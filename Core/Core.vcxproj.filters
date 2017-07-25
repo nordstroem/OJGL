@@ -6,5 +6,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\gl_loader.h" />
+    <ClInclude Include="src\glext.h" />
+    <ClInclude Include="src\wglext.h" />
   </ItemGroup>
 </Project>

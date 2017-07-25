@@ -15,7 +15,8 @@ palette). */
 void display()
 {
     /* rotate a triangle around */
-    glClear(GL_COLOR_BUFFER_BIT);
+	glActiveTexture(0);
+	glClear(GL_COLOR_BUFFER_BIT);
     glBegin(GL_TRIANGLES);
     glColor3f(1.0f, 0.0f, 0.0f);
     glVertex2i(0, 1);

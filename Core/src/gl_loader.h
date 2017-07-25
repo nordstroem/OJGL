@@ -1,4 +1,7 @@
 #pragma once 
+#include "glext.h"
+#include "wglext.h"
+
 extern void* gl_function_pointers[];
 /* Returns the number of functions that failed to load. */
 int load_gl_functions();
