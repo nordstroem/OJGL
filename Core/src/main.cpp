@@ -16,8 +16,8 @@ palette). */
 void display()
 {
     /* rotate a triangle around */
-	glActiveTexture(GL_TEXTURE0);
-	glClear(GL_COLOR_BUFFER_BIT);
+    glActiveTexture(GL_TEXTURE0);
+    glClear(GL_COLOR_BUFFER_BIT);
     glBegin(GL_TRIANGLES);
     glColor3f(1.0f, 0.0f, 0.0f);
     glVertex2i(0, 1);
@@ -149,7 +149,7 @@ int main()
     hDC = GetDC(hWnd);
     hRC = wglCreateContext(hDC);
     wglMakeCurrent(hDC, hRC);
-	load_gl_functions();
+    std::cout << load_gl_functions();
 
     ShowWindow(hWnd, 1);
 
