@@ -24,8 +24,7 @@ Window::~Window()
 
 void Window::getMessages()
 {
-	while (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
-	{
+    while (PeekMessage(&msg, 0, 0, 0, PM_REMOVE)) {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
@@ -115,7 +114,7 @@ LONG WINAPI Window::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
         return 0;
 
     case WM_SIZE:
-       // glViewport(0, 0, LOWORD(lParam), HIWORD(lParam));
+        // glViewport(0, 0, LOWORD(lParam), HIWORD(lParam));
         PostMessage(hWnd, WM_PAINT, 0, 0);
         return 0;
 

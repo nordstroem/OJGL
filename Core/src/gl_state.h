@@ -12,8 +12,8 @@ public:
     GLuint getVBO() const;
 
 private:
-	const unsigned vertexCount = 6;
-	DWORD startTime;
+    const unsigned vertexCount = 6;
+    DWORD startTime;
     void loadShader();
     void setupQuad();
     GLuint programID;
