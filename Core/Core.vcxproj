@@ -155,13 +155,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\gl_loader.cpp" />
+    <ClCompile Include="src\gl_state.cpp" />
+    <ClCompile Include="src\winapi\gl_loader.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\window.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\glext.h" />
-    <ClInclude Include="src\gl_loader.h" />
-    <ClInclude Include="src\wglext.h" />
+    <ClInclude Include="src\gl_state.h" />
+    <ClInclude Include="src\util.h" />
+    <ClInclude Include="src\winapi\glext.h" />
+    <ClInclude Include="src\winapi\gl_loader.h" />
+    <ClInclude Include="src\winapi\wglext.h" />
+    <ClInclude Include="src\window.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\demo.fs" />
+    <None Include="shaders\demo.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
