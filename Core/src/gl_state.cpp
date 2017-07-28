@@ -7,6 +7,7 @@
 
 GLState::GLState()
 {
+    startTime = GetTickCount();
     load_gl_functions();
     setupQuad();
     loadShader();
@@ -21,10 +22,9 @@ GLState::~GLState()
 
 void GLState::render() const
 {
-    static auto start = GetTickCount();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glUseProgram(programID);
-    glUniform1f(glGetUniformLocation(programID, "iGlobalTime"), (GetTickCount() - start) / 1000.0);
+    glUniform1f(glGetUniformLocation(programID, "iGlobalTime"), (GetTickCount() - startTime) / 1000.0);
     glBindVertexArray(vaoID);
     glDrawArrays(GL_TRIANGLES, 0, vertexCount);
     glBindVertexArray(0);
@@ -101,13 +101,13 @@ void GLState::loadShader()
 
     glValidateProgram(programID);
     glGetProgramiv(programID, GL_VALIDATE_STATUS, &param);
-	if (param == GL_FALSE) {
-		std::cout << "Shader program is not valid!\n";
-		int len;
-		char log[200];
-		glGetShaderInfoLog(fragID, 200, &len, log);
-		std::cout << log;
-	}
+    if (param == GL_FALSE) {
+        std::cout << "Shader program is not valid!\n";
+        int len;
+        char log[200];
+        glGetShaderInfoLog(fragID, 200, &len, log);
+        std::cout << log;
+    }
 
     //Delete the shaders
     glDetachShader(programID, vertID);

@@ -12,13 +12,12 @@ using namespace std;
 int main()
 {
     Window window;
-	GLState glState;
+    GLState glState;
 
-	while (true)
-	{
-		window.getMessages();
-		glState.render();
-	}
+    while (true) {
+        window.getMessages();
+        glState.render();
+    }
 
     return 0;
 }
