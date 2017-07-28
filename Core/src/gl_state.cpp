@@ -7,7 +7,7 @@
 
 GLState::GLState()
 {
-	startTime = GetTickCount();
+    startTime = GetTickCount();
     load_gl_functions();
     setupQuad();
     loadShader();
