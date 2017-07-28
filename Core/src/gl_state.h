@@ -13,6 +13,7 @@ public:
 
 private:
 	const unsigned vertexCount = 6;
+	DWORD startTime;
     void loadShader();
     void setupQuad();
     GLuint programID;
