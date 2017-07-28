@@ -13,9 +13,12 @@ int main()
 {
     Window window;
 	GLState glState;
-	glState.render(); window.update();
-   // std::thread t([&]() { while (true) {   } });
-    window.getMessages();
-  //  t.join();
+
+	while (true)
+	{
+		window.getMessages();
+		glState.render();
+	}
+
     return 0;
 }

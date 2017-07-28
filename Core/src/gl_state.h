@@ -2,8 +2,6 @@
 
 #include "winapi/gl_loader.h"
 
-using namespace std;
-
 class GLState {
 public:
     GLState();

@@ -14,19 +14,21 @@ GLState::GLState()
 
 GLState::~GLState()
 {
-	glDeleteVertexArrays(1, &vaoID);
-	glDeleteBuffers(1, &vboID);
-	glDeleteProgram(programID);
+    glDeleteVertexArrays(1, &vaoID);
+    glDeleteBuffers(1, &vboID);
+    glDeleteProgram(programID);
 }
 
 void GLState::render() const
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glUseProgram(programID);
-	glBindVertexArray(vaoID);
-	glDrawArrays(GL_TRIANGLES, 0, vertexCount);
-	glBindVertexArray(0);
-	glFlush();
+    static auto start = GetTickCount();
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glUseProgram(programID);
+    glUniform1f(glGetUniformLocation(programID, "iGlobalTime"), (GetTickCount() - start) / 1000.0);
+    glBindVertexArray(vaoID);
+    glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+    glBindVertexArray(0);
+    glFlush();
 }
 
 void GLState::setupQuad()
@@ -37,6 +39,7 @@ void GLState::setupQuad()
     };
 
     glGenVertexArrays(1, &vaoID);
+    std::cout << vaoID << '\n';
     glBindVertexArray(vaoID);
     glEnableVertexAttribArray(0);
     glGenBuffers(1, &vboID);
@@ -50,8 +53,13 @@ void GLState::setupQuad()
 void GLState::loadShader()
 {
 
-    string vertexShader = util::getFileContent("shaders/demo.vs");
-    string fragmentShader = util::getFileContent("shaders/demo.fs");
+    std::string vertexShader =
+#include "../shaders/demo.vs"
+        ;
+
+    std::string fragmentShader =
+#include "../shaders/demo.fs"
+        ;
 
     programID = glCreateProgram();
     int vertID = glCreateShader(GL_VERTEX_SHADER);
@@ -73,31 +81,37 @@ void GLState::loadShader()
         int len;
         char log[200];
         glGetShaderInfoLog(fragID, 200, &len, log);
-        cout << log;
+        std::cout << log;
     }
 
     glCompileShader(fragID);
 
     glGetShaderiv(fragID, GL_COMPILE_STATUS, &param);
     if (param == GL_FALSE) {
-        cout << "Failed to compile fragment shader!\n";
+        std::cout << "Failed to compile fragment shader!\n";
         int len;
         char log[200];
         glGetShaderInfoLog(fragID, 200, &len, log);
-        cout << log;
+        std::cout << log;
     }
 
     glAttachShader(programID, vertID);
     glAttachShader(programID, fragID);
     glLinkProgram(programID);
 
-    //glValidateProgram(program);
-    //System.out.println();
-    //glGetProgramiv(program, GL_VALIDATE_STATUS, bb2);
+    glValidateProgram(programID);
+    glGetProgramiv(programID, GL_VALIDATE_STATUS, &param);
+	if (param == GL_FALSE) {
+		std::cout << "Shader program is not valid!\n";
+		int len;
+		char log[200];
+		glGetShaderInfoLog(fragID, 200, &len, log);
+		std::cout << log;
+	}
 
     //Delete the shaders
-    //glDetachShader(program, vertID);
-    //glDetachShader(program, fragID);
+    glDetachShader(programID, vertID);
+    glDetachShader(programID, fragID);
     glDeleteShader(vertID);
     glDeleteShader(fragID);
 }

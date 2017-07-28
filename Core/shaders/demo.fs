@@ -1,7 +1,10 @@
+R"(
 #version 430
 
 in vec2 fragCoord; 
 out vec4 fragColor;
+
+uniform float iGlobalTime;
 
 float udRoundBox( vec3 p, vec3 b, float r )
 {
@@ -10,7 +13,6 @@ float udRoundBox( vec3 p, vec3 b, float r )
 
 void main() 
 {
-	float iGlobalTime = 0.0; 
 	vec2 uv = fragCoord.xy;
 	vec3 ro = vec3(iGlobalTime * 10.0, 2.0 * sin(iGlobalTime * 0.5), 2.0 * sin(iGlobalTime));
 	vec3 rd = normalize(vec3(1.0, uv.y - 0.5, uv.x - 0.5));
@@ -51,3 +53,4 @@ void main()
 	fragColor = vec4(color, 1.0);
 	fragColor.rgb = fragColor.rgb / (fragColor.rgb + vec3(1.0));
 }
+)"

@@ -71,6 +71,8 @@ int load_gl_functions();
 #define glGetAttribLocation ((PFNGLGETATTRIBLOCATIONPROC)gl_function_pointers[56])
 #define glBufferSubData ((PFNGLBUFFERSUBDATAPROC)gl_function_pointers[57])
 #define glUniform4iv ((PFNGLUNIFORM4IVPROC)gl_function_pointers[58])
+#define glDetachShader ((PFNGLDETACHSHADERPROC)gl_function_pointers[59])
+#define glValidateProgram ((PFNGLVALIDATEPROGRAMPROC)gl_function_pointers[60])
 
 #ifdef DEBUG
 extern void* gl_debug_function_pointers[];
