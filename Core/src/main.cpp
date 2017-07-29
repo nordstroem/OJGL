@@ -1,6 +1,8 @@
 
 #include "gl_state.h"
+#include "timer.h"
 #include "window.h"
+#include <functional>
 #include <iostream>
 #include <memory>
 #include <stdio.h>
@@ -13,10 +15,11 @@ int main()
 {
     Window window;
     GLState glState;
-
     while (true) {
-        window.getMessages();
-        glState.render();
+        cout << Timer::time<Timer::ns_t>([&]() {
+            window.getMessages();
+            glState.render();
+        }) << '\n';
     }
 
     return 0;

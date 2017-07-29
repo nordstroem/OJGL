@@ -13,6 +13,7 @@
     <ClInclude Include="src\gl_state.h" />
     <ClInclude Include="src\util.h" />
     <ClInclude Include="src\window.h" />
+    <ClInclude Include="src\timer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\demo.fs" />

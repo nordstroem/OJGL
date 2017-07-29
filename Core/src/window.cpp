@@ -133,7 +133,3 @@ LONG WINAPI Window::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 
     return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
-
-void Window::update()
-{
-}

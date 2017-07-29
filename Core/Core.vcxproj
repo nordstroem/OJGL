@@ -162,6 +162,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\gl_state.h" />
+    <ClInclude Include="src\timer.h" />
     <ClInclude Include="src\util.h" />
     <ClInclude Include="src\winapi\glext.h" />
     <ClInclude Include="src\winapi\gl_loader.h" />
