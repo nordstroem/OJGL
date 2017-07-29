@@ -11,7 +11,8 @@ using namespace std;
 
 int main()
 {
-    Window window;
+	bool fullScreen = false;
+    Window window(fullScreen);
     GLState glState;
 
     while (true) {

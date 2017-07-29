@@ -7,13 +7,14 @@
 
 class Window {
 public:
-    Window();
+    Window(bool fullScreen);
     ~Window();
     void update();
     void getMessages();
 
 private:
-    HWND CreateOpenGLWindow(char* title, int x, int y, int width, int height, BYTE type, DWORD flags);
+    HWND CreateOpenGLWindow(char* title, int x, int y, int width, int height, BYTE type, DWORD flags, bool fullScreen);
+	HWND CreateFullscreenWindow(HWND, HINSTANCE);
     static LONG WINAPI Window::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
     HDC hDC; // device context
     HGLRC hRC; // opengl context
