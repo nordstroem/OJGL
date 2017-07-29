@@ -12,7 +12,7 @@ public:
     using dsec_t = std::chrono::duration<double>;
 
     void start() { startTime = std::chrono::high_resolution_clock::now(); };
-    void end() { startTime = std::chrono::high_resolution_clock::now(); };
+    void end() { endTime = std::chrono::high_resolution_clock::now(); };
 
     template <typename T>
     auto time() { return std::chrono::duration_cast<T>(startTime - endTime).count(); };

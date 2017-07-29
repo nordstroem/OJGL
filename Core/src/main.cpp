@@ -13,7 +13,7 @@ using namespace std;
 
 int main()
 {
-	bool fullScreen = false;
+    bool fullScreen = false;
     Window window(fullScreen);
     GLState glState;
     while (true) {
