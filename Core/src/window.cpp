@@ -2,9 +2,9 @@
 #include "gl_state.h"
 #include <thread>
 
-Window::Window()
+Window::Window(bool fullScreen)
 {
-    hWnd = CreateOpenGLWindow("minimal", 0, 0, 256, 256, PFD_TYPE_RGBA, 0);
+    hWnd = CreateOpenGLWindow("minimal", 0, 0, 256, 256, PFD_TYPE_RGBA, 0, fullScreen);
     if (hWnd == NULL)
         exit(1);
 
@@ -30,7 +30,23 @@ void Window::getMessages()
     }
 }
 
-HWND Window::CreateOpenGLWindow(char* title, int x, int y, int width, int height, BYTE type, DWORD flags)
+HWND Window::CreateFullscreenWindow(HWND hwnd, HINSTANCE hInstance)
+{
+	HMONITOR hmon = MonitorFromWindow(hwnd,
+		MONITOR_DEFAULTTONEAREST);
+	MONITORINFO mi = { sizeof(mi) };
+	if (!GetMonitorInfo(hmon, &mi)) return NULL;
+	return CreateWindow(TEXT("static"),
+		TEXT("something interesting might go here"),
+		WS_POPUP | WS_VISIBLE,
+		mi.rcMonitor.left,
+		mi.rcMonitor.top,
+		mi.rcMonitor.right - mi.rcMonitor.left,
+		mi.rcMonitor.bottom - mi.rcMonitor.top,
+		hwnd, NULL, hInstance, 0);
+}
+
+HWND Window::CreateOpenGLWindow(char* title, int x, int y, int width, int height, BYTE type, DWORD flags, bool fullScreen)
 {
     int pf;
     HDC hDC;
@@ -63,6 +79,10 @@ HWND Window::CreateOpenGLWindow(char* title, int x, int y, int width, int height
 
     hWnd = CreateWindow(L"OpenGL", L"Hej", WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN,
         x, y, width, height, NULL, NULL, hInstance, NULL);
+	if (fullScreen) {
+		hWnd = CreateFullscreenWindow(hWnd, hInstance);
+	}
+	
 
     if (hWnd == NULL) {
         MessageBox(NULL, L"CreateWindow() failed:  Cannot create a window.",
