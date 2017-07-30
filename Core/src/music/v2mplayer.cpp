@@ -10,7 +10,7 @@
 
 #include "libv2.h"
 #include "v2mplayer.h"
-/*
+
 #define sTRUE (!0)
 #define sFALSE 0
 
@@ -50,10 +50,10 @@ void UpdateSampleDelta(sU32 nexttime, sU32 time, sU32 usecs, sU32 td2, sU32* smp
 			mov ebx, [td2]
 			div ebx
 			mov ecx, [smplrem]
-			add [ecx], edx
+			add[ecx], edx
 			adc eax, 0
 			mov ecx, [smpldelta]
-			mov [ecx], eax
+			mov[ecx], eax
     }
 }
 }
@@ -312,7 +312,7 @@ void V2MPlayer::Play(sU32 a_time)
 		imul ebx
 		mov  ebx, [ecx + m_tpc]
 		idiv ebx
-		mov  [destsmpl], eax
+		mov[destsmpl], eax
         }
 
     m_state.state = PlayerState::PLAYING;
@@ -349,7 +349,7 @@ void V2MPlayer::Stop(sU32 a_fadetime)
 			imul ebx
 			mov  ebx, [ecx + m_tpc]
 			idiv ebx
-			mov  [ftsmpls], eax
+			mov[ftsmpls], eax
             }
         m_fadedelta = m_fadeval / ftsmpls;
     } else
@@ -384,11 +384,11 @@ void V2MPlayer::Render(sF32* a_buffer, sU32 a_len, sBool a_add)
     } else if (m_state.state == PlayerState::OFF || !m_base.valid) {
         if (!a_add) {
             __asm {
-			  mov edi, [a_buffer]
-			  mov ecx, [a_len]
-			  shl ecx, 1
-			  xor eax, eax
-			  rep stosd
+				mov edi, [a_buffer]
+				mov ecx, [a_len]
+				shl ecx, 1
+				xor eax, eax
+				rep stosd
             }
         }
     } else {
@@ -483,4 +483,4 @@ sU32 V2MPlayer::CalcPositions(sS32** a_dest)
     return pn;
 }
 
-#endif */
+#endif
