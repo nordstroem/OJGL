@@ -14,10 +14,13 @@ using namespace std;
 int main()
 {
     bool fullScreen = false;
+  
     Music mu;
     mu.play();
+
     Window window(fullScreen);
     GLState glState;
+
     while (true) {
         //cout << Timer::time<Timer::ms_t>([&]() {
         window.getMessages();

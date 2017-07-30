@@ -62,8 +62,8 @@
 #*.rtf   diff=astextplain
 #*.RTF   diff=astextplain
 
-*/glext.h linguist-vendored
-*/wglext.h linguist-vendored
-*/gl_loader.cpp linguist-vendored
-*/gl_loader.h linguist-vendored
-
+*glext.h linguist-vendored=true
+*wglext.h linguist-vendored=true
+*gl_loader.cpp linguist-vendored=true
+*gl_loader.h linguist-vendored=true
+Core/src/winapi/* linguist-vendored=true
