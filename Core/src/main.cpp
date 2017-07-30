@@ -16,8 +16,9 @@ int main()
     bool fullScreen = false;
     Window window(fullScreen);
     GLState glState;
+
     while (true) {
-        cout << Timer::time<Timer::ns_t>([&]() {
+        cout << timer::funcTime<timer::ns_t>([&]() {
             window.getMessages();
             glState.render();
         }) << '\n';
