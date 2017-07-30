@@ -14,9 +14,15 @@
     <ClInclude Include="src\util.h" />
     <ClInclude Include="src\window.h" />
     <ClInclude Include="src\timer.h" />
+    <ClInclude Include="src\music\libv2.h" />
+    <ClInclude Include="src\music\v2mplayer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\demo.fs" />
     <None Include="shaders\demo.vs" />
+    <None Include="src\music\v2mplayer.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\..\..\..\Downloads\libv2.lib" />
   </ItemGroup>
 </Project>
