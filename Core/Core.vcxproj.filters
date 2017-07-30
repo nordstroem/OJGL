@@ -5,6 +5,8 @@
     <ClCompile Include="src\winapi\gl_loader.cpp" />
     <ClCompile Include="src\gl_state.cpp" />
     <ClCompile Include="src\window.cpp" />
+    <ClCompile Include="src\music\music.cpp" />
+    <ClCompile Include="src\music\v2mplayer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\winapi\glext.h" />
@@ -14,9 +16,13 @@
     <ClInclude Include="src\util.h" />
     <ClInclude Include="src\window.h" />
     <ClInclude Include="src\timer.h" />
+    <ClInclude Include="src\music\libv2.h" />
+    <ClInclude Include="src\music\v2mplayer.h" />
+    <ClInclude Include="src\music\music.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\demo.fs" />
     <None Include="shaders\demo.vs" />
+    <None Include="src\music\song.inc" />
   </ItemGroup>
 </Project>

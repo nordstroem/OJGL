@@ -1,9 +1,9 @@
 
 #include "gl_state.h"
+#include "music\music.h"
 #include "timer.h"
 #include "window.h"
 #include <functional>
-#include <iostream>
 #include <memory>
 #include <stdio.h>
 #include <string>
@@ -14,14 +14,18 @@ using namespace std;
 int main()
 {
     bool fullScreen = false;
+  
+    Music mu;
+    mu.play();
+
     Window window(fullScreen);
     GLState glState;
 
     while (true) {
-        cout << timer::funcTime<timer::ns_t>([&]() {
-            window.getMessages();
-            glState.render();
-        }) << '\n';
+        //cout << Timer::time<Timer::ms_t>([&]() {
+        window.getMessages();
+        glState.render();
+        //}) << '\n';
     }
 
     return 0;
