@@ -1,12 +1,13 @@
 #include "../window.h"
 #include "music.h"
 
+unsigned char song_v2m[] = {
+#include "song.inc"
+};
+
 Music::Music()
 {
     player = std::make_unique<V2MPlayer>();
-    song_v2m = {
-#include "song.inc"
-    };
 }
 
 Music::~Music()

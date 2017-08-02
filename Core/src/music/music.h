@@ -4,6 +4,8 @@
 #include <memory>
 #include <vector>
 
+extern unsigned char song_v2m[];
+
 class Music {
 public:
     Music();
@@ -11,6 +13,5 @@ public:
     void play();
 
 private:
-    std::vector<unsigned char> song_v2m;
     std::unique_ptr<V2MPlayer> player;
 };
