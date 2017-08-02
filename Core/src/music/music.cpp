@@ -33,6 +33,9 @@ void Music::play()
 void Music::sync(int channel, int note, int velocity)
 {
     if (playerInitialized) {
-        std::cout << "Channel: " << channel << " Note: " << note << " Velocity: " << velocity << "\n";
+        //std::cout << "Channel: " << channel << " Note: " << note << " Velocity: " << velocity << "\n";
+        //if (channel == 13 && velocity > 0) {
+        //   std::cout << "snare" << std::endl;
+        //}
     }
 }
