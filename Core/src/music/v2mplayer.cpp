@@ -260,7 +260,7 @@ void V2MPlayer::Tick()
             sc.notenr++;
             sc.noteptr++;
             UPDATENT2(sc.notenr, sc.notent, sc.noteptr, bc.notenum);
-            music.sync(ch);
+            music.sync(ch, sc.lastnte, sc.lastvel);
         }
         UPDATENT3(sc.notenr, sc.notent, sc.noteptr, bc.notenum);
     }

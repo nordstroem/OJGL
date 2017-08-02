@@ -26,10 +26,13 @@ void Music::play()
         player->Tick();
     player->Stop();
     dsInit(player->RenderProxy, player.get(), GetForegroundWindow());
+    playerInitialized = true;
     player->Play();
 }
 
-void Music::sync(int channel)
+void Music::sync(int channel, int note, int velocity)
 {
-    std::cout << "Channel: " << channel << "\n";
+    if (playerInitialized) {
+        std::cout << "Channel: " << channel << " Note: " << note << " Velocity: " << velocity << "\n";
+    }
 }
