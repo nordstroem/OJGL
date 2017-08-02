@@ -16,6 +16,8 @@
 #define V2MPLAYER_SYNC_FUNCTIONS
 #include "libv2.h"
 
+class Music;
+
 //#include "types.hpp"
 typedef unsigned char sU8; // for packed arrays
 typedef unsigned short sU16; // for packed arrays
@@ -38,6 +40,8 @@ typedef int sBool; // use for boolean function results
 
 class V2MPlayer {
 public:
+    V2MPlayer(Music& mu);
+
     void V2MPlayer::Tick();
     // init
     // call this instead of a constructor
@@ -127,6 +131,7 @@ public:
     // ------------------------------------------------------------------------------------------------------
 
 private:
+    Music& music;
     // struct defs
 
     // General info from V2M file

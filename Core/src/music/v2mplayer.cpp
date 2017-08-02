@@ -9,6 +9,7 @@
 /*************************************************************************************/
 
 #include "libv2.h"
+#include "music.h"
 #include "v2mplayer.h"
 
 #define sTRUE (!0)
@@ -172,6 +173,11 @@ void V2MPlayer::Reset()
     }
 }
 
+V2MPlayer::V2MPlayer(Music& mu)
+    : music(mu)
+{
+}
+
 void V2MPlayer::Tick()
 ///////////////////////
 {
@@ -254,6 +260,7 @@ void V2MPlayer::Tick()
             sc.notenr++;
             sc.noteptr++;
             UPDATENT2(sc.notenr, sc.notent, sc.noteptr, bc.notenum);
+            music.sync(ch);
         }
         UPDATENT3(sc.notenr, sc.notent, sc.noteptr, bc.notenum);
     }

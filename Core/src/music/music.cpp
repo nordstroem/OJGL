@@ -1,5 +1,6 @@
 #include "../window.h"
 #include "music.h"
+#include <iostream>
 
 unsigned char song_v2m[] = {
 #include "song.inc"
@@ -7,7 +8,7 @@ unsigned char song_v2m[] = {
 
 Music::Music()
 {
-    player = std::make_unique<V2MPlayer>();
+    player = std::make_unique<V2MPlayer>(*this);
 }
 
 Music::~Music()
@@ -26,4 +27,9 @@ void Music::play()
     player->Stop();
     dsInit(player->RenderProxy, player.get(), GetForegroundWindow());
     player->Play();
+}
+
+void Music::sync(int channel)
+{
+    std::cout << "Channel: " << channel << "\n";
 }
