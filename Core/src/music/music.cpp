@@ -8,7 +8,7 @@ unsigned char song_v2m[] = {
 
 Music::Music()
 {
-    player = std::make_unique<V2MPlayer>(*this);
+    player = std::make_unique<V2MPlayer>();
 }
 
 Music::~Music()
@@ -18,24 +18,24 @@ Music::~Music()
 
 void Music::play()
 {
-
     player->Init();
     player->Open(&(song_v2m[0]));
     player->Play();
     while (player->IsPlaying())
         player->Tick();
     player->Stop();
+    player->popSyncEvents();
     dsInit(player->RenderProxy, player.get(), GetForegroundWindow());
     playerInitialized = true;
     player->Play();
 }
 
-void Music::sync(int channel, int note, int velocity)
+void Music::updateSync()
 {
-    if (playerInitialized) {
-        //std::cout << "Channel: " << channel << " Note: " << note << " Velocity: " << velocity << "\n";
-        //if (channel == 13 && velocity > 0) {
-        //   std::cout << "snare" << std::endl;
-        //}
+    auto syncEvents = player->popSyncEvents();
+    for (auto se : *syncEvents) {
+        //std::cout << "Channel: " << se.channel << " Note: " << se.note << " Velocity: " << se.velocity << "\n";
+        //if (se.channel == 13 && se.velocity > 0)
+        //    std::cout << "snare" << std::endl;
     }
 }

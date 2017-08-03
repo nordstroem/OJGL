@@ -11,7 +11,7 @@ public:
     Music();
     ~Music();
     void play();
-    void sync(int channel, int note, int volume);
+    void updateSync();
 
 private:
     std::unique_ptr<V2MPlayer> player;

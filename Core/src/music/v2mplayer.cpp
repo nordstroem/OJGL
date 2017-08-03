@@ -59,6 +59,11 @@ void UpdateSampleDelta(sU32 nexttime, sU32 time, sU32 usecs, sU32 td2, sU32* smp
 }
 }
 
+V2MPlayer::V2MPlayer()
+{
+    syncEvents = std::make_unique<std::vector<SyncEvent>>();
+}
+
 sBool V2MPlayer::InitBase(const void* a_v2m)
 ///////////////////////////////////////
 {
@@ -173,9 +178,11 @@ void V2MPlayer::Reset()
     }
 }
 
-V2MPlayer::V2MPlayer(Music& mu)
-    : music(mu)
+std::unique_ptr<std::vector<SyncEvent>> V2MPlayer::popSyncEvents()
 {
+    std::unique_ptr<std::vector<SyncEvent>> currentEvents = std::move(syncEvents);
+    syncEvents = std::make_unique<std::vector<SyncEvent>>();
+    return currentEvents;
 }
 
 void V2MPlayer::Tick()
@@ -260,7 +267,7 @@ void V2MPlayer::Tick()
             sc.notenr++;
             sc.noteptr++;
             UPDATENT2(sc.notenr, sc.notent, sc.noteptr, bc.notenum);
-            music.sync(ch, sc.lastnte, sc.lastvel);
+            syncEvents->push_back(SyncEvent(ch, sc.lastnte, sc.lastvel));
         }
         UPDATENT3(sc.notenr, sc.notent, sc.noteptr, bc.notenum);
     }

@@ -7,6 +7,7 @@
     <ClCompile Include="src\window.cpp" />
     <ClCompile Include="src\music\music.cpp" />
     <ClCompile Include="src\music\v2mplayer.cpp" />
+    <ClCompile Include="src\music\syncevent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\winapi\glext.h" />
@@ -19,6 +20,7 @@
     <ClInclude Include="src\music\libv2.h" />
     <ClInclude Include="src\music\v2mplayer.h" />
     <ClInclude Include="src\music\music.h" />
+    <ClInclude Include="src\music\syncevent.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\demo.fs" />

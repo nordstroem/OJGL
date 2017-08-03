@@ -171,6 +171,7 @@
     <ClCompile Include="src\winapi\gl_loader.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\window.cpp" />
+    <ClCompile Include="src\music\syncevent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\music\music.h" />
@@ -183,6 +184,7 @@
     <ClInclude Include="src\winapi\wglext.h" />
     <ClInclude Include="src\window.h" />
     <ClInclude Include="src\music\v2mplayer.h" />
+    <ClInclude Include="src\music\syncevent.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\demo.fs" />
