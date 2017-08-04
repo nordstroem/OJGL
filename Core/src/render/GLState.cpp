@@ -39,7 +39,6 @@ void GLState::setupQuad()
     };
 
     glGenVertexArrays(1, &_vaoID);
-    std::cout << _vaoID << '\n';
     glBindVertexArray(_vaoID);
     glEnableVertexAttribArray(0);
     glGenBuffers(1, &_vboID);

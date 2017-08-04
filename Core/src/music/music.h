@@ -1,8 +1,9 @@
 #pragma once
 
+#include "syncchannel.h"
 #include "v2mplayer.h"
+#include <map>
 #include <memory>
-#include <vector>
 
 namespace ojgl {
 
@@ -15,8 +16,9 @@ public:
     void updateSync();
 
 private:
+    void initSync();
+    std::map<int, SyncChannel> _syncChannels;
     unsigned char* _song;
     std::unique_ptr<V2MPlayer> _player;
-    bool _playerInitialized = false;
 };
 } //namespace ojgl

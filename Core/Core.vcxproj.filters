@@ -12,6 +12,7 @@
     <ClCompile Include="src\render\Window.cpp" />
     <ClCompile Include="src\winapi\gl_loader.cpp" />
     <ClCompile Include="src\music\Music.cpp" />
+    <ClCompile Include="src\music\syncchannel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\music\V2MPlayer.h" />
@@ -25,5 +26,6 @@
     <ClInclude Include="src\OJGL.h" />
     <ClInclude Include="src\music\SyncEvent.hpp" />
     <ClInclude Include="src\music\Music.h" />
+    <ClInclude Include="src\music\syncchannel.h" />
   </ItemGroup>
 </Project>
