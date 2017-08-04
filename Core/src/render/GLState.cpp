@@ -1,32 +1,32 @@
-#include "gl_state.h"
-#include "util.h"
+#include "GLState.h"
 #include <iostream>
 #include <memory>
 #include <string>
 #include <vector>
 
-GLState::GLState()
+namespace ojgl {
+GLState::GLState(const std::string& vertexShader, const std::string& fragmentShader)
 {
-    startTime = GetTickCount();
+    _startTime = GetTickCount();
     load_gl_functions();
     setupQuad();
-    loadShader();
+    loadShader(vertexShader, fragmentShader);
 }
 
 GLState::~GLState()
 {
-    glDeleteVertexArrays(1, &vaoID);
-    glDeleteBuffers(1, &vboID);
-    glDeleteProgram(programID);
+    glDeleteVertexArrays(1, &_vaoID);
+    glDeleteBuffers(1, &_vboID);
+    glDeleteProgram(_programID);
 }
 
 void GLState::render() const
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glUseProgram(programID);
-    glUniform1f(glGetUniformLocation(programID, "iGlobalTime"), (GLfloat)((GetTickCount() - startTime) / 1000.0));
-    glBindVertexArray(vaoID);
-    glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+    glUseProgram(_programID);
+    glUniform1f(glGetUniformLocation(_programID, "iGlobalTime"), (GLfloat)((GetTickCount() - _startTime) / 1000.0));
+    glBindVertexArray(_vaoID);
+    glDrawArrays(GL_TRIANGLES, 0, _vertexCount);
     glBindVertexArray(0);
     glFlush();
 }
@@ -38,30 +38,22 @@ void GLState::setupQuad()
         1, -1, 0, 1, 1, 0, -1, 1, 0
     };
 
-    glGenVertexArrays(1, &vaoID);
-    std::cout << vaoID << '\n';
-    glBindVertexArray(vaoID);
+    glGenVertexArrays(1, &_vaoID);
+    std::cout << _vaoID << '\n';
+    glBindVertexArray(_vaoID);
     glEnableVertexAttribArray(0);
-    glGenBuffers(1, &vboID);
-    glBindBuffer(GL_ARRAY_BUFFER, vboID);
+    glGenBuffers(1, &_vboID);
+    glBindBuffer(GL_ARRAY_BUFFER, _vboID);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), &vertices, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 }
 
-void GLState::loadShader()
+void GLState::loadShader(const std::string& vertexShader, const std::string& fragmentShader)
 {
 
-    std::string vertexShader =
-#include "../shaders/demo.vs"
-        ;
-
-    std::string fragmentShader =
-#include "../shaders/demo.fs"
-        ;
-
-    programID = glCreateProgram();
+    _programID = glCreateProgram();
     int vertID = glCreateShader(GL_VERTEX_SHADER);
     int fragID = glCreateShader(GL_FRAGMENT_SHADER);
 
@@ -95,12 +87,12 @@ void GLState::loadShader()
         std::cout << log;
     }
 
-    glAttachShader(programID, vertID);
-    glAttachShader(programID, fragID);
-    glLinkProgram(programID);
+    glAttachShader(_programID, vertID);
+    glAttachShader(_programID, fragID);
+    glLinkProgram(_programID);
 
-    glValidateProgram(programID);
-    glGetProgramiv(programID, GL_VALIDATE_STATUS, &param);
+    glValidateProgram(_programID);
+    glGetProgramiv(_programID, GL_VALIDATE_STATUS, &param);
     if (param == GL_FALSE) {
         std::cout << "Shader program is not valid!\n";
         int len;
@@ -110,23 +102,24 @@ void GLState::loadShader()
     }
 
     //Delete the shaders
-    glDetachShader(programID, vertID);
-    glDetachShader(programID, fragID);
+    glDetachShader(_programID, vertID);
+    glDetachShader(_programID, fragID);
     glDeleteShader(vertID);
     glDeleteShader(fragID);
 }
 
 GLuint GLState::getProgramID() const
 {
-    return this->programID;
+    return this->_programID;
 }
 
 GLuint GLState::getVAO() const
 {
-    return this->vaoID;
+    return this->_vaoID;
 }
 
 GLuint GLState::getVBO() const
 {
-    return this->vboID;
+    return this->_vboID;
+}
 }

@@ -13,9 +13,8 @@
 #ifndef V2MPLAYER_H_
 #define V2MPLAYER_H_
 
-#define V2MPLAYER_SYNC_FUNCTIONS
-#include "SyncEvent.h"
-#include "libv2.h"
+#include "SyncEvent.hpp"
+#include "winapi/libv2.h"
 #include <memory>
 #include <mutex>
 #include <vector>
@@ -42,7 +41,7 @@ typedef int sBool; // use for boolean function results
 
 class V2MPlayer {
 public:
-    std::vector<SyncEvent> popSyncEvents();
+    std::vector<ojgl::SyncEvent> popSyncEvents();
 
     void V2MPlayer::Tick();
     // init
@@ -134,7 +133,7 @@ public:
 
 private:
     std::mutex syncEventsMutex;
-    std::vector<SyncEvent> syncEvents;
+    std::vector<ojgl::SyncEvent> syncEvents;
     // struct defs
 
     // General info from V2M file
@@ -165,7 +164,8 @@ private:
 
     // player state
     struct PlayerState {
-        enum { OFF,
+        enum {
+            OFF,
             STOPPED,
             PLAYING,
         } state;
@@ -226,7 +226,7 @@ private:
 
     sBool InitBase(const void* a_v2m); // inits base struct from v2m
     void Reset(); // resets player, inits synth
-    //void Tick(); // one midi player tick
+        //void Tick(); // one midi player tick
 };
 
 #endif

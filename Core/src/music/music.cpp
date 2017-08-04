@@ -1,41 +1,40 @@
-#include "../window.h"
 #include "music.h"
+#include "render/Window.h"
 #include <iostream>
+#include <vector>
 
-unsigned char song_v2m[] = {
-#include "song.inc"
-};
+namespace ojgl {
 
-Music::Music()
+Music::Music(unsigned char* song)
 {
-    player = std::make_unique<V2MPlayer>();
+    this->_player = std::make_unique<V2MPlayer>();
+    this->_song = song;
 }
 
 Music::~Music()
 {
-    player->Close();
+    this->_player->Close();
 }
 
 void Music::play()
 {
-    player->Init();
-    player->Open(&(song_v2m[0]));
-    player->Play();
-    while (player->IsPlaying())
-        player->Tick();
-    player->Stop();
-    player->popSyncEvents();
-    dsInit(player->RenderProxy, player.get(), GetForegroundWindow());
-    playerInitialized = true;
-    player->Play();
+    this->_player->Init();
+    this->_player->Open(this->_song);
+    this->_player->Play();
+    while (this->_player->IsPlaying())
+        this->_player->Tick();
+    this->_player->Stop();
+    this->_player->popSyncEvents();
+    dsInit(this->_player->RenderProxy, this->_player.get(), GetForegroundWindow());
+    this->_playerInitialized = true;
+    this->_player->Play();
 }
 
 void Music::updateSync()
 {
-    for (auto& se : player->popSyncEvents()) {
+    for (auto& se : this->_player->popSyncEvents()) {
         std::cout << "Channel: " << se.channel << " Note: " << se.note << " Velocity: " << se.velocity << "\n";
-        //if (se.channel == 13 && se.velocity > 0)
-        //    std::cout << "snare" << std::endl;
     }
     std::cout << "\n";
 }
+} //namespace ojgl
