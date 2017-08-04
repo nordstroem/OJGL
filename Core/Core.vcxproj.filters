@@ -7,14 +7,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="examples\Main.cpp" />
-    <ClCompile Include="src\music\Music.cpp" />
     <ClCompile Include="src\music\V2MPlayer.cpp" />
     <ClCompile Include="src\render\GLState.cpp" />
     <ClCompile Include="src\render\Window.cpp" />
     <ClCompile Include="src\winapi\gl_loader.cpp" />
+    <ClCompile Include="src\music\Music.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\music\Music.h" />
     <ClInclude Include="src\music\V2MPlayer.h" />
     <ClInclude Include="src\render\GLState.h" />
     <ClInclude Include="src\render\Window.h" />
@@ -25,5 +24,6 @@
     <ClInclude Include="src\winapi\wglext.h" />
     <ClInclude Include="src\OJGL.h" />
     <ClInclude Include="src\music\SyncEvent.hpp" />
+    <ClInclude Include="src\music\Music.h" />
   </ItemGroup>
 </Project>
