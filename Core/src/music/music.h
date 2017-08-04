@@ -4,16 +4,19 @@
 #include <memory>
 #include <vector>
 
-extern unsigned char song_v2m[];
+namespace ojgl {
 
 class Music {
+
 public:
-    Music();
+    Music(unsigned char* song);
     ~Music();
     void play();
     void updateSync();
 
 private:
-    std::unique_ptr<V2MPlayer> player;
-    bool playerInitialized = false;
+    unsigned char* _song;
+    std::unique_ptr<V2MPlayer> _player;
+    bool _playerInitialized = false;
 };
+} //namespace ojgl

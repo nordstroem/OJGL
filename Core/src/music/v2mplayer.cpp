@@ -8,9 +8,9 @@
 /*************************************************************************************/
 /*************************************************************************************/
 
-#include "libv2.h"
 #include "music.h"
 #include "v2mplayer.h"
+#include "winapi/libv2.h"
 
 #define sTRUE (!0)
 #define sFALSE 0
@@ -173,7 +173,7 @@ void V2MPlayer::Reset()
     }
 }
 
-std::vector<SyncEvent> V2MPlayer::popSyncEvents()
+std::vector<ojgl::SyncEvent> V2MPlayer::popSyncEvents()
 {
     std::lock_guard<std::mutex> lock(syncEventsMutex);
     return std::move(syncEvents);
@@ -262,7 +262,7 @@ void V2MPlayer::Tick()
             sc.noteptr++;
             UPDATENT2(sc.notenr, sc.notent, sc.noteptr, bc.notenum);
             std::lock_guard<std::mutex> lock(syncEventsMutex);
-            syncEvents.push_back(SyncEvent(ch, sc.lastnte, sc.lastvel));
+            syncEvents.push_back(ojgl::SyncEvent(ch, sc.lastnte, sc.lastvel));
         }
         UPDATENT3(sc.notenr, sc.notent, sc.noteptr, bc.notenum);
     }

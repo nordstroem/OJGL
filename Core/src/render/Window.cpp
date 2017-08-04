@@ -1,49 +1,52 @@
+#include "GLState.h"
 #include "Window.h"
-#include "gl_state.h"
 #include <thread>
+
+namespace ojgl {
 
 Window::Window(bool fullScreen)
 {
-    hWnd = CreateOpenGLWindow("minimal", 0, 0, 256, 256, PFD_TYPE_RGBA, 0, fullScreen);
-    if (hWnd == NULL)
+    _hWnd = CreateOpenGLWindow("minimal", 0, 0, 256, 256, PFD_TYPE_RGBA, 0, fullScreen);
+    if (_hWnd == NULL)
         exit(1);
 
-    hDC = GetDC(hWnd);
-    hRC = wglCreateContext(hDC);
-    wglMakeCurrent(hDC, hRC);
-    ShowWindow(hWnd, 1);
+    _hDC = GetDC(_hWnd);
+    _hRC = wglCreateContext(_hDC);
+    wglMakeCurrent(_hDC, _hRC);
+    ShowWindow(_hWnd, 1);
 }
 
 Window::~Window()
 {
     wglMakeCurrent(NULL, NULL);
-    ReleaseDC(hWnd, hDC);
-    wglDeleteContext(hRC);
-    DestroyWindow(hWnd);
+    ReleaseDC(_hWnd, _hDC);
+    wglDeleteContext(_hRC);
+    DestroyWindow(_hWnd);
 }
 
 void Window::getMessages()
 {
-    while (PeekMessage(&msg, 0, 0, 0, PM_REMOVE)) {
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
+    while (PeekMessage(&_msg, 0, 0, 0, PM_REMOVE)) {
+        TranslateMessage(&_msg);
+        DispatchMessage(&_msg);
     }
 }
 
 HWND Window::CreateFullscreenWindow(HWND hwnd, HINSTANCE hInstance)
 {
-	HMONITOR hmon = MonitorFromWindow(hwnd,
-		MONITOR_DEFAULTTONEAREST);
-	MONITORINFO mi = { sizeof(mi) };
-	if (!GetMonitorInfo(hmon, &mi)) return NULL;
-	return CreateWindow(TEXT("static"),
-		TEXT("something interesting might go here"),
-		WS_POPUP | WS_VISIBLE,
-		mi.rcMonitor.left,
-		mi.rcMonitor.top,
-		mi.rcMonitor.right - mi.rcMonitor.left,
-		mi.rcMonitor.bottom - mi.rcMonitor.top,
-		hwnd, NULL, hInstance, 0);
+    HMONITOR hmon = MonitorFromWindow(hwnd,
+        MONITOR_DEFAULTTONEAREST);
+    MONITORINFO mi = { sizeof(mi) };
+    if (!GetMonitorInfo(hmon, &mi))
+        return NULL;
+    return CreateWindow(TEXT("static"),
+        TEXT("something interesting might go here"),
+        WS_POPUP | WS_VISIBLE,
+        mi.rcMonitor.left,
+        mi.rcMonitor.top,
+        mi.rcMonitor.right - mi.rcMonitor.left,
+        mi.rcMonitor.bottom - mi.rcMonitor.top,
+        hwnd, NULL, hInstance, 0);
 }
 
 HWND Window::CreateOpenGLWindow(char* title, int x, int y, int width, int height, BYTE type, DWORD flags, bool fullScreen)
@@ -79,10 +82,9 @@ HWND Window::CreateOpenGLWindow(char* title, int x, int y, int width, int height
 
     hWnd = CreateWindow(L"OpenGL", L"Hej", WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN,
         x, y, width, height, NULL, NULL, hInstance, NULL);
-	if (fullScreen) {
-		hWnd = CreateFullscreenWindow(hWnd, hInstance);
-	}
-	
+    if (fullScreen) {
+        hWnd = CreateFullscreenWindow(hWnd, hInstance);
+    }
 
     if (hWnd == NULL) {
         MessageBox(NULL, L"CreateWindow() failed:  Cannot create a window.",
@@ -153,3 +155,4 @@ LONG WINAPI Window::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 
     return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
+} // namespace ojgl

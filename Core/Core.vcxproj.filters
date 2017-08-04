@@ -1,30 +1,29 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="src\main.cpp" />
+    <None Include="examples\songs\song.inc" />
+    <None Include="examples\shaders\demo.fs" />
+    <None Include="examples\shaders\demo.vs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="examples\Main.cpp" />
+    <ClCompile Include="src\music\Music.cpp" />
+    <ClCompile Include="src\music\V2MPlayer.cpp" />
+    <ClCompile Include="src\render\GLState.cpp" />
+    <ClCompile Include="src\render\Window.cpp" />
     <ClCompile Include="src\winapi\gl_loader.cpp" />
-    <ClCompile Include="src\gl_state.cpp" />
-    <ClCompile Include="src\window.cpp" />
-    <ClCompile Include="src\music\music.cpp" />
-    <ClCompile Include="src\music\v2mplayer.cpp" />
-    <ClCompile Include="src\music\syncevent.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\winapi\glext.h" />
+    <ClInclude Include="src\music\Music.h" />
+    <ClInclude Include="src\music\V2MPlayer.h" />
+    <ClInclude Include="src\render\GLState.h" />
+    <ClInclude Include="src\render\Window.h" />
+    <ClInclude Include="src\utility\Timer.hpp" />
     <ClInclude Include="src\winapi\gl_loader.h" />
+    <ClInclude Include="src\winapi\glext.h" />
+    <ClInclude Include="src\winapi\libv2.h" />
     <ClInclude Include="src\winapi\wglext.h" />
-    <ClInclude Include="src\gl_state.h" />
-    <ClInclude Include="src\util.h" />
-    <ClInclude Include="src\window.h" />
-    <ClInclude Include="src\timer.h" />
-    <ClInclude Include="src\music\libv2.h" />
-    <ClInclude Include="src\music\v2mplayer.h" />
-    <ClInclude Include="src\music\music.h" />
-    <ClInclude Include="src\music\syncevent.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="shaders\demo.fs" />
-    <None Include="shaders\demo.vs" />
-    <None Include="src\music\song.inc" />
+    <ClInclude Include="src\OJGL.h" />
+    <ClInclude Include="src\music\SyncEvent.hpp" />
   </ItemGroup>
 </Project>
