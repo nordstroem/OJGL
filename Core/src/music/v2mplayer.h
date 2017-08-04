@@ -17,6 +17,7 @@
 #include "SyncEvent.h"
 #include "libv2.h"
 #include <memory>
+#include <mutex>
 #include <vector>
 
 //#include "types.hpp"
@@ -132,6 +133,7 @@ public:
     // ------------------------------------------------------------------------------------------------------
 
 private:
+    std::mutex syncEventsMutex;
     std::vector<SyncEvent> syncEvents;
     // struct defs
 
