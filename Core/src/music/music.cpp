@@ -32,10 +32,10 @@ void Music::play()
 
 void Music::updateSync()
 {
-    auto syncEvents = player->popSyncEvents();
-    for (auto se : *syncEvents) {
-        //std::cout << "Channel: " << se.channel << " Note: " << se.note << " Velocity: " << se.velocity << "\n";
+    for (auto& se : player->popSyncEvents()) {
+        std::cout << "Channel: " << se.channel << " Note: " << se.note << " Velocity: " << se.velocity << "\n";
         //if (se.channel == 13 && se.velocity > 0)
         //    std::cout << "snare" << std::endl;
     }
+    std::cout << "\n";
 }

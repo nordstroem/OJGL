@@ -17,6 +17,7 @@
 #include "SyncEvent.h"
 #include "libv2.h"
 #include <memory>
+#include <mutex>
 #include <vector>
 
 //#include "types.hpp"
@@ -41,9 +42,7 @@ typedef int sBool; // use for boolean function results
 
 class V2MPlayer {
 public:
-    std::unique_ptr<std::vector<SyncEvent>> popSyncEvents();
-
-    V2MPlayer();
+    std::vector<SyncEvent> popSyncEvents();
 
     void V2MPlayer::Tick();
     // init
@@ -134,7 +133,8 @@ public:
     // ------------------------------------------------------------------------------------------------------
 
 private:
-    std::unique_ptr<std::vector<SyncEvent>> syncEvents;
+    std::mutex syncEventsMutex;
+    std::vector<SyncEvent> syncEvents;
     // struct defs
 
     // General info from V2M file
