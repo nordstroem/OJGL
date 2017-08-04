@@ -24,7 +24,7 @@ void GLState::render() const
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glUseProgram(programID);
-    glUniform1f(glGetUniformLocation(programID, "iGlobalTime"), (GetTickCount() - startTime) / 1000.0);
+    glUniform1f(glGetUniformLocation(programID, "iGlobalTime"), (GLfloat)((GetTickCount() - startTime) / 1000.0));
     glBindVertexArray(vaoID);
     glDrawArrays(GL_TRIANGLES, 0, vertexCount);
     glBindVertexArray(0);

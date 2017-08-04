@@ -11,7 +11,9 @@ public:
     Music();
     ~Music();
     void play();
+    void updateSync();
 
 private:
     std::unique_ptr<V2MPlayer> player;
+    bool playerInitialized = false;
 };

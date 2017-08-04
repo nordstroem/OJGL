@@ -14,7 +14,10 @@
 #define V2MPLAYER_H_
 
 #define V2MPLAYER_SYNC_FUNCTIONS
+#include "SyncEvent.h"
 #include "libv2.h"
+#include <memory>
+#include <vector>
 
 //#include "types.hpp"
 typedef unsigned char sU8; // for packed arrays
@@ -38,6 +41,10 @@ typedef int sBool; // use for boolean function results
 
 class V2MPlayer {
 public:
+    std::unique_ptr<std::vector<SyncEvent>> popSyncEvents();
+
+    V2MPlayer();
+
     void V2MPlayer::Tick();
     // init
     // call this instead of a constructor
@@ -127,6 +134,7 @@ public:
     // ------------------------------------------------------------------------------------------------------
 
 private:
+    std::unique_ptr<std::vector<SyncEvent>> syncEvents;
     // struct defs
 
     // General info from V2M file

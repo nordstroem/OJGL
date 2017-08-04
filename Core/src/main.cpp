@@ -14,7 +14,7 @@ using namespace std;
 int main()
 {
     bool fullScreen = false;
-  
+
     Music mu;
     mu.play();
 
@@ -25,6 +25,7 @@ int main()
         //cout << Timer::time<Timer::ms_t>([&]() {
         window.getMessages();
         glState.render();
+        mu.updateSync();
         //}) << '\n';
     }
 
