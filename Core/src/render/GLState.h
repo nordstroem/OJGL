@@ -1,5 +1,6 @@
 #pragma once
 
+#include "music\Music.h"
 #include "winapi/gl_loader.h"
 #include <string>
 
@@ -9,7 +10,7 @@ class GLState {
 public:
     GLState(const std::string& vertexShader, const std::string& fragmentShader);
     ~GLState();
-    void render() const;
+    void render(Music& music) const;
     GLuint getProgramID() const;
     GLuint getVAO() const;
     GLuint getVBO() const;

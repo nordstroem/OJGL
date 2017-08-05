@@ -1,4 +1,5 @@
 #include "GLState.h"
+#include "music\Music.h"
 #include <iostream>
 #include <memory>
 #include <string>
@@ -20,11 +21,21 @@ GLState::~GLState()
     glDeleteProgram(_programID);
 }
 
-void GLState::render() const
+void GLState::render(Music& music) const
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glUseProgram(_programID);
     glUniform1f(glGetUniformLocation(_programID, "iGlobalTime"), (GLfloat)((GetTickCount() - _startTime) / 1000.0));
+    for (auto& kv : music.syncChannels) {
+        auto sc = kv.second;
+        std::vector<GLfloat> values;
+        for (int i = 0; i < sc.numNotes; i++)
+            values.push_back((GLfloat)sc.getNoteVelocity(i) / 128.0);
+        std::string uniform = "CHANNEL_" + std::to_string(sc.channel) + "_VELOCITY";
+        glUniform1fv(glGetUniformLocation(_programID, uniform.c_str()), sc.numNotes, &values[0]);
+    }
+    glUniform1f(glGetUniformLocation(_programID, "CHANNEL_12_TOTAL"), music.syncChannels[12].getTotalHitsPerNote(0));
+    glUniform1f(glGetUniformLocation(_programID, "CHANNEL_13_TOTAL"), music.syncChannels[13].getTotalHitsPerNote(0));
     glBindVertexArray(_vaoID);
     glDrawArrays(GL_TRIANGLES, 0, _vertexCount);
     glBindVertexArray(0);
@@ -39,7 +50,6 @@ void GLState::setupQuad()
     };
 
     glGenVertexArrays(1, &_vaoID);
-    std::cout << _vaoID << '\n';
     glBindVertexArray(_vaoID);
     glEnableVertexAttribArray(0);
     glGenBuffers(1, &_vboID);
