@@ -8,8 +8,8 @@
 /*************************************************************************************/
 /*************************************************************************************/
 
-#include "music.h"
-#include "v2mplayer.h"
+#include "Music.h"
+#include "V2MPlayer.h"
 #include "winapi/libv2.h"
 
 #define sTRUE (!0)
@@ -38,7 +38,8 @@
         }                            \
     };
 
-namespace {
+namespace ojgl {
+
 void UpdateSampleDelta(sU32 nexttime, sU32 time, sU32 usecs, sU32 td2, sU32* smplrem, sU32* smpldelta)
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 {
@@ -56,7 +57,6 @@ void UpdateSampleDelta(sU32 nexttime, sU32 time, sU32 usecs, sU32 td2, sU32* smp
 			mov ecx, [smpldelta]
 			mov[ecx], eax
     }
-}
 }
 
 sBool V2MPlayer::InitBase(const void* a_v2m)
@@ -315,13 +315,13 @@ void V2MPlayer::Play(sU32 a_time)
     sU32 destsmpl, cursmpl = 0;
     __asm
         {
-		mov  ecx, this
-		mov	 eax, [a_time]
-		mov  ebx, [ecx + m_samplerate]
-		imul ebx
-		mov  ebx, [ecx + m_tpc]
-		idiv ebx
-		mov[destsmpl], eax
+			mov  ecx, this
+			mov	 eax, [a_time]
+			mov  ebx, [ecx + m_samplerate]
+			imul ebx
+			mov  ebx, [ecx + m_tpc]
+			idiv ebx
+			mov[destsmpl], eax
         }
 
     m_state.state = PlayerState::PLAYING;
@@ -352,13 +352,13 @@ void V2MPlayer::Stop(sU32 a_fadetime)
         sU32 ftsmpls;
         __asm
             {
-			mov  ecx, this
-			mov	 eax, [a_fadetime]
-			mov  ebx, [ecx + m_samplerate]
-			imul ebx
-			mov  ebx, [ecx + m_tpc]
-			idiv ebx
-			mov[ftsmpls], eax
+				mov  ecx, this
+				mov	 eax, [a_fadetime]
+				mov  ebx, [ecx + m_samplerate]
+				imul ebx
+				mov  ebx, [ecx + m_tpc]
+				idiv ebx
+				mov[ftsmpls], eax
             }
         m_fadedelta = m_fadeval / ftsmpls;
     } else
@@ -393,11 +393,11 @@ void V2MPlayer::Render(sF32* a_buffer, sU32 a_len, sBool a_add)
     } else if (m_state.state == PlayerState::OFF || !m_base.valid) {
         if (!a_add) {
             __asm {
-				mov edi, [a_buffer]
-				mov ecx, [a_len]
-				shl ecx, 1
-				xor eax, eax
-				rep stosd
+					mov edi, [a_buffer]
+					mov ecx, [a_len]
+					shl ecx, 1
+					xor eax, eax
+					rep stosd
             }
         }
     } else {
@@ -493,3 +493,4 @@ sU32 V2MPlayer::CalcPositions(sS32** a_dest)
 }
 
 #endif
+}

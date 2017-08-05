@@ -1,4 +1,4 @@
-#include "syncchannel.h"
+#include "SyncChannel.h"
 #include <stdexcept>
 
 SyncChannel::SyncChannel()

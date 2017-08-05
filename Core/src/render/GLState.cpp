@@ -1,5 +1,5 @@
 #include "GLState.h"
-#include "music\Music.h"
+#include "music/Music.h"
 #include <iostream>
 #include <memory>
 #include <string>

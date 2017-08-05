@@ -1,4 +1,4 @@
-#include "music.h"
+#include "Music.h"
 #include "render/Window.h"
 #include <iostream>
 #include <map>

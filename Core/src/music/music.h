@@ -1,7 +1,7 @@
 #pragma once
 
-#include "syncchannel.h"
-#include "v2mplayer.h"
+#include "SyncChannel.h"
+#include "V2MPlayer.h"
 #include <map>
 #include <memory>
 

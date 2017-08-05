@@ -8,16 +8,15 @@
 /*************************************************************************************/
 /*************************************************************************************/
 
-//#pragma once
-
-#ifndef V2MPLAYER_H_
-#define V2MPLAYER_H_
+#pragma once
 
 #include "SyncEvent.hpp"
 #include "winapi/libv2.h"
 #include <memory>
 #include <mutex>
 #include <vector>
+
+namespace ojgl {
 
 //#include "types.hpp"
 typedef unsigned char sU8; // for packed arrays
@@ -228,5 +227,4 @@ private:
     void Reset(); // resets player, inits synth
         //void Tick(); // one midi player tick
 };
-
-#endif
+}

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "music\Music.h"
+#include "music/Music.h"
 #include "winapi/gl_loader.h"
 #include <string>
 
