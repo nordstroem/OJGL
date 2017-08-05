@@ -14,10 +14,10 @@ public:
     ~Music();
     void play();
     void updateSync();
+    std::map<int, SyncChannel> syncChannels;
 
 private:
     void initSync();
-    std::map<int, SyncChannel> _syncChannels;
     unsigned char* _song;
     std::unique_ptr<V2MPlayer> _player;
 };

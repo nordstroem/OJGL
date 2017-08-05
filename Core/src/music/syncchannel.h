@@ -4,7 +4,7 @@
 class SyncChannel {
 public:
     SyncChannel();
-    SyncChannel(int numNotes, int minNote, double decay = 0.95);
+    SyncChannel(int numNotes, int minNote, int channel, double decay = 1.0);
     ~SyncChannel();
     void tick();
     void setVelocity(int absoluteNote, double velocity);
@@ -12,6 +12,8 @@ public:
     double getTotalNoteVelocity();
     int getTotalHitsPerNote(int absoluteNote);
     int getTotalHits();
+    int numNotes;
+    int channel;
 
 private:
     double _decay;

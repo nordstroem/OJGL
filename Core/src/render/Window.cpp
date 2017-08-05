@@ -6,7 +6,7 @@ namespace ojgl {
 
 Window::Window(bool fullScreen)
 {
-    _hWnd = CreateOpenGLWindow("minimal", 0, 0, 256, 256, PFD_TYPE_RGBA, 0, fullScreen);
+    _hWnd = CreateOpenGLWindow("minimal", 0, 0, 640, 480, PFD_TYPE_RGBA, 0, fullScreen);
     if (_hWnd == NULL)
         exit(1);
 

@@ -53,17 +53,19 @@ void Music::initSync()
     }
 
     for (auto& c : channels) {
-        _syncChannels[c] = SyncChannel(channelMaxNote[c] - channelMinNote[c] + 1, channelMinNote[c]);
+        int numNotes = channelMaxNote[c] - channelMinNote[c] + 1;
+        std::cout << "Channel " << c << " with " << numNotes << " notes\n";
+        syncChannels[c] = SyncChannel(numNotes, channelMinNote[c], c);
     }
 }
 
 void Music::updateSync()
 {
     for (auto& se : this->_player->popSyncEvents()) {
-        _syncChannels[se.channel].setVelocity(se.note, (double)se.velocity);
+        syncChannels[se.channel].setVelocity(se.note, (double)se.velocity);
     }
 
-    for (auto& kv : _syncChannels) {
+    for (auto& kv : syncChannels) {
         kv.second.tick();
     }
 }

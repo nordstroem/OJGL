@@ -1,4 +1,6 @@
 #include "OJGL.h"
+#include "utility\Timer.hpp"
+#include <chrono>
 #include <functional>
 #include <memory>
 #include <stdio.h>
@@ -29,9 +31,16 @@ int main()
     mu.play();
 
     while (true) {
+        timer::Timer t;
+        t.start();
         window.getMessages();
-        glState.render();
+        glState.render(mu);
         mu.updateSync();
+        t.end();
+        auto dur = t.time<timer::ms_t>();
+        if (dur < 1000.0 / 60.0) {
+            std::this_thread::sleep_for(std::chrono::milliseconds((int)(1000.0 / 60.0) - dur));
+        }
     }
 
     return 0;
