@@ -9,8 +9,8 @@ public:
     ~SyncChannel();
     void pushNote(int absoluteNote, int time);
     void tick(int currentTime);
-    float getTimeToNext(int absoluteNote);
-    float getTimeSinceLast(int absoluteNote);
+    float getTimeToNext(int absoluteNote) const;
+    float getTimeSinceLast(int absoluteNote) const;
     int getTotalHitsPerNote(int absoluteNote) const;
     int getTotalHits() const;
     int numNotes;

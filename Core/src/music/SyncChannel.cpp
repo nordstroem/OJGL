@@ -42,15 +42,15 @@ void SyncChannel::tick(int currentTime)
     }
 }
 
-float SyncChannel::getTimeToNext(int relativeNote)
+float SyncChannel::getTimeToNext(int relativeNote) const
 {
-    std::queue<int>& times = _timesPerNote[relativeNote];
+    const std::queue<int>& times = _timesPerNote[relativeNote];
     if (times.empty())
         return std::numeric_limits<float>::max();
     return (float)(times.front() - _currentTime);
 }
 
-float SyncChannel::getTimeSinceLast(int relativeNote)
+float SyncChannel::getTimeSinceLast(int relativeNote) const
 {
     if (_totalHitsPerNote[relativeNote] == 0)
         return std::numeric_limits<float>::max();
