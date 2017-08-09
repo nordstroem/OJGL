@@ -1,23 +1,25 @@
 #pragma once
+#include <queue>
 #include <vector>
 
 class SyncChannel {
 public:
     SyncChannel();
-    SyncChannel(int numNotes, int minNote, int channel, double decay = 1.0);
+    SyncChannel(int numNotes, int minNote, int channel);
     ~SyncChannel();
-    void tick();
-    void setVelocity(int absoluteNote, double velocity);
-    double getNoteVelocity(int relativeNote);
-    double getTotalNoteVelocity();
-    int getTotalHitsPerNote(int absoluteNote);
-    int getTotalHits();
+    void pushNote(int absoluteNote, int time);
+    void tick(int currentTime);
+    float getTimeToNext(int absoluteNote);
+    float getTimeSinceLast(int absoluteNote);
+    int getTotalHitsPerNote(int absoluteNote) const;
+    int getTotalHits() const;
     int numNotes;
     int channel;
 
 private:
-    double _decay;
     int _minNote;
-    std::vector<double> _currentNoteVelocities;
+    int _currentTime;
+    std::vector<int> _lastTimePerNote;
+    std::vector<std::queue<int>> _timesPerNote;
     std::vector<int> _totalHitsPerNote;
 };
