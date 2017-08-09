@@ -2,6 +2,7 @@
 
 #include "SyncChannel.h"
 #include "V2MPlayer.h"
+#include "utility\Timer.hpp"
 #include <map>
 
 namespace ojgl {
@@ -19,6 +20,6 @@ private:
     void initSync();
     unsigned char* _song;
     std::unique_ptr<V2MPlayer> _player;
-    std::chrono::time_point<std::chrono::system_clock> _start;
+    ojgl::timer::Timer _songTimer;
 };
 } //namespace ojgl

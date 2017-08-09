@@ -20,6 +20,9 @@ namespace timer {
         template <typename T>
         auto time() { return std::chrono::duration_cast<T>(endTime - startTime).count(); };
 
+        template <typename T>
+        auto elapsed() { return std::chrono::duration_cast<T>(std::chrono::high_resolution_clock::now() - startTime).count(); };
+
     private:
         clock_t startTime, endTime;
     };
@@ -32,5 +35,6 @@ namespace timer {
         auto dur = std::chrono::high_resolution_clock::now() - t1;
         return std::chrono::duration_cast<T>(dur).count();
     }
+
 } //namespace timer
 } //namespace ojgl
