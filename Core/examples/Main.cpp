@@ -1,6 +1,5 @@
 #include "OJGL.h"
 #include "utility\Timer.hpp"
-#include <chrono>
 #include <functional>
 #include <memory>
 #include <stdio.h>

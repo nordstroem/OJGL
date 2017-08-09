@@ -28,7 +28,7 @@ void Music::play()
     initSync();
     dsInit(this->_player->RenderProxy, this->_player.get(), GetForegroundWindow());
     this->_player->Play();
-    _start = std::chrono::system_clock::now();
+    _songTimer.start();
 }
 
 void Music::initSync()
@@ -64,7 +64,7 @@ void Music::initSync()
 
 void Music::updateSync()
 {
-    int time = (int)(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - _start).count());
+    int time = (int)_songTimer.elapsed<ojgl::timer::ms_t>();
     for (auto& kv : syncChannels)
         kv.second.tick(time);
 }
