@@ -1,5 +1,4 @@
 #include "OJGL.h"
-#include "utility\Timer.hpp"
 #include <functional>
 #include <memory>
 #include <stdio.h>
@@ -27,6 +26,9 @@ int main()
     GLState glState(vertexShader, fragmentShader);
     Music music(song);
     music.play();
+
+    auto a = Buffer::construct("sub", vertexShader, fragmentShader);
+    auto b = Buffer::construct("main", vertexShader, fragmentShader, { a });
 
     while (true) {
         timer::Timer t;
