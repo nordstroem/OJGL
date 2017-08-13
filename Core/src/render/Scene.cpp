@@ -7,6 +7,10 @@ namespace ojgl {
 Scene::Scene(std::shared_ptr<Buffer> buffer)
     : _mainBuffer(buffer)
 {
+    for (auto& b : buffers()) {
+        if (b != _mainBuffer)
+            b->generateFBO();
+    }
 }
 
 Scene::~Scene()
@@ -15,7 +19,18 @@ Scene::~Scene()
 
 Buffer& Scene::operator[](const std::string& name)
 {
+    for (auto& b : buffers()) {
+        if (b->name() == name) {
+            return *b;
+        }
+    }
 
+    //TODO buffer not found, maybe throw runtime error
+    return *_mainBuffer;
+}
+
+std::set<std::shared_ptr<Buffer>> Scene::buffers()
+{
     std::set<std::shared_ptr<Buffer>> available;
     std::set<std::shared_ptr<Buffer>> checked;
     available.insert(_mainBuffer);
@@ -25,28 +40,24 @@ Buffer& Scene::operator[](const std::string& name)
 
         // Check this node
         checked.insert(cur);
-        if (cur->name() == name) {
-            return *cur;
-        } else {
 
-            for (auto& v : *cur) {
-                //If a child node has not been checked, add to available
-                if (checked.find(v) != checked.end()) {
-                    available.insert(v);
-                }
+        for (auto& v : *cur) {
+            //If a child node has not been checked, add to available
+            if (checked.find(v) != checked.end()) {
+                available.insert(v);
             }
-            available.erase(cur);
         }
+        available.erase(cur);
     }
 
-    throw std::invalid_argument("Can not find a buffer with that name");
-    return *_mainBuffer;
+    return checked;
 }
 
 void Scene::render()
 {
-    _mainBuffer->reset();
-    _mainBuffer->render();
+    for (auto& b : buffers()) {
+        b->render();
+    }
 }
 
 } //namespace ojgl

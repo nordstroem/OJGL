@@ -15,6 +15,11 @@ Buffer::Buffer(const std::string& name, const std::string& vertex, const std::st
 
 Buffer::~Buffer()
 {
+    if (_fboID != 0)
+        glDeleteFramebuffers(1, &_fboID);
+    if (_fboTextureID != 0)
+        glDeleteTextures(1, &_fboTextureID);
+
     glDeleteProgram(_programID);
 }
 
@@ -33,21 +38,6 @@ std::string Buffer::name()
     return _name;
 }
 
-bool Buffer::hasRun()
-{
-    return _hasRun;
-}
-
-void Buffer::reset()
-{
-    _hasRun = false;
-    for (auto& b : _inputs) {
-        if (b->_hasRun) {
-            b->reset();
-        }
-    }
-}
-
 void Buffer::render()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -59,9 +49,36 @@ void Buffer::render()
 
     glDrawArrays(GL_TRIANGLES, 0, GLState::vertexCount);
     glFlush();
-
-    _hasRun = true;
 }
+
+void Buffer::generateFBO()
+{
+    //TODO create constructor for these
+    unsigned width = 500;
+    unsigned height = 500;
+
+    glGenFramebuffers(1, &_fboID);
+    glBindFramebuffer(GL_FRAMEBUFFER, _fboID);
+
+    glGenTextures(1, &_fboTextureID);
+    glBindTexture(GL_TEXTURE_2D, _fboTextureID);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, _fboTextureID, 0);
+    glDrawBuffer(GL_NONE);
+
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        std::cout << "Framebuffer error\n";
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glDrawBuffer(GL_FRONT);
+}
+
 void Buffer::loadShader(const std::string& vertexShader, const std::string& fragmentShader)
 {
 

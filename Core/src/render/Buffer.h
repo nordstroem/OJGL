@@ -1,6 +1,5 @@
 #pragma once
 #include "Uniform.hpp"
-#include "winapi/gl_loader.h"
 #include <map>
 #include <memory>
 #include <string>
@@ -16,21 +15,11 @@ public:
     ~Buffer();
     static BufferP construct(const std::string& name, const std::string& vertex, const std::string& fragment, std::initializer_list<BufferP> buffers);
     static BufferP construct(const std::string& name, const std::string& vertex, const std::string& fragment);
-    GLuint getProgramID() const;
+
+    unsigned getProgramID() const;
     void render();
-    void reset();
-    bool hasRun();
     std::string name();
-    template <typename T>
-    friend Buffer& operator<<(Buffer& o, T& b);
-
-    typedef std::vector<BufferP>::iterator iterator;
-    typedef std::vector<BufferP>::const_iterator const_iterator;
-
-    iterator begin() { return _inputs.begin(); }
-    const_iterator begin() const { return _inputs.begin(); }
-    iterator end() { return _inputs.end(); }
-    const_iterator end() const { return _inputs.end(); }
+    void generateFBO();
 
 private:
     Buffer(const std::string& name, const std::string& vertex, const std::string& fragment, std::initializer_list<std::shared_ptr<Buffer>> buffers);
@@ -38,10 +27,21 @@ private:
 
     std::vector<BufferP> _inputs;
     std::string _name;
-    GLuint _programID;
-    int _fboID;
-    bool _hasRun;
+    unsigned _programID;
+    unsigned _fboID = 0;
+    unsigned _fboTextureID = 0;
     std::map<std::string, std::shared_ptr<UniformBase>> _uniforms;
+
+public:
+    template <typename T>
+    friend Buffer& operator<<(Buffer& o, T& b);
+
+    typedef std::vector<BufferP>::iterator iterator;
+    typedef std::vector<BufferP>::const_iterator const_iterator;
+    iterator begin() { return _inputs.begin(); }
+    const_iterator begin() const { return _inputs.begin(); }
+    iterator end() { return _inputs.end(); }
+    const_iterator end() const { return _inputs.end(); }
 };
 
 template <typename T>

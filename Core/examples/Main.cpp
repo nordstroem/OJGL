@@ -28,6 +28,8 @@ int main()
     music.play();
 
     auto a = Buffer::construct("main", vertexShader, fragmentShader);
+    auto b = Buffer::construct("sub", vertexShader, fragmentShader, { a });
+
     Scene scene{ a };
 
     glState.addScene(scene);
@@ -35,7 +37,7 @@ int main()
     while (true) {
         timer::Timer t;
         t.start();
-        auto start = std::chrono::high_resolution_clock::now();
+
         window.getMessages();
 
         glState[0]["main"] << Uniform1f("iGlobalTime", (GLfloat)((GetTickCount() - glState.startTime()) / 1000.0f))
@@ -55,8 +57,8 @@ int main()
             glState[0]["main"] << Uniform1fv("CHANNEL_" + std::to_string(sc.channel) + "_TIME_SINCE", valuesSince)
                                << Uniform1fv("CHANNEL_" + std::to_string(sc.channel) + "_TIME_TO", valuesTo);
         }
-        glState.render();
 
+        glState.render();
         music.updateSync();
         t.end();
         auto durationMs = t.time<timer::ms_t>();
