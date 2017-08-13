@@ -17,6 +17,7 @@ public:
     static BufferP construct(const std::string& name, const std::string& vertex, const std::string& fragment);
 
     unsigned getProgramID() const;
+    unsigned fboTextureID();
     void render();
     std::string name();
     void generateFBO();
@@ -30,6 +31,8 @@ private:
     unsigned _programID;
     unsigned _fboID = 0;
     unsigned _fboTextureID = 0;
+    unsigned _width = 500;
+    unsigned _height = 500;
     std::map<std::string, std::shared_ptr<UniformBase>> _uniforms;
 
 public:

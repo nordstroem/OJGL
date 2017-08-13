@@ -4,6 +4,8 @@
     <None Include="examples\songs\song.inc" />
     <None Include="examples\shaders\demo.fs" />
     <None Include="examples\shaders\demo.vs" />
+    <None Include="examples\shaders\post.fs" />
+    <None Include="examples\shaders\post.vs" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="examples\Main.cpp" />

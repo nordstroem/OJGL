@@ -17,6 +17,14 @@ std::string fragmentShader{
 #include "shaders/demo.fs"
 };
 
+std::string vertexShaderPost{
+#include "shaders/post.vs"
+};
+
+std::string fragmentShaderPost{
+#include "shaders/post.fs"
+};
+
 using namespace ojgl;
 
 int main()
@@ -27,10 +35,10 @@ int main()
     Music music(song);
     music.play();
 
-    auto a = Buffer::construct("main", vertexShader, fragmentShader);
-    auto b = Buffer::construct("sub", vertexShader, fragmentShader, { a });
+    auto pre = Buffer::construct("main", vertexShader, fragmentShader);
+    auto post = Buffer::construct("post", vertexShaderPost, fragmentShaderPost, { pre });
 
-    Scene scene{ a };
+    Scene scene{ post };
 
     glState.addScene(scene);
 
@@ -39,6 +47,8 @@ int main()
         t.start();
 
         window.getMessages();
+
+        glState[0]["post"] << Uniform1f("r", 0.9);
 
         glState[0]["main"] << Uniform1f("iGlobalTime", (GLfloat)((GetTickCount() - glState.startTime()) / 1000.0f))
                            << Uniform1f("CHANNEL_12_TOTAL", (float)music.syncChannels[12].getTotalHitsPerNote(0))

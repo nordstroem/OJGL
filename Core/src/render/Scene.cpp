@@ -43,7 +43,7 @@ std::set<std::shared_ptr<Buffer>> Scene::buffers()
 
         for (auto& v : *cur) {
             //If a child node has not been checked, add to available
-            if (checked.find(v) != checked.end()) {
+            if (checked.find(v) == checked.end()) {
                 available.insert(v);
             }
         }
@@ -55,8 +55,34 @@ std::set<std::shared_ptr<Buffer>> Scene::buffers()
 
 void Scene::render()
 {
-    for (auto& b : buffers()) {
-        b->render();
+
+    auto available = buffers();
+    std::set<std::shared_ptr<Buffer>> rendered;
+
+    auto curIter = available.begin();
+
+    //Loop until all are rendered
+    //TODO detect cyclic dependence
+    while (!available.empty()) {
+        if (curIter == available.end())
+            curIter = available.begin();
+
+        auto cur = *curIter;
+
+        //If all child nodes are rendered, render this
+        bool allRendered = true;
+        for (auto& c : *cur) {
+            if (rendered.find(c) == rendered.end()) {
+                allRendered = false;
+                break;
+            }
+        }
+        if (allRendered) {
+            cur->render();
+            rendered.insert(cur);
+            available.erase(cur);
+        }
+        curIter++;
     }
 }
 
