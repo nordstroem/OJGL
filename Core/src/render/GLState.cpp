@@ -8,7 +8,7 @@
 
 namespace ojgl {
 
-GLState::GLState(const std::string& vertexShader, const std::string& fragmentShader)
+GLState::GLState()
 {
     _startTime = GetTickCount();
     load_gl_functions();
@@ -28,17 +28,20 @@ void GLState::addScene(const Scene& scene)
 
 void GLState::render()
 {
-    /* glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glUseProgram(_programID);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glBindVertexArray(_vaoID);
 
-    for (auto& um : _uniforms) {
-        um.second->setUniform(_programID);
+    for (auto& v : _scenes) {
+        v.render();
     }
 
-    glBindVertexArray(_vaoID);
-    glDrawArrays(GL_TRIANGLES, 0, _vertexCount);
     glBindVertexArray(0);
-    glFlush();*/
+    glFlush();
+}
+
+Scene& GLState::operator[](size_t i)
+{
+    return _scenes[i];
 }
 
 void GLState::setupQuad()

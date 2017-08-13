@@ -1,4 +1,5 @@
 #include "Buffer.h"
+#include "GLState.h"
 #include <iostream>
 #include <memory>
 #include <string>
@@ -14,6 +15,7 @@ Buffer::Buffer(const std::string& name, const std::string& vertex, const std::st
 
 Buffer::~Buffer()
 {
+    glDeleteProgram(_programID);
 }
 
 std::shared_ptr<Buffer> Buffer::construct(const std::string& name, const std::string& vertex, const std::string& fragment)
@@ -26,6 +28,35 @@ std::shared_ptr<Buffer> Buffer::construct(const std::string& name, const std::st
     return std::shared_ptr<Buffer>(new Buffer(name, fragment, vertex, buffers));
 }
 
+bool Buffer::hasRun()
+{
+    return _hasRun;
+}
+
+void Buffer::reset()
+{
+    _hasRun = false;
+    for (auto& b : _inputs) {
+        if (b->_hasRun) {
+            b->reset();
+        }
+    }
+}
+
+void Buffer::render()
+{
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glUseProgram(_programID);
+
+    for (auto& um : _uniforms) {
+        um.second->setUniform(_programID);
+    }
+
+    glDrawArrays(GL_TRIANGLES, 0, GLState::vertexCount);
+    glFlush();
+
+    _hasRun = true;
+}
 void Buffer::loadShader(const std::string& vertexShader, const std::string& fragmentShader)
 {
 
