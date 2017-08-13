@@ -6,8 +6,10 @@
 
 namespace ojgl {
 
-Buffer::Buffer(const std::string& name, const std::string& vertex, const std::string& fragment, std::initializer_list<std::shared_ptr<Buffer>> buffers)
-    : _inputs(buffers)
+Buffer::Buffer(unsigned width, unsigned height, const std::string& name, const std::string& vertex, const std::string& fragment, std::initializer_list<std::shared_ptr<Buffer>> buffers)
+    : _width(width)
+    , _height(height)
+    , _inputs(buffers)
     , _name(name)
 {
     loadShader(vertex, fragment);
@@ -23,14 +25,14 @@ Buffer::~Buffer()
     glDeleteProgram(_programID);
 }
 
-std::shared_ptr<Buffer> Buffer::construct(const std::string& name, const std::string& vertex, const std::string& fragment)
+std::shared_ptr<Buffer> Buffer::construct(unsigned width, unsigned height, const std::string& name, const std::string& vertex, const std::string& fragment)
 {
-    return construct(name, vertex, fragment, {});
+    return construct(width, height, name, vertex, fragment, {});
 }
 
-std::shared_ptr<Buffer> Buffer::construct(const std::string& name, const std::string& vertex, const std::string& fragment, std::initializer_list<std::shared_ptr<Buffer>> buffers)
+std::shared_ptr<Buffer> Buffer::construct(unsigned width, unsigned height, const std::string& name, const std::string& vertex, const std::string& fragment, std::initializer_list<std::shared_ptr<Buffer>> buffers)
 {
-    return std::shared_ptr<Buffer>(new Buffer(name, vertex, fragment, buffers));
+    return std::shared_ptr<Buffer>(new Buffer(width, height, name, vertex, fragment, buffers));
 }
 
 std::string Buffer::name()

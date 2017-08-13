@@ -13,8 +13,8 @@ class Buffer {
 
 public:
     ~Buffer();
-    static BufferP construct(const std::string& name, const std::string& vertex, const std::string& fragment, std::initializer_list<BufferP> buffers);
-    static BufferP construct(const std::string& name, const std::string& vertex, const std::string& fragment);
+    static BufferP construct(unsigned width, unsigned height, const std::string& name, const std::string& vertex, const std::string& fragment, std::initializer_list<BufferP> buffers);
+    static BufferP construct(unsigned width, unsigned height, const std::string& name, const std::string& vertex, const std::string& fragment);
 
     unsigned getProgramID() const;
     unsigned fboTextureID();
@@ -23,16 +23,16 @@ public:
     void generateFBO();
 
 private:
-    Buffer(const std::string& name, const std::string& vertex, const std::string& fragment, std::initializer_list<std::shared_ptr<Buffer>> buffers);
+    Buffer(unsigned width, unsigned height, const std::string& name, const std::string& vertex, const std::string& fragment, std::initializer_list<std::shared_ptr<Buffer>> buffers);
     void loadShader(const std::string& vertexShader, const std::string& fragmentShader);
 
     std::vector<BufferP> _inputs;
-    std::string _name;
+    const std::string _name;
     unsigned _programID;
     unsigned _fboID = 0;
     unsigned _fboTextureID = 0;
-    unsigned _width = 500;
-    unsigned _height = 500;
+    const unsigned _width;
+    const unsigned _height;
     std::map<std::string, std::shared_ptr<UniformBase>> _uniforms;
 
 public:

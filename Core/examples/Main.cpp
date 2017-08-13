@@ -30,13 +30,13 @@ using namespace ojgl;
 int main()
 {
     const double desiredFrameTimeMs = 1000.0 / 60.0;
-    Window window(false);
+    Window window(1024, 768, false);
     GLState glState;
     Music music(song);
     music.play();
 
-    auto pre = Buffer::construct("main", vertexShader, fragmentShader);
-    auto post = Buffer::construct("post", vertexShaderPost, fragmentShaderPost, { pre });
+    auto pre = Buffer::construct(1024, 768, "main", vertexShader, fragmentShader);
+    auto post = Buffer::construct(1024, 768, "post", vertexShaderPost, fragmentShaderPost, { pre });
 
     Scene scene{ post };
 
