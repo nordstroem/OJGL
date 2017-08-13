@@ -2,6 +2,7 @@
 
 #include "Buffer.h"
 #include <memory>
+#include <string>
 
 namespace ojgl {
 
@@ -10,9 +11,9 @@ public:
     Scene(std::shared_ptr<Buffer> buffer);
     ~Scene();
     void render();
-    std::shared_ptr<Buffer> _mainBuffer;
+    Buffer& operator[](const std::string& name);
 
-    //private:
-    //    std::shared_ptr<Buffer> _mainBuffer;
+private:
+    std::shared_ptr<Buffer> _mainBuffer;
 };
 } //namespace ojgl

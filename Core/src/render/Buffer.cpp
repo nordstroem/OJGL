@@ -28,6 +28,11 @@ std::shared_ptr<Buffer> Buffer::construct(const std::string& name, const std::st
     return std::shared_ptr<Buffer>(new Buffer(name, fragment, vertex, buffers));
 }
 
+std::string Buffer::name()
+{
+    return _name;
+}
+
 bool Buffer::hasRun()
 {
     return _hasRun;

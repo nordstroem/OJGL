@@ -27,7 +27,7 @@ int main()
     Music music(song);
     music.play();
 
-    auto a = Buffer::construct("sub", vertexShader, fragmentShader);
+    auto a = Buffer::construct("main", vertexShader, fragmentShader);
     Scene scene{ a };
 
     glState.addScene(scene);
@@ -38,9 +38,9 @@ int main()
         auto start = std::chrono::high_resolution_clock::now();
         window.getMessages();
 
-        *glState[0]._mainBuffer << Uniform1f("iGlobalTime", (GLfloat)((GetTickCount() - glState.startTime()) / 1000.0f))
-                                << Uniform1f("CHANNEL_12_TOTAL", (float)music.syncChannels[12].getTotalHitsPerNote(0))
-                                << Uniform1f("CHANNEL_13_TOTAL", (float)music.syncChannels[13].getTotalHitsPerNote(0));
+        glState[0]["main"] << Uniform1f("iGlobalTime", (GLfloat)((GetTickCount() - glState.startTime()) / 1000.0f))
+                           << Uniform1f("CHANNEL_12_TOTAL", (float)music.syncChannels[12].getTotalHitsPerNote(0))
+                           << Uniform1f("CHANNEL_13_TOTAL", (float)music.syncChannels[13].getTotalHitsPerNote(0));
 
         for (auto& kv : music.syncChannels) {
             auto sc = kv.second;
@@ -52,8 +52,8 @@ int main()
                 valuesTo.push_back((GLfloat)sc.getTimeToNext(i));
             }
 
-            *glState[0]._mainBuffer << Uniform1fv("CHANNEL_" + std::to_string(sc.channel) + "_TIME_SINCE", valuesSince)
-                                    << Uniform1fv("CHANNEL_" + std::to_string(sc.channel) + "_TIME_TO", valuesTo);
+            glState[0]["main"] << Uniform1fv("CHANNEL_" + std::to_string(sc.channel) + "_TIME_SINCE", valuesSince)
+                               << Uniform1fv("CHANNEL_" + std::to_string(sc.channel) + "_TIME_TO", valuesTo);
         }
         glState.render();
 
