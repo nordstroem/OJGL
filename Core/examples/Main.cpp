@@ -1,5 +1,4 @@
 #include "OJGL.h"
-#include "utility\Timer.hpp"
 #include <functional>
 #include <memory>
 #include <stdio.h>
@@ -18,25 +17,42 @@ std::string fragmentShader{
 #include "shaders/demo.fs"
 };
 
+std::string vertexShaderPost{
+#include "shaders/post.vs"
+};
+
+std::string fragmentShaderPost{
+#include "shaders/post.fs"
+};
+
 using namespace ojgl;
 
 int main()
 {
     const double desiredFrameTimeMs = 1000.0 / 60.0;
-    Window window(false);
-    GLState glState(vertexShader, fragmentShader);
+    Window window(1024, 768, false);
+    GLState glState;
     Music music(song);
     music.play();
+
+    auto pre = Buffer::construct(1024, 768, "main", vertexShader, fragmentShader);
+    auto post = Buffer::construct(1024, 768, "post", vertexShaderPost, fragmentShaderPost, { pre });
+
+    Scene scene{ post };
+
+    glState.addScene(scene);
 
     while (true) {
         timer::Timer t;
         t.start();
-        auto start = std::chrono::high_resolution_clock::now();
+
         window.getMessages();
 
-        glState << Uniform1f("iGlobalTime", (GLfloat)((GetTickCount() - glState.startTime()) / 1000.0f))
-                << Uniform1f("CHANNEL_12_TOTAL", (float)music.syncChannels[12].getTotalHitsPerNote(0))
-                << Uniform1f("CHANNEL_13_TOTAL", (float)music.syncChannels[13].getTotalHitsPerNote(0));
+        glState[0]["post"] << Uniform1f("r", 0.9);
+
+        glState[0]["main"] << Uniform1f("iGlobalTime", (GLfloat)((GetTickCount() - glState.startTime()) / 1000.0f))
+                           << Uniform1f("CHANNEL_12_TOTAL", (float)music.syncChannels[12].getTotalHitsPerNote(0))
+                           << Uniform1f("CHANNEL_13_TOTAL", (float)music.syncChannels[13].getTotalHitsPerNote(0));
 
         for (auto& kv : music.syncChannels) {
             auto sc = kv.second;
@@ -48,12 +64,11 @@ int main()
                 valuesTo.push_back((GLfloat)sc.getTimeToNext(i));
             }
 
-            glState << Uniform1fv("CHANNEL_" + std::to_string(sc.channel) + "_TIME_SINCE", valuesSince)
-                    << Uniform1fv("CHANNEL_" + std::to_string(sc.channel) + "_TIME_TO", valuesTo);
+            glState[0]["main"] << Uniform1fv("CHANNEL_" + std::to_string(sc.channel) + "_TIME_SINCE", valuesSince)
+                               << Uniform1fv("CHANNEL_" + std::to_string(sc.channel) + "_TIME_TO", valuesTo);
         }
 
         glState.render();
-
         music.updateSync();
         t.end();
         auto durationMs = t.time<timer::ms_t>();

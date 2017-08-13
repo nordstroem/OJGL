@@ -4,6 +4,8 @@
     <None Include="examples\songs\song.inc" />
     <None Include="examples\shaders\demo.fs" />
     <None Include="examples\shaders\demo.vs" />
+    <None Include="examples\shaders\post.fs" />
+    <None Include="examples\shaders\post.vs" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="examples\Main.cpp" />
@@ -13,6 +15,8 @@
     <ClCompile Include="src\winapi\gl_loader.cpp" />
     <ClCompile Include="src\music\Music.cpp" />
     <ClCompile Include="src\music\SyncChannel.cpp" />
+    <ClCompile Include="src\render\Buffer.cpp" />
+    <ClCompile Include="src\render\Scene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\music\V2MPlayer.h" />
@@ -28,5 +32,7 @@
     <ClInclude Include="src\music\Music.h" />
     <ClInclude Include="src\music\SyncChannel.h" />
     <ClInclude Include="src\render\Uniform.hpp" />
+    <ClInclude Include="src\render\Buffer.h" />
+    <ClInclude Include="src\render\Scene.h" />
   </ItemGroup>
 </Project>

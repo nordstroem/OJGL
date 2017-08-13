@@ -1,5 +1,4 @@
 #pragma once
-#include "GLState.h"
 #include "winapi/gl_loader.h"
 #include <iostream>
 #include <string>

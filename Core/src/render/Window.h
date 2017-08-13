@@ -7,7 +7,7 @@ namespace ojgl {
 
 class Window {
 public:
-    Window(bool fullScreen);
+    Window(unsigned window, unsigned height, bool fullScreen);
     ~Window();
     void getMessages();
 
@@ -20,5 +20,7 @@ private:
     HGLRC _hRC; // opengl context
     HWND _hWnd; // window
     MSG _msg; // message
+    unsigned _width;
+    unsigned _height;
 };
 } //namespace ojgl
