@@ -52,9 +52,10 @@ void Buffer::render()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glUseProgram(_programID);
-    for (size_t i = 0; i < _inputs.size(); i++)
-        glUniform1i(glGetUniformLocation(_programID, "inTexture" + i), i);
-
+    for (size_t i = 0; i < _inputs.size(); i++) {
+        std::string uniform = "inTexture" + std::to_string(i);
+        glUniform1i(glGetUniformLocation(_programID, uniform.c_str()), i);
+    }
     for (auto& um : _uniforms) {
         um.second->setUniform(_programID);
     }
