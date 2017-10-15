@@ -1,5 +1,6 @@
 #include "GLState.h"
 #include "Window.h"
+#include <exception>
 #include <thread>
 
 namespace ojgl {
@@ -20,8 +21,8 @@ Window::Window(unsigned width, unsigned height, bool fullScreen)
     Window* pThis = this;
     SetLastError(0);
     if (!SetWindowLongPtr(_hWnd, GWL_USERDATA, reinterpret_cast<LONG_PTR>(pThis))) {
-        //if (GetLastError() != 0)
-        //	return FALSE;
+        if (GetLastError() != 0)
+            throw std::runtime_error("SetWindowLongPtr failed in Window");
     }
 }
 
