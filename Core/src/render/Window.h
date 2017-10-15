@@ -10,6 +10,7 @@ public:
     Window(unsigned window, unsigned height, bool fullScreen);
     ~Window();
     void getMessages();
+    std::vector<UINT> getPressedKeys();
 
 private:
     HWND CreateOpenGLWindow(char* title, int x, int y, int width, int height, BYTE type, DWORD flags, bool fullScreen);
@@ -22,5 +23,6 @@ private:
     MSG _msg; // message
     unsigned _width;
     unsigned _height;
+    std::vector<UINT> _keys;
 };
 } //namespace ojgl
