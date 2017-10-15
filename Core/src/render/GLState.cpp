@@ -1,6 +1,7 @@
 #include "GLState.h"
 #include "Uniform.hpp"
 #include "music/Music.h"
+#include "utility\Timer.hpp"
 #include <iostream>
 #include <memory>
 #include <string>
@@ -10,15 +11,20 @@ namespace ojgl {
 
 GLState::GLState()
 {
-    _startTime = GetTickCount();
     load_gl_functions();
     setupQuad();
+    _startTime = timer::clock_t::now();
 }
 
 GLState::~GLState()
 {
     glDeleteVertexArrays(1, &_vaoID);
     glDeleteBuffers(1, &_vboID);
+}
+
+void GLState::setStartTime(timer::time_point_t time)
+{
+    _startTime = time;
 }
 
 void GLState::addScene(const Scene& scene)
@@ -31,8 +37,14 @@ void GLState::render()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glBindVertexArray(_vaoID);
 
+    auto t = timer::ms_t(0);
+    auto elapsed = timer::clock_t::now() - _startTime;
     for (auto& v : _scenes) {
-        v.render();
+        if (elapsed < v.duration() + t) {
+            v.render();
+            break;
+        }
+        t = t + v.duration();
     }
 
     glBindVertexArray(0);
@@ -72,7 +84,7 @@ GLuint GLState::getVBO() const
     return this->_vboID;
 }
 
-DWORD GLState::startTime() const
+timer::time_point_t GLState::startTime() const
 {
     return this->_startTime;
 }

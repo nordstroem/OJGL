@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Scene.h"
+#include "utility/Timer.hpp"
 #include "winapi/gl_loader.h"
 #include <functional>
 #include <set>
@@ -16,17 +17,18 @@ public:
     ~GLState();
     void render();
     void addScene(const Scene& scene);
+    void setStartTime(timer::time_point_t);
     Scene& operator[](size_t i);
     GLuint getVAO() const;
     GLuint getVBO() const;
-    DWORD startTime() const;
+    timer::time_point_t startTime() const;
 
     static const unsigned vertexCount = 6;
 
 private:
     void setupQuad();
 
-    DWORD _startTime;
+    timer::time_point_t _startTime;
     GLuint _vaoID;
     GLuint _vboID;
     std::vector<Scene> _scenes;
