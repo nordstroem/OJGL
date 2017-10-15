@@ -80,9 +80,10 @@ void Scene::render()
         if (allRendered) {
             cur->render();
             rendered.insert(cur);
-            available.erase(cur);
+            curIter = available.erase(curIter);
+        } else {
+            curIter++;
         }
-        curIter++;
     }
 }
 
