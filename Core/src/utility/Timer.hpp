@@ -6,11 +6,12 @@ namespace ojgl {
 
 namespace timer {
 
-    using clock_t = std::chrono::high_resolution_clock::time_point;
+    using clock_t = std::chrono::high_resolution_clock;
+    using time_point_t = std::chrono::high_resolution_clock::time_point;
     using ms_t = std::chrono::milliseconds;
     using ns_t = std::chrono::nanoseconds;
     using s_t = std::chrono::seconds;
-    using dsec_t = std::chrono::duration<double>;
+    //using duration_t = std::chrono::duration<double>;
 
     class Timer {
     public:
@@ -24,7 +25,7 @@ namespace timer {
         auto elapsed() { return std::chrono::duration_cast<T>(std::chrono::high_resolution_clock::now() - startTime).count(); };
 
     private:
-        clock_t startTime, endTime;
+        time_point_t startTime, endTime;
     };
 
     template <typename T, typename Fun, typename... Args>

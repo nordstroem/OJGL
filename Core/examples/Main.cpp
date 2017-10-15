@@ -1,4 +1,5 @@
 #include "OJGL.h"
+#include "utility\Timer.hpp"
 #include <functional>
 #include <memory>
 #include <stdio.h>
@@ -36,11 +37,19 @@ int main()
     music.play();
 
     auto pre = Buffer::construct(1024, 768, "main", vertexShader, fragmentShader);
-    auto post = Buffer::construct(1024, 768, "post", vertexShaderPost, fragmentShaderPost, { pre });
+    auto post = Buffer::construct(1024, 768, "post", vertexShaderPost, fragmentShaderPost);
 
-    Scene scene{ post };
+    Scene scene{ pre, timer::ms_t(1000) };
+    Scene scene2{ post, timer::ms_t(1000) };
 
     glState.addScene(scene);
+    glState.addScene(scene2);
+    glState.addScene(scene);
+    glState.addScene(scene2);
+    glState.addScene(scene);
+    glState.addScene(scene2);
+
+    glState.setStartTime(timer::clock_t::now());
 
     while (true) {
         timer::Timer t;
@@ -48,9 +57,10 @@ int main()
 
         window.getMessages();
 
-        glState[0]["post"] << Uniform1f("r", 0.9);
+        glState[0]["post"] << Uniform1f("r", 0.9f);
 
-        glState[0]["main"] << Uniform1f("iGlobalTime", (GLfloat)((GetTickCount() - glState.startTime()) / 1000.0f))
+        auto iGlobalTime = timer::clock_t::now() - glState.startTime();
+        glState[0]["main"] << Uniform1f("iGlobalTime", iGlobalTime.count() / 1000.f)
                            << Uniform1f("CHANNEL_12_TOTAL", (float)music.syncChannels[12].getTotalHitsPerNote(0))
                            << Uniform1f("CHANNEL_13_TOTAL", (float)music.syncChannels[13].getTotalHitsPerNote(0));
 

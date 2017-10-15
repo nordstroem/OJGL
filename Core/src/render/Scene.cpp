@@ -4,8 +4,9 @@
 
 namespace ojgl {
 
-Scene::Scene(std::shared_ptr<Buffer> buffer)
+Scene::Scene(std::shared_ptr<Buffer> buffer, timer::ms_t duration)
     : _mainBuffer(buffer)
+    , _duration(duration)
 {
     for (auto& b : buffers()) {
         if (b != _mainBuffer)
@@ -51,6 +52,11 @@ std::set<std::shared_ptr<Buffer>> Scene::buffers()
     }
 
     return checked;
+}
+
+timer::ms_t Scene::duration() const
+{
+    return this->_duration;
 }
 
 void Scene::render()
