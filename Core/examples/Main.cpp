@@ -57,6 +57,10 @@ int main()
 
         window.getMessages();
 
+        for (auto key : window.getPressedKeys()) {
+            std::cout << "key: " << key << "\n";
+        }
+
         glState[0]["post"] << Uniform1f("r", 0.9f);
 
         auto iGlobalTime = timer::clock_t::now() - glState.startTime();

@@ -1,5 +1,6 @@
 #include "GLState.h"
 #include "Window.h"
+#include <exception>
 #include <thread>
 
 namespace ojgl {
@@ -16,6 +17,13 @@ Window::Window(unsigned width, unsigned height, bool fullScreen)
     _hRC = wglCreateContext(_hDC);
     wglMakeCurrent(_hDC, _hRC);
     ShowWindow(_hWnd, 1);
+
+    Window* pThis = this;
+    SetLastError(0);
+    if (!SetWindowLongPtr(_hWnd, GWL_USERDATA, reinterpret_cast<LONG_PTR>(pThis))) {
+        if (GetLastError() != 0)
+            throw std::runtime_error("SetWindowLongPtr failed in Window");
+    }
 }
 
 Window::~Window()
@@ -32,6 +40,13 @@ void Window::getMessages()
         TranslateMessage(&_msg);
         DispatchMessage(&_msg);
     }
+}
+
+std::vector<UINT> Window::getPressedKeys()
+{
+    auto keys = _keys;
+    _keys.clear();
+    return keys;
 }
 
 HWND Window::CreateFullscreenWindow(HWND hwnd, HINSTANCE hInstance)
@@ -129,6 +144,8 @@ HWND Window::CreateOpenGLWindow(char* title, int x, int y, int width, int height
 
 LONG WINAPI Window::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+    Window* pThis = reinterpret_cast<Window*>(GetWindowLongPtr(hWnd, GWL_USERDATA));
+
     static PAINTSTRUCT ps;
 
     switch (uMsg) {
@@ -149,7 +166,11 @@ LONG WINAPI Window::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
             break;
         }
         return 0;
-
+    case WM_KEYUP:
+        if (pThis) {
+            pThis->_keys.push_back(wParam);
+        }
+        return 0;
     case WM_CLOSE:
         PostQuitMessage(0);
         return 0;
