@@ -26,6 +26,9 @@ public:
     void changeTime(timer::duration_t<T>);
     void togglePause();
     timer::ms_t relativeSceneTime();
+    void restart();
+    void nextScene();
+    void previousScene();
     static const unsigned vertexCount = 6;
 
 private:

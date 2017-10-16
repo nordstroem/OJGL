@@ -17,6 +17,7 @@ public:
     static constexpr int KEY_DOWN = 40;
     static constexpr int KEY_ESCAPE = 27;
     static constexpr int KEY_SPACE = 32;
+    static constexpr int KEY_R = 82;
 
 private:
     HWND CreateOpenGLWindow(char* title, int x, int y, int width, int height, BYTE type, DWORD flags, bool fullScreen);
