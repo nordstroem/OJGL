@@ -67,6 +67,9 @@ int main()
             if (key == Window::KEY_ESCAPE) {
                 return 0;
             }
+            if (key == Window::KEY_R) {
+                glState.restart();
+            }
         }
 
         glState[0]["post"] << Uniform1f("r", 0.9f);

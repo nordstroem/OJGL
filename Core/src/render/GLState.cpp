@@ -120,4 +120,9 @@ timer::ms_t GLState::relativeSceneTime()
     }
     return elapsed - t;
 }
+void GLState::restart()
+{
+    _startTime = timer::clock_t::now();
+    _pauseTime = _startTime;
+}
 }
