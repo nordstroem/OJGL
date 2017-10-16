@@ -22,16 +22,28 @@ public:
     GLuint getVAO() const;
     GLuint getVBO() const;
     timer::time_point_t startTime() const;
-
+    template <typename T>
+    void changeTime(timer::duration_t<T>);
+    void togglePause();
+    timer::ms_t relativeSceneTime();
     static const unsigned vertexCount = 6;
 
 private:
     void setupQuad();
 
+    timer::ms_t _elapsedTime();
     timer::time_point_t _startTime;
     GLuint _vaoID;
     GLuint _vboID;
     std::vector<Scene> _scenes;
+    bool _paused;
+    timer::time_point_t _pauseTime;
 };
+
+template <typename T>
+inline void GLState::changeTime(timer::duration_t<T> time)
+{
+    _startTime -= time;
+}
 
 } // namespace ojgl

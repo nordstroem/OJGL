@@ -11,6 +11,12 @@ public:
     ~Window();
     void getMessages();
     std::vector<UINT> getPressedKeys();
+    static constexpr int KEY_LEFT = 37;
+    static constexpr int KEY_UP = 38;
+    static constexpr int KEY_RIGHT = 39;
+    static constexpr int KEY_DOWN = 40;
+    static constexpr int KEY_ESCAPE = 27;
+    static constexpr int KEY_SPACE = 32;
 
 private:
     HWND CreateOpenGLWindow(char* title, int x, int y, int width, int height, BYTE type, DWORD flags, bool fullScreen);

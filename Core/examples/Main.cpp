@@ -39,13 +39,9 @@ int main()
     auto pre = Buffer::construct(1024, 768, "main", vertexShader, fragmentShader);
     auto post = Buffer::construct(1024, 768, "post", vertexShaderPost, fragmentShaderPost);
 
-    Scene scene{ pre, timer::ms_t(1000) };
-    Scene scene2{ post, timer::ms_t(1000) };
+    Scene scene{ pre, timer::ms_t(30000) };
+    Scene scene2{ post, timer::ms_t(5000) };
 
-    glState.addScene(scene);
-    glState.addScene(scene2);
-    glState.addScene(scene);
-    glState.addScene(scene2);
     glState.addScene(scene);
     glState.addScene(scene2);
 
@@ -59,11 +55,23 @@ int main()
 
         for (auto key : window.getPressedKeys()) {
             std::cout << "key: " << key << "\n";
+            if (key == Window::KEY_LEFT) {
+                glState.changeTime(timer::ms_t(-1000));
+            }
+            if (key == Window::KEY_RIGHT) {
+                glState.changeTime(timer::ms_t(1000));
+            }
+            if (key == Window::KEY_SPACE) {
+                glState.togglePause();
+            }
+            if (key == Window::KEY_ESCAPE) {
+                return 0;
+            }
         }
 
         glState[0]["post"] << Uniform1f("r", 0.9f);
 
-        auto iGlobalTime = timer::clock_t::now() - glState.startTime();
+        auto iGlobalTime = glState.relativeSceneTime();
         glState[0]["main"] << Uniform1f("iGlobalTime", iGlobalTime.count() / 1000.f)
                            << Uniform1f("CHANNEL_12_TOTAL", (float)music.syncChannels[12].getTotalHitsPerNote(0))
                            << Uniform1f("CHANNEL_13_TOTAL", (float)music.syncChannels[13].getTotalHitsPerNote(0));
