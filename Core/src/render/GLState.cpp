@@ -120,9 +120,38 @@ timer::ms_t GLState::relativeSceneTime()
     }
     return elapsed - t;
 }
+
 void GLState::restart()
 {
     _startTime = timer::clock_t::now();
     _pauseTime = _startTime;
+}
+
+void GLState::nextScene()
+{
+    auto t = timer::ms_t(0);
+    auto elapsed = _elapsedTime();
+    for (auto& v : _scenes) {
+        if (elapsed < v.duration() + t) {
+            changeTime(v.duration() - relativeSceneTime());
+            break;
+        }
+        t = t + v.duration();
+    }
+}
+
+void GLState::previousScene()
+{
+    auto t = timer::ms_t(0);
+    auto prevDur = timer::ms_t(0);
+    auto elapsed = _elapsedTime();
+    for (auto& v : _scenes) {
+        if (elapsed < v.duration() + t) {
+            changeTime(-relativeSceneTime() - prevDur);
+            break;
+        }
+        t = t + v.duration();
+        prevDur = v.duration();
+    }
 }
 }

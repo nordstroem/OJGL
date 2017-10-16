@@ -44,6 +44,10 @@ int main()
 
     glState.addScene(scene);
     glState.addScene(scene2);
+    glState.addScene(scene);
+    glState.addScene(scene2);
+    glState.addScene(scene);
+    glState.addScene(scene2);
 
     glState.setStartTime(timer::clock_t::now());
 
@@ -69,6 +73,12 @@ int main()
             }
             if (key == Window::KEY_R) {
                 glState.restart();
+            }
+            if (key == Window::KEY_UP) {
+                glState.nextScene();
+            }
+            if (key == Window::KEY_DOWN) {
+                glState.previousScene();
             }
         }
 
