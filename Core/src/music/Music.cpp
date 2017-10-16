@@ -68,4 +68,9 @@ void Music::updateSync()
     for (auto& kv : syncChannels)
         kv.second.tick(time);
 }
+
+void Music::restart()
+{
+    this->_player->Play(0);
+}
 } //namespace ojgl

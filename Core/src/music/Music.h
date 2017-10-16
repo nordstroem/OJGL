@@ -15,6 +15,7 @@ public:
     void play();
     void updateSync();
     std::map<int, SyncChannel> syncChannels;
+    void restart();
 
 private:
     void initSync();

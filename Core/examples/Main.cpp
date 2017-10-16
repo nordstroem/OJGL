@@ -73,6 +73,7 @@ int main()
             }
             if (key == Window::KEY_R) {
                 glState.restart();
+                music.restart();
             }
             if (key == Window::KEY_UP) {
                 glState.nextScene();
