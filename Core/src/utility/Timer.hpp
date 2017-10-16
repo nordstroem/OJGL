@@ -5,13 +5,13 @@
 namespace ojgl {
 
 namespace timer {
-
+    template <typename T>
+    using duration_t = std::chrono::duration<long long, T>;
     using clock_t = std::chrono::high_resolution_clock;
     using time_point_t = std::chrono::high_resolution_clock::time_point;
-    using ms_t = std::chrono::milliseconds;
+    using ms_t = duration_t<std::milli>;
     using ns_t = std::chrono::nanoseconds;
     using s_t = std::chrono::seconds;
-    //using duration_t = std::chrono::duration<double>;
 
     class Timer {
     public:
@@ -35,6 +35,12 @@ namespace timer {
         f(std::forward<Args>(args)...);
         auto dur = std::chrono::high_resolution_clock::now() - t1;
         return std::chrono::duration_cast<T>(dur).count();
+    }
+
+    template <typename T, typename P>
+    auto duration_cast(duration_t<P> dur)
+    {
+        return std::chrono::duration_cast<T>(dur);
     }
 
 } //namespace timer
