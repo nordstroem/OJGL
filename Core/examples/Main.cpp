@@ -1,8 +1,12 @@
 #include "OJGL.h"
 #include "utility\Timer.hpp"
+#include <fstream>
 #include <functional>
+#include <iostream>
 #include <memory>
+#include <sstream>
 #include <stdio.h>
+#include <streambuf>
 #include <string>
 #include <thread>
 
@@ -28,13 +32,9 @@ std::string fragmentShaderPost{
 
 using namespace ojgl;
 
-int main()
+void buildSceneGraph(GLState& glState)
 {
-    const double desiredFrameTimeMs = 1000.0 / 60.0;
-    Window window(1024, 768, false);
-    GLState glState;
-    Music music(song);
-    music.play();
+    glState.clearScenes();
 
     auto pre = Buffer::construct(1024, 768, "main", vertexShader, fragmentShader);
     auto post = Buffer::construct(1024, 768, "post", vertexShaderPost, fragmentShaderPost);
@@ -48,6 +48,17 @@ int main()
     glState.addScene(scene2);
     glState.addScene(scene);
     glState.addScene(scene2);
+}
+
+int main()
+{
+    const double desiredFrameTimeMs = 1000.0 / 60.0;
+    Window window(1024, 768, false);
+    GLState glState;
+    Music music(song);
+    music.play();
+
+    buildSceneGraph(glState);
 
     glState.setStartTime(timer::clock_t::now());
 
@@ -81,6 +92,20 @@ int main()
             }
             if (key == Window::KEY_DOWN) {
                 glState.previousScene();
+            }
+            if (key == Window::KEY_F1) {
+                //   "../../../Core/examples/shaders/demo.fs"
+                std::ifstream t("examples/shaders/demo.fs");
+                if (t.fail()) {
+                    std::cout << "fail\n";
+                }
+                std::stringstream buffer;
+                buffer << t.rdbuf();
+                size_t start = buffer.str().find("R\"(");
+                size_t end = buffer.str().find_last_of(")\"");
+                std::cout << buffer.str().substr(start + 3, end - start - 4);
+                fragmentShader = fragmentShaderPost;
+                buildSceneGraph(glState);
             }
             if (!glState.isPaused())
                 music.setTime(glState.elapsedTime());
