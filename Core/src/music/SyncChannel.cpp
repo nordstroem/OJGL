@@ -29,7 +29,7 @@ void SyncChannel::pushNote(int absoluteNote, int time)
     _timesPerNote[absoluteNote - _minNote].push(time);
 }
 
-void SyncChannel::tick(int currentTime)
+void SyncChannel::tick(long long currentTime)
 {
     _currentTime = currentTime;
     for (int note = 0; note < numNotes; note++) {
@@ -47,14 +47,14 @@ float SyncChannel::getTimeToNext(int relativeNote) const
     const std::queue<int>& times = _timesPerNote[relativeNote];
     if (times.empty())
         return std::numeric_limits<float>::max();
-    return (float)(times.front() - _currentTime);
+    return static_cast<float>(times.front() - _currentTime);
 }
 
 float SyncChannel::getTimeSinceLast(int relativeNote) const
 {
     if (_totalHitsPerNote[relativeNote] == 0)
         return std::numeric_limits<float>::max();
-    return (float)(_currentTime - _lastTimePerNote[relativeNote]);
+    return static_cast<float>(_currentTime - _lastTimePerNote[relativeNote]);
 }
 
 int SyncChannel::getTotalHitsPerNote(int relativeNote) const

@@ -29,12 +29,13 @@ public:
     void restart();
     void nextScene();
     void previousScene();
+    timer::ms_t elapsedTime();
+    bool isPaused();
     static const unsigned vertexCount = 6;
 
 private:
     void setupQuad();
 
-    timer::ms_t _elapsedTime();
     timer::time_point_t _startTime;
     GLuint _vaoID;
     GLuint _vboID;

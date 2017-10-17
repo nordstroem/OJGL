@@ -67,13 +67,14 @@ int main()
             }
             if (key == Window::KEY_SPACE) {
                 glState.togglePause();
+                if (glState.isPaused())
+                    music.stop();
             }
             if (key == Window::KEY_ESCAPE) {
                 return 0;
             }
             if (key == Window::KEY_R) {
                 glState.restart();
-                music.restart();
             }
             if (key == Window::KEY_UP) {
                 glState.nextScene();
@@ -81,6 +82,8 @@ int main()
             if (key == Window::KEY_DOWN) {
                 glState.previousScene();
             }
+            if (!glState.isPaused())
+                music.setTime(glState.elapsedTime());
         }
 
         glState[0]["post"] << Uniform1f("r", 0.9f);
@@ -105,7 +108,8 @@ int main()
         }
 
         glState.render();
-        music.updateSync();
+        if (!glState.isPaused())
+            music.updateSync();
         t.end();
         auto durationMs = t.time<timer::ms_t>();
         if (durationMs < desiredFrameTimeMs) {
