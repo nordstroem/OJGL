@@ -29,7 +29,7 @@ private:
 template <typename T>
 inline void Music::setTime(timer::duration_t<T> time)
 {
-    sU32 ms = timer::duration_cast<timer::ms_t>(time).count();
+    sU32 ms = static_cast<sU32>(timer::duration_cast<timer::ms_t>(time).count());
     this->_player->Stop();
     dsClose();
     auto& events = _player->popSyncEvents();
