@@ -69,45 +69,52 @@ int main()
         window.getMessages();
 
         for (auto key : window.getPressedKeys()) {
+            bool timeChanged(false);
             std::cout << "key: " << key << "\n";
             if (key == Window::KEY_LEFT) {
                 glState.changeTime(timer::ms_t(-1000));
+                timeChanged = true;
             }
             if (key == Window::KEY_RIGHT) {
                 glState.changeTime(timer::ms_t(1000));
+                timeChanged = true;
             }
             if (key == Window::KEY_SPACE) {
                 glState.togglePause();
                 if (glState.isPaused())
                     music.stop();
+                timeChanged = true;
             }
             if (key == Window::KEY_ESCAPE) {
                 return 0;
             }
             if (key == Window::KEY_R) {
                 glState.restart();
+                timeChanged = true;
             }
             if (key == Window::KEY_UP) {
                 glState.nextScene();
+                timeChanged = true;
             }
             if (key == Window::KEY_DOWN) {
                 glState.previousScene();
+                timeChanged = true;
             }
             if (key == Window::KEY_F1) {
-                //   "../../../Core/examples/shaders/demo.fs"
-                std::ifstream t("examples/shaders/demo.fs");
-                if (t.fail()) {
-                    std::cout << "fail\n";
+                std::ifstream shaderFile("examples/shaders/demo.fs");
+                if (shaderFile.fail()) {
+                    std::cout << "failed to open shader file\n";
                 }
                 std::stringstream buffer;
-                buffer << t.rdbuf();
-                size_t start = buffer.str().find("R\"(");
-                size_t end = buffer.str().find_last_of(")\"");
-                std::cout << buffer.str().substr(start + 3, end - start - 4);
-                fragmentShader = fragmentShaderPost;
+                buffer << shaderFile.rdbuf();
+                std::string fileContents = buffer.str();
+                size_t start = fileContents.find("R\"(");
+                size_t end = fileContents.find_last_of(")\"");
+                std::string shader = fileContents.substr(start + 3, end - start - 4);
+                fragmentShader = shader;
                 buildSceneGraph(glState);
             }
-            if (!glState.isPaused())
+            if (!glState.isPaused() && timeChanged)
                 music.setTime(glState.elapsedTime());
         }
 
