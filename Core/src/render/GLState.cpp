@@ -39,7 +39,7 @@ void GLState::render()
     glBindVertexArray(_vaoID);
 
     auto t = timer::ms_t(0);
-    auto elapsed = _elapsedTime();
+    auto elapsed = elapsedTime();
     for (auto& v : _scenes) {
         if (elapsed < v.duration() + t) {
             v.render();
@@ -75,13 +75,18 @@ void GLState::setupQuad()
     glBindVertexArray(0);
 }
 
-timer::ms_t GLState::_elapsedTime()
+timer::ms_t GLState::elapsedTime()
 {
     auto elapsed = timer::clock_t::now() - _startTime;
     if (_paused) {
         elapsed = _pauseTime - _startTime;
     }
     return timer::duration_cast<timer::ms_t>(elapsed);
+}
+
+bool GLState::isPaused()
+{
+    return _paused;
 }
 
 GLuint GLState::getVAO() const
@@ -111,7 +116,7 @@ void GLState::togglePause()
 timer::ms_t GLState::relativeSceneTime()
 {
     auto t = timer::ms_t(0);
-    auto elapsed = _elapsedTime();
+    auto elapsed = elapsedTime();
     for (auto& v : _scenes) {
         if (elapsed < v.duration() + t) {
             break;
@@ -130,7 +135,7 @@ void GLState::restart()
 void GLState::nextScene()
 {
     auto t = timer::ms_t(0);
-    auto elapsed = _elapsedTime();
+    auto elapsed = elapsedTime();
     for (auto& v : _scenes) {
         if (elapsed < v.duration() + t) {
             changeTime(v.duration() - relativeSceneTime());
@@ -144,7 +149,7 @@ void GLState::previousScene()
 {
     auto t = timer::ms_t(0);
     auto prevDur = timer::ms_t(0);
-    auto elapsed = _elapsedTime();
+    auto elapsed = elapsedTime();
     for (auto& v : _scenes) {
         if (elapsed < v.duration() + t) {
             changeTime(-relativeSceneTime() - prevDur);

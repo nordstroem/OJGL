@@ -67,6 +67,8 @@ int main()
             }
             if (key == Window::KEY_SPACE) {
                 glState.togglePause();
+                if (glState.isPaused())
+                    music.stop();
             }
             if (key == Window::KEY_ESCAPE) {
                 return 0;
@@ -80,14 +82,16 @@ int main()
             if (key == Window::KEY_DOWN) {
                 glState.previousScene();
             }
+            if (!glState.isPaused())
+                music.setTime(glState.elapsedTime());
         }
 
         glState[0]["post"] << Uniform1f("r", 0.9f);
 
         auto iGlobalTime = glState.relativeSceneTime();
         glState[0]["main"] << Uniform1f("iGlobalTime", iGlobalTime.count() / 1000.f)
-                           << Uniform1f("CHANNEL_12_TOTAL", (float)music.syncChannels[12].getTotalHitsPerNote(0))
-                           << Uniform1f("CHANNEL_13_TOTAL", (float)music.syncChannels[13].getTotalHitsPerNote(0));
+                           << Uniform1f("CHANNEL_12_TOTAL", static_cast<GLfloat>(music.syncChannels[12].getTotalHitsPerNote(0)))
+                           << Uniform1f("CHANNEL_13_TOTAL", static_cast<GLfloat>(music.syncChannels[13].getTotalHitsPerNote(0)));
 
         for (auto& kv : music.syncChannels) {
             auto sc = kv.second;
@@ -95,8 +99,8 @@ int main()
             std::vector<GLfloat> valuesTo;
 
             for (int i = 0; i < sc.numNotes; i++) {
-                valuesSince.push_back((GLfloat)sc.getTimeSinceLast(i));
-                valuesTo.push_back((GLfloat)sc.getTimeToNext(i));
+                valuesSince.push_back(static_cast<GLfloat>(sc.getTimeSinceLast(i).count()));
+                valuesTo.push_back(static_cast<GLfloat>(sc.getTimeToNext(i).count()));
             }
 
             glState[0]["main"] << Uniform1fv("CHANNEL_" + std::to_string(sc.channel) + "_TIME_SINCE", valuesSince)
@@ -104,7 +108,8 @@ int main()
         }
 
         glState.render();
-        music.updateSync();
+        if (!glState.isPaused())
+            music.updateSync();
         t.end();
         auto durationMs = t.time<timer::ms_t>();
         if (durationMs < desiredFrameTimeMs) {

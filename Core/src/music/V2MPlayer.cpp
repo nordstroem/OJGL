@@ -263,9 +263,9 @@ void V2MPlayer::Tick()
             sc.noteptr++;
             UPDATENT2(sc.notenr, sc.notent, sc.noteptr, bc.notenum);
             int index = m_state.bar * 32 + (m_state.beat * 128 + m_state.tick) / 16;
-            int time = _barTickToMs[index];
+            timer::ms_t time(_barTickToMs[index]);
             std::lock_guard<std::mutex> lock(_syncEventsMutex);
-            _syncEvents.push_back(ojgl::SyncEvent(ch, sc.lastnte, sc.lastvel, time));
+            _syncEvents.push_back(SyncEvent(ch, sc.lastnte, sc.lastvel, time));
         }
         UPDATENT3(sc.notenr, sc.notent, sc.noteptr, bc.notenum);
     }

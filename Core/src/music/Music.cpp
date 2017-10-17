@@ -21,17 +21,10 @@ void Music::play()
 {
     this->_player->Init();
     this->_player->Open(this->_song);
-    this->_player->Play();
-    while (this->_player->IsPlaying())
-        this->_player->Tick();
-    this->_player->Stop();
-    initSync();
-    dsInit(this->_player->RenderProxy, this->_player.get(), GetForegroundWindow());
-    this->_player->Play();
-    _songTimer.start();
+    setTime(timer::ms_t(0));
 }
 
-void Music::initSync()
+void Music::_initSync()
 {
     std::map<int, int> channelMinNote;
     std::map<int, int> channelMaxNote;
@@ -64,8 +57,13 @@ void Music::initSync()
 
 void Music::updateSync()
 {
-    int time = (int)_songTimer.elapsed<ojgl::timer::ms_t>();
+    auto time = timer::duration_cast<timer::ms_t>(timer::clock_t::now() - _startTime);
     for (auto& kv : syncChannels)
         kv.second.tick(time);
+}
+
+void Music::stop()
+{
+    this->_player->Stop();
 }
 } //namespace ojgl

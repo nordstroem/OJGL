@@ -13,6 +13,7 @@
 #pragma once
 
 #include "SyncEvent.hpp"
+#include "utility\Timer.hpp"
 #include "winapi/libv2.h"
 #include <map>
 #include <memory>
