@@ -136,8 +136,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalOptions>
-      </AdditionalOptions>
+      <AdditionalOptions>/std:c++latest</AdditionalOptions>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
       <AdditionalIncludeDirectories>$(SolutionDir)Core/src</AdditionalIncludeDirectories>
     </ClCompile>
@@ -153,8 +152,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalOptions>
-      </AdditionalOptions>
+      <AdditionalOptions>/std:c++latest</AdditionalOptions>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
       <AdditionalIncludeDirectories>$(SolutionDir)Core/src</AdditionalIncludeDirectories>
     </ClCompile>
@@ -172,8 +170,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalOptions>
-      </AdditionalOptions>
+      <AdditionalOptions>/std:c++latest</AdditionalOptions>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
       <AdditionalIncludeDirectories>$(SolutionDir)Core/src</AdditionalIncludeDirectories>
     </ClCompile>
@@ -194,8 +191,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalOptions>
-      </AdditionalOptions>
+      <AdditionalOptions>/std:c++latest</AdditionalOptions>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
       <AdditionalIncludeDirectories>$(SolutionDir)Core/src</AdditionalIncludeDirectories>
     </ClCompile>

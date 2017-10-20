@@ -4,11 +4,14 @@
 #include <functional>
 #include <iostream>
 #include <memory>
+#include <set>
 #include <sstream>
 #include <stdio.h>
 #include <streambuf>
 #include <string>
 #include <thread>
+
+#define DEBUG
 
 unsigned char song[] = {
 #include "songs/song.inc"
@@ -31,6 +34,29 @@ std::string fragmentShaderPost{
 };
 
 using namespace ojgl;
+
+#ifdef DEBUG
+void reloadShaders()
+{
+    std::map<std::string*, std::string> shaders;
+    shaders[&fragmentShader] = std::string("examples/shaders/demo.fs");
+    shaders[&fragmentShaderPost] = std::string("examples/shaders/post.fs");
+
+    for (auto[stringptr, path] : shaders) {
+        std::ifstream shaderFile(path);
+        if (shaderFile.fail()) {
+            std::cout << "failed to open shader file\n";
+        }
+        std::stringstream buffer;
+        buffer << shaderFile.rdbuf();
+        std::string fileContents = buffer.str();
+        size_t start = fileContents.find("R\"(");
+        size_t end = fileContents.find_last_of(")\"");
+        std::string shader = fileContents.substr(start + 3, end - start - 4);
+        *stringptr = shader;
+    }
+}
+#endif
 
 void buildSceneGraph(GLState& glState)
 {
@@ -55,6 +81,7 @@ int main()
     const double desiredFrameTimeMs = 1000.0 / 60.0;
     Window window(1024, 768, false);
     GLState glState;
+
     Music music(song);
     music.play();
 
@@ -69,6 +96,10 @@ int main()
         window.getMessages();
 
         for (auto key : window.getPressedKeys()) {
+            if (key == Window::KEY_ESCAPE) {
+                return 0;
+            }
+#ifdef DEBUG
             bool timeChanged(false);
             std::cout << "key: " << key << "\n";
             if (key == Window::KEY_LEFT) {
@@ -85,9 +116,7 @@ int main()
                     music.stop();
                 timeChanged = true;
             }
-            if (key == Window::KEY_ESCAPE) {
-                return 0;
-            }
+
             if (key == Window::KEY_R) {
                 glState.restart();
                 timeChanged = true;
@@ -101,21 +130,13 @@ int main()
                 timeChanged = true;
             }
             if (key == Window::KEY_F1) {
-                std::ifstream shaderFile("examples/shaders/demo.fs");
-                if (shaderFile.fail()) {
-                    std::cout << "failed to open shader file\n";
-                }
-                std::stringstream buffer;
-                buffer << shaderFile.rdbuf();
-                std::string fileContents = buffer.str();
-                size_t start = fileContents.find("R\"(");
-                size_t end = fileContents.find_last_of(")\"");
-                std::string shader = fileContents.substr(start + 3, end - start - 4);
-                fragmentShader = shader;
+                reloadShaders();
                 buildSceneGraph(glState);
             }
+
             if (!glState.isPaused() && timeChanged)
                 music.setTime(glState.elapsedTime());
+#endif
         }
 
         glState[0]["post"] << Uniform1f("r", 0.9f);

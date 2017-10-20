@@ -9,8 +9,8 @@ uniform float r;
 
 void main() {
 	vec3 col = texture2D(inTexture0, fragCoord).xyz;
-	col = mix(col, vec3(1.0, 0.0, 0.0), 0.5);
-	fragColor = vec4(1.0, 0.0, 0.0, 1.0);
+	col = mix(col, vec3(1.0, 1.0, 0.0), 0.5);
+	fragColor = vec4(1.0, 0.0, 1.0, 1.0);
 
 }
 )"
