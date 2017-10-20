@@ -3,16 +3,10 @@
 
 namespace ojgl {
 
-Texture::Texture()
+Texture::Texture(int width, int height, unsigned char* img)
 {
-}
-
-Texture::~Texture()
-{
-}
-
-void Texture::load(unsigned char* img)
-{
+    _width = width;
+    _height = height;
     glGenTextures(1, &_textureID);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, _textureID);
@@ -25,4 +19,7 @@ void Texture::load(unsigned char* img)
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
+Texture::~Texture()
+{
+}
 } //namespace ojgl

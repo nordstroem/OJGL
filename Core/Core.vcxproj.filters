@@ -36,5 +36,6 @@
     <ClInclude Include="src\render\Buffer.h" />
     <ClInclude Include="src\render\Scene.h" />
     <ClInclude Include="src\render\Texture.h" />
+    <ClInclude Include="src\winapi\tinydeflate.h" />
   </ItemGroup>
 </Project>
