@@ -31,6 +31,7 @@ public:
     void previousScene();
     timer::ms_t elapsedTime();
     bool isPaused();
+    void clearScenes();
     static const unsigned vertexCount = 6;
 
 private:

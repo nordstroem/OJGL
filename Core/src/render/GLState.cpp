@@ -89,6 +89,11 @@ bool GLState::isPaused()
     return _paused;
 }
 
+void GLState::clearScenes()
+{
+    _scenes.clear();
+}
+
 GLuint GLState::getVAO() const
 {
     return this->_vaoID;

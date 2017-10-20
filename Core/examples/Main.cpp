@@ -1,10 +1,17 @@
 #include "OJGL.h"
 #include "utility\Timer.hpp"
+#include <fstream>
 #include <functional>
+#include <iostream>
 #include <memory>
+#include <set>
+#include <sstream>
 #include <stdio.h>
+#include <streambuf>
 #include <string>
 #include <thread>
+
+#define DEBUG
 
 unsigned char song[] = {
 #include "songs/song.inc"
@@ -28,13 +35,34 @@ std::string fragmentShaderPost{
 
 using namespace ojgl;
 
-int main()
+#ifdef DEBUG
+void reloadShaders()
 {
-    const double desiredFrameTimeMs = 1000.0 / 60.0;
-    Window window(1024, 768, false);
-    GLState glState;
-    Music music(song);
-    music.play();
+    std::map<std::string*, std::string> shaders;
+    shaders[&fragmentShader] = std::string("examples/shaders/demo.fs");
+    shaders[&fragmentShaderPost] = std::string("examples/shaders/post.fs");
+
+    for (auto[stringptr, path] : shaders) {
+        std::ifstream shaderFile(path);
+        if (shaderFile.fail()) {
+            std::cout << "failed to open shader file\n";
+        }
+        std::stringstream buffer;
+        buffer << shaderFile.rdbuf();
+        std::string fileContents = buffer.str();
+        std::string pre = "R\"(";
+        std::string post = ")\"";
+        size_t start = fileContents.find(pre);
+        size_t end = fileContents.find_last_of(post);
+        std::string shader = fileContents.substr(start + pre.length(), end - start - post.length() - 2);
+        *stringptr = shader;
+    }
+}
+#endif
+
+void buildSceneGraph(GLState& glState)
+{
+    glState.clearScenes();
 
     auto pre = Buffer::construct(1024, 768, "main", vertexShader, fragmentShader);
     auto post = Buffer::construct(1024, 768, "post", vertexShaderPost, fragmentShaderPost);
@@ -48,6 +76,18 @@ int main()
     glState.addScene(scene2);
     glState.addScene(scene);
     glState.addScene(scene2);
+}
+
+int main()
+{
+    const double desiredFrameTimeMs = 1000.0 / 60.0;
+    Window window(1024, 768, false);
+    GLState glState;
+
+    Music music(song);
+    music.play();
+
+    buildSceneGraph(glState);
 
     glState.setStartTime(timer::clock_t::now());
 
@@ -58,32 +98,47 @@ int main()
         window.getMessages();
 
         for (auto key : window.getPressedKeys()) {
+            if (key == Window::KEY_ESCAPE) {
+                return 0;
+            }
+#ifdef DEBUG
+            bool timeChanged(false);
             std::cout << "key: " << key << "\n";
             if (key == Window::KEY_LEFT) {
                 glState.changeTime(timer::ms_t(-1000));
+                timeChanged = true;
             }
             if (key == Window::KEY_RIGHT) {
                 glState.changeTime(timer::ms_t(1000));
+                timeChanged = true;
             }
             if (key == Window::KEY_SPACE) {
                 glState.togglePause();
                 if (glState.isPaused())
                     music.stop();
+                timeChanged = true;
             }
-            if (key == Window::KEY_ESCAPE) {
-                return 0;
-            }
+
             if (key == Window::KEY_R) {
                 glState.restart();
+                timeChanged = true;
             }
             if (key == Window::KEY_UP) {
                 glState.nextScene();
+                timeChanged = true;
             }
             if (key == Window::KEY_DOWN) {
                 glState.previousScene();
+                timeChanged = true;
             }
-            if (!glState.isPaused())
+            if (key == Window::KEY_F1) {
+                reloadShaders();
+                buildSceneGraph(glState);
+            }
+
+            if (!glState.isPaused() && timeChanged)
                 music.setTime(glState.elapsedTime());
+#endif
         }
 
         glState[0]["post"] << Uniform1f("r", 0.9f);
