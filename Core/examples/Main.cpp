@@ -50,9 +50,11 @@ void reloadShaders()
         std::stringstream buffer;
         buffer << shaderFile.rdbuf();
         std::string fileContents = buffer.str();
-        size_t start = fileContents.find("R\"(");
-        size_t end = fileContents.find_last_of(")\"");
-        std::string shader = fileContents.substr(start + 3, end - start - 4);
+        std::string pre = "R\"(";
+        std::string post = ")\"";
+        size_t start = fileContents.find(pre);
+        size_t end = fileContents.find_last_of(post);
+        std::string shader = fileContents.substr(start + pre.length(), end - start - post.length() - 2);
         *stringptr = shader;
     }
 }
