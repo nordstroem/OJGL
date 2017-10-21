@@ -3,12 +3,16 @@
 
 namespace ojgl {
 
-Texture::Texture()
+Texture::Texture(unsigned width, unsigned height, unsigned char* img)
+    : _width(width)
+    , _height(height)
 {
+    load(img);
 }
 
 Texture::~Texture()
 {
+    glDeleteTextures(1, &_textureID);
 }
 
 void Texture::load(unsigned char* img)

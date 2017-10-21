@@ -48,10 +48,11 @@
     <ClInclude Include="src\render\GLState.h" />
     <ClInclude Include="src\render\Uniform.hpp" />
     <ClInclude Include="src\render\Window.h" />
+    <ClInclude Include="src\thirdparty\stb_image.h" />
     <ClInclude Include="src\utility\Timer.hpp" />
     <ClInclude Include="src\winapi\glext.h" />
     <ClInclude Include="src\winapi\gl_loader.h" />
-    <ClInclude Include="src\winapi\libv2.h" />
+    <ClInclude Include="src\thirdparty\libv2.h" />
     <ClInclude Include="src\winapi\wglext.h" />
     <ClInclude Include="src\render\Texture.h" />
   </ItemGroup>

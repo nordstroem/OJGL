@@ -3,13 +3,14 @@
 namespace ojgl {
 class Texture {
 public:
-    Texture();
+    Texture(unsigned width, unsigned height, unsigned char* img);
     ~Texture();
-    void load(unsigned char*);
 
 private:
-    unsigned _width;
-    unsigned _height;
+    void load(unsigned char* img);
+
+    const unsigned _width;
+    const unsigned _height;
     unsigned _textureID;
 };
 } //namespace ojgl

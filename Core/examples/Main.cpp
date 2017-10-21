@@ -1,4 +1,6 @@
 #include "OJGL.h"
+#define STB_IMAGE_IMPLEMENTATION
+#include "thirdparty\stb_image.h"
 #include "utility\Timer.hpp"
 #include <fstream>
 #include <functional>
@@ -78,6 +80,13 @@ void buildSceneGraph(GLState& glState)
     glState.addScene(scene2);
 }
 
+std::tuple<int, int, int, unsigned char*> readTexture(const std::string& filepath)
+{
+    int width = 0, height = 0, channels = 0;
+    unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &channels, 0);
+    return std::make_tuple(width, height, channels, data);
+}
+
 int main()
 {
     const double desiredFrameTimeMs = 1000.0 / 60.0;
@@ -86,6 +95,8 @@ int main()
 
     Music music(song);
     music.play();
+
+    auto[width, height, channels, data] = readTexture("textures/image.png");
 
     buildSceneGraph(glState);
 
