@@ -1,5 +1,7 @@
 #pragma once
+#include "Texture.h"
 #include "Uniform.hpp"
+#include <iostream>
 #include <map>
 #include <memory>
 #include <string>
@@ -34,10 +36,22 @@ private:
     const unsigned _width;
     const unsigned _height;
     std::map<std::string, std::shared_ptr<UniformBase>> _uniforms;
+    std::vector<Texture> _textures;
 
 public:
     template <typename T>
-    friend Buffer& operator<<(Buffer& o, T& b);
+    typename std::enable_if_t<std::is_base_of_v<UniformBase, T>, Buffer&> operator<<(T& b)
+    {
+        _uniforms[b.location()] = std::make_shared<typename std::remove_reference<T>::type>(std::forward<T>(b));
+        return *this;
+    }
+
+    template <typename T>
+    typename std::enable_if_t<std::is_same_v<Texture, T>, Buffer&> operator<<(T& b)
+    {
+        _textures.emplace_back(b);
+        return *this;
+    }
 
     typedef std::vector<BufferP>::iterator iterator;
     typedef std::vector<BufferP>::const_iterator const_iterator;
@@ -46,12 +60,5 @@ public:
     iterator end() { return _inputs.end(); }
     const_iterator end() const { return _inputs.end(); }
 };
-
-template <typename T>
-Buffer& operator<<(Buffer& o, T& b)
-{
-    o._uniforms[b.location()] = std::make_shared<typename std::remove_reference<T>::type>(std::forward<T>(b));
-    return o;
-}
 
 } //namespace ojgl

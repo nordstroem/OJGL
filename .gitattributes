@@ -66,4 +66,7 @@
 *wglext.h linguist-vendored=true
 *gl_loader.cpp linguist-vendored=true
 *gl_loader.h linguist-vendored=true
+*stb_image.h linguist-vendored=true
+*libv2.h linguist-vendored=true
 Core/src/winapi/* linguist-vendored=true
+Core/src/thirdparty/* linguist-vendored=true

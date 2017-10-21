@@ -22,6 +22,7 @@ uniform float CHANNEL_13_TIME_TO[1];
 uniform float CHANNEL_12_TOTAL;
 uniform float CHANNEL_13_TOTAL;
 
+uniform sampler2D image;
 
 float rect(vec2 p, vec2 size)
 {
@@ -77,7 +78,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 			color = vec3(1.0, 0.0, 1.0);
 	}
 
-	fragColor = vec4(color, 1.0);
+	fragColor = mix(texture2D(image, vec2(fragCoord.x, 1.0 - fragCoord.y)), vec4(color, 1.0), 1.0-pow(0.995, CHANNEL_13_TIME_SINCE[0]));
 }
 
 void main()

@@ -40,7 +40,7 @@ public:
     Uniform1fv(const std::string& location, const std::vector<float>& values)
         : UniformBase(location)
         , _values(values){};
-    void setUniform(int programID)
+    void setUniform(int programID) override
     {
         glUniform1fv(glGetUniformLocation(programID, this->_location.c_str()), _values.size(), &_values[0]);
     }
@@ -48,4 +48,4 @@ public:
 private:
     const std::vector<float> _values;
 };
-}
+} //namespace ojgl

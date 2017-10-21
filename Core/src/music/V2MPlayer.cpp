@@ -12,7 +12,7 @@
 
 #include "Music.h"
 #include "V2MPlayer.h"
-#include "winapi/libv2.h"
+#include "thirdparty/libv2.h"
 
 #define sTRUE (!0)
 #define sFALSE 0

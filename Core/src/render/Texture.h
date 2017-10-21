@@ -1,15 +1,21 @@
 #pragma once
+#include <string>
 
 namespace ojgl {
 class Texture {
 public:
-    Texture();
+    Texture(const std::string& location, int width, int height, int channels, unsigned char* img);
     ~Texture();
-    void load(unsigned char*);
+    std::string location() const;
+    unsigned textureID();
 
 private:
-    unsigned _width;
-    unsigned _height;
+    void load(unsigned char* img);
+
+    const std::string _location;
+    const int _width;
+    const int _height;
+    const int _channels;
     unsigned _textureID;
 };
 } //namespace ojgl
