@@ -98,9 +98,9 @@ int main()
     music.play();
 
     auto[width, height, channels, data] = readTexture("examples/textures/image.png");
-    Texture t(width, height, data.get());
+    Texture t("image", width, height, channels, data.get());
     buildSceneGraph(glState);
-
+    glState[0]["main"] << t;
     glState.setStartTime(timer::clock_t::now());
 
     while (true) {

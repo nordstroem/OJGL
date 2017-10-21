@@ -56,13 +56,23 @@ void Buffer::render()
         std::string uniform = "inTexture" + std::to_string(i);
         glUniform1i(glGetUniformLocation(_programID, uniform.c_str()), i);
     }
-    for (auto& um : _uniforms) {
-        um.second->setUniform(_programID);
+
+    for (size_t i = 0; i < _textures.size(); i++) {
+        glUniform1i(glGetUniformLocation(_programID, _textures[i].location().c_str()), _inputs.size() + i);
     }
 
     for (size_t i = 0; i < _inputs.size(); i++) {
         glActiveTexture(GL_TEXTURE0 + i);
         glBindTexture(GL_TEXTURE_2D, _inputs[i]->fboTextureID());
+    }
+
+    for (size_t i = 0; i < _textures.size(); i++) {
+        glActiveTexture(GL_TEXTURE0 + _inputs.size() + i);
+        glBindTexture(GL_TEXTURE_2D, _textures[i].textureID());
+    }
+
+    for (auto& um : _uniforms) {
+        um.second->setUniform(_programID);
     }
 
     glDrawArrays(GL_TRIANGLES, 0, GLState::vertexCount);

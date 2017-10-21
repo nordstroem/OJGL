@@ -36,6 +36,7 @@ private:
     const unsigned _width;
     const unsigned _height;
     std::map<std::string, std::shared_ptr<UniformBase>> _uniforms;
+    std::vector<Texture> _textures;
 
 public:
     template <typename T>
@@ -48,7 +49,7 @@ public:
     template <typename T>
     typename std::enable_if_t<std::is_same_v<Texture, T>, Buffer&> operator<<(T& b)
     {
-        // o._uniforms[b.location()] = std::make_shared<typename std::remove_reference<T>::type>(std::forward<T>(b));
+        _textures.emplace_back(b);
         return *this;
     }
 
