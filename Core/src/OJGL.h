@@ -5,4 +5,5 @@
 #include "render/GLState.h"
 #include "render/Uniform.hpp"
 #include "render/Window.h"
+#include "render\Texture.h"
 #include "utility/Timer.hpp"

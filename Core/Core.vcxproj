@@ -52,6 +52,7 @@
     <ClInclude Include="src\winapi\glext.h" />
     <ClInclude Include="src\winapi\gl_loader.h" />
     <ClInclude Include="src\winapi\libv2.h" />
+    <ClInclude Include="src\winapi\tinydeflate.h" />
     <ClInclude Include="src\winapi\wglext.h" />
     <ClInclude Include="src\render\Texture.h" />
   </ItemGroup>

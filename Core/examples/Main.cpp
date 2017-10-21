@@ -1,5 +1,8 @@
+#define TINYDEFLATE_IMPL
+
 #include "OJGL.h"
 #include "utility\Timer.hpp"
+#include "winapi\tinydeflate.h"
 #include <fstream>
 #include <functional>
 #include <iostream>
@@ -80,6 +83,9 @@ void buildSceneGraph(GLState& glState)
 
 int main()
 {
+    tdImage img = tdLoadPNG("images/fredag.png");
+    Texture texture(img.w, img.h, reinterpret_cast<unsigned char*>(img.pix));
+
     const double desiredFrameTimeMs = 1000.0 / 60.0;
     Window window(1024, 768, false);
     GLState glState;

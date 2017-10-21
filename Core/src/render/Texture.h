@@ -3,9 +3,8 @@
 namespace ojgl {
 class Texture {
 public:
-    Texture();
+    Texture(int, int, unsigned char*);
     ~Texture();
-    void load(unsigned char*);
 
 private:
     unsigned _width;
