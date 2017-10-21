@@ -80,11 +80,12 @@ void buildSceneGraph(GLState& glState)
     glState.addScene(scene2);
 }
 
-std::tuple<int, int, int, unsigned char*> readTexture(const std::string& filepath)
+std::tuple<int, int, int, std::unique_ptr<unsigned char, decltype(&stbi_image_free)>> readTexture(const std::string& filepath)
 {
     int width = 0, height = 0, channels = 0;
     unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &channels, 0);
-    return std::make_tuple(width, height, channels, data);
+    std::unique_ptr<unsigned char, decltype(&stbi_image_free)> dataptr(data, stbi_image_free);
+    return std::make_tuple(width, height, channels, std::move(dataptr));
 }
 
 int main()
@@ -96,8 +97,8 @@ int main()
     Music music(song);
     music.play();
 
-    auto[width, height, channels, data] = readTexture("textures/image.png");
-
+    auto[width, height, channels, data] = readTexture("examples/textures/image.png");
+    Texture t(width, height, data.get());
     buildSceneGraph(glState);
 
     glState.setStartTime(timer::clock_t::now());
@@ -182,6 +183,5 @@ int main()
             std::this_thread::sleep_for(std::chrono::milliseconds((int)(desiredFrameTimeMs)-durationMs));
         }
     }
-
     return 0;
 }

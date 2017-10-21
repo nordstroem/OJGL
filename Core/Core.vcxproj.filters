@@ -38,4 +38,7 @@
     <ClInclude Include="src\thirdparty\libv2.h" />
     <ClInclude Include="src\thirdparty\stb_image.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="examples\textures\image.png" />
+  </ItemGroup>
 </Project>

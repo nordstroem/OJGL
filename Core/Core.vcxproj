@@ -56,6 +56,9 @@
     <ClInclude Include="src\winapi\wglext.h" />
     <ClInclude Include="src\render\Texture.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="examples\textures\image.png" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{7AF8FBC7-C228-41B3-A7BB-119C1B83A171}</ProjectGuid>

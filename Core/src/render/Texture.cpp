@@ -3,7 +3,7 @@
 
 namespace ojgl {
 
-Texture::Texture(unsigned width, unsigned height, unsigned char* img)
+Texture::Texture(int width, int height, unsigned char* img)
     : _width(width)
     , _height(height)
 {
