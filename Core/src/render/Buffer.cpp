@@ -57,8 +57,10 @@ void Buffer::render()
         glUniform1i(glGetUniformLocation(_programID, uniform.c_str()), i);
     }
 
-    for (size_t i = 0; i < _textures.size(); i++) {
-        glUniform1i(glGetUniformLocation(_programID, _textures[i].location().c_str()), _inputs.size() + i);
+    size_t index = 0;
+    for (auto[location, texture] : _textures) {
+        glUniform1i(glGetUniformLocation(_programID, location.c_str()), _inputs.size() + index);
+        index++;
     }
 
     for (size_t i = 0; i < _inputs.size(); i++) {
@@ -66,9 +68,11 @@ void Buffer::render()
         glBindTexture(GL_TEXTURE_2D, _inputs[i]->fboTextureID());
     }
 
-    for (size_t i = 0; i < _textures.size(); i++) {
-        glActiveTexture(GL_TEXTURE0 + _inputs.size() + i);
-        glBindTexture(GL_TEXTURE_2D, _textures[i].textureID());
+    index = 0;
+    for (auto[location, texture] : _textures) {
+        glActiveTexture(GL_TEXTURE0 + _inputs.size() + index);
+        glBindTexture(GL_TEXTURE_2D, texture->textureID());
+        index++;
     }
 
     for (auto& um : _uniforms) {
