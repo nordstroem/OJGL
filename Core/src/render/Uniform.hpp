@@ -48,4 +48,17 @@ public:
 private:
     const std::vector<float> _values;
 };
+
+class Uniform1t {
+public:
+    Uniform1t(const std::string& location, std::shared_ptr<Texture> texture)
+        : _location(location)
+        , _texture(texture){};
+    std::string location() const { return _location; }
+    int textureID() const { return _texture->textureID(); }
+
+private:
+    const std::string _location;
+    const std::shared_ptr<Texture> _texture;
+};
 } //namespace ojgl

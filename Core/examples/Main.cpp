@@ -97,10 +97,12 @@ int main()
     Music music(song);
     music.play();
 
-    auto[width, height, channels, data] = readTexture("examples/textures/image.png");
-    Texture t("image", width, height, channels, data.get());
     buildSceneGraph(glState);
-    glState[0]["main"] << t;
+
+    auto[width, height, channels, data] = readTexture("examples/textures/image.png");
+    auto texture = Texture::construct(width, height, channels, data.get());
+
+    glState[0]["main"] << Uniform1t("image", texture);
     glState.setStartTime(timer::clock_t::now());
 
     while (true) {

@@ -1,25 +1,26 @@
 #include "Texture.h"
 #include "winapi\gl_loader.h"
+#include <iostream>
+#include <memory>
 #include <string>
 
 namespace ojgl {
-Texture::Texture(const std::string& location, int width, int height, int channels, unsigned char* img)
-    : _location(location)
-    , _width(width)
+Texture::Texture(int width, int height, int channels, unsigned char* img)
+    : _width(width)
     , _height(height)
     , _channels(channels)
 {
     load(img);
 }
 
+std::shared_ptr<Texture> Texture::construct(int width, int height, int channels, unsigned char* img)
+{
+    return std::shared_ptr<Texture>(new Texture(width, height, channels, img));
+}
+
 Texture::~Texture()
 {
     glDeleteTextures(1, &_textureID);
-}
-
-std::string Texture::location() const
-{
-    return _location;
 }
 
 unsigned Texture::textureID()

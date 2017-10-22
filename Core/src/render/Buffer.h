@@ -36,7 +36,7 @@ private:
     const unsigned _width;
     const unsigned _height;
     std::map<std::string, std::shared_ptr<UniformBase>> _uniforms;
-    std::vector<Texture> _textures;
+    std::vector<Uniform1t> _textures;
 
 public:
     template <typename T>
@@ -47,9 +47,9 @@ public:
     }
 
     template <typename T>
-    typename std::enable_if_t<std::is_same_v<Texture, T>, Buffer&> operator<<(T& b)
+    typename std::enable_if_t<std::is_same_v<Uniform1t, T>, Buffer&> operator<<(T&& b)
     {
-        _textures.emplace_back(b);
+        _textures.emplace_back(std::forward<T>(b));
         return *this;
     }
 
