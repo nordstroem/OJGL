@@ -19,10 +19,10 @@ namespace timer {
         void end() { endTime = std::chrono::high_resolution_clock::now(); };
 
         template <typename T>
-        auto time() { return std::chrono::duration_cast<T>(endTime - startTime).count(); };
+        auto time() { return std::chrono::duration_cast<T>(endTime - startTime); };
 
         template <typename T>
-        auto elapsed() { return std::chrono::duration_cast<T>(std::chrono::high_resolution_clock::now() - startTime).count(); };
+        auto elapsed() { return std::chrono::duration_cast<T>(std::chrono::high_resolution_clock::now() - startTime); };
 
     private:
         time_point_t startTime, endTime;

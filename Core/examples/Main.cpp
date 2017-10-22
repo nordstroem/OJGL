@@ -90,7 +90,8 @@ std::tuple<int, int, int, std::unique_ptr<unsigned char, decltype(&stbi_image_fr
 
 int main()
 {
-    const double desiredFrameTimeMs = 1000.0 / 60.0;
+    const timer::ms_t desiredFrameTime(17);
+
     Window window(1024, 768, false);
     GLState glState;
 
@@ -181,8 +182,8 @@ int main()
             music.updateSync();
         t.end();
         auto durationMs = t.time<timer::ms_t>();
-        if (durationMs < desiredFrameTimeMs) {
-            std::this_thread::sleep_for(std::chrono::milliseconds((int)(desiredFrameTimeMs)-durationMs));
+        if (durationMs < desiredFrameTime) {
+            std::this_thread::sleep_for(desiredFrameTime - durationMs);
         }
     }
     return 0;
