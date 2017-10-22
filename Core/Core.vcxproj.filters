@@ -6,6 +6,10 @@
     <None Include="examples\shaders\demo.vs" />
     <None Include="examples\shaders\post.fs" />
     <None Include="examples\shaders\post.vs" />
+    <None Include="examples\shaders\scene.fs" />
+    <None Include="examples\shaders\final.fs" />
+    <None Include="examples\shaders\blur1.fs" />
+    <None Include="examples\shaders\blur2.fs" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="examples\Main.cpp" />

@@ -35,6 +35,19 @@ std::string fragmentShaderPost{
 #include "shaders/post.fs"
 };
 
+std::string fragmentScene{
+#include "shaders/scene.fs"
+};
+std::string fragmentBlur1{
+#include "shaders/blur1.fs"
+};
+std::string fragmentBlur2{
+#include "shaders/blur2.fs"
+};
+std::string fragmentFinal{
+#include "shaders/final.fs"
+};
+
 using namespace ojgl;
 
 #ifdef DEBUG
@@ -43,6 +56,11 @@ void reloadShaders()
     std::map<std::string*, std::string> shaders;
     shaders[&fragmentShader] = std::string("examples/shaders/demo.fs");
     shaders[&fragmentShaderPost] = std::string("examples/shaders/post.fs");
+
+    shaders[&fragmentScene] = std::string("examples/shaders/scene.fs");
+    shaders[&fragmentBlur1] = std::string("examples/shaders/blur1.fs");
+    shaders[&fragmentBlur2] = std::string("examples/shaders/blur2.fs");
+    shaders[&fragmentFinal] = std::string("examples/shaders/final.fs");
 
     for (auto[stringptr, path] : shaders) {
         std::ifstream shaderFile(path);
@@ -66,18 +84,16 @@ void buildSceneGraph(GLState& glState)
 {
     glState.clearScenes();
 
-    auto pre = Buffer::construct(1024, 768, "main", vertexShader, fragmentShader);
-    auto post = Buffer::construct(1024, 768, "post", vertexShaderPost, fragmentShaderPost);
+    //auto pre = Buffer::construct(1024, 768, "main", vertexShader, fragmentShader);
+    //auto post = Buffer::construct(1024, 768, "post", vertexShaderPost, fragmentShaderPost);
+    auto sceneB = Buffer::construct(1024, 768, "scene", vertexShader, fragmentScene);
+    auto blur1 = Buffer::construct(1024, 768, "blur1", vertexShader, fragmentBlur1, { sceneB });
+    auto blur2 = Buffer::construct(1024, 768, "blur2", vertexShader, fragmentBlur2, { blur1 });
+    auto finall = Buffer::construct(1024, 768, "finall", vertexShader, fragmentFinal, { sceneB, blur2, blur1 });
 
-    Scene scene{ pre, timer::ms_t(30000) };
-    Scene scene2{ post, timer::ms_t(5000) };
+    Scene scene{ finall, timer::ms_t(30000) };
 
     glState.addScene(scene);
-    glState.addScene(scene2);
-    glState.addScene(scene);
-    glState.addScene(scene2);
-    glState.addScene(scene);
-    glState.addScene(scene2);
 }
 
 std::tuple<int, int, int, std::unique_ptr<unsigned char, decltype(&stbi_image_free)>> readTexture(const std::string& filepath)
