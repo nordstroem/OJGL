@@ -10,6 +10,7 @@
     <None Include="examples\shaders\final.fs" />
     <None Include="examples\shaders\blur1.fs" />
     <None Include="examples\shaders\blur2.fs" />
+    <None Include="examples\shaders\tunnel.fs" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="examples\Main.cpp" />

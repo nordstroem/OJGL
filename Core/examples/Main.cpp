@@ -48,6 +48,10 @@ std::string fragmentFinal{
 #include "shaders/final.fs"
 };
 
+std::string fragmentTunnel{
+#include "shaders/tunnel.fs"
+};
+
 using namespace ojgl;
 
 #ifdef DEBUG
@@ -61,6 +65,8 @@ void reloadShaders()
     shaders[&fragmentBlur1] = std::string("examples/shaders/blur1.fs");
     shaders[&fragmentBlur2] = std::string("examples/shaders/blur2.fs");
     shaders[&fragmentFinal] = std::string("examples/shaders/final.fs");
+
+    shaders[&fragmentTunnel] = std::string("examples/shaders/tunnel.fs");
 
     for (auto[stringptr, path] : shaders) {
         std::ifstream shaderFile(path);
@@ -84,16 +90,23 @@ void buildSceneGraph(GLState& glState)
 {
     glState.clearScenes();
 
-    //auto pre = Buffer::construct(1024, 768, "main", vertexShader, fragmentShader);
-    //auto post = Buffer::construct(1024, 768, "post", vertexShaderPost, fragmentShaderPost);
+    auto pre = Buffer::construct(1024, 768, "main", vertexShader, fragmentShader);
+    auto post = Buffer::construct(1024, 768, "post", vertexShaderPost, fragmentShaderPost);
+
     auto sceneB = Buffer::construct(1024, 768, "scene", vertexShader, fragmentScene);
     auto blur1 = Buffer::construct(1024, 768, "blur1", vertexShader, fragmentBlur1, { sceneB });
     auto blur2 = Buffer::construct(1024, 768, "blur2", vertexShader, fragmentBlur2, { blur1 });
     auto finall = Buffer::construct(1024, 768, "finall", vertexShader, fragmentFinal, { sceneB, blur2, blur1 });
 
-    Scene scene{ finall, timer::ms_t(30000) };
+    auto tunnel = Buffer::construct(1024, 768, "tunnel", vertexShader, fragmentTunnel);
 
-    glState.addScene(scene);
+    Scene scene1{ tunnel, timer::ms_t(3000000) };
+    Scene scene2{ finall, timer::ms_t(30000) };
+    Scene scene3{ pre, timer::ms_t(30000) };
+
+    glState.addScene(scene1);
+    glState.addScene(scene2);
+    glState.addScene(scene3);
 }
 
 std::tuple<int, int, int, std::unique_ptr<unsigned char, decltype(&stbi_image_free)>> readTexture(const std::string& filepath)
@@ -175,9 +188,9 @@ int main()
         glState[0]["post"] << Uniform1f("r", 0.9f);
 
         auto iGlobalTime = glState.relativeSceneTime();
-        glState[0]["main"] << Uniform1f("iGlobalTime", iGlobalTime.count() / 1000.f)
-                           << Uniform1f("CHANNEL_12_TOTAL", static_cast<GLfloat>(music.syncChannels[12].getTotalHitsPerNote(0)))
-                           << Uniform1f("CHANNEL_13_TOTAL", static_cast<GLfloat>(music.syncChannels[13].getTotalHitsPerNote(0)));
+        glState[0]["tunnel"] << Uniform1f("iGlobalTime", iGlobalTime.count() / 1000.f)
+                             << Uniform1f("CHANNEL_12_TOTAL", static_cast<GLfloat>(music.syncChannels[12].getTotalHitsPerNote(0)))
+                             << Uniform1f("CHANNEL_13_TOTAL", static_cast<GLfloat>(music.syncChannels[13].getTotalHitsPerNote(0)));
 
         for (auto& kv : music.syncChannels) {
             auto sc = kv.second;
@@ -189,8 +202,8 @@ int main()
                 valuesTo.push_back(static_cast<GLfloat>(sc.getTimeToNext(i).count()));
             }
 
-            glState[0]["main"] << Uniform1fv("CHANNEL_" + std::to_string(sc.channel) + "_TIME_SINCE", valuesSince)
-                               << Uniform1fv("CHANNEL_" + std::to_string(sc.channel) + "_TIME_TO", valuesTo);
+            glState[0]["tunnel"] << Uniform1fv("CHANNEL_" + std::to_string(sc.channel) + "_TIME_SINCE", valuesSince)
+                                 << Uniform1fv("CHANNEL_" + std::to_string(sc.channel) + "_TIME_TO", valuesTo);
         }
 
         glState.render();
