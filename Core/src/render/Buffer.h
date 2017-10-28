@@ -40,16 +40,15 @@ private:
 
 public:
     template <typename T>
-    typename std::enable_if_t<std::is_base_of_v<UniformBase, T>, Buffer&> operator<<(T& b)
+    typename std::enable_if_t<std::is_base_of_v<UniformBase, typename std::remove_reference<T>::type>, Buffer&> operator<<(T&& b)
     {
         _uniforms[b.location()] = std::make_shared<typename std::remove_reference<T>::type>(std::forward<T>(b));
         return *this;
     }
 
-    template <typename T>
-    typename std::enable_if_t<std::is_same_v<Uniform1t, T>, Buffer&> operator<<(T b)
+    inline Buffer& operator<<(const Uniform1t& b)
     {
-        _textures[b.location()] = std::make_shared<typename std::remove_reference<T>::type>(std::forward<T>(b));
+        _textures[b.location()] = std::make_shared<Uniform1t>(b);
         return *this;
     }
 
