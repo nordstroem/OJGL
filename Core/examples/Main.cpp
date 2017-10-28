@@ -12,6 +12,7 @@
 #include <streambuf>
 #include <string>
 #include <thread>
+#include <unordered_map>
 
 #define DEBUG
 
@@ -40,7 +41,7 @@ using namespace ojgl;
 #ifdef DEBUG
 void reloadShaders()
 {
-    std::map<std::string*, std::string> shaders;
+    std::unordered_map<std::string*, std::string> shaders;
     shaders[&fragmentShader] = std::string("examples/shaders/demo.fs");
     shaders[&fragmentShaderPost] = std::string("examples/shaders/post.fs");
 

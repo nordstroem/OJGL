@@ -2,9 +2,9 @@
 #include "Texture.h"
 #include "Uniform.hpp"
 #include <iostream>
-#include <map>
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace ojgl {
@@ -35,8 +35,8 @@ private:
     unsigned _fboTextureID = 0;
     const unsigned _width;
     const unsigned _height;
-    std::map<std::string, std::shared_ptr<UniformBase>> _uniforms;
-    std::map<std::string, std::shared_ptr<Uniform1t>> _textures;
+    std::unordered_map<std::string, std::shared_ptr<UniformBase>> _uniforms;
+    std::unordered_map<std::string, std::shared_ptr<Uniform1t>> _textures;
 
 public:
     template <typename T>

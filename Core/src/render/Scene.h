@@ -3,8 +3,8 @@
 #include "Buffer.h"
 #include "utility/Timer.hpp"
 #include <memory>
-#include <set>
 #include <string>
+#include <unordered_set>
 
 namespace ojgl {
 
@@ -15,11 +15,10 @@ public:
 
     void render();
     Buffer& operator[](const std::string& name);
-
-    std::set<std::shared_ptr<Buffer>> buffers();
     timer::ms_t duration() const;
 
 private:
+    std::unordered_set<std::shared_ptr<Buffer>> buffers();
     std::shared_ptr<Buffer> _mainBuffer;
     timer::ms_t _duration;
 };

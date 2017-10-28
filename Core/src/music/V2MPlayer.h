@@ -15,9 +15,9 @@
 #include "SyncEvent.hpp"
 #include "thirdparty/libv2.h"
 #include "utility\Timer.hpp"
-#include <map>
 #include <memory>
 #include <mutex>
+#include <unordered_map>
 #include <vector>
 
 namespace ojgl {
@@ -182,7 +182,7 @@ public:
 private:
     std::mutex _syncEventsMutex;
     std::vector<ojgl::SyncEvent> _syncEvents;
-    std::map<int, int> _barTickToMs;
+    std::unordered_map<int, int> _barTickToMs;
     // struct defs
 
     // General info from V2M file

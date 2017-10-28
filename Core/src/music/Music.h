@@ -3,7 +3,7 @@
 #include "SyncChannel.h"
 #include "V2MPlayer.h"
 #include "utility\Timer.hpp"
-#include <map>
+#include <unordered_map>
 
 namespace ojgl {
 
@@ -14,7 +14,7 @@ public:
     ~Music();
     void play();
     void updateSync();
-    std::map<int, SyncChannel> syncChannels;
+    std::unordered_map<int, SyncChannel> syncChannels;
     template <typename T>
     void setTime(timer::duration_t<T>);
     void stop();
