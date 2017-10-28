@@ -1,8 +1,8 @@
 #include "Music.h"
 #include "render/Window.h"
 #include <iostream>
-#include <map>
-#include <set>
+#include <unordered_map>
+#include <unordered_set>
 
 namespace ojgl {
 
@@ -26,9 +26,9 @@ void Music::play()
 
 void Music::_initSync()
 {
-    std::map<int, int> channelMinNote;
-    std::map<int, int> channelMaxNote;
-    std::set<int> channels;
+    std::unordered_map<int, int> channelMinNote;
+    std::unordered_map<int, int> channelMaxNote;
+    std::unordered_set<int> channels;
     auto& events = _player->popSyncEvents();
     for (auto& se : events) {
         int channel = se.channel;

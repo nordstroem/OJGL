@@ -1,6 +1,6 @@
 #include "Scene.h"
-#include <set>
 #include <stdexcept>
+#include <unordered_set>
 
 namespace ojgl {
 
@@ -30,10 +30,10 @@ Buffer& Scene::operator[](const std::string& name)
     return *_mainBuffer;
 }
 
-std::set<std::shared_ptr<Buffer>> Scene::buffers()
+std::unordered_set<std::shared_ptr<Buffer>> Scene::buffers()
 {
-    std::set<std::shared_ptr<Buffer>> available;
-    std::set<std::shared_ptr<Buffer>> checked;
+    std::unordered_set<std::shared_ptr<Buffer>> available;
+    std::unordered_set<std::shared_ptr<Buffer>> checked;
     available.insert(_mainBuffer);
 
     while (!available.empty()) {
@@ -63,7 +63,7 @@ void Scene::render()
 {
 
     auto available = buffers();
-    std::set<std::shared_ptr<Buffer>> rendered;
+    std::unordered_set<std::shared_ptr<Buffer>> rendered;
 
     auto curIter = available.begin();
 

@@ -4,9 +4,7 @@
 #include "utility/Timer.hpp"
 #include "winapi/gl_loader.h"
 #include <functional>
-#include <set>
 #include <string>
-#include <unordered_set>
 #include <vector>
 
 namespace ojgl {
