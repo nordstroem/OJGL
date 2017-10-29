@@ -79,7 +79,7 @@ void Buffer::render()
         um.second->setUniform(_programID);
     }
 
-    glDrawArrays(GL_TRIANGLES, 0, GLState::vertexCount);
+    glDrawArrays(GL_TRIANGLES, 0, Buffer::vertexCount);
 
     glUseProgram(0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);

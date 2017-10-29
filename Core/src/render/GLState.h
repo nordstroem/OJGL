@@ -13,34 +13,38 @@ class GLState {
 public:
     GLState();
     ~GLState();
+
     void render();
     void addScene(const Scene& scene);
     void setStartTime(timer::time_point_t);
-    Scene& operator[](size_t i);
-    GLuint getVAO() const;
-    GLuint getVBO() const;
-    timer::time_point_t startTime() const;
-    template <typename T>
-    void changeTime(timer::duration_t<T>);
-    void togglePause();
-    timer::ms_t relativeSceneTime();
     void restart();
     void nextScene();
     void previousScene();
-    timer::ms_t elapsedTime();
+    void togglePause();
     bool isPaused();
     void clearScenes();
-    static const unsigned vertexCount = 6;
+
+    timer::time_point_t startTime() const;
+    timer::ms_t relativeSceneTime() const;
+    timer::ms_t elapsedTime() const;
+
+    Scene& operator[](size_t i);
 
 private:
     void setupQuad();
+    GLuint getVAO() const;
+    GLuint getVBO() const;
 
+    std::vector<Scene> _scenes;
     timer::time_point_t _startTime;
+    timer::time_point_t _pauseTime;
     GLuint _vaoID;
     GLuint _vboID;
-    std::vector<Scene> _scenes;
     bool _paused;
-    timer::time_point_t _pauseTime;
+
+public:
+    template <typename T>
+    void changeTime(timer::duration_t<T>);
 };
 
 template <typename T>

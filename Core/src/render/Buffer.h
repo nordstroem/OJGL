@@ -11,12 +11,12 @@ namespace ojgl {
 
 class Buffer {
 
-    using BufferP = std::shared_ptr<Buffer>;
+    using BufferPtr = std::shared_ptr<Buffer>;
 
 public:
     ~Buffer();
-    static BufferP construct(unsigned width, unsigned height, const std::string& name, const std::string& vertex, const std::string& fragment, std::initializer_list<BufferP> buffers);
-    static BufferP construct(unsigned width, unsigned height, const std::string& name, const std::string& vertex, const std::string& fragment);
+    static BufferPtr construct(unsigned width, unsigned height, const std::string& name, const std::string& vertex, const std::string& fragment, std::initializer_list<BufferPtr> buffers);
+    static BufferPtr construct(unsigned width, unsigned height, const std::string& name, const std::string& vertex, const std::string& fragment);
 
     unsigned getProgramID() const;
     unsigned fboTextureID();
@@ -28,7 +28,7 @@ private:
     Buffer(unsigned width, unsigned height, const std::string& name, const std::string& vertex, const std::string& fragment, std::initializer_list<std::shared_ptr<Buffer>> buffers);
     void loadShader(const std::string& vertexShader, const std::string& fragmentShader);
 
-    std::vector<BufferP> _inputs;
+    std::vector<BufferPtr> _inputs;
     const std::string _name;
     unsigned _programID;
     unsigned _fboID = 0;
@@ -37,6 +37,8 @@ private:
     const unsigned _height;
     std::unordered_map<std::string, std::shared_ptr<UniformBase>> _uniforms;
     std::unordered_map<std::string, std::shared_ptr<Uniform1t>> _textures;
+
+    static constexpr unsigned vertexCount = 6;
 
 public:
     template <typename T>
@@ -52,8 +54,8 @@ public:
         return *this;
     }
 
-    typedef std::vector<BufferP>::iterator iterator;
-    typedef std::vector<BufferP>::const_iterator const_iterator;
+    typedef std::vector<BufferPtr>::iterator iterator;
+    typedef std::vector<BufferPtr>::const_iterator const_iterator;
     iterator begin() { return _inputs.begin(); }
     const_iterator begin() const { return _inputs.begin(); }
     iterator end() { return _inputs.end(); }

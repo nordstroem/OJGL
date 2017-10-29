@@ -75,7 +75,7 @@ void GLState::setupQuad()
     glBindVertexArray(0);
 }
 
-timer::ms_t GLState::elapsedTime()
+timer::ms_t GLState::elapsedTime() const
 {
     auto elapsed = timer::clock_t::now() - _startTime;
     if (_paused) {
@@ -118,7 +118,7 @@ void GLState::togglePause()
     _pauseTime = timer::clock_t::now();
 }
 
-timer::ms_t GLState::relativeSceneTime()
+timer::ms_t GLState::relativeSceneTime() const
 {
     auto t = timer::ms_t(0);
     auto elapsed = elapsedTime();
