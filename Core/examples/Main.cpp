@@ -35,21 +35,29 @@ std::string fragmentShaderPost{
 #include "shaders/post.fs"
 };
 
-std::string fragmentScene{
-#include "shaders/scene.fs"
-};
-std::string fragmentBlur1{
-#include "shaders/blur1.fs"
-};
-std::string fragmentBlur2{
-#include "shaders/blur2.fs"
-};
-std::string fragmentFinal{
-#include "shaders/final.fs"
+#define SHADER_FRAGMENT_DOF_SCENE "shaders/dofScene.fs"
+std::string fragmentDOFScene{
+#include SHADER_FRAGMENT_DOF_SCENE
 };
 
-std::string fragmentTunnel{
-#include "shaders/tunnel.fs"
+#define SHADER_FRAGMENT_DOF_BLUR1 "shaders/dofBlur1.fs"
+std::string fragmentDOFBlur1{
+#include SHADER_FRAGMENT_DOF_BLUR1
+};
+
+#define SHADER_FRAGMENT_DOF_BLUR2 "shaders/dofBlur2.fs"
+std::string fragmentDOFBlur2{
+#include SHADER_FRAGMENT_DOF_BLUR2
+};
+
+#define SHADER_FRAGMENT_DOF_FINAL "shaders/dofFinal.fs"
+std::string fragmentDOFFinal{
+#include SHADER_FRAGMENT_DOF_FINAL
+};
+
+#define SHADER_FRAGMENT_TUNNEL_SCENE "shaders/tunnelScene.fs"
+std::string fragmentTunnelScene{
+#include SHADER_FRAGMENT_TUNNEL_SCENE
 };
 
 using namespace ojgl;
@@ -61,12 +69,12 @@ void reloadShaders()
     shaders[&fragmentShader] = std::string("examples/shaders/demo.fs");
     shaders[&fragmentShaderPost] = std::string("examples/shaders/post.fs");
 
-    shaders[&fragmentScene] = std::string("examples/shaders/scene.fs");
-    shaders[&fragmentBlur1] = std::string("examples/shaders/blur1.fs");
-    shaders[&fragmentBlur2] = std::string("examples/shaders/blur2.fs");
-    shaders[&fragmentFinal] = std::string("examples/shaders/final.fs");
+    shaders[&fragmentDOFScene] = std::string("examples/" SHADER_FRAGMENT_DOF_SCENE);
+    shaders[&fragmentDOFBlur1] = std::string("examples/" SHADER_FRAGMENT_DOF_BLUR1);
+    shaders[&fragmentDOFBlur2] = std::string("examples/" SHADER_FRAGMENT_DOF_BLUR2);
+    shaders[&fragmentDOFFinal] = std::string("examples/" SHADER_FRAGMENT_DOF_FINAL);
 
-    shaders[&fragmentTunnel] = std::string("examples/shaders/tunnel.fs");
+    shaders[&fragmentTunnelScene] = std::string("examples/" SHADER_FRAGMENT_TUNNEL_SCENE);
 
     for (auto[stringptr, path] : shaders) {
         std::ifstream shaderFile(path);
@@ -93,20 +101,16 @@ void buildSceneGraph(GLState& glState)
     auto pre = Buffer::construct(1024, 768, "main", vertexShader, fragmentShader);
     auto post = Buffer::construct(1024, 768, "post", vertexShaderPost, fragmentShaderPost);
 
-    auto sceneB = Buffer::construct(1024, 768, "scene", vertexShader, fragmentScene);
-    auto blur1 = Buffer::construct(1024, 768, "blur1", vertexShader, fragmentBlur1, { sceneB });
-    auto blur2 = Buffer::construct(1024, 768, "blur2", vertexShader, fragmentBlur2, { blur1 });
-    auto finall = Buffer::construct(1024, 768, "finall", vertexShader, fragmentFinal, { sceneB, blur2, blur1 });
+    auto DOFScene = Buffer::construct(1024, 768, "DOFScene", vertexShader, fragmentDOFScene);
+    auto DOFBlur1 = Buffer::construct(1024, 768, "DOFBlur1", vertexShader, fragmentDOFBlur1, { DOFScene });
+    auto DOFBlur2 = Buffer::construct(1024, 768, "DOFBlur2", vertexShader, fragmentDOFBlur2, { DOFBlur1 });
+    auto DOFFinal = Buffer::construct(1024, 768, "DOFFinal", vertexShader, fragmentDOFFinal, { DOFScene, DOFBlur2, DOFBlur1 });
 
-    auto tunnel = Buffer::construct(1024, 768, "tunnel", vertexShader, fragmentTunnel);
+    auto tunnelScene = Buffer::construct(1024, 768, "tunnelScene", vertexShader, fragmentTunnelScene);
 
-    Scene scene1{ tunnel, timer::ms_t(3000000) };
-    Scene scene2{ finall, timer::ms_t(30000) };
-    Scene scene3{ pre, timer::ms_t(30000) };
-
-    glState.addScene(scene1);
-    glState.addScene(scene2);
-    glState.addScene(scene3);
+    glState.addScene(Scene{ DOFFinal, timer::ms_t(30000) });
+    glState.addScene(Scene{ tunnelScene, timer::ms_t(30000) });
+    glState.addScene(Scene{ pre, timer::ms_t(30000) });
 }
 
 std::tuple<int, int, int, std::unique_ptr<unsigned char, decltype(&stbi_image_free)>> readTexture(const std::string& filepath)
@@ -188,7 +192,7 @@ int main()
         glState[0]["post"] << Uniform1f("r", 0.9f);
 
         auto iGlobalTime = glState.relativeSceneTime();
-        glState[0]["tunnel"] << Uniform1f("iGlobalTime", iGlobalTime.count() / 1000.f)
+        glState[1]["tunnel"] << Uniform1f("iGlobalTime", iGlobalTime.count() / 1000.f)
                              << Uniform1f("CHANNEL_12_TOTAL", static_cast<GLfloat>(music.syncChannels[12].getTotalHitsPerNote(0)))
                              << Uniform1f("CHANNEL_13_TOTAL", static_cast<GLfloat>(music.syncChannels[13].getTotalHitsPerNote(0)));
 
@@ -202,7 +206,7 @@ int main()
                 valuesTo.push_back(static_cast<GLfloat>(sc.getTimeToNext(i).count()));
             }
 
-            glState[0]["tunnel"] << Uniform1fv("CHANNEL_" + std::to_string(sc.channel) + "_TIME_SINCE", valuesSince)
+            glState[1]["tunnel"] << Uniform1fv("CHANNEL_" + std::to_string(sc.channel) + "_TIME_SINCE", valuesSince)
                                  << Uniform1fv("CHANNEL_" + std::to_string(sc.channel) + "_TIME_TO", valuesTo);
         }
 
