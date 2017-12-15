@@ -26,7 +26,7 @@ Buffer& Scene::operator[](const std::string& name)
         }
     }
 
-    //TODO buffer not found, maybe throw runtime error
+    //TODO buffer not found, maybe throw runtime error. Yes error would be good I think.
     return *_mainBuffer;
 }
 
