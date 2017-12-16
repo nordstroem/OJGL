@@ -65,7 +65,7 @@ void main() {
                 if (p.y < - 3.0) {
                     ref = 0.0;
                     if (mod(floor(p.x) + floor(p.z), 2.0) > 0.5 ) {
-                    	 col = vec3(0.9, 0., 0.9);
+                    	 col = vec3(0.9, 0.2, 0.9);
                     } else {
                     	 col = vec3(0.5, 0.2, 0.9);
                     }
