@@ -9,7 +9,7 @@ Window::Window(unsigned width, unsigned height, bool fullScreen)
     : _width(width)
     , _height(height)
 {
-    _hWnd = CreateOpenGLWindow("minimal", 0, 0, width, height, PFD_TYPE_RGBA, 0, fullScreen);
+    _hWnd = CreateOpenGLWindow("minimal", 0, 0, PFD_TYPE_RGBA, 0, fullScreen);
     if (_hWnd == NULL)
         exit(1);
 
@@ -20,7 +20,7 @@ Window::Window(unsigned width, unsigned height, bool fullScreen)
 
     Window* pThis = this;
     SetLastError(0);
-    if (!SetWindowLongPtr(_hWnd, GWL_USERDATA, reinterpret_cast<LONG_PTR>(pThis))) {
+    if (!SetWindowLongPtr(_hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pThis))) {
         if (GetLastError() != 0)
             throw std::runtime_error("SetWindowLongPtr failed in Window");
     }
@@ -66,7 +66,7 @@ HWND Window::CreateFullscreenWindow(HWND hwnd, HINSTANCE hInstance)
         hwnd, NULL, hInstance, 0);
 }
 
-HWND Window::CreateOpenGLWindow(char* title, int x, int y, int width, int height, BYTE type, DWORD flags, bool fullScreen)
+HWND Window::CreateOpenGLWindow(const char* title, int x, int y, BYTE type, DWORD flags, bool fullScreen)
 {
     int pf;
     HDC hDC;
@@ -98,7 +98,7 @@ HWND Window::CreateOpenGLWindow(char* title, int x, int y, int width, int height
     }
 
     hWnd = CreateWindow(L"OpenGL", L"Hej", WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN,
-        x, y, width, height, NULL, NULL, hInstance, NULL);
+        x, y, this->_width, this->_height, NULL, NULL, hInstance, NULL);
     if (fullScreen) {
         hWnd = CreateFullscreenWindow(hWnd, hInstance);
     }
@@ -144,7 +144,7 @@ HWND Window::CreateOpenGLWindow(char* title, int x, int y, int width, int height
 
 LONG WINAPI Window::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-    Window* pThis = reinterpret_cast<Window*>(GetWindowLongPtr(hWnd, GWL_USERDATA));
+    Window* pThis = reinterpret_cast<Window*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
 
     static PAINTSTRUCT ps;
 

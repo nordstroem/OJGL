@@ -32,7 +32,7 @@ inline void Music::setTime(timer::duration_t<T> time)
     sU32 ms = static_cast<sU32>(timer::duration_cast<timer::ms_t>(time).count());
     this->_player->Stop();
     dsClose();
-    auto& events = _player->popSyncEvents();
+    auto events = _player->popSyncEvents();
     this->_player->Play(ms);
     while (this->_player->IsPlaying())
         this->_player->Tick();

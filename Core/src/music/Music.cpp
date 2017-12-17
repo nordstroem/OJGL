@@ -29,7 +29,7 @@ void Music::_initSync()
     std::unordered_map<int, int> channelMinNote;
     std::unordered_map<int, int> channelMaxNote;
     std::unordered_set<int> channels;
-    auto& events = _player->popSyncEvents();
+    auto events = _player->popSyncEvents();
     for (auto& se : events) {
         int channel = se.channel;
         int note = se.note;
