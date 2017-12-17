@@ -21,9 +21,9 @@ public:
     static constexpr int KEY_F1 = 112;
 
 private:
-    HWND CreateOpenGLWindow(char* title, int x, int y, int width, int height, BYTE type, DWORD flags, bool fullScreen);
+    HWND CreateOpenGLWindow(const char* title, int x, int y, BYTE type, DWORD flags, bool fullScreen);
     HWND CreateFullscreenWindow(HWND, HINSTANCE);
-    static LONG WINAPI Window::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+    static LONG WINAPI WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
     HDC _hDC; // device context
     HGLRC _hRC; // opengl context

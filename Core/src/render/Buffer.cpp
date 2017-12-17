@@ -7,10 +7,10 @@
 namespace ojgl {
 
 Buffer::Buffer(unsigned width, unsigned height, const std::string& name, const std::string& vertex, const std::string& fragment, std::initializer_list<std::shared_ptr<Buffer>> buffers)
-    : _width(width)
-    , _height(height)
-    , _inputs(buffers)
+    : _inputs(buffers)
     , _name(name)
+    , _width(width)
+    , _height(height)
 {
     loadShader(vertex, fragment);
 }

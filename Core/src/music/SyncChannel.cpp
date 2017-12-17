@@ -6,16 +6,16 @@
 namespace ojgl {
 
 SyncChannel::SyncChannel()
-    : _minNote(-1)
+    : numNotes(-1)
     , channel(-1)
-    , numNotes(-1)
+    , _minNote(-1)
 {
 }
 
 SyncChannel::SyncChannel(int numNotes, int minNote, int channel)
-    : _minNote(minNote)
+    : numNotes(numNotes)
     , channel(channel)
-    , numNotes(numNotes)
+    , _minNote(minNote)
 {
     _lastTimePerNote.resize(numNotes);
     _timesPerNote.resize(numNotes);

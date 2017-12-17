@@ -46,7 +46,7 @@ class V2MPlayer {
 public:
     std::vector<ojgl::SyncEvent> popSyncEvents();
 
-    void V2MPlayer::Tick();
+    void Tick();
     // init
     // call this instead of a constructor
     void Init(sU32 a_tickspersec = 1000)
