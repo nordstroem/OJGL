@@ -1,6 +1,7 @@
 #include "OJGL.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "thirdparty\stb_image.h"
+#include "utility\Log.h"
 #include "utility\Timer.hpp"
 #include <fstream>
 #include <functional>
@@ -13,8 +14,6 @@
 #include <string>
 #include <thread>
 #include <unordered_map>
-
-#define DEBUG
 
 unsigned char song[] = {
 #include "songs/song.inc"
@@ -63,7 +62,7 @@ std::string fragmentTunnelScene{
 
 using namespace ojgl;
 
-#ifdef DEBUG
+#ifdef _DEBUG
 void debugRereadShaderFiles()
 {
     std::unordered_map<std::string*, std::string> shaders;
@@ -80,7 +79,7 @@ void debugRereadShaderFiles()
     for (auto[stringptr, path] : shaders) {
         std::ifstream shaderFile(path);
         if (shaderFile.fail()) {
-            std::cout << "failed to open shader file\n";
+            LOG("failed to open shader file");
             // TODO Maybe best to just throw error and crash here
         }
         std::stringstream buffer;
@@ -151,9 +150,9 @@ int main()
             if (key == Window::KEY_ESCAPE) {
                 return 0;
             }
-#ifdef DEBUG
+#ifdef _DEBUG
             bool timeChanged(false);
-            std::cout << "key: " << key << "\n";
+            LOG_INFO("key: " << key);
             if (key == Window::KEY_LEFT) {
                 glState.changeTime(timer::ms_t(-1000));
                 timeChanged = true;
