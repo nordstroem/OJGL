@@ -64,23 +64,24 @@ std::string fragmentTunnelScene{
 using namespace ojgl;
 
 #ifdef DEBUG
-void reloadShaders()
+void debugRereadShaderFiles()
 {
     std::unordered_map<std::string*, std::string> shaders;
-    shaders[&fragmentShader] = std::string("examples/shaders/demo.fs");
-    shaders[&fragmentShaderPost] = std::string("examples/shaders/post.fs");
+    shaders[&fragmentShader] = "examples/shaders/demo.fs";
+    shaders[&fragmentShaderPost] = "examples/shaders/post.fs";
 
-    shaders[&fragmentDOFScene] = std::string("examples/" SHADER_FRAGMENT_DOF_SCENE);
-    shaders[&fragmentDOFBlur1] = std::string("examples/" SHADER_FRAGMENT_DOF_BLUR1);
-    shaders[&fragmentDOFBlur2] = std::string("examples/" SHADER_FRAGMENT_DOF_BLUR2);
-    shaders[&fragmentDOFFinal] = std::string("examples/" SHADER_FRAGMENT_DOF_FINAL);
+    shaders[&fragmentDOFScene] = "examples/" SHADER_FRAGMENT_DOF_SCENE;
+    shaders[&fragmentDOFBlur1] = "examples/" SHADER_FRAGMENT_DOF_BLUR1;
+    shaders[&fragmentDOFBlur2] = "examples/" SHADER_FRAGMENT_DOF_BLUR2;
+    shaders[&fragmentDOFFinal] = "examples/" SHADER_FRAGMENT_DOF_FINAL;
 
-    shaders[&fragmentTunnelScene] = std::string("examples/" SHADER_FRAGMENT_TUNNEL_SCENE);
+    shaders[&fragmentTunnelScene] = "examples/" SHADER_FRAGMENT_TUNNEL_SCENE;
 
     for (auto[stringptr, path] : shaders) {
         std::ifstream shaderFile(path);
         if (shaderFile.fail()) {
             std::cout << "failed to open shader file\n";
+            // TODO Maybe best to just throw error and crash here
         }
         std::stringstream buffer;
         buffer << shaderFile.rdbuf();
@@ -181,7 +182,7 @@ int main()
                 timeChanged = true;
             }
             if (key == Window::KEY_F1) {
-                reloadShaders();
+                debugRereadShaderFiles();
                 buildSceneGraph(glState);
             }
 
