@@ -1,5 +1,6 @@
 #include "Buffer.h"
 #include "GLState.h"
+#include "utility\Log.h"
 #include <iostream>
 #include <memory>
 #include <string>
@@ -102,7 +103,7 @@ void Buffer::generateFBO()
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _fboTextureID, 0);
 
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        std::cout << "Framebuffer error\n";
+        LOG_ERROR("Framebuffer error");
 
     glBindTexture(GL_TEXTURE_2D, 0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -127,22 +128,22 @@ void Buffer::loadShader(const std::string& vertexShader, const std::string& frag
     GLint param;
     glGetShaderiv(vertID, GL_COMPILE_STATUS, &param);
     if (param == GL_FALSE) {
-        std::cout << "Failed to compile vertex shader!\n";
+        LOG_ERROR("Failed to compile vertex shader!");
         int len;
         char log[200];
         glGetShaderInfoLog(fragID, 200, &len, log);
-        std::cout << log;
+        LOG_ERROR(log);
     }
 
     glCompileShader(fragID);
 
     glGetShaderiv(fragID, GL_COMPILE_STATUS, &param);
     if (param == GL_FALSE) {
-        std::cout << "Failed to compile fragment shader!\n";
+        LOG_ERROR("Failed to compile fragment shader!");
         int len;
         char log[200];
         glGetShaderInfoLog(fragID, 200, &len, log);
-        std::cout << log;
+        LOG_ERROR(log);
     }
 
     glAttachShader(_programID, vertID);
@@ -152,11 +153,11 @@ void Buffer::loadShader(const std::string& vertexShader, const std::string& frag
     glValidateProgram(_programID);
     glGetProgramiv(_programID, GL_VALIDATE_STATUS, &param);
     if (param == GL_FALSE) {
-        std::cout << "Shader program is not valid!\n";
+        LOG_ERROR("Shader program is not valid!");
         int len;
         char log[200];
         glGetShaderInfoLog(fragID, 200, &len, log);
-        std::cout << log;
+        LOG_ERROR(log);
     }
 
     //Delete the shaders

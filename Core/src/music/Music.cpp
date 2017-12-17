@@ -1,5 +1,6 @@
 #include "Music.h"
 #include "render/Window.h"
+#include "utility/Log.h"
 #include <iostream>
 #include <unordered_map>
 #include <unordered_set>
@@ -47,7 +48,7 @@ void Music::_initSync()
 
     for (auto& c : channels) {
         int numNotes = channelMaxNote[c] - channelMinNote[c] + 1;
-        std::cout << "Channel " << c << " with " << numNotes << " notes\n";
+        LOG_INFO("Channel " << c << " with " << numNotes << " notes");
         syncChannels[c] = SyncChannel(numNotes, channelMinNote[c], c);
     }
 
