@@ -1,4 +1,4 @@
-R"(
+R""(
 #version 430
 
 in vec2 fragCoord;
@@ -116,4 +116,4 @@ void main() {
 	fragColor = vec4(color, focus);
 }
 
-)"
+)""

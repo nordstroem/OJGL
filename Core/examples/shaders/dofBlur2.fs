@@ -1,4 +1,4 @@
-R"(
+R""(
 #version 430
 
 in vec2 fragCoord;
@@ -33,4 +33,4 @@ void main()
     fragColor.rgb = col / totalWeight; 
     fragColor.a = focus;
 }
-)"
+)""
