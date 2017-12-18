@@ -16,7 +16,7 @@ public:
 
     void render();
     void addScene(const Scene& scene);
-    void setStartTime(timer::time_point_t);
+    void setStartTime(timer::time_point_t time);
     void restart();
     void nextScene();
     void previousScene();
@@ -44,7 +44,7 @@ private:
 
 public:
     template <typename T>
-    void changeTime(timer::duration_t<T>);
+    void changeTime(timer::duration_t<T> time);
 };
 
 template <typename T>

@@ -9,7 +9,6 @@
 #include <memory>
 #include <set>
 #include <sstream>
-#include <stdio.h>
 #include <streambuf>
 #include <string>
 #include <thread>
@@ -163,8 +162,9 @@ int main()
             }
             if (key == Window::KEY_SPACE) {
                 glState.togglePause();
-                if (glState.isPaused())
+                if (glState.isPaused()) {
                     music.stop();
+                }
                 timeChanged = true;
             }
 
@@ -185,8 +185,9 @@ int main()
                 buildSceneGraph(glState);
             }
 
-            if (!glState.isPaused() && timeChanged)
+            if (!glState.isPaused() && timeChanged) {
                 music.setTime(glState.elapsedTime());
+            }
 #endif
         }
 
@@ -212,8 +213,9 @@ int main()
         }
 
         glState.render();
-        if (!glState.isPaused())
+        if (!glState.isPaused()) {
             music.updateSync();
+        }
         t.end();
         auto durationMs = t.time<timer::ms_t>();
         if (durationMs < desiredFrameTime) {

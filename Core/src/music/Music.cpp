@@ -37,10 +37,12 @@ void Music::_initSync()
 
         channels.insert(channel);
 
-        if (channelMinNote.find(channel) == channelMinNote.end())
+        if (channelMinNote.find(channel) == channelMinNote.end()) {
             channelMinNote[channel] = (std::numeric_limits<int>::max)();
-        if (channelMaxNote.find(channel) == channelMaxNote.end())
+        }
+        if (channelMaxNote.find(channel) == channelMaxNote.end()) {
             channelMaxNote[channel] = std::numeric_limits<int>::lowest();
+        }
 
         channelMinNote[channel] = min(channelMinNote[channel], note);
         channelMaxNote[channel] = max(channelMaxNote[channel], note);
@@ -52,15 +54,17 @@ void Music::_initSync()
         syncChannels[c] = SyncChannel(numNotes, channelMinNote[c], c);
     }
 
-    for (auto& se : events)
+    for (auto& se : events) {
         syncChannels[se.channel].pushNote(se.note, se.time);
+    }
 }
 
 void Music::updateSync()
 {
     auto time = timer::duration_cast<timer::ms_t>(timer::clock_t::now() - _startTime);
-    for (auto& kv : syncChannels)
+    for (auto& kv : syncChannels) {
         kv.second.tick(time);
+    }
 }
 
 void Music::stop()

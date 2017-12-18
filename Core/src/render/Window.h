@@ -7,7 +7,7 @@ namespace ojgl {
 
 class Window {
 public:
-    Window(unsigned window, unsigned height, bool fullScreen);
+    Window(unsigned width, unsigned height, bool fullScreen);
     ~Window();
     void getMessages();
     std::vector<UINT> getPressedKeys();
@@ -22,7 +22,7 @@ public:
 
 private:
     HWND CreateOpenGLWindow(const char* title, int x, int y, BYTE type, DWORD flags, bool fullScreen);
-    HWND CreateFullscreenWindow(HWND, HINSTANCE);
+    HWND CreateFullscreenWindow(HWND hwnd, HINSTANCE hInstance);
     static LONG WINAPI WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
     HDC _hDC; // device context

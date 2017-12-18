@@ -9,7 +9,7 @@ struct SyncEvent {
         , note(note)
         , velocity(velocity)
         , time(time){};
-    ~SyncEvent(){};
+    ~SyncEvent() = default;
 
     const int channel;
     const int note;

@@ -8,10 +8,11 @@ namespace ojgl {
 
 class UniformBase {
 public:
-    UniformBase(const std::string& location)
-        : _location(location)
+    UniformBase(const std::string&& location)
+        : _location(std::move(location))
     {
     }
+
     virtual ~UniformBase() = default;
 
     virtual void setUniform(int programID) = 0;
@@ -23,8 +24,8 @@ protected:
 
 class Uniform1f : public UniformBase {
 public:
-    Uniform1f(const std::string& location, float x)
-        : UniformBase(location)
+    Uniform1f(const std::string&& location, float x)
+        : UniformBase(std::move(location))
         , _x(x){};
     void setUniform(int programID) override
     {
@@ -37,9 +38,9 @@ private:
 
 class Uniform1fv : public UniformBase {
 public:
-    Uniform1fv(const std::string& location, const std::vector<float>& values)
-        : UniformBase(location)
-        , _values(values){};
+    Uniform1fv(const std::string&& location, const std::vector<float>&& values)
+        : UniformBase(std::move(location))
+        , _values(std::move(values)){};
     void setUniform(int programID) override
     {
         glUniform1fv(glGetUniformLocation(programID, this->_location.c_str()), _values.size(), &_values[0]);
@@ -51,9 +52,9 @@ private:
 
 class Uniform1t {
 public:
-    Uniform1t(const std::string& location, std::shared_ptr<Texture> texture)
-        : _location(location)
-        , _texture(texture){};
+    Uniform1t(const std::string&& location, std::shared_ptr<Texture>&& texture)
+        : _location(std::move(location))
+        , _texture(std::move(texture)){};
     std::string location() const { return _location; }
     int textureID() const { return _texture->textureID(); }
 
