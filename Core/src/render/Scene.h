@@ -11,7 +11,6 @@ namespace ojgl {
 class Scene {
 public:
     Scene(std::shared_ptr<Buffer> buffer, timer::ms_t duration);
-    ~Scene();
 
     void render();
     Buffer& operator[](const std::string& name);

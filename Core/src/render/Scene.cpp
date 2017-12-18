@@ -15,8 +15,6 @@ Scene::Scene(std::shared_ptr<Buffer> buffer, timer::ms_t duration)
     }
 }
 
-Scene::~Scene() = default;
-
 Buffer& Scene::operator[](const std::string& name)
 {
     for (auto& b : buffers()) {

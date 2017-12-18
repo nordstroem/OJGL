@@ -5,8 +5,6 @@
 
 namespace ojgl {
 
-SyncChannel::SyncChannel() = default;
-
 SyncChannel::SyncChannel(int numNotes, int minNote, int channel)
     : numNotes(numNotes)
     , channel(channel)
@@ -16,8 +14,6 @@ SyncChannel::SyncChannel(int numNotes, int minNote, int channel)
     _timesPerNote.resize(numNotes);
     _totalHitsPerNote.resize(numNotes);
 }
-
-SyncChannel::~SyncChannel() = default;
 
 void SyncChannel::pushNote(int absoluteNote, timer::ms_t time)
 {

@@ -7,9 +7,8 @@ namespace ojgl {
 
 class SyncChannel {
 public:
-    SyncChannel();
+    SyncChannel() = default;
     SyncChannel(int numNotes, int minNote, int channel);
-    ~SyncChannel();
     void pushNote(int absoluteNote, timer::ms_t time);
     void tick(timer::ms_t currentTime);
     timer::ms_t getTimeToNext(int relativeNote) const;
