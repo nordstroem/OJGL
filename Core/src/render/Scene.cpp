@@ -5,18 +5,17 @@
 namespace ojgl {
 
 Scene::Scene(std::shared_ptr<Buffer> buffer, timer::ms_t duration)
-    : _mainBuffer(buffer)
+    : _mainBuffer(std::move(buffer))
     , _duration(duration)
 {
     for (auto& b : buffers()) {
-        if (b != _mainBuffer)
+        if (b != _mainBuffer) {
             b->generateFBO();
+        }
     }
 }
 
-Scene::~Scene()
-{
-}
+Scene::~Scene() = default;
 
 Buffer& Scene::operator[](const std::string& name)
 {
@@ -70,8 +69,9 @@ void Scene::render()
     //Loop until all are rendered
     //TODO detect cyclic dependence
     while (!available.empty()) {
-        if (curIter == available.end())
+        if (curIter == available.end()) {
             curIter = available.begin();
+        }
 
         auto cur = *curIter;
 
