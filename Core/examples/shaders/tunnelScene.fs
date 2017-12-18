@@ -1,4 +1,4 @@
-R"(
+R""(
 #version 430
 
 in vec2 fragCoord;
@@ -338,4 +338,4 @@ void main()
     fragColor.rgb = fragColor.rgb / (fragColor.rgb + vec3(1.0));
 }
 
-)"   
+)""  

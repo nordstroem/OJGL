@@ -85,11 +85,11 @@ void debugRereadShaderFiles()
         std::stringstream buffer;
         buffer << shaderFile.rdbuf();
         std::string fileContents = buffer.str();
-        std::string pre = "R\"(";
-        std::string post = ")\"";
+        std::string pre = "R\"\"(";
+        std::string post = ")\"\"";
         size_t start = fileContents.find(pre);
-        size_t end = fileContents.find_last_of(post);
-        std::string shader = fileContents.substr(start + pre.length(), end - start - post.length() - 2);
+        size_t end = fileContents.rfind(post);
+        std::string shader = fileContents.substr(start + pre.length(), end - start - pre.length());
         *stringptr = shader;
     }
 }
