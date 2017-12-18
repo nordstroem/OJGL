@@ -1,4 +1,6 @@
 #include "Scene.h"
+#include "utility\Log.h"
+#include <cassert>
 #include <stdexcept>
 #include <unordered_set>
 
@@ -22,8 +24,8 @@ Buffer& Scene::operator[](const std::string& name)
             return *b;
         }
     }
-
-    //TODO buffer not found, maybe throw runtime error. Yes error would be good I think.
+    LOG_ERROR("Buffer " << name << " not found");
+    assert(false);
     return *_mainBuffer;
 }
 
