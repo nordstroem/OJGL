@@ -1,5 +1,6 @@
 #include "Scene.h"
 #include "utility\Log.h"
+#include <algorithm>
 #include <cassert>
 #include <stdexcept>
 #include <unordered_set>
@@ -19,14 +20,10 @@ Scene::Scene(std::shared_ptr<Buffer> buffer, timer::ms_t duration)
 
 Buffer& Scene::operator[](const std::string& name)
 {
-    for (auto& b : buffers()) {
-        if (b->name() == name) {
-            return *b;
-        }
-    }
-    LOG_ERROR("Buffer " << name << " not found");
-    assert(false);
-    return *_mainBuffer;
+    auto buffers = this->buffers();
+    auto res = std::find_if(buffers.begin(), buffers.end(), [&](auto b) { return b->name() == name; });
+    assert(res != buffers.end());
+    return **res;
 }
 
 std::unordered_set<std::shared_ptr<Buffer>> Scene::buffers()
