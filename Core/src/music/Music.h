@@ -16,7 +16,7 @@ public:
     void updateSync();
     std::unordered_map<int, SyncChannel> syncChannels;
     template <typename T>
-    void setTime(timer::duration_t<T>);
+    void setTime(timer::duration_t<T> time);
     void stop();
 
 private:
@@ -29,13 +29,14 @@ private:
 template <typename T>
 inline void Music::setTime(timer::duration_t<T> time)
 {
-    sU32 ms = static_cast<sU32>(timer::duration_cast<timer::ms_t>(time).count());
+    auto ms = static_cast<sU32>(timer::duration_cast<timer::ms_t>(time).count());
     this->_player->Stop();
     dsClose();
     auto events = _player->popSyncEvents();
     this->_player->Play(ms);
-    while (this->_player->IsPlaying())
+    while (this->_player->IsPlaying()) {
         this->_player->Tick();
+    }
     this->_player->Stop();
     _initSync();
     dsInit(this->_player->RenderProxy, this->_player.get(), GetForegroundWindow());

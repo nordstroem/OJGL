@@ -3,13 +3,13 @@
 #include "thirdparty\stb_image.h"
 #include "utility\Log.h"
 #include "utility\Timer.hpp"
+#include <cassert>
 #include <fstream>
 #include <functional>
 #include <iostream>
 #include <memory>
 #include <set>
 #include <sstream>
-#include <stdio.h>
 #include <streambuf>
 #include <string>
 #include <thread>
@@ -78,10 +78,9 @@ void debugRereadShaderFiles()
 
     for (auto[stringptr, path] : shaders) {
         std::ifstream shaderFile(path);
-        if (shaderFile.fail()) {
-            LOG("failed to open shader file");
-            // TODO Maybe best to just throw error and crash here
-        }
+
+        assert(!shaderFile.fail());
+
         std::stringstream buffer;
         buffer << shaderFile.rdbuf();
         std::string fileContents = buffer.str();
@@ -137,7 +136,7 @@ int main()
     auto[width, height, channels, data] = readTexture("examples/textures/image.png");
     auto texture = Texture::construct(width, height, channels, data.get());
 
-    glState[0]["main"] << Uniform1t("image", texture);
+    glState[2]["main"] << Uniform1t("image", texture);
     glState.setStartTime(timer::clock_t::now());
 
     while (true) {
@@ -163,8 +162,9 @@ int main()
             }
             if (key == Window::KEY_SPACE) {
                 glState.togglePause();
-                if (glState.isPaused())
+                if (glState.isPaused()) {
                     music.stop();
+                }
                 timeChanged = true;
             }
 
@@ -185,17 +185,16 @@ int main()
                 buildSceneGraph(glState);
             }
 
-            if (!glState.isPaused() && timeChanged)
+            if (!glState.isPaused() && timeChanged) {
                 music.setTime(glState.elapsedTime());
+            }
 #endif
         }
 
-        glState[0]["post"] << Uniform1f("r", 0.9f);
-
         auto iGlobalTime = glState.relativeSceneTime();
-        glState[1]["tunnel"] << Uniform1f("iGlobalTime", iGlobalTime.count() / 1000.f)
-                             << Uniform1f("CHANNEL_12_TOTAL", static_cast<GLfloat>(music.syncChannels[12].getTotalHitsPerNote(0)))
-                             << Uniform1f("CHANNEL_13_TOTAL", static_cast<GLfloat>(music.syncChannels[13].getTotalHitsPerNote(0)));
+        glState[1]["tunnelScene"] << Uniform1f("iGlobalTime", iGlobalTime.count() / 1000.f)
+                                  << Uniform1f("CHANNEL_12_TOTAL", static_cast<GLfloat>(music.syncChannels[12].getTotalHitsPerNote(0)))
+                                  << Uniform1f("CHANNEL_13_TOTAL", static_cast<GLfloat>(music.syncChannels[13].getTotalHitsPerNote(0)));
 
         for (auto& kv : music.syncChannels) {
             auto sc = kv.second;
@@ -207,13 +206,14 @@ int main()
                 valuesTo.push_back(static_cast<GLfloat>(sc.getTimeToNext(i).count()));
             }
 
-            glState[1]["tunnel"] << Uniform1fv("CHANNEL_" + std::to_string(sc.channel) + "_TIME_SINCE", valuesSince)
-                                 << Uniform1fv("CHANNEL_" + std::to_string(sc.channel) + "_TIME_TO", valuesTo);
+            glState[1]["tunnelScene"] << Uniform1fv("CHANNEL_" + std::to_string(sc.channel) + "_TIME_SINCE", valuesSince)
+                                      << Uniform1fv("CHANNEL_" + std::to_string(sc.channel) + "_TIME_TO", valuesTo);
         }
 
         glState.render();
-        if (!glState.isPaused())
+        if (!glState.isPaused()) {
             music.updateSync();
+        }
         t.end();
         auto durationMs = t.time<timer::ms_t>();
         if (durationMs < desiredFrameTime) {

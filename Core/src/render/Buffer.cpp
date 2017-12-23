@@ -18,10 +18,12 @@ Buffer::Buffer(unsigned width, unsigned height, const std::string& name, const s
 
 Buffer::~Buffer()
 {
-    if (_fboID != 0)
+    if (_fboID != 0) {
         glDeleteFramebuffers(1, &_fboID);
-    if (_fboTextureID != 0)
+    }
+    if (_fboTextureID != 0) {
         glDeleteTextures(1, &_fboTextureID);
+    }
 
     glDeleteProgram(_programID);
 }
@@ -93,7 +95,7 @@ void Buffer::generateFBO()
 
     glGenTextures(1, &_fboTextureID);
     glBindTexture(GL_TEXTURE_2D, _fboTextureID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, _width, _height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, _width, _height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -102,8 +104,9 @@ void Buffer::generateFBO()
 
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _fboTextureID, 0);
 
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
         LOG_ERROR("Framebuffer error");
+    }
 
     glBindTexture(GL_TEXTURE_2D, 0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);

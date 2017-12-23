@@ -1,33 +1,29 @@
 #include "Scene.h"
+#include "utility\Log.h"
+#include <algorithm>
+#include <cassert>
 #include <stdexcept>
 #include <unordered_set>
 
 namespace ojgl {
 
 Scene::Scene(std::shared_ptr<Buffer> buffer, timer::ms_t duration)
-    : _mainBuffer(buffer)
+    : _mainBuffer(std::move(buffer))
     , _duration(duration)
 {
     for (auto& b : buffers()) {
-        if (b != _mainBuffer)
+        if (b != _mainBuffer) {
             b->generateFBO();
+        }
     }
-}
-
-Scene::~Scene()
-{
 }
 
 Buffer& Scene::operator[](const std::string& name)
 {
-    for (auto& b : buffers()) {
-        if (b->name() == name) {
-            return *b;
-        }
-    }
-
-    //TODO buffer not found, maybe throw runtime error. Yes error would be good I think.
-    return *_mainBuffer;
+    auto buffers = this->buffers();
+    auto res = std::find_if(buffers.begin(), buffers.end(), [&](auto b) { return b->name() == name; });
+    assert(res != buffers.end());
+    return **res;
 }
 
 std::unordered_set<std::shared_ptr<Buffer>> Scene::buffers()
@@ -70,8 +66,9 @@ void Scene::render()
     //Loop until all are rendered
     //TODO detect cyclic dependence
     while (!available.empty()) {
-        if (curIter == available.end())
+        if (curIter == available.end()) {
             curIter = available.begin();
+        }
 
         auto cur = *curIter;
 
