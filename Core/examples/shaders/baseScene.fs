@@ -514,58 +514,11 @@ vec3 raymarch(vec3 ro, vec3 rd, vec3 eye) {
 
 void main()
 {
-	//float u = (fragCoord.x / iResolution.x) * 2.0 - 1.0; // 
-    //float v = ((fragCoord.y / iResolution.y) * 2.0 - 1.0)  * (9.0/ 16.0);//* (iResolution.y/iResolution.x);
     float u = fragCoord.x * 2.0 - 1.0;
 	float v = fragCoord.y * 2.0 - 1.0;
 
-	float t = iGlobalTime * 0.5;
-    vec3 eye = vec3(2* sin(t), 2 , 2 * cos(t));
-	vec3 tar = vec3(0,0, 0); //eye + vec3(0.0, 0.0, 1.0);
-//	if (iGlobalTime < 10.0) {
-//		eye = vec3(3, 1, iGlobalTime * 4 - 40);
-//		tar = eye + vec3(-0.5, -0.4, 1);
-//	}
-	float r = 3 + 0.5 * sin(iGlobalTime);
-	eye = mix(vec3(3, 1.5, iGlobalTime * 4 - 40), vec3(r* sin(-t), 2 + sin(iGlobalTime) * 0.5 , r * cos(-t)), smoothstep(9.5,11.0,iGlobalTime));
-	tar = mix(eye + vec3(-0.5, -0.8, 1), vec3(0,0, 0), smoothstep(9.5,11.0,iGlobalTime));
-	if (iGlobalTime > 20.0) {
-		float c2x = 1337.0;
-		float c2y = 1337.0;
-		eye = vec3(c2x,c2y,1.5);
-		tar = eye + vec3(0,0,-1);
-	}
-	vec3 dir = normalize(tar - eye);
-	vec3 right = normalize(cross(vec3(0, 1, 0), dir));
-	vec3 up = cross(dir, right);
-
-	vec3 ro = eye;
-	vec3 rd = normalize(dir + right*u + up*v);
-
-	vec3 light = vec3(0.0, 0.0, 26.0 );
-
-	float material = -1.0;
-	vec3 color = raymarch(ro, rd, eye);
-    fragColor = vec4(color, 1.0);
-    //fragColor.rgb = fragColor.rgb / (fragColor.rgb + vec3(1.0));
-    //fragColor.rgb = mix(fragColor.rgb, vec3(1), smoothstep(25.5, 26.0, iGlobalTime));
-
-	//fragColor.rgb = vec3(rd.z, 0.0, 0.0);
-	//fragColor.rgb = vec3(1.0, 0.0, 0.0);
-} 
-
-
-/*
-void main()
-{
-	float u = fragCoord.x * 2.0 - 1.0;
-	float v = fragCoord.y * 2.0 - 1.0;
-    
-	float t = iGlobalTime * 0.5;
-    vec3 eye = vec3(0, 0, iGlobalTime);
-	vec3 tar = eye + vec3(0,0, 1); 
-
-	float r = 3 + 0.5 * sin(iGlobalTime);
+    vec3 eye = vec3(2 * sin(iGlobalTime), 1, 2 * cos(iGlobalTime));
+	vec3 tar = vec3(0 ,0, 0); 
 
 	vec3 dir = normalize(tar - eye);
 	vec3 right = normalize(cross(vec3(0, 1, 0), dir));
@@ -573,13 +526,12 @@ void main()
 
 	vec3 ro = eye;
 	vec3 rd = normalize(dir + right*u + up*v);
-
-	vec3 light = vec3(0.0, 0.0, 26.0 );
-
+	
 	float material = -1.0;
 	vec3 color = raymarch(ro, rd, eye);
     fragColor = vec4(color, 1.0);
     fragColor.rgb = fragColor.rgb / (fragColor.rgb + vec3(1.0));
-}*/
+} 
+
 
 )""  
