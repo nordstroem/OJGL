@@ -212,8 +212,8 @@ vec4 lights(vec3 p) {
 
 vec3 evaluateLight(vec3 pos, inout float dis)
 {
-	vec4 l = light(pos);
-	vec4 sl = lights(pos);
+	vec4 l = light(pos); 
+	vec4 sl = lights(pos); dis = sl.w; return sl.xyz;
 	dis = min(l.w, sl.w);
 	return l.xyz + sl.xyz;
 //	return l.xyz;
@@ -251,9 +251,11 @@ void addLightning(inout vec3 color, vec3 normal, vec3 eye, vec3 pos) {
 	//str = towerLight(pos).x;
 	float tmp = 0;
 //	color =  color * (0.05 + 0.9*diffuse*light(pos).xyz) + spec*str;
-	color =  color * (0.05 + 0.9*diffuse*light(pos).xyz + 0.2 * diffuses * lights(pos).xyz ) + spec*str + specs*strs*0.5;
+	//color =  color * (0.05 + 0.9*diffuse*light(pos).xyz + 0.2 * diffuses * lights(pos).xyz ) + spec*str + specs*strs*0.5;
+	color = color * (0.05 + 0.2*diffuses*lights(pos).xyz) + specs*strs*0.5;
 	color = clamp(color, vec3(0), vec3(1));
 	//color *= str;
+
 }
 
 
@@ -443,7 +445,7 @@ vec3 raymarch(vec3 ro, vec3 rd, vec3 eye) {
 			vec2 res = map(p, rd);
 			d = res.x;
 //			d = min(d, 0.2);
-			float fogAmount = 0.02 + 2.5 * (smoothstep(9.25, 9.5, iGlobalTime) - smoothstep(9.5, 9.75, iGlobalTime));// + max(0, -p.y * 0.5);
+			float fogAmount = 0.005;// + max(0, -p.y * 0.5);
 //			fogAmount += smoothstep(28*7, 29*7,p.z) * 5.0;
 			float lightDis = -1.0;
 			vec3 light = evaluateLight(p, lightDis);
@@ -469,12 +471,13 @@ vec3 raymarch(vec3 ro, vec3 rd, vec3 eye) {
 					c = vec3(0, 0, 0);
 				}
 				//c *= occlusion(p, normal, rd);
-				//addLightning(c, normal, eye, p);
+				addLightning(c, normal, eye, p);
 				if (end) {
 					transmittance = 0;
 				}
-				//col = mix(col, transmittance * c + scatteredLight, ref);
-				col = c;
+				col = mix(col, transmittance * c + scatteredLight, ref);
+				//col = c;
+				//return col;
 //				col = mix(col, vec3(0.7), clamp(t * 0.01, 0, 1));
 				if (m == MAT_GROUND) {
 					return col;
