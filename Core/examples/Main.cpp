@@ -60,165 +60,178 @@ std::string fragmentTunnelScene{
 #include SHADER_FRAGMENT_TUNNEL_SCENE
 };
 
+#define SHADER_FRAGMENT_BASE_SCENE "shaders/baseScene.fs"
+std::string fragmentBaseScene{
+#include SHADER_FRAGMENT_BASE_SCENE
+};
+
 using namespace ojgl;
 
 #ifdef _DEBUG
 void debugRereadShaderFiles()
 {
-    std::unordered_map<std::string*, std::string> shaders;
-    shaders[&fragmentShader] = "examples/shaders/demo.fs";
-    shaders[&fragmentShaderPost] = "examples/shaders/post.fs";
+	std::unordered_map<std::string*, std::string> shaders;
+	shaders[&fragmentShader] = "examples/shaders/demo.fs";
+	shaders[&fragmentShaderPost] = "examples/shaders/post.fs";
 
-    shaders[&fragmentDOFScene] = "examples/" SHADER_FRAGMENT_DOF_SCENE;
-    shaders[&fragmentDOFBlur1] = "examples/" SHADER_FRAGMENT_DOF_BLUR1;
-    shaders[&fragmentDOFBlur2] = "examples/" SHADER_FRAGMENT_DOF_BLUR2;
-    shaders[&fragmentDOFFinal] = "examples/" SHADER_FRAGMENT_DOF_FINAL;
+	shaders[&fragmentDOFScene] = "examples/" SHADER_FRAGMENT_DOF_SCENE;
+	shaders[&fragmentDOFBlur1] = "examples/" SHADER_FRAGMENT_DOF_BLUR1;
+	shaders[&fragmentDOFBlur2] = "examples/" SHADER_FRAGMENT_DOF_BLUR2;
+	shaders[&fragmentDOFFinal] = "examples/" SHADER_FRAGMENT_DOF_FINAL;
 
-    shaders[&fragmentTunnelScene] = "examples/" SHADER_FRAGMENT_TUNNEL_SCENE;
+	shaders[&fragmentTunnelScene] = "examples/" SHADER_FRAGMENT_TUNNEL_SCENE;
 
-    for (auto[stringptr, path] : shaders) {
-        std::ifstream shaderFile(path);
-        if (shaderFile.fail()) {
-            LOG("failed to open shader file");
-            // TODO Maybe best to just throw error and crash here
-        }
-        std::stringstream buffer;
-        buffer << shaderFile.rdbuf();
-        std::string fileContents = buffer.str();
-        std::string pre = "R\"\"(";
-        std::string post = ")\"\"";
-        size_t start = fileContents.find(pre);
-        size_t end = fileContents.rfind(post);
-        std::string shader = fileContents.substr(start + pre.length(), end - start - pre.length());
-        *stringptr = shader;
-    }
+	shaders[&fragmentBaseScene] = "examples/" SHADER_FRAGMENT_BASE_SCENE;
+
+
+	for (auto[stringptr, path] : shaders) {
+		std::string dbg("C:\\Users\\ospe\\Source\\Repos\\OJGL\\Core\\");
+		std::ifstream shaderFile(dbg + path);
+		if (shaderFile.fail()) {
+			LOG("failed to open shader file");
+			// TODO Maybe best to just throw error and crash here
+		}
+
+		std::stringstream buffer;
+		buffer << shaderFile.rdbuf();
+		std::string fileContents = buffer.str();
+		std::string pre = "R\"\"(";
+		std::string post = ")\"\"";
+		size_t start = fileContents.find(pre);
+		size_t end = fileContents.rfind(post);
+		std::string shader = fileContents.substr(start + pre.length(), end - start - pre.length());
+		*stringptr = shader;
+	}
 }
 #endif
 
 void buildSceneGraph(GLState& glState)
 {
-    glState.clearScenes();
+	glState.clearScenes();
 
-    auto pre = Buffer::construct(1024, 768, "main", vertexShader, fragmentShader);
-    auto post = Buffer::construct(1024, 768, "post", vertexShaderPost, fragmentShaderPost);
+	auto pre = Buffer::construct(1024, 768, "main", vertexShader, fragmentShader);
+	auto post = Buffer::construct(1024, 768, "post", vertexShaderPost, fragmentShaderPost);
 
-    auto DOFScene = Buffer::construct(1024, 768, "DOFScene", vertexShader, fragmentDOFScene);
-    auto DOFBlur1 = Buffer::construct(1024, 768, "DOFBlur1", vertexShader, fragmentDOFBlur1, { DOFScene });
-    auto DOFBlur2 = Buffer::construct(1024, 768, "DOFBlur2", vertexShader, fragmentDOFBlur2, { DOFBlur1 });
-    auto DOFFinal = Buffer::construct(1024, 768, "DOFFinal", vertexShader, fragmentDOFFinal, { DOFScene, DOFBlur2, DOFBlur1 });
+	auto DOFScene = Buffer::construct(1024, 768, "DOFScene", vertexShader, fragmentDOFScene);
+	auto DOFBlur1 = Buffer::construct(1024, 768, "DOFBlur1", vertexShader, fragmentDOFBlur1, { DOFScene });
+	auto DOFBlur2 = Buffer::construct(1024, 768, "DOFBlur2", vertexShader, fragmentDOFBlur2, { DOFBlur1 });
+	auto DOFFinal = Buffer::construct(1024, 768, "DOFFinal", vertexShader, fragmentDOFFinal, { DOFScene, DOFBlur2, DOFBlur1 });
 
-    auto tunnelScene = Buffer::construct(1024, 768, "tunnelScene", vertexShader, fragmentTunnelScene);
+	auto tunnelScene = Buffer::construct(1024, 768, "tunnelScene", vertexShader, fragmentTunnelScene);
 
-    glState.addScene(Scene{ DOFFinal, timer::ms_t(30000) });
-    glState.addScene(Scene{ tunnelScene, timer::ms_t(30000) });
-    glState.addScene(Scene{ pre, timer::ms_t(30000) });
+	auto baseScene = Buffer::construct(1024, 768, "baseScene", vertexShader, fragmentBaseScene);
+
+	glState.addScene(Scene{ baseScene, timer::ms_t(3000000) });
+	glState.addScene(Scene{ DOFFinal, timer::ms_t(30000) });
+	glState.addScene(Scene{ tunnelScene, timer::ms_t(30000) });
+	glState.addScene(Scene{ pre, timer::ms_t(30000) });
 }
 
 std::tuple<int, int, int, std::unique_ptr<unsigned char, decltype(&stbi_image_free)>> readTexture(const std::string& filepath)
 {
-    int width = 0, height = 0, channels = 0;
-    unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &channels, 0);
-    std::unique_ptr<unsigned char, decltype(&stbi_image_free)> dataptr(data, stbi_image_free);
-    return std::make_tuple(width, height, channels, std::move(dataptr));
+	int width = 0, height = 0, channels = 0;
+	unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &channels, 0);
+	std::unique_ptr<unsigned char, decltype(&stbi_image_free)> dataptr(data, stbi_image_free);
+	return std::make_tuple(width, height, channels, std::move(dataptr));
 }
 
 int main()
 {
-    const timer::ms_t desiredFrameTime(17);
+	const timer::ms_t desiredFrameTime(17);
 
-    Window window(1024, 768, false);
-    GLState glState;
+	Window window(1024, 768, false);
+	GLState glState;
 
-    Music music(song);
-    music.play();
+	Music music(song);
+	music.play();
 
-    buildSceneGraph(glState);
+	buildSceneGraph(glState);
 
-    auto[width, height, channels, data] = readTexture("examples/textures/image.png");
-    auto texture = Texture::construct(width, height, channels, data.get());
+	auto[width, height, channels, data] = readTexture("examples/textures/image.png");
+	auto texture = Texture::construct(width, height, channels, data.get());
 
-    glState[0]["main"] << Uniform1t("image", texture);
-    glState.setStartTime(timer::clock_t::now());
+	glState[0]["main"] << Uniform1t("image", texture);
+	glState.setStartTime(timer::clock_t::now());
 
-    while (true) {
-        timer::Timer t;
-        t.start();
+	while (true) {
+		timer::Timer t;
+		t.start();
 
-        window.getMessages();
+		window.getMessages();
 
-        for (auto key : window.getPressedKeys()) {
-            if (key == Window::KEY_ESCAPE) {
-                return 0;
-            }
+		for (auto key : window.getPressedKeys()) {
+			if (key == Window::KEY_ESCAPE) {
+				return 0;
+			}
 #ifdef _DEBUG
-            bool timeChanged(false);
-            LOG_INFO("key: " << key);
-            if (key == Window::KEY_LEFT) {
-                glState.changeTime(timer::ms_t(-1000));
-                timeChanged = true;
-            }
-            if (key == Window::KEY_RIGHT) {
-                glState.changeTime(timer::ms_t(1000));
-                timeChanged = true;
-            }
-            if (key == Window::KEY_SPACE) {
-                glState.togglePause();
-                if (glState.isPaused())
-                    music.stop();
-                timeChanged = true;
-            }
+			bool timeChanged(false);
+			LOG_INFO("key: " << key);
+			if (key == Window::KEY_LEFT) {
+				glState.changeTime(timer::ms_t(-1000));
+				timeChanged = true;
+			}
+			if (key == Window::KEY_RIGHT) {
+				glState.changeTime(timer::ms_t(1000));
+				timeChanged = true;
+			}
+			if (key == Window::KEY_SPACE) {
+				glState.togglePause();
+				if (glState.isPaused())
+					music.stop();
+				timeChanged = true;
+			}
 
-            if (key == Window::KEY_R) {
-                glState.restart();
-                timeChanged = true;
-            }
-            if (key == Window::KEY_UP) {
-                glState.nextScene();
-                timeChanged = true;
-            }
-            if (key == Window::KEY_DOWN) {
-                glState.previousScene();
-                timeChanged = true;
-            }
-            if (key == Window::KEY_F1) {
-                debugRereadShaderFiles();
-                buildSceneGraph(glState);
-            }
+			if (key == Window::KEY_R) {
+				glState.restart();
+				timeChanged = true;
+			}
+			if (key == Window::KEY_UP) {
+				glState.nextScene();
+				timeChanged = true;
+			}
+			if (key == Window::KEY_DOWN) {
+				glState.previousScene();
+				timeChanged = true;
+			}
+			if (key == Window::KEY_F1) {
+				debugRereadShaderFiles();
+				buildSceneGraph(glState);
+			}
 
-            if (!glState.isPaused() && timeChanged)
-                music.setTime(glState.elapsedTime());
+			if (!glState.isPaused() && timeChanged)
+				music.setTime(glState.elapsedTime());
 #endif
-        }
+		}
 
-        glState[0]["post"] << Uniform1f("r", 0.9f);
+		glState[0]["post"] << Uniform1f("r", 0.9f);
 
-        auto iGlobalTime = glState.relativeSceneTime();
-        glState[1]["tunnel"] << Uniform1f("iGlobalTime", iGlobalTime.count() / 1000.f)
-                             << Uniform1f("CHANNEL_12_TOTAL", static_cast<GLfloat>(music.syncChannels[12].getTotalHitsPerNote(0)))
-                             << Uniform1f("CHANNEL_13_TOTAL", static_cast<GLfloat>(music.syncChannels[13].getTotalHitsPerNote(0)));
+		auto iGlobalTime = glState.relativeSceneTime();
+		glState[1]["tunnel"] << Uniform1f("iGlobalTime", iGlobalTime.count() / 1000.f)
+			<< Uniform1f("CHANNEL_12_TOTAL", static_cast<GLfloat>(music.syncChannels[12].getTotalHitsPerNote(0)))
+			<< Uniform1f("CHANNEL_13_TOTAL", static_cast<GLfloat>(music.syncChannels[13].getTotalHitsPerNote(0)));
 
-        for (auto& kv : music.syncChannels) {
-            auto sc = kv.second;
-            std::vector<GLfloat> valuesSince;
-            std::vector<GLfloat> valuesTo;
+		for (auto& kv : music.syncChannels) {
+			auto sc = kv.second;
+			std::vector<GLfloat> valuesSince;
+			std::vector<GLfloat> valuesTo;
 
-            for (int i = 0; i < sc.numNotes; i++) {
-                valuesSince.push_back(static_cast<GLfloat>(sc.getTimeSinceLast(i).count()));
-                valuesTo.push_back(static_cast<GLfloat>(sc.getTimeToNext(i).count()));
-            }
+			for (int i = 0; i < sc.numNotes; i++) {
+				valuesSince.push_back(static_cast<GLfloat>(sc.getTimeSinceLast(i).count()));
+				valuesTo.push_back(static_cast<GLfloat>(sc.getTimeToNext(i).count()));
+			}
 
-            glState[1]["tunnel"] << Uniform1fv("CHANNEL_" + std::to_string(sc.channel) + "_TIME_SINCE", valuesSince)
-                                 << Uniform1fv("CHANNEL_" + std::to_string(sc.channel) + "_TIME_TO", valuesTo);
-        }
+			glState[1]["tunnel"] << Uniform1fv("CHANNEL_" + std::to_string(sc.channel) + "_TIME_SINCE", valuesSince)
+				<< Uniform1fv("CHANNEL_" + std::to_string(sc.channel) + "_TIME_TO", valuesTo);
+		}
 
-        glState.render();
-        if (!glState.isPaused())
-            music.updateSync();
-        t.end();
-        auto durationMs = t.time<timer::ms_t>();
-        if (durationMs < desiredFrameTime) {
-            std::this_thread::sleep_for(desiredFrameTime - durationMs);
-        }
-    }
-    return 0;
+		glState.render();
+		if (!glState.isPaused())
+			music.updateSync();
+		t.end();
+		auto durationMs = t.time<timer::ms_t>();
+		if (durationMs < desiredFrameTime) {
+			std::this_thread::sleep_for(desiredFrameTime - durationMs);
+		}
+	}
+	return 0;
 }

@@ -11,6 +11,7 @@
     <None Include="examples\shaders\dofBlur1.fs" />
     <None Include="examples\shaders\dofFinal.fs" />
     <None Include="examples\shaders\tunnelScene.fs" />
+    <None Include="examples\shaders\baseScene.fs" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="examples\Main.cpp" />

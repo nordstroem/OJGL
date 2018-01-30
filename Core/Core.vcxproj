@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <None Include="examples\shaders\baseScene.fs" />
     <None Include="examples\shaders\dofBlur1.fs" />
     <None Include="examples\shaders\dofBlur2.fs" />
     <None Include="examples\shaders\demo.fs" />
