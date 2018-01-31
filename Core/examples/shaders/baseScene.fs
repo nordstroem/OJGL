@@ -210,9 +210,16 @@ vec4 lights(vec3 p) {
 	return vec4(points, diss);
 }
 
+vec3 lightAPos(vec3 p)
+{
+	p.z = mod(p.z, 4.0) - 2.0;
+	return p;
+}
+
 vec4 lightA(vec3 p)
 {
 	vec3 lightPos = vec3(2, 0, 0);
+	p = lightAPos(p);
 	float dis = length(p - lightPos);
 	vec3 col = vec3(1.0, 0.0, 0.0);
 	const float strength = 10.0;
@@ -230,12 +237,16 @@ vec4 lightB(vec3 p)
 	return vec4(res, dis);
 }
 
-vec3 evaluateLight(vec3 pos, inout float dis)
+vec4 lightUnion(vec4 a, vec4 b)
 {
-	vec4 A = lightA(pos);
-	vec4 B = lightB(pos);
-	dis = min(A.w, B.w);
-	return A.rgb + B.rgb;
+	return vec4(a.rgb + b.rgb, min(a.w, b.w));
+}
+
+vec4 evaluateLight(vec3 pos)
+{
+	vec4 res = lightA(pos);
+	res = lightUnion(res, lightB(pos));
+	return res;
 }
 
 void addLightning(inout vec3 color, vec3 normal, vec3 eye, vec3 pos) {
@@ -249,17 +260,15 @@ void addLightning(inout vec3 color, vec3 normal, vec3 eye, vec3 pos) {
 	r.z = mod(pos.z, s) - s * 0.5;
 	r.y -=  0.7;
 	float sw = 3.0  - 1.5 * smoothstep(0.0, 6.0 ,abs(pos.z));
-	//dis += step(0, -abs(p.x) + s) * (s - abs(p.x));
-//	r.x -= sw * 1.1;
 	r.x = abs(r.x) - sw * 1.3;
-	vec3 slpos = r;
-	vec3 invLights = normalize(-slpos);
-	float diffuses = max(0.0, dot(invLights, normal));
-	float specs = specular(normal, -invLights, normalize(eye - slpos), 50.0);
-	float diss = length(-slpos);
-	float strs = 1.0/(0.5 + 0.01*diss + 0.1*diss*diss);
+	vec3 slpos = r; 
+	vec3 invLights = normalize(-slpos); //////
+	float diffuses = max(0.0, dot(invLights, normal)); //////
+	float specs = specular(normal, -invLights, normalize(eye - slpos), 50.0); //////
+	float diss = length(-slpos); //////
+	float strs = 1.0/(0.5 + 0.01*diss + 0.1*diss*diss); //////
 
-	vec3 lpos = vec3(0,-1,1);//LPOS;//vec3(1, 1, -2);
+	vec3 lpos = vec3(0,-1,1);
 
 	float dis = length(lpos - pos);
 	vec3 invLight = normalize(lpos - pos);
@@ -267,14 +276,9 @@ void addLightning(inout vec3 color, vec3 normal, vec3 eye, vec3 pos) {
 	float spec = specular(normal, -invLight, normalize(eye - pos), 220.0);
 
 	float str = 1.0/(0.5 + 0.01*dis + 0.1*dis*dis);
-	//str = towerLight(pos).x;
-	float tmp = 0;
-//	color =  color * (0.05 + 0.9*diffuse*light(pos).xyz) + spec*str;
 	//color =  color * (0.05 + 0.9*diffuse*light(pos).xyz + 0.2 * diffuses * lights(pos).xyz ) + spec*str + specs*strs*0.5;
 	color = color * (0.05 + 0.2*diffuses*lights(pos).xyz) + specs*strs*0.5;
 	color = clamp(color, vec3(0), vec3(1));
-	//color *= str;
-
 }
 
 #define MAT_GROUND 1.0
@@ -347,12 +351,12 @@ vec3 raymarch(vec3 ro, vec3 rd, vec3 eye)
 			float m = res.y;
 
 			float fogAmount = 0.005;
-			float lightDis = -1.0;
-			vec3 light = evaluateLight(p, lightDis);
-			d = min(d, lightDis);
+			vec4 lightColDis = evaluateLight(p);
+			vec3 light = lightColDis.rgb;
+			d = min(d, lightColDis.w);
 
 			vec3 lightIntegrated = light - light * exp(-fogAmount * d);
-			scatteredLight += transmittance * lightIntegrated;
+			scatteredLight += transmittance * lightIntegrated;	
 			transmittance *= exp(-fogAmount * d);
 
 			t += d;		
