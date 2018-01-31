@@ -27,7 +27,7 @@ uniform float CHANNEL_13_TOTAL;
 //////////////////////////////////////////////////////
 
 #define REFLECTION
-//#define REFRACTION
+//#define REFRACTION // TODO: I don't think this works perfectly.
 
 vec2 un(vec2 a, vec2 b)
 {
@@ -210,14 +210,32 @@ vec4 lights(vec3 p) {
 	return vec4(points, diss);
 }
 
+vec4 lightA(vec3 p)
+{
+	vec3 lightPos = vec3(2, 0, 0);
+	float dis = length(p - lightPos);
+	vec3 col = vec3(1.0, 0.0, 0.0);
+	const float strength = 10.0;
+	vec3 res = col * strength / (dis * dis * dis);
+	return vec4(res, dis);
+}
+
+vec4 lightB(vec3 p)
+{
+	vec3 lightPos = vec3(-2, 0, 0);
+	float dis = length(p - lightPos);
+	vec3 col = vec3(0.0, 0.0, 1.0);
+	const float strength = 10.0;
+	vec3 res = col * strength / (dis * dis * dis);
+	return vec4(res, dis);
+}
 
 vec3 evaluateLight(vec3 pos, inout float dis)
 {
-	vec4 l = light(pos); 
-	vec4 sl = lights(pos); dis = sl.w; return sl.xyz;
-	dis = min(l.w, sl.w);
-	return l.xyz + sl.xyz;
-//	return l.xyz;
+	vec4 A = lightA(pos);
+	vec4 B = lightB(pos);
+	dis = min(A.w, B.w);
+	return A.rgb + B.rgb;
 }
 
 void addLightning(inout vec3 color, vec3 normal, vec3 eye, vec3 pos) {
@@ -259,88 +277,11 @@ void addLightning(inout vec3 color, vec3 normal, vec3 eye, vec3 pos) {
 
 }
 
+#define MAT_GROUND 1.0
+#define MAT_PEND 2.0
+#define MAT_WATER 3.0
 
-
-//mat3 rot(float x, float y, float z)
-//{
-//	float cx = cos(x);
-//	float sx = sin(x);
-//	float cy = cos(y);
-//	float sy = sin(y);
-//	float cz = cos(z);
-//	float sz = sin(z);
-//	mat3 xm = mat3(1, 0, 0,
-//					0, cx, -sx,
-//					0, sx, cx);
-//	mat3 ym = mat3(cy, 0, sy,
-//			  		0, 1, 0,
-//			  		-sy, 0, cy);
-//	mat3 zm = mat3(cz, -sz, 0,
-//					sz, cz, 0,
-//					0, 0, 1);
-//	return xm * ym * zm;
-//}
-
-mat3 rot(float z)
-{
-	float cx = 1.0;
-	float sx = 0.0;
-	float cy = 1.0;
-	float sy = 0.0;
-	float cz = cos(z);
-	float sz = sin(z);
-//	mat3 xm = mat3(1, 0, 0,
-//					0, cx, -sx,
-//					0, sx, cx);
-//	mat3 ym = mat3(cy, 0, sy,
-//			  		0, 1, 0,
-//			  		-sy, 0, cy);
-	mat3 zm = mat3(cz, -sz, 0,
-					sz, cz, 0,
-					0, 0, 1);
-//	return xm * ym * zm;
-	return zm;
-}
-
-#define TEX 0.2
-#define SIZE 8.0
-#define PI 3.1415
-
-#define MAT_GROUND 2.0
-#define MAT_PEND 3.0
-#define MAT_WATER 5.0
-
-
-
-
-
-
-
-
-
-//vec2 tree(vec3 p) {
-//	float a  = atan(p.z, p.x);
-//	float r = length(p.xz);
-//	//r = mod(r,5) - 0.5;
-////	a = mod(a + iGlobalTime, 1) - 0.5;
-//	vec3 pn = vec3(r*cos(a), p.y, r*sin(a));
-////	float dis = udRoundBox(pn, vec3(1), 0.5);
-////	float dis = sdCylinder(pn,  0.2);
-//	float s = 2.5;
-//	float rr = sin(p.y);
-//	float dis = sdCylinder(p - vec3(rr*cos(p.y * s - 4*iGlobalTime), 0, rr*sin(p.y * s - 4*iGlobalTime)),  0.15);
-//	float dis2 = sdCylinder(p - vec3(-rr*cos(p.y * s - 4*iGlobalTime), 0, -rr*sin(p.y * s - 4*iGlobalTime)),  0.15);
-//	rr *= 1.9 ;
-//	float dis3 = sdCylinder(p - vec3(rr*cos(p.y * s - 4*iGlobalTime), 0, rr*sin(p.y * s - 4*iGlobalTime)),  0.1);
-//	float dis4 = sdCylinder(p - vec3(-rr*cos(p.y * s - 4*iGlobalTime), 0, -rr*sin(p.y * s - 4*iGlobalTime)),  0.1);
-//	dis = smin(dis, dis2);
-////	dis3 = smin(dis3, dis4);
-//	dis = smin(dis, dis3);
-//	float sp = length(p - vec3(0, -2, 0)) - 2;
-//	dis = smin(sp, dis);
-//	return vec2(0.2*dis, MAT_TREE);
-//}
-
+// TODO: cleanup and fix noise texture
 vec2 water(vec3 p, vec3 rd)
 {
 	if (rd.y > 0) {
@@ -361,54 +302,13 @@ vec2 water(vec3 p, vec3 rd)
 	return vec2(max(h, dis), MAT_WATER);
 }
 
-vec2 pground(vec3 p, vec3 rd)  {
-	float incDrum = 1337;
-	float drum = 1337.0;
-	p.y -= -2.8;
-	float d = (incDrum + 1 - drum);
-	float dis = p.y + 0.5*texture(inTexture0, p.xz*0.25 ).x;
-	float w = 1.5 * smoothstep(0.0, 15.0 ,abs(p.z));
-	p.x -= + sin(p.z*0.25) * w;
-	p.x -= + sin(p.z*0.15) * w;
-	float s = 3.0  - 1.5 * smoothstep(0.0, 6.0 ,abs(p.z));
-//	if (abs(p.x) < s) {
-		dis += step(0, -abs(p.x) + s) * (s - abs(p.x));
-//	}
-
-	return vec2(dis*0.5, MAT_GROUND);
-}
-
-vec2 pendulum(vec3 p) {
-float theta1 = 1337.0;
-float theta2 = 1337.0;
-	float c1x = 1337.0;
-	float c1y = 1337.0;
-	float c2x = 1337.0;
-	float c2y = 1337.0;
-	vec3 p1 = (p - vec3(c1x, c1y, 0)) * rot(-theta1);
-	vec3 p2 = (p - vec3(c2x, c2y, 0)) * rot(-theta2);
-	vec3 c =  p -  vec3(c1x * 2.0, c1y * 2.0, 0);
-	float c1a = udRoundBox(p1 - vec3(0, 0, -0.07), vec3(0.15, 0.6, 0.01), 0.02);
-	float c1b = udRoundBox(p1 - vec3(0, 0, 0.07), vec3(0.15, 0.6, 0.01), 0.02);
-	float c1 = min(c1a, c1b);
-//	float c1 = udRoundBox(p1, vec3(0.15, 0.6, 0.01), 0.01);
-	float c2 = udRoundBox(p2, vec3(0.15, 0.45, 0.01), 0.02);
-	float dis = min(c1, c2);
-	vec2 res = vec2(dis  + 1 - step(9.5, iGlobalTime), MAT_PEND);
+vec2 map(vec3 p, vec3 rd) 
+{
+	vec2 res = vec2(p.y + 3.0, MAT_GROUND);
+	res = un(res, vec2(sdBox(p - vec3(0,-0.5, 0), vec3(0.5)), MAT_GROUND));
+	res = un(res, vec2(sdBox(p - vec3(0, 1.0, 0), vec3(0.3)), MAT_GROUND));
 	return res;
 }
-
-vec2 map(vec3 p, vec3 rd) {
-	vec2 res = pground(p, rd);
-//	if (iGlobalTime > 9.5) {
-		res = un(res, pendulum(p));
-//	}
-	res = un(res, water(p, rd));
-	res = un(res, vec2(sdBox(p-vec3(0,-0.5,0), vec3(0.5)), MAT_GROUND));
-	return res;
-}
-
-
 
 vec3 getNormal(vec3 p, vec3 rd)
 {
@@ -418,7 +318,6 @@ vec3 getNormal(vec3 p, vec3 rd)
     normal.y = map(p + ep.yxz, rd).x - map(p - ep.yxz, rd).x;
     normal.z = map(p + ep.yzx, rd).x - map(p - ep.yzx, rd).x;
     return normalize(normal);
-
 }
 
 float occlusion(vec3 p, vec3 normal, vec3 rd)
@@ -428,8 +327,8 @@ float occlusion(vec3 p, vec3 normal, vec3 rd)
 }
 
 
-
-vec3 raymarch(vec3 ro, vec3 rd, vec3 eye) {
+vec3 raymarch(vec3 ro, vec3 rd, vec3 eye) 
+{
 	const int maxIter = 90;
 	const float maxDis = 200.0;
 	const int jumps = 3;
@@ -461,6 +360,7 @@ vec3 raymarch(vec3 ro, vec3 rd, vec3 eye) {
 			if (d < 0.01 || end) {
 				vec3 c = vec3(1, 0, 1);
 				vec3 normal = getNormal(p, rd);
+
 				if (m == MAT_GROUND) {
 					c = mix(vec3(0.3,0.9,0.3), vec3(0.9,0.8,0.3), min(normal.y * 1.0, 1));
 				} else if (m == MAT_PEND) {
@@ -468,12 +368,14 @@ vec3 raymarch(vec3 ro, vec3 rd, vec3 eye) {
 				} else if (m == MAT_WATER) {
 					c = vec3(0, 0, 0);
 				}
+
 				c *= occlusion(p, normal, rd);
 				addLightning(c, normal, eye, p);
 				if (end) {
 					transmittance = 0;
 				}
 				col = mix(col, transmittance * c + scatteredLight, ref);
+
 				if (m == MAT_GROUND) {
 					return col;
 				} else if (m == MAT_PEND) {
@@ -482,35 +384,20 @@ vec3 raymarch(vec3 ro, vec3 rd, vec3 eye) {
 					ref *= 0.9;
 				}
 
-#ifdef REFRACTION
-				rd = refract(rd, getNormal(p, rd), 1/1.2);
-#endif
 #ifdef REFLECTION
 				rd = reflect(rd, getNormal(p, rd));
 #endif
-				
-
-				ro = p + rd*0.05;
+#ifdef REFRACTION
+				rd = refract(rd, getNormal(p, rd), 1/1.2);
+#endif
+				ro = p + rd*0.5;
 				t = 0;
-				//i = 0;
-				//maxIter /= 2;
 				break;
 			}
-//			if (t > maxDis) {
-//				return col;
-//			}
 		}
-
-//		if (ref < 0.1) {
-//			break;
-//		}
 	}
 	return col;
 }
-
-
-
-
 
 void main()
 {
@@ -529,9 +416,7 @@ void main()
 	
 	vec3 color = raymarch(ro, rd, eye);
 	color /= (color + vec3(1.0));
-    fragColor = vec4(color, 1.0);
-    
+    fragColor = vec4(color, 1.0);  
 } 
-
 
 )""  
