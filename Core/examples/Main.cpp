@@ -206,6 +206,7 @@ int main()
 		glState[0]["post"] << Uniform1f("r", 0.9f);
 
 		auto iGlobalTime = glState.relativeSceneTime();
+		glState[0]["baseScene"] << Uniform1f("iGlobalTime", iGlobalTime.count() / 1000.f);
 		glState[1]["tunnel"] << Uniform1f("iGlobalTime", iGlobalTime.count() / 1000.f)
 			<< Uniform1f("CHANNEL_12_TOTAL", static_cast<GLfloat>(music.syncChannels[12].getTotalHitsPerNote(0)))
 			<< Uniform1f("CHANNEL_13_TOTAL", static_cast<GLfloat>(music.syncChannels[13].getTotalHitsPerNote(0)));

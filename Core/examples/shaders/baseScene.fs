@@ -26,7 +26,8 @@ uniform float CHANNEL_13_TOTAL;
 
 //////////////////////////////////////////////////////
 
-
+#define REFLECTION
+//#define REFRACTION
 
 vec2 un(vec2 a, vec2 b)
 {
@@ -403,6 +404,7 @@ vec2 map(vec3 p, vec3 rd) {
 		res = un(res, pendulum(p));
 //	}
 	res = un(res, water(p, rd));
+	res = un(res, vec2(sdBox(p-vec3(0,-0.5,0), vec3(0.5)), MAT_GROUND));
 	return res;
 }
 
@@ -428,73 +430,71 @@ float occlusion(vec3 p, vec3 normal, vec3 rd)
 
 
 vec3 raymarch(vec3 ro, vec3 rd, vec3 eye) {
-	float t = 0.0;
-	int maxIter = 90;
+	const int maxIter = 90;
 	const float maxDis = 200.0;
-	float d = 0.0;
-	vec3 p = vec3(-1.0, -1.0, -1.0);
-	vec3 col = vec3(0);
 	const int jumps = 3;
+
+	vec3 col = vec3(0);	
 	float ref = 1.0;
+
 	vec3 scatteredLight = vec3(0.0);
 	float transmittance = 1.0;
-//	for (int j = 0; j < jumps; j++) {
+	for (int j = 0; j < jumps; j++) {
+		float t = 0.0;
 		for (int i = 0; i < maxIter; i++) {
-			p = ro + rd * t;
-
+			vec3 p = ro + rd * t;
 			vec2 res = map(p, rd);
-			d = res.x;
-//			d = min(d, 0.2);
-			float fogAmount = 0.005;// + max(0, -p.y * 0.5);
-//			fogAmount += smoothstep(28*7, 29*7,p.z) * 5.0;
+			float d = res.x;
+			float m = res.y;
+
+			float fogAmount = 0.005;
 			float lightDis = -1.0;
 			vec3 light = evaluateLight(p, lightDis);
-//			d = min(d, lightDis);
-			d = min(min(d, 1), max(lightDis*0.5, 0.05));
+			d = min(d, lightDis);
+
 			vec3 lightIntegrated = light - light * exp(-fogAmount * d);
 			scatteredLight += transmittance * lightIntegrated;
 			transmittance *= exp(-fogAmount * d);
 
-			t += d;
-			float m = res.y;
-			bool end = i == maxIter - 1 ||t > maxDis;
+			t += d;		
+			bool end = i == maxIter - 1 || t > maxDis;
 			if (d < 0.01 || end) {
 				vec3 c = vec3(1, 0, 1);
 				vec3 normal = getNormal(p, rd);
 				if (m == MAT_GROUND) {
-//					c = mix(vec3(0.9,0.8,0.3), vec3(0.9,0.2,0.5), min(normal.y * 1.5, 1));
 					c = mix(vec3(0.3,0.9,0.3), vec3(0.9,0.8,0.3), min(normal.y * 1.0, 1));
-					//c = vec3(1, 0, 0);
 				} else if (m == MAT_PEND) {
 					c = vec3(1, 0.5, 1);
 				} else if (m == MAT_WATER) {
 					c = vec3(0, 0, 0);
 				}
-				//c *= occlusion(p, normal, rd);
+				c *= occlusion(p, normal, rd);
 				addLightning(c, normal, eye, p);
 				if (end) {
 					transmittance = 0;
 				}
 				col = mix(col, transmittance * c + scatteredLight, ref);
-				//col = c;
-				//return col;
-//				col = mix(col, vec3(0.7), clamp(t * 0.01, 0, 1));
 				if (m == MAT_GROUND) {
 					return col;
-					//return vec3(1.0, 0.0, 0.0);
 				} else if (m == MAT_PEND) {
-//					ref *= 0.9;
 					ref *= abs(normal.z);
 				} else {
 					ref *= 0.9;
 				}
-//				ref = 0.0;
+
+#ifdef REFRACTION
+				rd = refract(rd, getNormal(p, rd), 1/1.2);
+#endif
+#ifdef REFLECTION
 				rd = reflect(rd, getNormal(p, rd));
-//				rd = refract(rd, getNormal(p, rd), 1/1.2);
+#endif
+				
+
 				ro = p + rd*0.05;
 				t = 0;
-				i = 0;
-				maxIter /= 2;
+				//i = 0;
+				//maxIter /= 2;
+				break;
 			}
 //			if (t > maxDis) {
 //				return col;
@@ -504,7 +504,7 @@ vec3 raymarch(vec3 ro, vec3 rd, vec3 eye) {
 //		if (ref < 0.1) {
 //			break;
 //		}
-//	}
+	}
 	return col;
 }
 
@@ -527,10 +527,10 @@ void main()
 	vec3 ro = eye;
 	vec3 rd = normalize(dir + right*u + up*v);
 	
-	float material = -1.0;
 	vec3 color = raymarch(ro, rd, eye);
+	color /= (color + vec3(1.0));
     fragColor = vec4(color, 1.0);
-    fragColor.rgb = fragColor.rgb / (fragColor.rgb + vec3(1.0));
+    
 } 
 
 
