@@ -227,9 +227,15 @@ vec4 lightA(vec3 p)
 	return vec4(res, dis);
 }
 
+vec3 lightBPos(vec3 p)
+{
+	return p - vec3(0.0, 2.0 * sin(iGlobalTime), 0.0);
+}
+
 vec4 lightB(vec3 p)
 {
-	vec3 lightPos = vec3(-2, 0, 0);
+	vec3 lightPos = vec3(-1, 0, 0);
+	p = lightBPos(p);
 	float dis = length(p - lightPos);
 	vec3 col = vec3(0.0, 0.0, 1.0);
 	const float strength = 10.0;
@@ -249,7 +255,28 @@ vec4 evaluateLight(vec3 pos)
 	return res;
 }
 
+void addLight(inout vec3 diffRes, inout float specRes, vec3 normal, vec3 eye, vec3 pos, vec3 lightCol) 
+{
+	vec3 col = vec3(0.0);
+	vec3 invLight = normalize(-pos);
+	float diffuse = max(0.0, dot(invLight, normal));
+	float spec = specular(normal, -invLight, normalize(eye - pos), 50.0);
+	float dis = length(-pos);
+	float str = 1.0/(0.5 + 0.01*dis + 0.1*dis*dis); 
+
+	diffRes = diffuse * lightCol;
+	specRes = spec * str;
+}
+
 void addLightning(inout vec3 color, vec3 normal, vec3 eye, vec3 pos) {
+	vec3 diffuse = vec3(0.0);
+	float specular = 0.0;
+	// TODO kan lightA ta pos som argument så man inte upprepar`?
+	addLight(diffuse, specular, normal, eye, lightAPos(pos), lightA(pos));
+	//addLight
+
+	color = color * diffuse + specular;
+
 	vec3 r = pos;
 	float w = 1.5 * smoothstep(0.0, 15.0 ,abs(pos.z));
 	r.x -= + sin(pos.z*0.25) * w;
