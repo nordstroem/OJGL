@@ -29,6 +29,8 @@ uniform float CHANNEL_13_TOTAL;
 #define REFLECTION
 //#define REFRACTION // TODO: I don't think this works perfectly.
 
+//#define VOLUMETRIC_LIGHTNING
+
 vec2 un(vec2 a, vec2 b)
 {
 	return a.x < b.x ? a : b;
@@ -262,26 +264,26 @@ void addLight(inout vec3 diffRes, inout float specRes, vec3 normal, vec3 eye, ve
 	float dis = length(-pos);
 	float str = 1.0/(0.5 + 0.01*dis + 0.1*dis*dis); 
 
-	diffRes = diffuse * lightCol;
-	specRes = spec * str;
+	diffRes += diffuse * lightCol;
+	specRes += spec * str;
 }
 
 
 void addLightning(inout vec3 color, vec3 normal, vec3 eye, vec3 pos) {
 	vec3 diffuse = vec3(0.0);
 	float specular = 0.0;
+	const float ambient = 0.1;
 
 	{
 		vec3 lightPos = lightAPos(pos);
 		addLight(diffuse, specular, normal, eye, lightPos, lightA(lightPos).rgb);
 	}
 	{
-		vec3 lightPos = lightAPos(pos);
-		addLight(diffuse, specular, normal, eye, lightPos, lightA(lightPos).rgb);
+		vec3 lightPos = lightBPos(pos);
+		addLight(diffuse, specular, normal, eye, lightPos, lightB(lightPos).rgb);
 	}
-	//addLight
-
-	color = color * diffuse + specular;
+	color = color * (ambient + diffuse) + specular;
+	
 	//color =  color * (0.05 + 0.9*diffuse*light(pos).xyz + 0.2 * diffuses * lights(pos).xyz ) + spec*str + specs*strs*0.5;
 
 }
@@ -289,6 +291,7 @@ void addLightning(inout vec3 color, vec3 normal, vec3 eye, vec3 pos) {
 #define MAT_GROUND 1.0
 #define MAT_PEND 2.0
 #define MAT_WATER 3.0
+#define MAT_MIRROR 4.0
 
 // TODO: cleanup and fix noise texture
 vec2 water(vec3 p, vec3 rd)
@@ -313,7 +316,8 @@ vec2 water(vec3 p, vec3 rd)
 
 vec2 map(vec3 p, vec3 rd) 
 {
-	vec2 res = vec2(p.y + 3.0, MAT_GROUND);
+	vec2 res = vec2(-sdBox(p, vec3(5.0)), MAT_GROUND);
+	res = un(res, vec2(sdBox(p - vec3(0, 0, 3.0), vec3(1.0, 2.0, 0.1)), MAT_MIRROR));
 	res = un(res, vec2(sdBox(p - vec3(0,-0.5, 0), vec3(0.5)), MAT_GROUND));
 	res = un(res, vec2(sdBox(p - vec3(0, 1.0, 0), vec3(0.3)), MAT_GROUND));
 	return res;
@@ -354,7 +358,7 @@ vec3 raymarch(vec3 ro, vec3 rd, vec3 eye)
 			vec2 res = map(p, rd);
 			float d = res.x;
 			float m = res.y;
-
+#ifdef VOLUMETRIC_LIGHTNING
 			float fogAmount = 0.005;
 			vec4 lightColDis = evaluateLight(p);
 			vec3 light = lightColDis.rgb;
@@ -363,7 +367,7 @@ vec3 raymarch(vec3 ro, vec3 rd, vec3 eye)
 			vec3 lightIntegrated = light - light * exp(-fogAmount * d);
 			scatteredLight += transmittance * lightIntegrated;	
 			transmittance *= exp(-fogAmount * d);
-
+#endif
 			t += d;		
 			bool end = i == maxIter - 1 || t > maxDis;
 			if (d < 0.01 || end) {
@@ -376,6 +380,8 @@ vec3 raymarch(vec3 ro, vec3 rd, vec3 eye)
 					c = vec3(1, 0.5, 1);
 				} else if (m == MAT_WATER) {
 					c = vec3(0, 0, 0);
+				} else if (m == MAT_MIRROR) {
+					c = vec3(0.0);
 				}
 
 				c *= occlusion(p, normal, rd);
@@ -387,6 +393,8 @@ vec3 raymarch(vec3 ro, vec3 rd, vec3 eye)
 
 				if (m == MAT_GROUND) {
 					return col;
+				} else if (m == MAT_MIRROR) {
+					ref *= 0.9;
 				} else if (m == MAT_PEND) {
 					ref *= abs(normal.z);
 				} else {
