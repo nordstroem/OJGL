@@ -219,7 +219,6 @@ vec3 lightAPos(vec3 p)
 vec4 lightA(vec3 p)
 {
 	vec3 lightPos = vec3(2, 0, 0);
-	p = lightAPos(p);
 	float dis = length(p - lightPos);
 	vec3 col = vec3(1.0, 0.0, 0.0);
 	const float strength = 10.0;
@@ -235,7 +234,6 @@ vec3 lightBPos(vec3 p)
 vec4 lightB(vec3 p)
 {
 	vec3 lightPos = vec3(-1, 0, 0);
-	p = lightBPos(p);
 	float dis = length(p - lightPos);
 	vec3 col = vec3(0.0, 0.0, 1.0);
 	const float strength = 10.0;
@@ -250,8 +248,8 @@ vec4 lightUnion(vec4 a, vec4 b)
 
 vec4 evaluateLight(vec3 pos)
 {
-	vec4 res = lightA(pos);
-	res = lightUnion(res, lightB(pos));
+	vec4 res = lightA(lightAPos(pos));
+	res = lightUnion(res, lightB(lightBPos(pos)));
 	return res;
 }
 
@@ -268,44 +266,24 @@ void addLight(inout vec3 diffRes, inout float specRes, vec3 normal, vec3 eye, ve
 	specRes = spec * str;
 }
 
+
 void addLightning(inout vec3 color, vec3 normal, vec3 eye, vec3 pos) {
 	vec3 diffuse = vec3(0.0);
 	float specular = 0.0;
-	// TODO kan lightA ta pos som argument så man inte upprepar`?
-	addLight(diffuse, specular, normal, eye, lightAPos(pos), lightA(pos));
+
+	{
+		vec3 lightPos = lightAPos(pos);
+		addLight(diffuse, specular, normal, eye, lightPos, lightA(lightPos).rgb);
+	}
+	{
+		vec3 lightPos = lightAPos(pos);
+		addLight(diffuse, specular, normal, eye, lightPos, lightA(lightPos).rgb);
+	}
 	//addLight
 
 	color = color * diffuse + specular;
-
-	vec3 r = pos;
-	float w = 1.5 * smoothstep(0.0, 15.0 ,abs(pos.z));
-	r.x -= + sin(pos.z*0.25) * w;
-	r.x -= + sin(pos.z*0.15) * w;
-	r.y -= -3.0;
-	r.z -= -50;
-	float s = 5.0;
-	r.z = mod(pos.z, s) - s * 0.5;
-	r.y -=  0.7;
-	float sw = 3.0  - 1.5 * smoothstep(0.0, 6.0 ,abs(pos.z));
-	r.x = abs(r.x) - sw * 1.3;
-	vec3 slpos = r; 
-	vec3 invLights = normalize(-slpos); //////
-	float diffuses = max(0.0, dot(invLights, normal)); //////
-	float specs = specular(normal, -invLights, normalize(eye - slpos), 50.0); //////
-	float diss = length(-slpos); //////
-	float strs = 1.0/(0.5 + 0.01*diss + 0.1*diss*diss); //////
-
-	vec3 lpos = vec3(0,-1,1);
-
-	float dis = length(lpos - pos);
-	vec3 invLight = normalize(lpos - pos);
-	float diffuse = max(0.0, dot(invLight, normal));
-	float spec = specular(normal, -invLight, normalize(eye - pos), 220.0);
-
-	float str = 1.0/(0.5 + 0.01*dis + 0.1*dis*dis);
 	//color =  color * (0.05 + 0.9*diffuse*light(pos).xyz + 0.2 * diffuses * lights(pos).xyz ) + spec*str + specs*strs*0.5;
-	color = color * (0.05 + 0.2*diffuses*lights(pos).xyz) + specs*strs*0.5;
-	color = clamp(color, vec3(0), vec3(1));
+
 }
 
 #define MAT_GROUND 1.0
