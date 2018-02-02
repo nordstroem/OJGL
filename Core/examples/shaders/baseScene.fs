@@ -29,7 +29,11 @@ uniform float CHANNEL_13_TOTAL;
 #define REFLECTION
 //#define REFRACTION // TODO: I don't think this works perfectly.
 
-//#define VOLUMETRIC_LIGHTNING
+#define VOLUMETRIC_LIGHTNING
+
+#define MAT_MIRROR 1.0
+#define MAT_BOX 2.0
+#define MAT_ROOM 3.0
 
 vec2 un(vec2 a, vec2 b)
 {
@@ -121,100 +125,9 @@ float smin( float a, float b)
 //	return ca < cb ? vec2(sm, a.y) : vec2(m, b.y);
 //}
 
-
-
-
-
-
-
-
-
-
-vec4 light(vec3 p) {
-
-//	float s = 30.0;
-//	p.xz = mod(p.xz + vec2(s*0.5), s) - s * 0.5;
-//	float t = iGlobalTime;
-	vec3 lightCol  = vec3(1);
-			lightCol = normalize(lightCol);
-	vec3 lightPos = vec3(0);
-	vec3 L = lightPos-p;
-
-
-	float dis = 99999;
-	float t = iGlobalTime;
-//	if (t >= 6.5) {
-		float l2t = clamp((iGlobalTime - 6.6) * 2.0, 0, 1);
-		float leg2 = sdCappedCylinder(p - vec3(0, -3.0 + 1.5*l2t, -0.5), vec2(0.01, 1.5 * l2t));
-		dis = min(dis, leg2 + 1 -  step(6.6, iGlobalTime));
-//	}
-//	if (t >= 7.0) {
-		float ct = clamp((iGlobalTime - 7.1) * 3.0, 0, 1);
-		float cyl1 = sdCappedCylinder(p.xzy - vec3(0, -0.5 + 0.5 * ct, 0), vec2(0.01, 0.5 * ct));
-		dis = min(dis, cyl1 + 1 -  step(7.1, iGlobalTime));
-//	}
-//	if (t >= 7.333) {
-		float l1t = clamp((iGlobalTime - 7.433) * 2.0, 0, 1);
-		float leg1 = sdCappedCylinder(p - vec3(0,  0.0 - 1.5*l1t, 0.5), vec2(0.01, 1.5*l1t));
-		dis = min(dis, leg1 + 1 -  step(7.433, iGlobalTime));
-//	}
-	vec3 r = p;
-	float w = 1.5 * smoothstep(0.0, 15.0 ,abs(p.z));
-	r.x -= + sin(p.z*0.25) * w;
-	r.x -= + sin(p.z*0.15) * w;
-	r.y -= -3.0;
-	r.z -= -50;
-
-	if (t < 7.93) {
-		t = min(t, 6.65);
-	} else {
-		t -= 1.2;
-	}
-	float rt = t * 6;
-	float river = sdCappedCylinder(r.xzy, vec2(0.01, 10.0 + rt));
-	river = max(-sdBox(p - vec3(0, -3.0, 0), vec3(0.5)), river);
-//	if (abs(p.z) < 0.6) {
-////		river = 999;
-//		river += abs(p.z) + 0.3;
-//	}
-
-	dis = 	min(dis, river);//min(min(leg1, leg2), min(cyl1, river));
-//	float distanceToL = max(0.0001, dis);
-//	vec3 Lnorm = L/distanceToL;
-
-	vec3 point = vec3(1,0.55,1) * 5.0/(dis*dis);
-
-
-//	return vec4(point * (0.1 + 1.0*drum) + points, min(dis, diss));
-	float drum = 1337.0;
-	return vec4(point * (0.1 + 1.0*drum), dis);
-}
-
-vec4 lights(vec3 p) {
-	vec3 r = p;
-	float w = 1.5 * smoothstep(0.0, 15.0 ,abs(p.z));
-	r.x -= + sin(p.z*0.25) * w;
-	r.x -= + sin(p.z*0.15) * w;
-	r.y -= -3.0;
-	r.z -= -50;
-
-	float s = 5.0;
-	r.z = mod(p.z, s) - s * 0.5;
-	r.y -=  0.7;
-//	s = 1.0;
-//	r.y = mod(r.y, s) - s * 0.5;
-	float sw = 3.0  - 1.5 * smoothstep(0.0, 6.0 ,abs(p.z));
-//	r.x -= sw * 1.1;
-	r.x = abs(r.x) - sw * 1.3;
-	float diss = length(r) - 0.0;
-	vec3 col = vec3(0.5,0.5,1);
-	vec3 points = col * 10.0/(diss*diss);
-	return vec4(points, diss);
-}
-
 vec3 lightAPos(vec3 p)
 {
-	p.z = mod(p.z, 4.0) - 2.0;
+	p.z = mod(p.z, 2.0) - 1.0;
 	return p;
 }
 
@@ -223,14 +136,14 @@ vec4 lightA(vec3 p)
 	vec3 lightPos = vec3(2, 0, 0);
 	float dis = length(p - lightPos);
 	vec3 col = vec3(1.0, 0.0, 0.0);
-	const float strength = 10.0;
+	const float strength = 3.0;
 	vec3 res = col * strength / (dis * dis * dis);
 	return vec4(res, dis);
 }
 
 vec3 lightBPos(vec3 p)
 {
-	return p - vec3(0.0, 2.0 * sin(iGlobalTime), 0.0);
+	return p - vec3(0.0, 1.0 + 2.0 * sin(iGlobalTime), 0.0);
 }
 
 vec4 lightB(vec3 p)
@@ -288,13 +201,10 @@ void addLightning(inout vec3 color, vec3 normal, vec3 eye, vec3 pos) {
 
 }
 
-#define MAT_GROUND 1.0
-#define MAT_PEND 2.0
-#define MAT_WATER 3.0
-#define MAT_MIRROR 4.0
+
 
 // TODO: cleanup and fix noise texture
-vec2 water(vec3 p, vec3 rd)
+/*vec2 water(vec3 p, vec3 rd)
 {
 	if (rd.y > 0) {
 		return vec2(99999, MAT_WATER);
@@ -312,14 +222,14 @@ vec2 water(vec3 p, vec3 rd)
 	float dis = (0.1 -p.y)/rd.y;
 
 	return vec2(max(h, dis), MAT_WATER);
-}
+}*/
 
 vec2 map(vec3 p, vec3 rd) 
 {
-	vec2 res = vec2(-sdBox(p, vec3(5.0)), MAT_GROUND);
+	vec2 res = vec2(-sdBox(p - vec3(0, 3.0, 0), vec3(5.0)), MAT_ROOM);
 	res = un(res, vec2(sdBox(p - vec3(0, 0, 3.0), vec3(1.0, 2.0, 0.1)), MAT_MIRROR));
-	res = un(res, vec2(sdBox(p - vec3(0,-0.5, 0), vec3(0.5)), MAT_GROUND));
-	res = un(res, vec2(sdBox(p - vec3(0, 1.0, 0), vec3(0.3)), MAT_GROUND));
+	res = un(res, vec2(sdBox(p - vec3(0,-0.5, 0), vec3(0.5)), MAT_BOX));
+	res = un(res, vec2(sdBox(p - vec3(0, 1.0, 0), vec3(0.3)), MAT_BOX));
 	return res;
 }
 
@@ -336,7 +246,7 @@ vec3 getNormal(vec3 p, vec3 rd)
 float occlusion(vec3 p, vec3 normal, vec3 rd)
 {
 	float o = clamp(2*map(p + normal * 0.5, rd).x, 0, 1);
-	return 0.2 + 0.8*o;
+	return 0.8 + 0.2*o;
 }
 
 
@@ -344,7 +254,7 @@ vec3 raymarch(vec3 ro, vec3 rd, vec3 eye)
 {
 	const int maxIter = 90;
 	const float maxDis = 200.0;
-	const int jumps = 3;
+	const int jumps = 5;
 
 	vec3 col = vec3(0);	
 	float ref = 1.0;
@@ -374,31 +284,28 @@ vec3 raymarch(vec3 ro, vec3 rd, vec3 eye)
 				vec3 c = vec3(1, 0, 1);
 				vec3 normal = getNormal(p, rd);
 
-				if (m == MAT_GROUND) {
-					c = mix(vec3(0.3,0.9,0.3), vec3(0.9,0.8,0.3), min(normal.y * 1.0, 1));
-				} else if (m == MAT_PEND) {
-					c = vec3(1, 0.5, 1);
-				} else if (m == MAT_WATER) {
-					c = vec3(0, 0, 0);
-				} else if (m == MAT_MIRROR) {
+				if (m == MAT_MIRROR) {
 					c = vec3(0.0);
+				} else if (m == MAT_BOX) {
+					c = vec3(1.0, 0.0, 0.0);
+				} else if (m == MAT_ROOM) {
+					c = vec3(0.5);
 				}
 
 				c *= occlusion(p, normal, rd);
 				addLightning(c, normal, eye, p);
+				
 				if (end) {
 					transmittance = 0;
 				}
 				col = mix(col, transmittance * c + scatteredLight, ref);
 
-				if (m == MAT_GROUND) {
+				if (m == MAT_ROOM) {
 					return col;
 				} else if (m == MAT_MIRROR) {
 					ref *= 0.9;
-				} else if (m == MAT_PEND) {
-					ref *= abs(normal.z);
-				} else {
-					ref *= 0.9;
+				} else if (m == MAT_BOX) {
+					ref *= 0.5;
 				}
 
 #ifdef REFLECTION
