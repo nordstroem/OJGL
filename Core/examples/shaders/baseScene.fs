@@ -168,6 +168,24 @@ vec4 evaluateLight(vec3 pos)
 	return res;
 }
 
+
+float shadow(in vec3 ro, in vec3 rd, float mint, float maxt, float shadowAmbient)
+{
+    
+    float t = 0.1;
+    for(float _ = 0.0; _ == 0.0; _ += 0.0)
+    {
+        if (t >= maxt) {
+        	return 1.0;
+        }
+        float h = scene(ro + rd*t, rd).x;
+        if( h<0.01 )
+            return shadowAmbient;
+        t += h;
+    }
+    return 1.0;
+}
+
 void addLight(inout vec3 diffRes, inout float specRes, vec3 normal, vec3 eye, vec3 pos, vec3 lightCol) 
 {
 	vec3 col = vec3(0.0);
@@ -176,7 +194,8 @@ void addLight(inout vec3 diffRes, inout float specRes, vec3 normal, vec3 eye, ve
 	float spec = specular(normal, -invLight, normalize(eye - pos), 50.0);
 	float dis = length(-pos);
 	float str = 1.0/(0.5 + 0.01*dis + 0.1*dis*dis); 
-
+	float shadowAmbient = 0.3;
+	float s = shadow(p, normalize(light - p), 0.1, length(light - p) - 1.0, shadowAmbient);
 	diffRes += diffuse * lightCol;
 	specRes += spec * str;
 }
@@ -185,11 +204,11 @@ void addLight(inout vec3 diffRes, inout float specRes, vec3 normal, vec3 eye, ve
 void addLightning(inout vec3 color, vec3 normal, vec3 eye, vec3 pos) {
 	vec3 diffuse = vec3(0.0);
 	float specular = 0.0;
-	const float ambient = 0.1;
+	const float ambient = 0.3;
 
 	{
-		vec3 lightPos = lightAPos(pos);
-		addLight(diffuse, specular, normal, eye, lightPos, lightA(lightPos).rgb);
+	//	vec3 lightPos = lightAPos(pos);
+	//	addLight(diffuse, specular, normal, eye, lightPos, lightA(lightPos).rgb);
 	}
 	{
 		vec3 lightPos = lightBPos(pos);
