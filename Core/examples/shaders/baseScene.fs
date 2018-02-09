@@ -31,6 +31,10 @@ uniform float CHANNEL_13_TOTAL;
 
 #define VOLUMETRIC_LIGHTNING
 
+#define SHADOWS
+
+#define TONE_MAPPING
+
 #define MAT_MIRROR 1.0
 #define MAT_BOX 2.0
 #define MAT_ROOM 3.0
@@ -125,10 +129,19 @@ float smin( float a, float b)
 //	return ca < cb ? vec2(sm, a.y) : vec2(m, b.y);
 //}
 
+vec2 map(vec3 p, vec3 rd) 
+{
+	vec2 res = vec2(-sdBox(p - vec3(0, 3.0, 0), vec3(5.0)), MAT_ROOM);
+	res = un(res, vec2(sdBox(p - vec3(0, 0, 3.0), vec3(1.0, 2.0, 0.1)), MAT_MIRROR));
+	res = un(res, vec2(udRoundBox(p - vec3(0,-0.5, 0), vec3(0.4), 0.1), MAT_BOX));
+	res = un(res, vec2(udRoundBox(p - vec3(0, 1.0, 0), vec3(0.25), 0.05), MAT_BOX));
+	return res;
+}
+#define LOL 3.0
 vec3 lightAPos(vec3 p)
 {
-	p.z = mod(p.z, 2.0) - 1.0;
-	return p;
+	p.z = mod(p.z, LOL) - LOL * 0.5;
+	return p - vec3(3.0 * sin(iGlobalTime), 0, 0);
 }
 
 vec4 lightA(vec3 p)
@@ -143,13 +156,13 @@ vec4 lightA(vec3 p)
 
 vec3 lightBPos(vec3 p)
 {
-	return p - vec3(0.0, 1.0 + 2.0 * sin(iGlobalTime), 0.0);
+	return p - vec3(-1.0, 1.0 + 2.0 * sin(iGlobalTime), 0.0);
 }
 
 vec4 lightB(vec3 p)
 {
-	vec3 lightPos = vec3(-1, 0, 0);
-	float dis = length(p - lightPos);
+	//vec3 lightPos = vec3(-1, 0, 0);
+	float dis = length(p);// - lightPos);
 	vec3 col = vec3(0.0, 0.0, 1.0);
 	const float strength = 10.0;
 	vec3 res = col * strength / (dis * dis * dis);
@@ -169,7 +182,7 @@ vec4 evaluateLight(vec3 pos)
 }
 
 
-float shadow(in vec3 ro, in vec3 rd, float mint, float maxt, float shadowAmbient)
+float shadow(in vec3 ro, in vec3 rd, float mint, float maxt)
 {
     
     float t = 0.1;
@@ -178,28 +191,34 @@ float shadow(in vec3 ro, in vec3 rd, float mint, float maxt, float shadowAmbient
         if (t >= maxt) {
         	return 1.0;
         }
-        float h = scene(ro + rd*t, rd).x;
+        float h = map(ro + rd*t, rd).x;
         if( h<0.01 )
-            return shadowAmbient;
+            return 0.0;
         t += h;
     }
     return 1.0;
 }
 
-void addLight(inout vec3 diffRes, inout float specRes, vec3 normal, vec3 eye, vec3 pos, vec3 lightCol) 
+void addLight(inout vec3 diffRes, inout float specRes, vec3 normal, vec3 eye, vec3 lightPos, vec3 lightCol, 
+	float shadow) // kalla shadow innan, annars bara skicka in 1.0
+		//vec3 p, vec3 light) 
 {
 	vec3 col = vec3(0.0);
-	vec3 invLight = normalize(-pos);
+	vec3 invLight = normalize(-lightPos);
 	float diffuse = max(0.0, dot(invLight, normal));
-	float spec = specular(normal, -invLight, normalize(eye - pos), 50.0);
-	float dis = length(-pos);
+	float spec = specular(normal, -invLight, normalize(eye - lightPos), 50.0);
+	float dis = length(-lightPos);
 	float str = 1.0/(0.5 + 0.01*dis + 0.1*dis*dis); 
-	float shadowAmbient = 0.3;
-	float s = shadow(p, normalize(light - p), 0.1, length(light - p) - 1.0, shadowAmbient);
-	diffRes += diffuse * lightCol;
+	float shadowAmbient = 0.0;
+	float s = shadow(p, normalize(light - p), 0.1, length(light - p) - 1.0);
+	diffRes += diffuse * lightCol * str;
+	//diffRes += vec3(s);
 	specRes += spec * str;
 }
 
+
+
+//
 
 void addLightning(inout vec3 color, vec3 normal, vec3 eye, vec3 pos) {
 	vec3 diffuse = vec3(0.0);
@@ -207,12 +226,20 @@ void addLightning(inout vec3 color, vec3 normal, vec3 eye, vec3 pos) {
 	const float ambient = 0.3;
 
 	{
-	//	vec3 lightPos = lightAPos(pos);
-	//	addLight(diffuse, specular, normal, eye, lightPos, lightA(lightPos).rgb);
+		vec3 p = pos;
+		//p.z = mod(p.z, LOL) - LOL * 0.5;
+		vec3 light = vec3(2, 0, 0) + vec3(3.0 * sin(iGlobalTime), 0, 0);
+		light += int(p.z / LOL) * LOL;
+
+		vec3 lightPos = lightAPos(pos);
+		//addLight(diffuse, specular, normal, eye, lightPos, lightA(lightPos).rgb,
+		//	p, light);
 	}
 	{
+		vec3 p = pos;
+		vec3 light = vec3(-1.0, 1.0 + 2.0 * sin(iGlobalTime), 0.0);
 		vec3 lightPos = lightBPos(pos);
-		addLight(diffuse, specular, normal, eye, lightPos, lightB(lightPos).rgb);
+		addLight(diffuse, specular, normal, eye, lightPos, lightB(lightPos).rgb,p , light);
 	}
 	color = color * (ambient + diffuse) + specular;
 	
@@ -243,14 +270,7 @@ void addLightning(inout vec3 color, vec3 normal, vec3 eye, vec3 pos) {
 	return vec2(max(h, dis), MAT_WATER);
 }*/
 
-vec2 map(vec3 p, vec3 rd) 
-{
-	vec2 res = vec2(-sdBox(p - vec3(0, 3.0, 0), vec3(5.0)), MAT_ROOM);
-	res = un(res, vec2(sdBox(p - vec3(0, 0, 3.0), vec3(1.0, 2.0, 0.1)), MAT_MIRROR));
-	res = un(res, vec2(sdBox(p - vec3(0,-0.5, 0), vec3(0.5)), MAT_BOX));
-	res = un(res, vec2(sdBox(p - vec3(0, 1.0, 0), vec3(0.3)), MAT_BOX));
-	return res;
-}
+
 
 vec3 getNormal(vec3 p, vec3 rd)
 {
@@ -273,7 +293,7 @@ vec3 raymarch(vec3 ro, vec3 rd, vec3 eye)
 {
 	const int maxIter = 90;
 	const float maxDis = 200.0;
-	const int jumps = 5;
+	const int jumps = 1;
 
 	vec3 col = vec3(0);	
 	float ref = 1.0;
@@ -358,7 +378,9 @@ void main()
 	vec3 rd = normalize(dir + right*u + up*v);
 	
 	vec3 color = raymarch(ro, rd, eye);
+#ifdef TONE_MAPPING
 	color /= (color + vec3(1.0));
+#endif
     fragColor = vec4(color, 1.0);  
 } 
 
