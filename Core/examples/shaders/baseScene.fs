@@ -131,30 +131,30 @@ float smin( float a, float b)
 
 vec2 map(vec3 p, vec3 rd) 
 {
-	vec2 res = vec2(-sdBox(p - vec3(0, 3.0, 0), vec3(5.0)), MAT_ROOM);
+	vec2 res = vec2(-sdBox(p - vec3(0, 3.0, 0), vec3(5.0, 5.0, 10.0)), MAT_ROOM);
 	res = un(res, vec2(sdBox(p - vec3(0, 0, 3.0), vec3(1.0, 2.0, 0.1)), MAT_MIRROR));
 	res = un(res, vec2(udRoundBox(p - vec3(0,-0.5, 0), vec3(0.4), 0.1), MAT_BOX));
 	res = un(res, vec2(udRoundBox(p - vec3(0, 1.0, 0), vec3(0.25), 0.05), MAT_BOX));
 	return res;
 }
-#define LOL 3.0
-vec3 lightAPos(vec3 p)
+#define LOL 4.0
+vec3 lightAModifyPos(vec3 p)
 {
 	p.z = mod(p.z, LOL) - LOL * 0.5;
-	return p - vec3(3.0 * sin(iGlobalTime), 0, 0);
+	return p - vec3(2.0 + 3.0 * sin(iGlobalTime), 0, 0);
 }
 
 vec4 lightA(vec3 p)
 {
-	vec3 lightPos = vec3(2, 0, 0);
-	float dis = length(p - lightPos);
+	//vec3 lightPos = vec3(2, 0, 0);
+	float dis = length(p);// - lightPos);
 	vec3 col = vec3(1.0, 0.0, 0.0);
 	const float strength = 3.0;
 	vec3 res = col * strength / (dis * dis * dis);
 	return vec4(res, dis);
 }
 
-vec3 lightBPos(vec3 p)
+vec3 lightBModifyPos(vec3 p)
 {
 	return p - vec3(-1.0, 1.0 + 2.0 * sin(iGlobalTime), 0.0);
 }
@@ -176,8 +176,8 @@ vec4 lightUnion(vec4 a, vec4 b)
 
 vec4 evaluateLight(vec3 pos)
 {
-	vec4 res = lightA(lightAPos(pos));
-	res = lightUnion(res, lightB(lightBPos(pos)));
+	vec4 res = lightA(lightAModifyPos(pos));
+	res = lightUnion(res, lightB(lightBModifyPos(pos)));
 	return res;
 }
 
@@ -209,11 +209,11 @@ void addLight(inout vec3 diffRes, inout float specRes, vec3 normal, vec3 eye, ve
 	float spec = specular(normal, -invLight, normalize(eye - lightPos), 50.0);
 	float dis = length(-lightPos);
 	float str = 1.0/(0.5 + 0.01*dis + 0.1*dis*dis); 
-	float shadowAmbient = 0.0;
-	float s = shadow(p, normalize(light - p), 0.1, length(light - p) - 1.0);
-	diffRes += diffuse * lightCol * str;
-	//diffRes += vec3(s);
-	specRes += spec * str;
+	//float shadowAmbient = 0.0;
+	//float s = shadow(p, normalize(light - p), 0.1, length(light - p) - 1.0);
+	diffRes += diffuse * lightCol * str * shadow;
+	//diffRes += vec3(shadow);
+	specRes += spec * str * shadow;
 }
 
 
@@ -226,20 +226,21 @@ void addLightning(inout vec3 color, vec3 normal, vec3 eye, vec3 pos) {
 	const float ambient = 0.3;
 
 	{
-		vec3 p = pos;
 		//p.z = mod(p.z, LOL) - LOL * 0.5;
-		vec3 light = vec3(2, 0, 0) + vec3(3.0 * sin(iGlobalTime), 0, 0);
-		light += int(p.z / LOL) * LOL;
+		//vec3 light = vec3(2, 0, 0) + vec3(3.0 * sin(iGlobalTime), 0, 0);
+		//light += int(p.z / LOL) * LOL;
 
-		vec3 lightPos = lightAPos(pos);
+		//vec3 lightPos = lightAModifyPos(pos);
 		//addLight(diffuse, specular, normal, eye, lightPos, lightA(lightPos).rgb,
 		//	p, light);
+
+		vec3 posLightOrigo = lightAModifyPos(pos);
+		addLight(diffuse, specular, normal, eye, posLightOrigo, lightA(posLightOrigo).rgb, 1.0);
 	}
-	{
-		vec3 p = pos;
-		vec3 light = vec3(-1.0, 1.0 + 2.0 * sin(iGlobalTime), 0.0);
-		vec3 lightPos = lightBPos(pos);
-		addLight(diffuse, specular, normal, eye, lightPos, lightB(lightPos).rgb,p , light);
+	{		
+		vec3 posLightOrigo = lightBModifyPos(pos);
+		float shadow = shadow(pos, normalize(-posLightOrigo), 0.1, length(posLightOrigo) - 1.0);
+		addLight(diffuse, specular, normal, eye, posLightOrigo, lightB(posLightOrigo).rgb, shadow);
 	}
 	color = color * (ambient + diffuse) + specular;
 	
@@ -293,7 +294,7 @@ vec3 raymarch(vec3 ro, vec3 rd, vec3 eye)
 {
 	const int maxIter = 90;
 	const float maxDis = 200.0;
-	const int jumps = 1;
+	const int jumps = 4;
 
 	vec3 col = vec3(0);	
 	float ref = 1.0;
