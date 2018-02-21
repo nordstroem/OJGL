@@ -85,8 +85,7 @@ void debugRereadShaderFiles()
 
 
 	for (auto[stringptr, path] : shaders) {
-		std::string dbg("C:\\Users\\ospe\\Source\\Repos\\OJGL\\Core\\");
-		std::ifstream shaderFile(dbg + path);
+		std::ifstream shaderFile(path);
 		if (shaderFile.fail()) {
 			LOG("failed to open shader file");
 			// TODO Maybe best to just throw error and crash here
