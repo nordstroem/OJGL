@@ -50,11 +50,6 @@ float sdBox( vec3 p, vec3 b )
   return min(max(d.x,max(d.y,d.z)),0.0) + length(max(d,0.0));
 }
 
-//float udBox( vec3 p, vec3 b )
-//{
-//  return length(max(abs(p)-b,0.0));
-//}
-
 float sdCylinder( vec3 p, float r )
 {
   return length(p.xz)-r;
@@ -130,7 +125,8 @@ vec4 evaluateLight(vec3 pos)
 	return res;
 }
 
-float shadow(in vec3 ro, in vec3 rd, float mint, float maxt)
+#ifdef SHADOWS
+float shadowFunction(in vec3 ro, in vec3 rd, float mint, float maxt)
 {
     float t = 0.1;
     for(float _ = 0.0; _ == 0.0; _ += 0.0)
@@ -145,6 +141,9 @@ float shadow(in vec3 ro, in vec3 rd, float mint, float maxt)
     }
     return 1.0;
 }
+#else
+#define shadowFunction(ro, rd, mint, maxt) 1.0
+#endif
 
 void addLight(inout vec3 diffRes, inout float specRes, vec3 normal, vec3 eye, vec3 lightPos, vec3 lightCol, float shadow)
 {
@@ -171,7 +170,7 @@ void addLightning(inout vec3 color, vec3 normal, vec3 eye, vec3 pos) {
 	{	
 		// Light with shadow
 		vec3 posLightOrigo = lightBModifyPos(pos);
-		float shadow = shadow(pos, normalize(-posLightOrigo), 0.1, length(posLightOrigo));
+		float shadow = shadowFunction(pos, normalize(-posLightOrigo), 0.1, length(posLightOrigo));
 		//if (shadow != 0.0) // TODO: Test if this gives better performance
 		addLight(diffuse, specular, normal, eye, posLightOrigo, lightB(posLightOrigo).rgb, shadow);
 	}
