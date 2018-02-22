@@ -5,13 +5,6 @@
 
 namespace ojgl {
 
-SyncChannel::SyncChannel()
-    : numNotes(-1)
-    , channel(-1)
-    , _minNote(-1)
-{
-}
-
 SyncChannel::SyncChannel(int numNotes, int minNote, int channel)
     : numNotes(numNotes)
     , channel(channel)
@@ -20,10 +13,6 @@ SyncChannel::SyncChannel(int numNotes, int minNote, int channel)
     _lastTimePerNote.resize(numNotes);
     _timesPerNote.resize(numNotes);
     _totalHitsPerNote.resize(numNotes);
-}
-
-SyncChannel::~SyncChannel()
-{
 }
 
 void SyncChannel::pushNote(int absoluteNote, timer::ms_t time)
@@ -47,15 +36,17 @@ void SyncChannel::tick(timer::ms_t currentTime)
 timer::ms_t SyncChannel::getTimeToNext(int relativeNote) const
 {
     const std::queue<timer::ms_t>& times = _timesPerNote[relativeNote];
-    if (times.empty())
+    if (times.empty()) {
         return timer::ms_t(std::numeric_limits<long long>::max());
+    }
     return times.front() - _currentTime;
 }
 
 timer::ms_t SyncChannel::getTimeSinceLast(int relativeNote) const
 {
-    if (_totalHitsPerNote[relativeNote] == 0)
+    if (_totalHitsPerNote[relativeNote] == 0) {
         return timer::ms_t(std::numeric_limits<long long>::max());
+    }
     return _currentTime - _lastTimePerNote[relativeNote];
 }
 

@@ -10,8 +10,9 @@ Window::Window(unsigned width, unsigned height, bool fullScreen)
     , _height(height)
 {
     _hWnd = CreateOpenGLWindow("minimal", 0, 0, PFD_TYPE_RGBA, 0, fullScreen);
-    if (_hWnd == NULL)
+    if (_hWnd == nullptr) {
         exit(1);
+    }
 
     _hDC = GetDC(_hWnd);
     _hRC = wglCreateContext(_hDC);
@@ -21,14 +22,15 @@ Window::Window(unsigned width, unsigned height, bool fullScreen)
     Window* pThis = this;
     SetLastError(0);
     if (!SetWindowLongPtr(_hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pThis))) {
-        if (GetLastError() != 0)
+        if (GetLastError() != 0) {
             throw std::runtime_error("SetWindowLongPtr failed in Window");
+        }
     }
 }
 
 Window::~Window()
 {
-    wglMakeCurrent(NULL, NULL);
+    wglMakeCurrent(nullptr, nullptr);
     ReleaseDC(_hWnd, _hDC);
     wglDeleteContext(_hRC);
     DestroyWindow(_hWnd);
@@ -36,7 +38,7 @@ Window::~Window()
 
 void Window::getMessages()
 {
-    while (PeekMessage(&_msg, 0, 0, 0, PM_REMOVE)) {
+    while (PeekMessage(&_msg, nullptr, 0, 0, PM_REMOVE)) {
         TranslateMessage(&_msg);
         DispatchMessage(&_msg);
     }
@@ -54,8 +56,9 @@ HWND Window::CreateFullscreenWindow(HWND hwnd, HINSTANCE hInstance)
     HMONITOR hmon = MonitorFromWindow(hwnd,
         MONITOR_DEFAULTTONEAREST);
     MONITORINFO mi = { sizeof(mi) };
-    if (!GetMonitorInfo(hmon, &mi))
-        return NULL;
+    if (!GetMonitorInfo(hmon, &mi)) {
+        return nullptr;
+    }
     return CreateWindow(TEXT("static"),
         TEXT("something interesting might go here"),
         WS_POPUP | WS_VISIBLE,
@@ -63,7 +66,7 @@ HWND Window::CreateFullscreenWindow(HWND hwnd, HINSTANCE hInstance)
         mi.rcMonitor.top,
         mi.rcMonitor.right - mi.rcMonitor.left,
         mi.rcMonitor.bottom - mi.rcMonitor.top,
-        hwnd, NULL, hInstance, 0);
+        hwnd, nullptr, hInstance, nullptr);
 }
 
 HWND Window::CreateOpenGLWindow(const char* title, int x, int y, BYTE type, DWORD flags, bool fullScreen)
@@ -73,7 +76,7 @@ HWND Window::CreateOpenGLWindow(const char* title, int x, int y, BYTE type, DWOR
     HWND hWnd;
     WNDCLASS wc;
     PIXELFORMATDESCRIPTOR pfd;
-    static HINSTANCE hInstance = 0;
+    static HINSTANCE hInstance = nullptr;
 
     /* only register the window class once - use hInstance as a flag. */
     if (!hInstance) {

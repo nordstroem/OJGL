@@ -54,8 +54,8 @@ public:
         return *this;
     }
 
-    typedef std::vector<BufferPtr>::iterator iterator;
-    typedef std::vector<BufferPtr>::const_iterator const_iterator;
+    using iterator = std::vector<BufferPtr>::iterator;
+    using const_iterator = std::vector<BufferPtr>::const_iterator;
     iterator begin() { return _inputs.begin(); }
     const_iterator begin() const { return _inputs.begin(); }
     iterator end() { return _inputs.end(); }
