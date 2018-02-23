@@ -34,6 +34,25 @@ namespace resources {
 #include "shaders/demo.fs"
         };
 
+        std::string intro{
+#include "shaders/introScene.fs"
+        };
+
+        std::string grave{
+#include "shaders/graveScene.fs"
+        };
+
+        std::string gravePost{
+#include "shaders/graveScenePost.fs"
+        };
+
+        std::string room{
+#include "shaders/roomScene.fs"
+        };
+
+        std::string roomPost{
+#include "shaders/roomScenePost.fs"
+        };
     } //namespace fragment
 
     namespace vertex {

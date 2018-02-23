@@ -26,10 +26,10 @@ uniform float CHANNEL_13_TOTAL;
 
 //////////////////////////////////////////////////////
 
-#define REFLECTION
+//#define REFLECTION
 //#define REFRACTION // TODO: I don't think this works perfectly.
 
-#define VOLUMETRIC_LIGHTNING
+//#define VOLUMETRIC_LIGHTNING
 
 #define SHADOWS
 
@@ -76,10 +76,10 @@ float specular(vec3 normal, vec3 light, vec3 viewdir, float s)
 
 vec2 map(vec3 p, vec3 rd) 
 {
-	vec2 res = vec2(-sdBox(p - vec3(0, 3.0, 0), vec3(5.0, 5.0, 10.0)), MAT_ROOM);
-	res = un(res, vec2(sdBox(p - vec3(0, 0, 3.0), vec3(1.0, 2.0, 0.1)), MAT_MIRROR));
-	res = un(res, vec2(udRoundBox(p - vec3(0,-0.5, 0), vec3(0.4), 0.1), MAT_BOX));
-	res = un(res, vec2(udRoundBox(p - vec3(0, 1.0, 0), vec3(0.25), 0.05), MAT_BOX));
+	vec2 res = vec2(-sdBox(p - vec3(0, 3.0, 0), vec3(50.0, 50.0, 100.0)), MAT_ROOM);
+	//res = un(res, vec2(sdBox(p - vec3(0, 0, 3.0), vec3(1.0, 2.0, 0.1)), MAT_MIRROR));
+	//res = un(res, vec2(udRoundBox(p - vec3(0,-0.5, 0), vec3(0.4), 0.1), MAT_BOX));
+	res = un(res, vec2(udRoundBox(p - vec3(0, 0.0, -0.5), vec3(0.5), 0.00), MAT_BOX));
 	return res;
 }
 
@@ -87,7 +87,7 @@ vec3 lightAModifyPos(vec3 p)
 {
 	float size = 4.0;
 	p.z = mod(p.z, size) - size * 0.5;
-	return p - vec3(2.0 + 3.0 * sin(iGlobalTime), 0, 0);
+	return p - vec3(2.0, 0, 0);
 }
 
 vec4 lightA(vec3 p)
@@ -101,7 +101,7 @@ vec4 lightA(vec3 p)
 
 vec3 lightBModifyPos(vec3 p)
 {
-	return p - vec3(-1.0, 1.0 + 2.0 * sin(iGlobalTime), 0.0);
+	return p - vec3(-1.0, 1.0, 0.0);
 }
 
 vec4 lightB(vec3 p)
@@ -145,16 +145,20 @@ float shadowFunction(in vec3 ro, in vec3 rd, float mint, float maxt)
 #define shadowFunction(ro, rd, mint, maxt) 1.0
 #endif
 
-void addLight(inout vec3 diffRes, inout float specRes, vec3 normal, vec3 eye, vec3 lightPos, vec3 lightCol, float shadow)
+void addLight(inout vec3 diffRes, inout float specRes, vec3 normal, vec3 eye, vec3 lightPos, vec3 lightCol, float shadow, vec3 pos)
 {
 	vec3 col = vec3(0.0);
-	vec3 invLight = normalize(-lightPos);
+	vec3 invLight = normalize(lightPos - pos);
 	float diffuse = max(0.0, dot(invLight, normal));
-	float spec = specular(normal, -invLight, normalize(eye - lightPos), 50.0);
-	float dis = length(-lightPos);
-	float str = 1.0/(0.5 + 0.01*dis + 0.1*dis*dis); 
-	diffRes += diffuse * lightCol * str * shadow;
-	specRes += spec * str * shadow;
+	float spec = specular(normal, -invLight, normalize(eye - pos), 80.0);
+	//float dis = length(lightPos);
+	float dis = length(lightPos - pos);
+	//float str = 1.0/(0.5 + 0.01*dis + 0.1*dis*dis); 
+	//diffRes += diffuse * lightCol * str * shadow;
+	//specRes += spec * str * shadow;
+
+	diffRes += diffuse * lightCol * shadow;
+	specRes += spec  *  shadow  * 1.0 * length(lightCol);
 }
 
 void addLightning(inout vec3 color, vec3 normal, vec3 eye, vec3 pos) {
@@ -165,14 +169,14 @@ void addLightning(inout vec3 color, vec3 normal, vec3 eye, vec3 pos) {
 	{
 		// Lights without shadow
 		vec3 posLightOrigo = lightAModifyPos(pos);
-		addLight(diffuse, specular, normal, eye, posLightOrigo, lightA(posLightOrigo).rgb, 1.0);
+		addLight(diffuse, specular, normal, eye, pos-posLightOrigo, lightA(posLightOrigo).rgb, 1.0, pos);
 	}
 	{	
 		// Light with shadow
 		vec3 posLightOrigo = lightBModifyPos(pos);
 		float shadow = shadowFunction(pos, normalize(-posLightOrigo), 0.1, length(posLightOrigo));
 		//if (shadow != 0.0) // TODO: Test if this gives better performance
-		addLight(diffuse, specular, normal, eye, posLightOrigo, lightB(posLightOrigo).rgb, shadow);
+		addLight(diffuse, specular, normal, eye, pos-posLightOrigo, lightB(posLightOrigo).rgb, shadow, pos);
 	}
 	color = color * (ambient + diffuse) + specular;
 }
@@ -198,7 +202,7 @@ vec3 raymarch(vec3 ro, vec3 rd, vec3 eye)
 {
 	const int maxIter = 90;
 	const float maxDis = 200.0;
-	const int jumps = 4;
+	const int jumps = 1;
 
 	vec3 col = vec3(0);	
 	float ref = 1.0;
@@ -233,10 +237,10 @@ vec3 raymarch(vec3 ro, vec3 rd, vec3 eye)
 				} else if (m == MAT_BOX) {
 					c = vec3(1.0, 0.0, 0.0);
 				} else if (m == MAT_ROOM) {
-					c = vec3(0.5);
+					c = vec3(mod(p / 10.0, 1.0));
 				}
 
-				c *= occlusion(p, normal, rd);
+				//c *= occlusion(p, normal, rd);
 				addLightning(c, normal, eye, p);
 				
 				if (end) {
@@ -266,14 +270,20 @@ vec3 raymarch(vec3 ro, vec3 rd, vec3 eye)
 	}
 	return col;
 }
-
+#define PI 3.1415
 void main()
 {
     float u = fragCoord.x * 2.0 - 1.0;
 	float v = fragCoord.y * 2.0 - 1.0;
+	float f = 1 + 0.5*sin(iGlobalTime*5.0);
+	u *= f;
+	v *= f;
 
-    vec3 eye = vec3(2 * sin(iGlobalTime), 1, 2 * cos(iGlobalTime));
-	vec3 tar = vec3(0 ,0, 0); 
+	float fov = PI - 2*atan(1.0 / f);
+	float dis = 4.0 / (2*tan(0.5*fov));
+
+    vec3 eye = vec3(0, 0, dis);
+	vec3 tar = eye + vec3(0 ,0, -1); 
 
 	vec3 dir = normalize(tar - eye);
 	vec3 right = normalize(cross(vec3(0, 1, 0), dir));

@@ -16,7 +16,7 @@
 
 using namespace ojgl;
 
-void buildSceneGraph(GLState& glState)
+void buildSceneGraph(GLState& glState, int x, int y)
 {
     glState.clearScenes();
 
@@ -31,6 +31,18 @@ void buildSceneGraph(GLState& glState)
     auto tunnel = Buffer::construct(1024, 768, "tunnel", "demo.vs", "tunnelScene.fs");
 
     auto base = Buffer::construct(1024, 768, "base", "demo.vs", "demo.fs");
+
+    auto intro = Buffer::construct(x, y, "intro", "demo.vs", "introScene.fs");
+
+    auto grave = Buffer::construct(x, y, "grave", "demo.vs", "graveScene.fs");
+    auto gravePost = Buffer::construct(x, y, "gravePost", "demo.vs", "graveScenePost.fs", { grave });
+
+    auto room = Buffer::construct(x, y, "room", "demo.vs", "roomScene.fs");
+    auto roomPost = Buffer::construct(x, y, "roomPost", "demo.vs", "roomScenePost.fs", { room });
+
+    glState.addScene(Scene{ "introScene", intro, Duration::milliseconds(7000) });
+    glState.addScene(Scene{ "graveScene", gravePost, Duration::milliseconds(3000000) });
+    glState.addScene(Scene{ "roomScene", roomPost, Duration::milliseconds(3000000) });
 
     glState.addScene(Scene{ "baseScene", base, Duration::milliseconds(3000000) });
     glState.addScene(Scene{ "DOFScene", DOFFinal, Duration::milliseconds(30000) });
@@ -48,7 +60,8 @@ std::tuple<int, int, int, std::unique_ptr<unsigned char, decltype(&stbi_image_fr
 
 int main()
 {
-
+    int x = 1920 / 2;
+    int y = 1080 / 2;
     ShaderReader::setBasePath("examples/shaders/");
     ShaderReader::preLoad("demo.vs", resources::vertex::demo);
     ShaderReader::preLoad("post.vs", resources::vertex::post);
@@ -60,15 +73,21 @@ int main()
     ShaderReader::preLoad("dofFinal.fs", resources::fragment::dofFinal);
     ShaderReader::preLoad("tunnel.fs", resources::fragment::tunnel);
 
+    ShaderReader::preLoad("introScene.fs", resources::fragment::intro);
+    ShaderReader::preLoad("graveScene.fs", resources::fragment::grave);
+    ShaderReader::preLoad("graveScenePost.fs", resources::fragment::gravePost);
+    ShaderReader::preLoad("roomScene.fs", resources::fragment::room);
+    ShaderReader::preLoad("roomScenePost.fs", resources::fragment::roomPost);
+
     const auto desiredFrameTime = Duration::milliseconds(17);
 
-    Window window(1024, 768, false);
+    Window window(x, y, false);
     GLState glState;
 
     Music music(resources::songs::song);
     music.play();
 
-    buildSceneGraph(glState);
+    buildSceneGraph(glState, x, y);
 
     auto[width, height, channels, data] = readTexture("examples/textures/image.png");
     auto texture = Texture::construct(width, height, channels, data.get());
@@ -126,7 +145,7 @@ int main()
 
         auto iGlobalTime = glState.relativeSceneTime();
 
-        glState["baseScene"]["base"] << Uniform1f("iGlobalTime", iGlobalTime.toMilliseconds() / 1000.f);
+        /* glState["baseScene"]["base"] << Uniform1f("iGlobalTime", iGlobalTime.toMilliseconds() / 1000.f);
         glState["tunnelScene"]["tunnel"] << Uniform1f("iGlobalTime", iGlobalTime.toMilliseconds() / 1000.f)
                                          << Uniform1f("CHANNEL_12_TOTAL", static_cast<GLfloat>(music.syncChannels()[12].getTotalHitsPerNote(0)))
                                          << Uniform1f("CHANNEL_13_TOTAL", static_cast<GLfloat>(music.syncChannels()[13].getTotalHitsPerNote(0)));
@@ -143,7 +162,23 @@ int main()
 
             glState["baseScene"]["base"] << Uniform1fv("CHANNEL_" + std::to_string(sc.channel) + "_TIME_SINCE", valuesSince)
                                          << Uniform1fv("CHANNEL_" + std::to_string(sc.channel) + "_TIME_TO", valuesTo);
-        }
+        }*/
+
+        glState["introScene"]["intro"] << Uniform1f("iGlobalTime", iGlobalTime.toMilliseconds() / 1000.f);
+        glState["graveScene"]["grave"] << Uniform1f("iGlobalTime", iGlobalTime.toMilliseconds() / 1000.f);
+        glState["graveScene"]["gravePost"] << Uniform1f("iGlobalTime", iGlobalTime.toMilliseconds() / 1000.f);
+        glState["roomScene"]["room"] << Uniform1f("iGlobalTime", iGlobalTime.toMilliseconds() / 1000.f);
+        glState["roomScene"]["roomPost"] << Uniform1f("iGlobalTime", iGlobalTime.toMilliseconds() / 1000.f);
+
+        glState["graveScene"]["gravePost"] << Uniform1f("CHANNEL_4_TO", min(music.syncChannels()[4].getTimeToNext(0).toMilliseconds(), music.syncChannels()[4].getTimeToNext(1).toMilliseconds()) / 1000.f);
+        glState["graveScene"]["gravePost"] << Uniform1f("CHANNEL_4_TOTAL", music.syncChannels()[4].getTotalHitsPerNote(0) + music.syncChannels()[4].getTotalHitsPerNote(1));
+        glState["graveScene"]["gravePost"] << Uniform1f("CHANNEL_11_SINCE", music.syncChannels()[11].getTimeSinceLast(0).toMilliseconds() / 1000.f);
+        glState["graveScene"]["grave"] << Uniform1f("CHANNEL_11_SINCE", music.syncChannels()[11].getTimeSinceLast(0).toMilliseconds() / 1000.f);
+        glState["graveScene"]["grave"] << Uniform1f("CHANNEL_11_TOTAL", music.syncChannels()[11].getTotalHits());
+        std::vector<float> since;
+        since.push_back(music.syncChannels()[4].getTimeSinceLast(0).toMilliseconds() / 1000.f);
+        since.push_back(music.syncChannels()[4].getTimeSinceLast(1).toMilliseconds() / 1000.f);
+        glState["graveScene"]["grave"] << Uniform1fv("CHANNEL_4_SINCE", since);
 
         glState.render();
         if (!glState.isPaused()) {
