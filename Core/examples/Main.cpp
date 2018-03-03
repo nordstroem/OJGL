@@ -3,7 +3,6 @@
 #include "thirdparty\stb_image.h"
 #include "utility\Log.h"
 #include "utility\Timer.hpp"
-#include <cassert>
 #include <fstream>
 #include <functional>
 #include <iostream>
@@ -83,9 +82,9 @@ void debugRereadShaderFiles()
 
     shaders[&fragmentBaseScene] = "examples/" SHADER_FRAGMENT_BASE_SCENE;
 
-    for (auto [stringptr, path] : shaders) {
+    for (auto[stringptr, path] : shaders) {
         std::ifstream shaderFile(path);
-        assert(!shaderFile.fail());
+        _ASSERTE(!shaderFile.fail());
 
         std::stringstream buffer;
         buffer << shaderFile.rdbuf();
@@ -142,7 +141,7 @@ int main()
 
     buildSceneGraph(glState);
 
-    auto [width, height, channels, data] = readTexture("examples/textures/image.png");
+    auto[width, height, channels, data] = readTexture("examples/textures/image.png");
     auto texture = Texture::construct(width, height, channels, data.get());
 
     glState[2]["main"] << Uniform1t("image", texture);

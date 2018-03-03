@@ -1,7 +1,6 @@
 #include "Scene.h"
 #include "utility\Log.h"
 #include <algorithm>
-#include <cassert>
 #include <stdexcept>
 #include <unordered_set>
 
@@ -22,7 +21,7 @@ Buffer& Scene::operator[](const std::string& name)
 {
     auto buffers = this->buffers();
     auto res = std::find_if(buffers.begin(), buffers.end(), [&](auto b) { return b->name() == name; });
-    assert(res != buffers.end());
+    _ASSERTE(res != buffers.end());
     return **res;
 }
 
