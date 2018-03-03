@@ -29,6 +29,7 @@ public:
     timer::ms_t elapsedTime() const;
 
     Scene& operator[](size_t i);
+    Scene& operator[](const std::string& name);
 
 private:
     void setupQuad();

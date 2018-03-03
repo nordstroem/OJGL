@@ -38,7 +38,7 @@ std::shared_ptr<Buffer> Buffer::construct(unsigned width, unsigned height, const
     return std::shared_ptr<Buffer>(new Buffer(width, height, name, vertex, fragment, buffers));
 }
 
-std::string Buffer::name()
+std::string Buffer::name() const
 {
     return _name;
 }

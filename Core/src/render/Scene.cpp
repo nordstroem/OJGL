@@ -6,15 +6,27 @@
 
 namespace ojgl {
 
-Scene::Scene(const std::shared_ptr<Buffer>& buffer, timer::ms_t duration)
+Scene::Scene(const std::string& name, const std::shared_ptr<Buffer>& buffer, timer::ms_t duration)
     : _mainBuffer(std::move(buffer))
     , _duration(duration)
+    , _name(name)
+
 {
     for (auto& b : buffers()) {
         if (b != _mainBuffer) {
             b->generateFBO();
         }
     }
+}
+
+Scene::Scene(const std::shared_ptr<Buffer>& buffer, timer::ms_t duration)
+    : Scene("default", buffer, duration)
+{
+}
+
+std::string Scene::name() const
+{
+    return _name;
 }
 
 Buffer& Scene::operator[](const std::string& name)
