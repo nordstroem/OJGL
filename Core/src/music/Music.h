@@ -10,7 +10,7 @@ namespace ojgl {
 class Music {
 
 public:
-    Music(unsigned char* song);
+    explicit Music(unsigned char* song);
     ~Music();
     void play();
     void updateSync();

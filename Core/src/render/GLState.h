@@ -32,8 +32,6 @@ public:
 
 private:
     void setupQuad();
-    GLuint getVAO() const;
-    GLuint getVBO() const;
 
     std::vector<Scene> _scenes;
     timer::time_point_t _startTime;

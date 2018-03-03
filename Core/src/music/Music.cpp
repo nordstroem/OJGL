@@ -8,9 +8,9 @@
 namespace ojgl {
 
 Music::Music(unsigned char* song)
+    : _song(song)
+    , _player(std::make_unique<V2MPlayer>())
 {
-    this->_player = std::make_unique<V2MPlayer>();
-    this->_song = song;
 }
 
 Music::~Music()

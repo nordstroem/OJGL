@@ -6,7 +6,7 @@
 
 namespace ojgl {
 
-Scene::Scene(std::shared_ptr<Buffer> buffer, timer::ms_t duration)
+Scene::Scene(const std::shared_ptr<Buffer>& buffer, timer::ms_t duration)
     : _mainBuffer(std::move(buffer))
     , _duration(duration)
 {

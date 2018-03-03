@@ -51,7 +51,7 @@ private:
 
 class Uniform1t {
 public:
-    Uniform1t(const std::string& location, std::shared_ptr<Texture> texture)
+    Uniform1t(const std::string& location, const std::shared_ptr<Texture>& texture)
         : _location(location)
         , _texture(texture){};
     std::string location() const { return _location; }
