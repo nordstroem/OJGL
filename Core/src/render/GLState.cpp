@@ -94,16 +94,6 @@ void GLState::clearScenes()
     _scenes.clear();
 }
 
-GLuint GLState::getVAO() const
-{
-    return this->_vaoID;
-}
-
-GLuint GLState::getVBO() const
-{
-    return this->_vboID;
-}
-
 timer::time_point_t GLState::startTime() const
 {
     return this->_startTime;
