@@ -21,7 +21,7 @@ public:
     unsigned getProgramID() const;
     unsigned fboTextureID();
     void render();
-    std::string name();
+    std::string name() const;
     void generateFBO();
 
 private:

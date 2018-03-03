@@ -10,11 +10,11 @@
 namespace ojgl {
 
 GLState::GLState()
+    : _startTime(timer::clock_t::now())
+    , _paused(false)
 {
     load_gl_functions();
     setupQuad();
-    _startTime = timer::clock_t::now();
-    _paused = false;
 }
 
 GLState::~GLState()
@@ -55,6 +55,13 @@ void GLState::render()
 Scene& GLState::operator[](size_t i)
 {
     return _scenes[i];
+}
+
+Scene& GLState::operator[](const std::string& name)
+{
+    auto res = std::find_if(_scenes.begin(), _scenes.end(), [&](const auto& s) { return s.name() == name; });
+    _ASSERTE(res != _scenes.end());
+    return *res;
 }
 
 void GLState::setupQuad()
