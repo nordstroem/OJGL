@@ -54,12 +54,10 @@ public:
         return *this;
     }
 
-    using iterator = std::vector<BufferPtr>::iterator;
-    using const_iterator = std::vector<BufferPtr>::const_iterator;
-    iterator begin() { return _inputs.begin(); }
-    const_iterator begin() const { return _inputs.begin(); }
-    iterator end() { return _inputs.end(); }
-    const_iterator end() const { return _inputs.end(); }
+    auto begin() { return _inputs.begin(); }
+    auto begin() const { return _inputs.cbegin(); }
+    auto end() { return _inputs.end(); }
+    auto end() const { return _inputs.cend(); }
 };
 
 } //namespace ojgl
