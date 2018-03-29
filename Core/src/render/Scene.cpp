@@ -6,7 +6,7 @@
 
 namespace ojgl {
 
-Scene::Scene(const std::string& name, const std::shared_ptr<Buffer>& buffer, timer::ms_t duration)
+Scene::Scene(const std::string& name, const std::shared_ptr<Buffer>& buffer, timer::Milliseconds duration)
     : _mainBuffer(std::move(buffer))
     , _duration(duration)
     , _name(name)
@@ -19,7 +19,7 @@ Scene::Scene(const std::string& name, const std::shared_ptr<Buffer>& buffer, tim
     }
 }
 
-Scene::Scene(const std::shared_ptr<Buffer>& buffer, timer::ms_t duration)
+Scene::Scene(const std::shared_ptr<Buffer>& buffer, timer::Milliseconds duration)
     : Scene("default", buffer, duration)
 {
 }
@@ -61,7 +61,7 @@ std::unordered_set<std::shared_ptr<Buffer>> Scene::buffers()
     return checked;
 }
 
-timer::ms_t Scene::duration() const
+timer::Milliseconds Scene::duration() const
 {
     return this->_duration;
 }

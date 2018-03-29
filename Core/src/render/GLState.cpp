@@ -10,7 +10,7 @@
 namespace ojgl {
 
 GLState::GLState()
-    : _startTime(timer::clock_t::now())
+    : _startTime(timer::now())
     , _paused(false)
 {
     load_gl_functions();
@@ -23,7 +23,7 @@ GLState::~GLState()
     glDeleteBuffers(1, &_vboID);
 }
 
-void GLState::setStartTime(timer::time_point_t time)
+void GLState::setStartTime(timer::Timepoint time)
 {
     _startTime = time;
 }
@@ -38,7 +38,7 @@ void GLState::render()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glBindVertexArray(_vaoID);
 
-    auto t = timer::ms_t(0);
+    auto t = timer::Milliseconds(0);
     auto elapsed = elapsedTime();
     for (auto& v : _scenes) {
         if (elapsed < v.duration() + t) {
@@ -83,13 +83,13 @@ void GLState::setupQuad()
     glBindVertexArray(0);
 }
 
-timer::ms_t GLState::elapsedTime() const
+timer::Milliseconds GLState::elapsedTime() const
 {
-    auto elapsed = timer::clock_t::now() - _startTime;
+    auto elapsed = timer::now() - _startTime;
     if (_paused) {
         elapsed = _pauseTime - _startTime;
     }
-    return timer::duration_cast<timer::ms_t>(elapsed);
+    return timer::duration_cast<timer::Milliseconds>(elapsed);
 }
 
 bool GLState::isPaused()
@@ -102,7 +102,7 @@ void GLState::clearScenes()
     _scenes.clear();
 }
 
-timer::time_point_t GLState::startTime() const
+timer::Timepoint GLState::startTime() const
 {
     return this->_startTime;
 }
@@ -110,15 +110,15 @@ timer::time_point_t GLState::startTime() const
 void GLState::togglePause()
 {
     if (_paused) {
-        _startTime += timer::clock_t::now() - _pauseTime;
+        _startTime += timer::now() - _pauseTime;
     }
     _paused = !_paused;
-    _pauseTime = timer::clock_t::now();
+    _pauseTime = timer::now();
 }
 
-timer::ms_t GLState::relativeSceneTime() const
+timer::Milliseconds GLState::relativeSceneTime() const
 {
-    auto t = timer::ms_t(0);
+    auto t = timer::Milliseconds(0);
     auto elapsed = elapsedTime();
     for (auto& v : _scenes) {
         if (elapsed < v.duration() + t) {
@@ -131,13 +131,13 @@ timer::ms_t GLState::relativeSceneTime() const
 
 void GLState::restart()
 {
-    _startTime = timer::clock_t::now();
+    _startTime = timer::now();
     _pauseTime = _startTime;
 }
 
 void GLState::nextScene()
 {
-    auto t = timer::ms_t(0);
+    auto t = timer::Milliseconds(0);
     auto elapsed = elapsedTime();
     for (auto& v : _scenes) {
         if (elapsed < v.duration() + t) {
@@ -150,8 +150,8 @@ void GLState::nextScene()
 
 void GLState::previousScene()
 {
-    auto t = timer::ms_t(0);
-    auto prevDur = timer::ms_t(0);
+    auto t = timer::Milliseconds(0);
+    auto prevDur = timer::Milliseconds(0);
     auto elapsed = elapsedTime();
     for (auto& v : _scenes) {
         if (elapsed < v.duration() + t) {

@@ -15,16 +15,16 @@ SyncChannel::SyncChannel(int numNotes, int minNote, int channel)
     _totalHitsPerNote.resize(numNotes);
 }
 
-void SyncChannel::pushNote(int absoluteNote, timer::ms_t time)
+void SyncChannel::pushNote(int absoluteNote, timer::Milliseconds time)
 {
     _timesPerNote[absoluteNote - _minNote].push(time);
 }
 
-void SyncChannel::tick(timer::ms_t currentTime)
+void SyncChannel::tick(timer::Milliseconds currentTime)
 {
     _currentTime = currentTime;
     for (int note = 0; note < numNotes; note++) {
-        std::queue<timer::ms_t>& s = _timesPerNote[note];
+        std::queue<timer::Milliseconds>& s = _timesPerNote[note];
         while (!s.empty() && s.front() <= _currentTime) {
             _lastTimePerNote[note] = _currentTime;
             _totalHitsPerNote[note]++;
@@ -33,19 +33,19 @@ void SyncChannel::tick(timer::ms_t currentTime)
     }
 }
 
-timer::ms_t SyncChannel::getTimeToNext(int relativeNote) const
+timer::Milliseconds SyncChannel::getTimeToNext(int relativeNote) const
 {
-    const std::queue<timer::ms_t>& times = _timesPerNote[relativeNote];
+    const std::queue<timer::Milliseconds>& times = _timesPerNote[relativeNote];
     if (times.empty()) {
-        return timer::ms_t(std::numeric_limits<long long>::max());
+        return timer::Milliseconds(std::numeric_limits<long long>::max());
     }
     return times.front() - _currentTime;
 }
 
-timer::ms_t SyncChannel::getTimeSinceLast(int relativeNote) const
+timer::Milliseconds SyncChannel::getTimeSinceLast(int relativeNote) const
 {
     if (_totalHitsPerNote[relativeNote] == 0) {
-        return timer::ms_t(std::numeric_limits<long long>::max());
+        return timer::Milliseconds(std::numeric_limits<long long>::max());
     }
     return _currentTime - _lastTimePerNote[relativeNote];
 }

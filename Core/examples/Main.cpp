@@ -115,10 +115,10 @@ void buildSceneGraph(GLState& glState)
 
     auto base = Buffer::construct(1024, 768, "base", vertexShader, fragmentBaseScene);
 
-    glState.addScene(Scene{ "baseScene", base, timer::ms_t(3000000) });
-    glState.addScene(Scene{ "DOFScene", DOFFinal, timer::ms_t(30000) });
-    glState.addScene(Scene{ "tunnelScene", tunnel, timer::ms_t(30000) });
-    glState.addScene(Scene{ "imageScene", pre, timer::ms_t(30000) });
+    glState.addScene(Scene{ "baseScene", base, timer::Milliseconds(3000000) });
+    glState.addScene(Scene{ "DOFScene", DOFFinal, timer::Milliseconds(30000) });
+    glState.addScene(Scene{ "tunnelScene", tunnel, timer::Milliseconds(30000) });
+    glState.addScene(Scene{ "imageScene", pre, timer::Milliseconds(30000) });
 }
 
 std::tuple<int, int, int, std::unique_ptr<unsigned char, decltype(&stbi_image_free)>> readTexture(const std::string& filepath)
@@ -131,7 +131,7 @@ std::tuple<int, int, int, std::unique_ptr<unsigned char, decltype(&stbi_image_fr
 
 int main()
 {
-    const timer::ms_t desiredFrameTime(17);
+    const timer::Milliseconds desiredFrameTime(17);
 
     Window window(1024, 768, false);
     GLState glState;
@@ -145,9 +145,9 @@ int main()
     auto texture = Texture::construct(width, height, channels, data.get());
 
     glState["imageScene"]["main"] << Uniform1t("image", texture);
-    glState.setStartTime(timer::clock_t::now());
+    glState.setStartTime(timer::now());
 
-    auto previousPrintTime = timer::clock_t::now();
+    auto previousPrintTime = timer::now();
     while (true) {
         timer::Timer t;
         t.start();
@@ -162,11 +162,11 @@ int main()
             bool timeChanged(false);
             LOG_INFO("key: " << key);
             if (key == Window::KEY_LEFT) {
-                glState.changeTime(timer::ms_t(-1000));
+                glState.changeTime(timer::Milliseconds(-1000));
                 timeChanged = true;
             }
             if (key == Window::KEY_RIGHT) {
-                glState.changeTime(timer::ms_t(1000));
+                glState.changeTime(timer::Milliseconds(1000));
                 timeChanged = true;
             }
             if (key == Window::KEY_SPACE) {
@@ -227,11 +227,11 @@ int main()
         }
         t.end();
 
-        auto durationMs = t.time<timer::ms_t>();
-        auto timeSinceLastPrint = timer::clock_t::now() - previousPrintTime;
-        if (timeSinceLastPrint > timer::s_t(2)) {
+        auto durationMs = t.time<timer::Milliseconds>();
+        auto timeSinceLastPrint = timer::now() - previousPrintTime;
+        if (timeSinceLastPrint > timer::Seconds(2)) {
             LOG_INFO("Frame time: " << durationMs.count() << "ms");
-            previousPrintTime = timer::clock_t::now();
+            previousPrintTime = timer::now();
         }
     }
     return 0;

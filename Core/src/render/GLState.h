@@ -16,7 +16,7 @@ public:
 
     void render();
     void addScene(const Scene& scene);
-    void setStartTime(timer::time_point_t time);
+    void setStartTime(timer::Timepoint time);
     void restart();
     void nextScene();
     void previousScene();
@@ -24,9 +24,9 @@ public:
     bool isPaused();
     void clearScenes();
 
-    timer::time_point_t startTime() const;
-    timer::ms_t relativeSceneTime() const;
-    timer::ms_t elapsedTime() const;
+    timer::Timepoint startTime() const;
+    timer::Milliseconds relativeSceneTime() const;
+    timer::Milliseconds elapsedTime() const;
 
     Scene& operator[](size_t i);
     Scene& operator[](const std::string& name);
@@ -35,19 +35,19 @@ private:
     void setupQuad();
 
     std::vector<Scene> _scenes;
-    timer::time_point_t _startTime;
-    timer::time_point_t _pauseTime;
+    timer::Timepoint _startTime;
+    timer::Timepoint _pauseTime;
     GLuint _vaoID;
     GLuint _vboID;
     bool _paused;
 
 public:
     template <typename T>
-    void changeTime(timer::duration_t<T> time);
+    void changeTime(timer::Duration<T> time);
 };
 
 template <typename T>
-inline void GLState::changeTime(timer::duration_t<T> time)
+inline void GLState::changeTime(timer::Duration<T> time)
 {
     _startTime -= time;
 }

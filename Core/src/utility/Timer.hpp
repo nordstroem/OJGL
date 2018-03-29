@@ -6,12 +6,12 @@ namespace ojgl {
 
 namespace timer {
     template <typename T>
-    using duration_t = std::chrono::duration<long long, T>;
-    using clock_t = std::chrono::high_resolution_clock;
-    using time_point_t = std::chrono::high_resolution_clock::time_point;
-    using ms_t = std::chrono::milliseconds;
-    using ns_t = std::chrono::nanoseconds;
-    using s_t = std::chrono::seconds;
+    using Duration = std::chrono::duration<long long, T>;
+
+    using Timepoint = std::chrono::high_resolution_clock::time_point;
+    using Milliseconds = std::chrono::milliseconds;
+    using Nanoseconds = std::chrono::nanoseconds;
+    using Seconds = std::chrono::seconds;
 
     class Timer {
     public:
@@ -25,11 +25,11 @@ namespace timer {
         auto elapsed() { return std::chrono::duration_cast<T>(std::chrono::high_resolution_clock::now() - startTime); };
 
     private:
-        time_point_t startTime, endTime;
+        Timepoint startTime, endTime;
     };
 
     template <typename T, typename Fun, typename... Args>
-    auto funcTime(Fun&& f, Args&&... args)
+    typename Duration<T>::rep funcTime(Fun&& f, Args&&... args)
     {
         auto t1 = std::chrono::high_resolution_clock::now();
         f(std::forward<Args>(args)...);
@@ -38,10 +38,9 @@ namespace timer {
     }
 
     template <typename T, typename P>
-    auto duration_cast(duration_t<P> dur)
-    {
-        return std::chrono::duration_cast<T>(dur);
-    }
+    T duration_cast(Duration<P> dur) { return std::chrono::duration_cast<T>(dur); }
+
+    Timepoint inline now() { return std::chrono::high_resolution_clock::now(); }
 
 } //namespace timer
 } //namespace ojgl
