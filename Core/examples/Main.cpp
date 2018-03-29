@@ -147,6 +147,7 @@ int main()
     glState["imageScene"]["main"] << Uniform1t("image", texture);
     glState.setStartTime(timer::clock_t::now());
 
+    auto previousPrintTime = timer::clock_t::now();
     while (true) {
         timer::Timer t;
         t.start();
@@ -225,9 +226,12 @@ int main()
             music.updateSync();
         }
         t.end();
+
         auto durationMs = t.time<timer::ms_t>();
-        if (durationMs < desiredFrameTime) {
-            std::this_thread::sleep_for(desiredFrameTime - durationMs);
+        auto timeSinceLastPrint = timer::clock_t::now() - previousPrintTime;
+        if (timeSinceLastPrint > timer::s_t(2)) {
+            LOG_INFO("Frame time: " << durationMs.count() << "ms");
+            previousPrintTime = timer::clock_t::now();
         }
     }
     return 0;
