@@ -4,7 +4,7 @@ namespace ojgl {
 
 struct SyncEvent {
 
-    SyncEvent(int channel, int note, int velocity, timer::Milliseconds time)
+    SyncEvent(int channel, int note, int velocity, Milliseconds time)
         : channel(channel)
         , note(note)
         , velocity(velocity)
@@ -14,6 +14,6 @@ struct SyncEvent {
     const int channel;
     const int note;
     const int velocity;
-    const timer::Milliseconds time;
+    const Milliseconds time;
 };
 } //namespace ojgl

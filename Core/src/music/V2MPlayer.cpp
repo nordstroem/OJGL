@@ -263,7 +263,7 @@ void V2MPlayer::Tick()
             sc.noteptr++;
             UPDATENT2(sc.notenr, sc.notent, sc.noteptr, bc.notenum);
             int index = m_state.bar * 32 + (m_state.beat * 128 + m_state.tick) / 16;
-            timer::Milliseconds time(_barTickToMs[index]);
+            Milliseconds time(_barTickToMs[index]);
             std::lock_guard<std::mutex> lock(_syncEventsMutex);
             _syncEvents.push_back(SyncEvent(ch, sc.lastnte, sc.lastvel, time));
         }
