@@ -22,7 +22,7 @@ void Music::play()
 {
     this->_player->Init();
     this->_player->Open(this->_song);
-    setTime(timer::ms_t(0));
+    setTime(Milliseconds(0));
 }
 
 void Music::_initSync()
@@ -61,7 +61,7 @@ void Music::_initSync()
 
 void Music::updateSync()
 {
-    auto time = timer::duration_cast<timer::ms_t>(timer::clock_t::now() - _startTime);
+    auto time = duration_cast<Milliseconds>(now() - _startTime);
     for (auto& kv : syncChannels) {
         kv.second.tick(time);
     }

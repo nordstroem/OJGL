@@ -10,18 +10,18 @@ namespace ojgl {
 
 class Scene {
 public:
-    Scene(const std::shared_ptr<Buffer>& buffer, timer::ms_t duration);
-    Scene(const std::string& name, const std::shared_ptr<Buffer>& buffer, timer::ms_t duration);
+    Scene(const std::shared_ptr<Buffer>& buffer, Milliseconds duration);
+    Scene(const std::string& name, const std::shared_ptr<Buffer>& buffer, Milliseconds duration);
 
     void render();
     std::string name() const;
     Buffer& operator[](const std::string& name);
-    timer::ms_t duration() const;
+    Milliseconds duration() const;
 
 private:
     std::unordered_set<std::shared_ptr<Buffer>> buffers();
     std::shared_ptr<Buffer> _mainBuffer;
-    timer::ms_t _duration;
+    Milliseconds _duration;
     std::string _name;
 };
 } //namespace ojgl
