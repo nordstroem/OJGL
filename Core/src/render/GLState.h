@@ -25,8 +25,8 @@ public:
     void clearScenes();
 
     Timepoint startTime() const;
-    Milliseconds relativeSceneTime() const;
-    Milliseconds elapsedTime() const;
+    Duration relativeSceneTime() const;
+    Duration elapsedTime() const;
 
     Scene& operator[](size_t i);
     Scene& operator[](const std::string& name);
@@ -42,12 +42,10 @@ private:
     bool _paused;
 
 public:
-    template <typename T>
-    void changeTime(Duration<T> time);
+    void changeTime(Duration time);
 };
 
-template <typename T>
-inline void GLState::changeTime(Duration<T> time)
+inline void GLState::changeTime(Duration time)
 {
     _startTime -= time;
 }

@@ -1,10 +1,12 @@
 #pragma once
 
+#include "utility\Timer.hpp"
+
 namespace ojgl {
 
 struct SyncEvent {
 
-    SyncEvent(int channel, int note, int velocity, Milliseconds time)
+    SyncEvent(int channel, int note, int velocity, Duration time)
         : channel(channel)
         , note(note)
         , velocity(velocity)
@@ -14,6 +16,6 @@ struct SyncEvent {
     const int channel;
     const int note;
     const int velocity;
-    const Milliseconds time;
+    const Duration time;
 };
 } //namespace ojgl

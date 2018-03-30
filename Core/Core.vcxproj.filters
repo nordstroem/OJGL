@@ -26,6 +26,8 @@
     <ClCompile Include="src\render\Buffer.cpp" />
     <ClCompile Include="src\render\Scene.cpp" />
     <ClCompile Include="src\render\Texture.cpp" />
+    <ClCompile Include="src\utility\Duration.cpp" />
+    <ClCompile Include="src\utility\Timepoint.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\music\V2MPlayer.h" />
@@ -46,6 +48,8 @@
     <ClInclude Include="src\thirdparty\libv2.h" />
     <ClInclude Include="src\thirdparty\stb_image.h" />
     <ClInclude Include="src\utility\Log.h" />
+    <ClInclude Include="src\utility\Duration.h" />
+    <ClInclude Include="src\utility\Timepoint.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="examples\textures\image.png" />

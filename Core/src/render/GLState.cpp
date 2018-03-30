@@ -10,7 +10,8 @@
 namespace ojgl {
 
 GLState::GLState()
-    : _startTime(now())
+    : _startTime(Timepoint::now())
+    , _pauseTime(Timepoint::now())
     , _paused(false)
 {
     load_gl_functions();
@@ -38,7 +39,7 @@ void GLState::render()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glBindVertexArray(_vaoID);
 
-    auto t = Milliseconds(0);
+    auto t = Duration::milliseconds(0);
     auto elapsed = elapsedTime();
     for (auto& v : _scenes) {
         if (elapsed < v.duration() + t) {
@@ -83,13 +84,13 @@ void GLState::setupQuad()
     glBindVertexArray(0);
 }
 
-Milliseconds GLState::elapsedTime() const
+Duration GLState::elapsedTime() const
 {
-    auto elapsed = now() - _startTime;
+    auto elapsed = Timepoint::now() - _startTime;
     if (_paused) {
         elapsed = _pauseTime - _startTime;
     }
-    return duration_cast<Milliseconds>(elapsed);
+    return elapsed;
 }
 
 bool GLState::isPaused()
@@ -110,15 +111,15 @@ Timepoint GLState::startTime() const
 void GLState::togglePause()
 {
     if (_paused) {
-        _startTime += now() - _pauseTime;
+        _startTime += Timepoint::now() - _pauseTime;
     }
     _paused = !_paused;
-    _pauseTime = now();
+    _pauseTime = Timepoint::now();
 }
 
-Milliseconds GLState::relativeSceneTime() const
+Duration GLState::relativeSceneTime() const
 {
-    auto t = Milliseconds(0);
+    auto t = Duration::milliseconds(0);
     auto elapsed = elapsedTime();
     for (auto& v : _scenes) {
         if (elapsed < v.duration() + t) {
@@ -131,13 +132,13 @@ Milliseconds GLState::relativeSceneTime() const
 
 void GLState::restart()
 {
-    _startTime = now();
+    _startTime = Timepoint::now();
     _pauseTime = _startTime;
 }
 
 void GLState::nextScene()
 {
-    auto t = Milliseconds(0);
+    auto t = Duration::milliseconds(0);
     auto elapsed = elapsedTime();
     for (auto& v : _scenes) {
         if (elapsed < v.duration() + t) {
@@ -150,8 +151,8 @@ void GLState::nextScene()
 
 void GLState::previousScene()
 {
-    auto t = Milliseconds(0);
-    auto prevDur = Milliseconds(0);
+    auto t = Duration::milliseconds(0);
+    auto prevDur = Duration::milliseconds(0);
     auto elapsed = elapsedTime();
     for (auto& v : _scenes) {
         if (elapsed < v.duration() + t) {

@@ -10,6 +10,7 @@ namespace ojgl {
 Music::Music(unsigned char* song)
     : _song(song)
     , _player(std::make_unique<V2MPlayer>())
+    , _startTime(Timepoint::now())
 {
 }
 
@@ -22,7 +23,7 @@ void Music::play()
 {
     this->_player->Init();
     this->_player->Open(this->_song);
-    setTime(Milliseconds(0));
+    setTime(Duration::milliseconds(0));
 }
 
 void Music::_initSync()
@@ -61,7 +62,7 @@ void Music::_initSync()
 
 void Music::updateSync()
 {
-    auto time = duration_cast<Milliseconds>(now() - _startTime);
+    auto time = Timepoint::now() - _startTime;
     for (auto& kv : syncChannels) {
         kv.second.tick(time);
     }
@@ -70,5 +71,22 @@ void Music::updateSync()
 void Music::stop()
 {
     this->_player->Stop();
+}
+
+void Music::setTime(Duration time)
+{
+    auto ms = static_cast<sU32>(time.toMilliseconds());
+    this->_player->Stop();
+    dsClose();
+    auto events = _player->popSyncEvents();
+    this->_player->Play(ms);
+    while (this->_player->IsPlaying()) {
+        this->_player->Tick();
+    }
+    this->_player->Stop();
+    _initSync();
+    dsInit(this->_player->RenderProxy, this->_player.get(), GetForegroundWindow());
+    this->_player->Play(ms);
+    _startTime = Timepoint::now() - time;
 }
 } //namespace ojgl
