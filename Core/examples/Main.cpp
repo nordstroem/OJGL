@@ -204,11 +204,11 @@ int main()
 
         glState["baseScene"]["base"] << Uniform1f("iGlobalTime", iGlobalTime.toMilliseconds() / 1000.f);
         glState["tunnelScene"]["tunnel"] << Uniform1f("iGlobalTime", iGlobalTime.toMilliseconds() / 1000.f)
-                                         << Uniform1f("CHANNEL_12_TOTAL", static_cast<GLfloat>(music.syncChannels[12].getTotalHitsPerNote(0)))
-                                         << Uniform1f("CHANNEL_13_TOTAL", static_cast<GLfloat>(music.syncChannels[13].getTotalHitsPerNote(0)));
+                                         << Uniform1f("CHANNEL_12_TOTAL", static_cast<GLfloat>(music.syncChannels()[12].getTotalHitsPerNote(0)))
+                                         << Uniform1f("CHANNEL_13_TOTAL", static_cast<GLfloat>(music.syncChannels()[13].getTotalHitsPerNote(0)));
 
-        for (auto& kv : music.syncChannels) {
-            auto sc = kv.second;
+        for (auto& kv : music.syncChannels()) {
+            const auto& sc = kv.second;
             std::vector<GLfloat> valuesSince;
             std::vector<GLfloat> valuesTo;
 

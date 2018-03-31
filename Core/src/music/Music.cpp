@@ -52,18 +52,18 @@ void Music::_initSync()
     for (auto& c : channels) {
         int numNotes = channelMaxNote[c] - channelMinNote[c] + 1;
         LOG_INFO("Channel " << c << " with " << numNotes << " notes");
-        syncChannels[c] = SyncChannel(numNotes, channelMinNote[c], c);
+        _syncChannels[c] = SyncChannel(numNotes, channelMinNote[c], c);
     }
 
     for (auto& se : events) {
-        syncChannels[se.channel].pushNote(se.note, se.time);
+        _syncChannels[se.channel].pushNote(se.note, se.time);
     }
 }
 
 void Music::updateSync()
 {
     auto time = Timepoint::now() - _startTime;
-    for (auto& kv : syncChannels) {
+    for (auto& kv : _syncChannels) {
         kv.second.tick(time);
     }
 }
@@ -71,6 +71,11 @@ void Music::updateSync()
 void Music::stop()
 {
     this->_player->Stop();
+}
+
+std::unordered_map<int, SyncChannel>& Music::syncChannels()
+{
+    return _syncChannels;
 }
 
 void Music::setTime(Duration time)

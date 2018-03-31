@@ -1,4 +1,5 @@
 #include "SyncChannel.h"
+#include "utility\Log.h"
 #include <iostream>
 #include <numeric>
 #include <stdexcept>
