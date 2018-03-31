@@ -14,9 +14,4 @@ Timepoint& Timepoint::operator-=(const Duration& other)
     this->_timepoint -= other.backend();
     return *this;
 }
-
-Timepoint& operator+=(Timepoint& left, const Duration& right)
-{
-    return left;
-}
 }
