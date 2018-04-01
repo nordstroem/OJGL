@@ -1,8 +1,6 @@
 #include "OJGL.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "thirdparty\stb_image.h"
-#include "utility\Log.h"
-#include "utility\Timer.hpp"
 #include <fstream>
 #include <functional>
 #include <iostream>

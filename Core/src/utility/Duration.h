@@ -7,6 +7,8 @@ namespace ojgl {
 
 class Duration {
 
+    friend class Timepoint;
+
     using Backend = std::chrono::nanoseconds;
 
 public:
@@ -34,9 +36,6 @@ public:
     Duration& operator+=(const Duration& other);
 
     friend std::ostream& operator<<(std::ostream& left, const Duration& right);
-
-    // TODO remove this.
-    Backend backend() const { return _duration; }
 
 public:
     static Duration seconds(long long s) { return Duration(std::chrono::seconds(s)); }
