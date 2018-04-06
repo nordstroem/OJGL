@@ -32,7 +32,7 @@ float rect(vec2 p, float w, float h)
 {
 	return rect(p, vec2(w, h));
 }
-void mainImage(out vec4 fragColor, in vec2 fragCoord)
+void mainImage()
 {
 	vec2 p = fragCoord;
 	vec3 color = vec3(0.2);
@@ -77,12 +77,12 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 			color = vec3(1.0, 0.0, 1.0);
 	}
 
-	fragColor = mix(texture2D(image, vec2(fragCoord.x, 1.0 - fragCoord.y)), vec4(color, 1.0), 1.0-pow(0.995, CHANNEL_13_TIME_SINCE[0]));
+	fragColor.rgb = color;
 }
 
 void main()
 {
-	mainImage(fragColor, fragCoord);
+	mainImage();
 }
 
 )"" 

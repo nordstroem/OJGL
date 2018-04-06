@@ -59,7 +59,7 @@ std::string fragmentTunnelScene{
 #include SHADER_FRAGMENT_TUNNEL_SCENE
 };
 
-#define SHADER_FRAGMENT_BASE_SCENE "shaders/baseScene.fs"
+#define SHADER_FRAGMENT_BASE_SCENE "shaders/demo.fs"
 std::string fragmentBaseScene{
 #include SHADER_FRAGMENT_BASE_SCENE
 };
@@ -217,8 +217,8 @@ int main()
                 valuesTo.push_back(static_cast<GLfloat>(sc.getTimeToNext(i).count()));
             }
 
-            glState["tunnelScene"]["tunnel"] << Uniform1fv("CHANNEL_" + std::to_string(sc.channel) + "_TIME_SINCE", valuesSince)
-                                             << Uniform1fv("CHANNEL_" + std::to_string(sc.channel) + "_TIME_TO", valuesTo);
+            glState["baseScene"]["base"] << Uniform1fv("CHANNEL_" + std::to_string(sc.channel) + "_TIME_SINCE", valuesSince)
+                                         << Uniform1fv("CHANNEL_" + std::to_string(sc.channel) + "_TIME_TO", valuesTo);
         }
 
         glState.render();
