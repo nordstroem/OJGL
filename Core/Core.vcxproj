@@ -34,6 +34,7 @@
     <None Include="examples\songs\song.inc" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\utility\Duration.cpp" />
     <ClCompile Include="examples\Main.cpp" />
     <ClCompile Include="src\render\Scene.cpp" />
     <ClCompile Include="src\music\Music.cpp" />
@@ -44,8 +45,10 @@
     <ClCompile Include="src\render\Window.cpp" />
     <ClCompile Include="src\winapi\gl_loader.cpp" />
     <ClCompile Include="src\render\Texture.cpp" />
+    <ClCompile Include="src\utility\Timepoint.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\utility\Duration.h" />
     <ClInclude Include="src\render\Scene.h" />
     <ClInclude Include="src\music\Music.h" />
     <ClInclude Include="src\music\SyncChannel.h" />
@@ -64,6 +67,7 @@
     <ClInclude Include="src\thirdparty\libv2.h" />
     <ClInclude Include="src\winapi\wglext.h" />
     <ClInclude Include="src\render\Texture.h" />
+    <ClInclude Include="src\utility\Timepoint.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="examples\textures\image.png" />

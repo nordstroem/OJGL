@@ -1,4 +1,5 @@
 #include "SyncChannel.h"
+#include "utility\Log.h"
 #include <iostream>
 #include <numeric>
 #include <stdexcept>
@@ -15,16 +16,16 @@ SyncChannel::SyncChannel(int numNotes, int minNote, int channel)
     _totalHitsPerNote.resize(numNotes);
 }
 
-void SyncChannel::pushNote(int absoluteNote, Milliseconds time)
+void SyncChannel::pushNote(int absoluteNote, Duration time)
 {
     _timesPerNote[absoluteNote - _minNote].push(time);
 }
 
-void SyncChannel::tick(Milliseconds currentTime)
+void SyncChannel::tick(Duration currentTime)
 {
     _currentTime = currentTime;
     for (int note = 0; note < numNotes; note++) {
-        std::queue<Milliseconds>& s = _timesPerNote[note];
+        std::queue<Duration>& s = _timesPerNote[note];
         while (!s.empty() && s.front() <= _currentTime) {
             _lastTimePerNote[note] = _currentTime;
             _totalHitsPerNote[note]++;
@@ -33,19 +34,19 @@ void SyncChannel::tick(Milliseconds currentTime)
     }
 }
 
-Milliseconds SyncChannel::getTimeToNext(int relativeNote) const
+Duration SyncChannel::getTimeToNext(int relativeNote) const
 {
-    const std::queue<Milliseconds>& times = _timesPerNote[relativeNote];
+    const std::queue<Duration>& times = _timesPerNote[relativeNote];
     if (times.empty()) {
-        return Milliseconds(std::numeric_limits<long long>::max());
+        return Duration::maximum();
     }
     return times.front() - _currentTime;
 }
 
-Milliseconds SyncChannel::getTimeSinceLast(int relativeNote) const
+Duration SyncChannel::getTimeSinceLast(int relativeNote) const
 {
     if (_totalHitsPerNote[relativeNote] == 0) {
-        return Milliseconds(std::numeric_limits<long long>::max());
+        return Duration::maximum();
     }
     return _currentTime - _lastTimePerNote[relativeNote];
 }
