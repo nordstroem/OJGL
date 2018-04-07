@@ -41,6 +41,7 @@ public:
     static Duration seconds(long long s) { return Duration(std::chrono::seconds(s)); }
     static Duration milliseconds(long long ms) { return Duration(std::chrono::milliseconds(ms)); }
     static Duration nanoseconds(long long ns) { return Duration(std::chrono::nanoseconds(ns)); }
+    static Duration maximum();
 
 private:
     Backend _duration;

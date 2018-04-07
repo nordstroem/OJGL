@@ -38,7 +38,7 @@ Duration SyncChannel::getTimeToNext(int relativeNote) const
 {
     const std::queue<Duration>& times = _timesPerNote[relativeNote];
     if (times.empty()) {
-        return Duration::milliseconds(std::numeric_limits<long long>::max());
+        return Duration::maximum();
     }
     return times.front() - _currentTime;
 }
@@ -46,7 +46,7 @@ Duration SyncChannel::getTimeToNext(int relativeNote) const
 Duration SyncChannel::getTimeSinceLast(int relativeNote) const
 {
     if (_totalHitsPerNote[relativeNote] == 0) {
-        return Duration::milliseconds(std::numeric_limits<long long>::max());
+        return Duration::maximum();
     }
     return _currentTime - _lastTimePerNote[relativeNote];
 }

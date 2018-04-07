@@ -14,6 +14,11 @@ Duration& Duration::operator+=(const Duration& other)
     return *this;
 }
 
+Duration Duration::maximum()
+{
+    return Duration(std::chrono::nanoseconds(std::numeric_limits<long long>::max()));
+}
+
 std::ostream& operator<<(std::ostream& left, const Duration& right)
 {
     return left << right.toMilliseconds() << "ms";
