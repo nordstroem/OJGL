@@ -34,6 +34,7 @@
     <None Include="examples\songs\song.inc" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\utility\ShaderReader.cpp" />
     <ClCompile Include="src\utility\Duration.cpp" />
     <ClCompile Include="examples\Main.cpp" />
     <ClCompile Include="src\render\Scene.cpp" />
@@ -48,6 +49,8 @@
     <ClCompile Include="src\utility\Timepoint.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="examples\EmbeddedResources.h" />
+    <ClInclude Include="src\utility\ShaderReader.h" />
     <ClInclude Include="src\utility\Duration.h" />
     <ClInclude Include="src\render\Scene.h" />
     <ClInclude Include="src\music\Music.h" />
