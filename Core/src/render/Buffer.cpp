@@ -120,8 +120,7 @@ void Buffer::generateFBO()
 
 void Buffer::loadShader()
 {
-
-    if (_programID != -1)
+    if (_programID != 0)
         glDeleteProgram(_programID);
 
     _programID = glCreateProgram();

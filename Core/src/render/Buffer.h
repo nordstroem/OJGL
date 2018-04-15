@@ -30,7 +30,7 @@ private:
 
     std::vector<BufferPtr> _inputs;
     const std::string _name;
-    unsigned _programID = -1;
+    unsigned _programID = 0;
     unsigned _fboID = 0;
     unsigned _fboTextureID = 0;
     const unsigned _width;
