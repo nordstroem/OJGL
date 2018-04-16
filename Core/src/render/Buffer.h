@@ -15,8 +15,8 @@ class Buffer {
 
 public:
     ~Buffer();
-    static BufferPtr construct(unsigned width, unsigned height, const std::string& name, const std::string& vertex, const std::string& fragment, std::initializer_list<BufferPtr> buffers);
-    static BufferPtr construct(unsigned width, unsigned height, const std::string& name, const std::string& vertex, const std::string& fragment);
+    static BufferPtr construct(unsigned width, unsigned height, const std::string& name, const std::string& vertexPath, const std::string& fragmentPath, std::initializer_list<BufferPtr> buffers);
+    static BufferPtr construct(unsigned width, unsigned height, const std::string& name, const std::string& vertexPath, const std::string& fragmentPath);
 
     unsigned getProgramID() const;
     unsigned fboTextureID();
@@ -26,17 +26,19 @@ public:
 
 private:
     Buffer(unsigned width, unsigned height, const std::string& name, const std::string& vertex, const std::string& fragment, std::initializer_list<std::shared_ptr<Buffer>> buffers);
-    void loadShader(const std::string& vertexShader, const std::string& fragmentShader);
+    void loadShader();
 
     std::vector<BufferPtr> _inputs;
     const std::string _name;
-    unsigned _programID;
+    unsigned _programID = 0;
     unsigned _fboID = 0;
     unsigned _fboTextureID = 0;
     const unsigned _width;
     const unsigned _height;
     std::unordered_map<std::string, std::shared_ptr<UniformBase>> _uniforms;
     std::unordered_map<std::string, std::shared_ptr<Uniform1t>> _textures;
+    std::string _vertexPath;
+    std::string _fragmentPath;
 
     static constexpr unsigned vertexCount = 6;
 

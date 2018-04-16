@@ -1,19 +1,22 @@
 #include "Buffer.h"
 #include "GLState.h"
 #include "utility\Log.h"
+#include "utility\ShaderReader.h"
 #include <iostream>
 #include <memory>
 #include <string>
 
 namespace ojgl {
 
-Buffer::Buffer(unsigned width, unsigned height, const std::string& name, const std::string& vertex, const std::string& fragment, std::initializer_list<std::shared_ptr<Buffer>> buffers)
+Buffer::Buffer(unsigned width, unsigned height, const std::string& name, const std::string& vertexPath, const std::string& fragmentPath, std::initializer_list<std::shared_ptr<Buffer>> buffers)
     : _inputs(buffers)
     , _name(name)
     , _width(width)
     , _height(height)
+    , _vertexPath(vertexPath)
+    , _fragmentPath(fragmentPath)
 {
-    loadShader(vertex, fragment);
+    loadShader();
 }
 
 Buffer::~Buffer()
@@ -50,6 +53,9 @@ unsigned Buffer::fboTextureID()
 
 void Buffer::render()
 {
+    if (ShaderReader::modified(_vertexPath) || ShaderReader::modified(_fragmentPath))
+        loadShader();
+
     glBindFramebuffer(GL_FRAMEBUFFER, _fboID);
     glViewport(0, 0, _width, _height);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -112,19 +118,21 @@ void Buffer::generateFBO()
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void Buffer::loadShader(const std::string& vertexShader, const std::string& fragmentShader)
+void Buffer::loadShader()
 {
+    if (_programID != 0)
+        glDeleteProgram(_programID);
 
     _programID = glCreateProgram();
     int vertID = glCreateShader(GL_VERTEX_SHADER);
     int fragID = glCreateShader(GL_FRAGMENT_SHADER);
 
-    int vertexShaderLength = vertexShader.length();
-    auto vertexChar = vertexShader.c_str();
+    int vertexShaderLength = ShaderReader::get(_vertexPath).length();
+    auto vertexChar = ShaderReader::get(_vertexPath).c_str();
     glShaderSource(vertID, 1, &vertexChar, &vertexShaderLength);
 
-    int fragmentShaderLength = fragmentShader.length();
-    auto fragmentChar = fragmentShader.c_str();
+    int fragmentShaderLength = ShaderReader::get(_fragmentPath).length();
+    auto fragmentChar = ShaderReader::get(_fragmentPath).c_str();
     glShaderSource(fragID, 1, &fragmentChar, &fragmentShaderLength);
 
     glCompileShader(vertID);
