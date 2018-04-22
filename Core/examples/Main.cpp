@@ -35,19 +35,21 @@ void buildSceneGraph(GLState& glState, int x, int y)
     auto intro = Buffer::construct(x, y, "intro", "demo.vs", "introScene.fs");
 
     auto grave = Buffer::construct(x, y, "grave", "demo.vs", "graveScene.fs");
-    auto gravePost = Buffer::construct(x, y, "gravePost", "demo.vs", "graveScenePost.fs", { grave });
+    auto graveFxaa = Buffer::construct(x, y, "fxaa", "fxaa.vs", "fxaa.fs", { grave });
+    auto gravePost = Buffer::construct(x, y, "gravePost", "demo.vs", "graveScenePost.fs", { graveFxaa });
 
     auto room = Buffer::construct(x, y, "room", "demo.vs", "roomScene.fs");
-    auto roomPost = Buffer::construct(x, y, "roomPost", "demo.vs", "roomScenePost.fs", { room });
+    auto roomFxaa = Buffer::construct(x, y, "fxaa", "fxaa.vs", "fxaa.fs", { room });
+    auto roomPost = Buffer::construct(x, y, "roomPost", "demo.vs", "roomScenePost.fs", { roomFxaa });
 
-    glState.addScene(Scene{ "introScene", intro, Duration::milliseconds(7000) });
-    glState.addScene(Scene{ "graveScene", gravePost, Duration::milliseconds(3000000) });
-    glState.addScene(Scene{ "roomScene", roomPost, Duration::milliseconds(3000000) });
+    glState.addScene("introScene", intro, Duration::milliseconds(7000));
+    glState.addScene("graveScene", gravePost, Duration::milliseconds(3000000));
+    glState.addScene("roomScene", roomPost, Duration::milliseconds(3000000));
 
-    glState.addScene(Scene{ "baseScene", base, Duration::milliseconds(3000000) });
-    glState.addScene(Scene{ "DOFScene", DOFFinal, Duration::milliseconds(30000) });
-    glState.addScene(Scene{ "tunnelScene", tunnel, Duration::milliseconds(30000) });
-    glState.addScene(Scene{ "imageScene", pre, Duration::milliseconds(30000) });
+    glState.addScene("baseScene", base, Duration::milliseconds(3000000));
+    glState.addScene("DOFScene", DOFFinal, Duration::milliseconds(30000));
+    glState.addScene("tunnelScene", tunnel, Duration::milliseconds(30000));
+    glState.addScene("imageScene", pre, Duration::milliseconds(30000));
 }
 
 std::tuple<int, int, int, std::unique_ptr<unsigned char, decltype(&stbi_image_free)>> readTexture(const std::string& filepath)
@@ -164,20 +166,18 @@ int main()
                                          << Uniform1fv("CHANNEL_" + std::to_string(sc.channel) + "_TIME_TO", valuesTo);
         }*/
 
-        glState["introScene"]["intro"] << Uniform1f("iGlobalTime", iGlobalTime.toMilliseconds() / 1000.f);
-        glState["graveScene"]["grave"] << Uniform1f("iGlobalTime", iGlobalTime.toMilliseconds() / 1000.f);
-        glState["graveScene"]["gravePost"] << Uniform1f("iGlobalTime", iGlobalTime.toMilliseconds() / 1000.f);
-        glState["roomScene"]["room"] << Uniform1f("iGlobalTime", iGlobalTime.toMilliseconds() / 1000.f);
-        glState["roomScene"]["roomPost"] << Uniform1f("iGlobalTime", iGlobalTime.toMilliseconds() / 1000.f);
+        glState << Uniform1f("iGlobalTime", iGlobalTime.toSeconds());
+        glState << Uniform1f("resolutionWidth", static_cast<float>(x));
+        glState << Uniform1f("resolutionHeight", static_cast<float>(y));
 
-        glState["graveScene"]["gravePost"] << Uniform1f("CHANNEL_4_TO", min(music.syncChannels()[4].getTimeToNext(0).toMilliseconds(), music.syncChannels()[4].getTimeToNext(1).toMilliseconds()) / 1000.f);
-        glState["graveScene"]["gravePost"] << Uniform1f("CHANNEL_4_TOTAL", music.syncChannels()[4].getTotalHitsPerNote(0) + music.syncChannels()[4].getTotalHitsPerNote(1));
-        glState["graveScene"]["gravePost"] << Uniform1f("CHANNEL_11_SINCE", music.syncChannels()[11].getTimeSinceLast(0).toMilliseconds() / 1000.f);
-        glState["graveScene"]["grave"] << Uniform1f("CHANNEL_11_SINCE", music.syncChannels()[11].getTimeSinceLast(0).toMilliseconds() / 1000.f);
-        glState["graveScene"]["grave"] << Uniform1f("CHANNEL_11_TOTAL", music.syncChannels()[11].getTotalHits());
+        glState["graveScene"]["gravePost"] << Uniform1f("CHANNEL_4_TO", min(music.syncChannels()[4].getTimeToNext(0).toSeconds(), music.syncChannels()[4].getTimeToNext(1).toSeconds()));
+        glState["graveScene"]["gravePost"] << Uniform1f("CHANNEL_4_TOTAL", static_cast<float>(music.syncChannels()[4].getTotalHitsPerNote(0) + music.syncChannels()[4].getTotalHitsPerNote(1)));
+        glState["graveScene"]["gravePost"] << Uniform1f("CHANNEL_11_SINCE", music.syncChannels()[11].getTimeSinceLast(0).toSeconds());
+        glState["graveScene"]["grave"] << Uniform1f("CHANNEL_11_SINCE", music.syncChannels()[11].getTimeSinceLast(0).toSeconds());
+        glState["graveScene"]["grave"] << Uniform1f("CHANNEL_11_TOTAL", static_cast<float>(music.syncChannels()[11].getTotalHits()));
         std::vector<float> since;
-        since.push_back(music.syncChannels()[4].getTimeSinceLast(0).toMilliseconds() / 1000.f);
-        since.push_back(music.syncChannels()[4].getTimeSinceLast(1).toMilliseconds() / 1000.f);
+        since.push_back(music.syncChannels()[4].getTimeSinceLast(0).toSeconds());
+        since.push_back(music.syncChannels()[4].getTimeSinceLast(1).toSeconds());
         glState["graveScene"]["grave"] << Uniform1fv("CHANNEL_4_SINCE", since);
 
         glState.render();

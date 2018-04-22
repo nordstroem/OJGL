@@ -25,7 +25,7 @@ private:
 template <typename Fun, typename... Args>
 Duration funcTime(Fun&& f, Args&&... args)
 {
-    auto t1 = now();
+    auto t1 = Timepoint::now();
     f(std::forward<Args>(args)...);
     return dur = Timepoint::now() - t1;
 }

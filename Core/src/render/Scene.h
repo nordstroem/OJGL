@@ -17,9 +17,9 @@ public:
     std::string name() const;
     Buffer& operator[](const std::string& name);
     Duration duration() const;
+    std::unordered_set<std::shared_ptr<Buffer>> buffers();
 
 private:
-    std::unordered_set<std::shared_ptr<Buffer>> buffers();
     std::shared_ptr<Buffer> _mainBuffer;
     Duration _duration;
     std::string _name;
