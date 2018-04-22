@@ -80,7 +80,7 @@ std::unordered_map<int, SyncChannel>& Music::syncChannels()
 
 void Music::setTime(Duration time)
 {
-    auto ms = static_cast<sU32>(time.toMilliseconds());
+    auto ms = time.toMilliseconds<sU32>();
     this->_player->Stop();
     dsClose();
     auto events = _player->popSyncEvents();

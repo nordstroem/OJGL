@@ -29,11 +29,6 @@ void GLState::setStartTime(Timepoint time)
     _startTime = time;
 }
 
-void GLState::addScene(const Scene& scene)
-{
-    _scenes.push_back(scene);
-}
-
 void GLState::render()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

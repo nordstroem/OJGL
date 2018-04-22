@@ -15,7 +15,6 @@ public:
     ~GLState();
 
     void render();
-    void addScene(const Scene& scene);
     void setStartTime(Timepoint time);
     void restart();
     void nextScene();
@@ -30,6 +29,24 @@ public:
 
     Scene& operator[](size_t i);
     Scene& operator[](const std::string& name);
+
+public:
+    template <typename... Args>
+    void addScene(Args&&... args)
+    {
+        this->_scenes.emplace_back(std::forward<Args>(args)...);
+    }
+
+    template <typename T>
+    GLState& operator<<(T&& b)
+    {
+        for (auto& scene : this->_scenes) {
+            const auto buffers = scene.buffers();
+            for (auto& buffer : buffers)
+                *buffer << b;
+        }
+        return *this;
+    }
 
 private:
     void setupQuad();
