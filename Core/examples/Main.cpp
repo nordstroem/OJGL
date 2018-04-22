@@ -35,10 +35,12 @@ void buildSceneGraph(GLState& glState, int x, int y)
     auto intro = Buffer::construct(x, y, "intro", "demo.vs", "introScene.fs");
 
     auto grave = Buffer::construct(x, y, "grave", "demo.vs", "graveScene.fs");
-    auto gravePost = Buffer::construct(x, y, "gravePost", "demo.vs", "graveScenePost.fs", { grave });
+    auto graveFxaa = Buffer::construct(x, y, "fxaa", "fxaa.vs", "fxaa.fs", { grave });
+    auto gravePost = Buffer::construct(x, y, "gravePost", "demo.vs", "graveScenePost.fs", { graveFxaa });
 
     auto room = Buffer::construct(x, y, "room", "demo.vs", "roomScene.fs");
-    auto roomPost = Buffer::construct(x, y, "roomPost", "demo.vs", "roomScenePost.fs", { room });
+    auto roomFxaa = Buffer::construct(x, y, "fxaa", "fxaa.vs", "fxaa.fs", { room });
+    auto roomPost = Buffer::construct(x, y, "roomPost", "demo.vs", "roomScenePost.fs", { roomFxaa });
 
     glState.addScene("introScene", intro, Duration::milliseconds(7000));
     glState.addScene("graveScene", gravePost, Duration::milliseconds(3000000));
@@ -165,6 +167,9 @@ int main()
         }*/
 
         glState << Uniform1f("iGlobalTime", iGlobalTime.toSeconds());
+        glState << Uniform1f("resolutionWidth", static_cast<float>(x));
+        glState << Uniform1f("resolutionHeight", static_cast<float>(y));
+
         glState["graveScene"]["gravePost"] << Uniform1f("CHANNEL_4_TO", min(music.syncChannels()[4].getTimeToNext(0).toSeconds(), music.syncChannels()[4].getTimeToNext(1).toSeconds()));
         glState["graveScene"]["gravePost"] << Uniform1f("CHANNEL_4_TOTAL", static_cast<float>(music.syncChannels()[4].getTotalHitsPerNote(0) + music.syncChannels()[4].getTotalHitsPerNote(1)));
         glState["graveScene"]["gravePost"] << Uniform1f("CHANNEL_11_SINCE", music.syncChannels()[11].getTimeSinceLast(0).toSeconds());

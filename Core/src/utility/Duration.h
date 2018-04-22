@@ -23,10 +23,10 @@ public:
     T toSeconds() const { return std::chrono::duration_cast<std::chrono::duration<T>>(_duration).count(); }
 
     template <typename T = float>
-    long long toMilliseconds() const { return std::chrono::duration_cast<std::chrono::duration<T, std::milli>>(_duration).count(); }
+    T toMilliseconds() const { return std::chrono::duration_cast<std::chrono::duration<T, std::milli>>(_duration).count(); }
 
     template <typename T = float>
-    long long toNanoseconds() const { return std::chrono::duration_cast<std::chrono::duration<T, std::nano>>(_duration).count(); }
+    T toNanoseconds() const { return std::chrono::duration_cast<std::chrono::duration<T, std::nano>>(_duration).count(); }
 
     Duration operator-() const { return Duration(-this->_duration); }
     Duration operator-(const Duration& other) const { return Duration(this->_duration - other._duration); }
