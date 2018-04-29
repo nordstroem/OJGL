@@ -8,17 +8,6 @@
 
 namespace ojgl {
 
-Buffer::Buffer(unsigned width, unsigned height, const std::string& name, const std::string& vertexPath, const std::string& fragmentPath, std::initializer_list<std::shared_ptr<Buffer>> buffers)
-    : _inputs(buffers)
-    , _name(name)
-    , _width(width)
-    , _height(height)
-    , _vertexPath(vertexPath)
-    , _fragmentPath(fragmentPath)
-{
-    loadShader();
-}
-
 Buffer::~Buffer()
 {
     if (_fboID != 0) {
@@ -29,16 +18,6 @@ Buffer::~Buffer()
     }
 
     glDeleteProgram(_programID);
-}
-
-std::shared_ptr<Buffer> Buffer::construct(unsigned width, unsigned height, const std::string& name, const std::string& vertex, const std::string& fragment)
-{
-    return construct(width, height, name, vertex, fragment, {});
-}
-
-std::shared_ptr<Buffer> Buffer::construct(unsigned width, unsigned height, const std::string& name, const std::string& vertex, const std::string& fragment, std::initializer_list<std::shared_ptr<Buffer>> buffers)
-{
-    return std::shared_ptr<Buffer>(new Buffer(width, height, name, vertex, fragment, buffers));
 }
 
 std::string Buffer::name() const

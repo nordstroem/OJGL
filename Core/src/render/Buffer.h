@@ -15,9 +15,6 @@ class Buffer {
 
 public:
     ~Buffer();
-    static BufferPtr construct(unsigned width, unsigned height, const std::string& name, const std::string& vertexPath, const std::string& fragmentPath, std::initializer_list<BufferPtr> buffers);
-    static BufferPtr construct(unsigned width, unsigned height, const std::string& name, const std::string& vertexPath, const std::string& fragmentPath);
-
     unsigned getProgramID() const;
     unsigned fboTextureID();
     void render();
@@ -25,7 +22,18 @@ public:
     void generateFBO();
 
 private:
-    Buffer(unsigned width, unsigned height, const std::string& name, const std::string& vertex, const std::string& fragment, std::initializer_list<std::shared_ptr<Buffer>> buffers);
+    template <typename... Args>
+    Buffer(unsigned width, unsigned height, const std::string& name, const std::string& vertexPath, const std::string& fragmentPath, Args&&... buffers)
+        : _inputs({ std::forward<Args>(buffers)... })
+        , _name(name)
+        , _width(width)
+        , _height(height)
+        , _vertexPath(vertexPath)
+        , _fragmentPath(fragmentPath)
+    {
+        loadShader();
+    }
+
     void loadShader();
 
     std::vector<BufferPtr> _inputs;
@@ -43,6 +51,12 @@ private:
     static constexpr unsigned vertexCount = 6;
 
 public:
+    template <typename... Args>
+    static BufferPtr construct(Args&&... args)
+    {
+        return std::shared_ptr<Buffer>(new Buffer(std::forward<Args>(args)...));
+    }
+
     template <typename T>
     typename std::enable_if_t<std::is_base_of_v<UniformBase, typename std::remove_reference<T>::type>, Buffer&> operator<<(T&& b)
     {

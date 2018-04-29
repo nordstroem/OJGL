@@ -27,7 +27,7 @@ Duration funcTime(Fun&& f, Args&&... args)
 {
     auto t1 = Timepoint::now();
     f(std::forward<Args>(args)...);
-    return dur = Timepoint::now() - t1;
+    return Timepoint::now() - t1;
 }
 
 } //namespace ojgl
