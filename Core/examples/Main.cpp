@@ -24,9 +24,9 @@ void buildSceneGraph(GLState& glState, int x, int y)
     auto post = Buffer::construct(1024, 768, "post", "post.vs", "post.fs");
 
     auto DOFScene = Buffer::construct(1024, 768, "DOFScene", "demo.vs", "dofScene.fs");
-    auto DOFBlur1 = Buffer::construct(1024, 768, "DOFBlur1", "demo.vs", "dofBlur1.fs", { DOFScene });
-    auto DOFBlur2 = Buffer::construct(1024, 768, "DOFBlur2", "demo.vs", "dofBlur2.fs", { DOFBlur1 });
-    auto DOFFinal = Buffer::construct(1024, 768, "DOFFinal", "demo.vs", "dofFinal.fs", { DOFScene, DOFBlur2, DOFBlur1 });
+    auto DOFBlur1 = Buffer::construct(1024, 768, "DOFBlur1", "demo.vs", "dofBlur1.fs", DOFScene);
+    auto DOFBlur2 = Buffer::construct(1024, 768, "DOFBlur2", "demo.vs", "dofBlur2.fs", DOFBlur1);
+    auto DOFFinal = Buffer::construct(1024, 768, "DOFFinal", "demo.vs", "dofFinal.fs", DOFScene, DOFBlur2, DOFBlur1);
 
     auto tunnel = Buffer::construct(1024, 768, "tunnel", "demo.vs", "tunnelScene.fs");
 
@@ -35,12 +35,12 @@ void buildSceneGraph(GLState& glState, int x, int y)
     auto intro = Buffer::construct(x, y, "intro", "demo.vs", "introScene.fs");
 
     auto grave = Buffer::construct(x, y, "grave", "demo.vs", "graveScene.fs");
-    auto graveFxaa = Buffer::construct(x, y, "fxaa", "fxaa.vs", "fxaa.fs", { grave });
-    auto gravePost = Buffer::construct(x, y, "gravePost", "demo.vs", "graveScenePost.fs", { graveFxaa });
+    auto graveFxaa = Buffer::construct(x, y, "fxaa", "fxaa.vs", "fxaa.fs", grave);
+    auto gravePost = Buffer::construct(x, y, "gravePost", "demo.vs", "graveScenePost.fs", graveFxaa);
 
     auto room = Buffer::construct(x, y, "room", "demo.vs", "roomScene.fs");
-    auto roomFxaa = Buffer::construct(x, y, "fxaa", "fxaa.vs", "fxaa.fs", { room });
-    auto roomPost = Buffer::construct(x, y, "roomPost", "demo.vs", "roomScenePost.fs", { roomFxaa });
+    auto roomFxaa = Buffer::construct(x, y, "fxaa", "fxaa.vs", "fxaa.fs", room);
+    auto roomPost = Buffer::construct(x, y, "roomPost", "demo.vs", "roomScenePost.fs", roomFxaa);
 
     glState.addScene("introScene", intro, Duration::milliseconds(7000));
     glState.addScene("graveScene", gravePost, Duration::milliseconds(3000000));
@@ -77,6 +77,8 @@ int main()
 
     ShaderReader::preLoad("introScene.fs", resources::fragment::intro);
     ShaderReader::preLoad("graveScene.fs", resources::fragment::grave);
+    ShaderReader::preLoad("fxaa.fs", resources::fragment::fxaa);
+    ShaderReader::preLoad("fxaa.vs", resources::vertex::fxaa);
     ShaderReader::preLoad("graveScenePost.fs", resources::fragment::gravePost);
     ShaderReader::preLoad("roomScene.fs", resources::fragment::room);
     ShaderReader::preLoad("roomScenePost.fs", resources::fragment::roomPost);

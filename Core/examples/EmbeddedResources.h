@@ -10,6 +10,10 @@ namespace resources {
 #include "shaders/post.fs"
         };
 
+        std::string fxaa{
+#include "shaders/fxaa.fs"
+        };
+
         std::string dofScene{
 #include "shaders/dofScene.fs"
         };
@@ -63,6 +67,10 @@ namespace resources {
 
         std::string post{
 #include "shaders/post.vs"
+        };
+
+        std::string fxaa{
+#include "shaders/fxaa.vs"
         };
     } //namespace vertex
 
