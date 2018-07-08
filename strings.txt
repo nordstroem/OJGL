@@ -1,0 +1,2453 @@
+!This program cannot be run in DOS mode.
+Rich
+.text
+`.rdata
+@.data
+.rsrc
+@.reloc
+t$0V
+S RVV
+PPPP
+S<RPPh
++C8u
+S RP
+C`+C8y
+Cl+Ch
+Cl][
+5(qB
+%<pB
+%<pB
+]$;E
+%4pB
+%<pB
+%4qB
+}4Iu
+}4Iu
+}4Iu
+}4Iu
+}4Iu
+%4qB
+}4Iu
+}4Iu
+%@pB
+%<pB
+%<pB
+%<pB
+%ppB
+%<pB
+%<pB
+%<pB
+%\pB
+%<pB
+%<pB
+t.QV
+t.QV
+%ppB
+%<pB
+YQ;L
+t$(1
+|$(1
+G@@<@u
+|$(1
+ BA:
+%|YA
+_`_^[]
+%0ZA
+FdPQ
+QQV3
+FdPQ
+Vt?Huz
+%TZA
+hD.A
+hP=A
+hHgA
+h tA
+hp>A
+h0?A
+hP@A
+hpAA
+h09B
+h09B
+h0BA
+^j@P
+^j@P
+_^[]
+?w1V
+_^[]
+h`.A
+Y_^[
+Y_^[
+PQSVW
+Y_^[
+QSVW
+SWSRP
+SWSRP
+SWSRP
+SWSRP
+	RPQ
+hQ/A
+3h8;B
+h@;B
+hH;B
+hP;B
+hX;B
+h`;B
+h8;B
+h@;B
+Pht;B
+Y_^[
+SVWP
+h@;B
+hX;B
+hP;B
+h8;B
+hh;B
+h <B
+h0<B
+hP<B
+hh<B
+hD@B
+PjHh
+=$QA
+h =B
+j	hD<B
+h0=B
+hD<B
+h@=B
+hD<B
+h@=B
+hT=B
+hh=B
+Y_^[
+SVWP
+Y_^[
+SVWP
+hh;B
+h@;B
+ht;B
+Y_^[
+SVWP
+h@;B
+Y_^[
+SVWP
+h@;B
+Y_^[
+SVWP
+h@;B
+Y_^[
+SVWP
+h@;B
+Y_^[
+SVWP
+h <B
+h(<B
+Y_^[
+SVWP
+h0<B
+h@;B
+j	hD<B
+Y_^[
+SVWP
+hP<B
+h@;B
+h`<B
+Y_^[
+SVWP
+hh<B
+h@;B
+h|<B
+Y_^[
+gfff+
+=fff
+gfff
+Y_^[
+h44A
+SVWP
+wlRQ
+Y_^[
+SVWP
+Y_^[
+SVWP
+Y_^[
+gfff+
+h 5A
+PQSVW
+;9tM
+Y_^[
+he6A
+SVWP
+Y_^[
+SVWP
+Y_^[
+^j(P
+^j(P
+Y_^[
+Y_^[
+h07A
+PQSVW
+Y_^[
+_^[]
+_^[]
+_^[]
+hP7A
+Y_^[
+hp7A
+PSVW
+Y_^[
+Y_^[
+Y_^[
+0^[]
+Y_^[
+Y_^[
+gfff+
+QSVW
+$SVW
+X(Sj
+Y_^[
+hi8A
+XSVW
+Y_^[
+dSVW
+Y_^[
+h07A
+PQSVW
+Y_^[
+Y_^[
+PQSVW
+Y_^[
+h89A
+SVWP
+wqQR
+Y_^[
+h`9A
+Y_^[
+Y_^[
+Y_^[
+Y_^[
+PSVW
+Y_^[
+^jPP
+hO:A
+Y_^[
+SSVRP
+t$ RP
+;W+F
+L$$;
+9x r9
+L$ C
+L$ ;X
+^jPP
+Y_^[
+Y_^[
+Y_^[
+0^[]
+Y_^[
+Y_^[
+Y_^[
+Y_^[
+I0SVW
+gfff
+gfff
+gfff+
+Y_^[
+Y_^[
+Y_^[
+h5;A
+Y_^[
+h];A
+Y_^[
+Y_^[
+QSVW
+H,;O
+H<;O
+HL;O
+H\;O
+PSVW
+Y_^[
+dSVW
+QRQQP
+Y_^[
+F(t	Pj
+F,t	Pj
+h0<A
+w(h@
+F	VP
+h`<A
+PSVW
+G Pj
+G$Pj
+gfff+
+Y_^[
+SVWh
+w/QR
+SWSRP
+gfff+
+D$  
+D$$@
+D$@H>B
+hX>B
+hh>B
+L$t3
+hH>B
+u'PhX>B
+L$t3
+)D$@PW
+)D$Xf
+D$H(
+D$L$
+u'PhX>B
+h@?B
+L$t3
+L$@QPW
+u'PhX>B
+L$t3
+D$@Pj(
+%PPA
+%TPA
+%XPA
+%\PA
+%`PA
+%dPA
+%hPA
+%lPA
+%pPA
+%tPA
+j Y+
+h(_B
+hH_B
+t=+}
+8csm
+hP%A
+hh_B
+hTRA
+hHRA
+hDRA
+hdZA
+ntel
+5ineI
+5Genu
+t#=`
+8csm
+h[&A
+Y__^[
+h$sB
+%@QA
+%\QA
+%XQA
+%TQA
+%`QA
+%LQA
+%HQA
+%hQA
+%tQA
+%|QA
+%lQA
+%pQA
+%(PA
+WVS3
+WVU3
+v	N+D$
+%<QA
+bad allocation
+bad array new length
+vector<T> too long
+string too long
+list<T> too long
+#version 430
+in vec2 fragCoord;
+out vec4 fragColor;
+uniform sampler2D inTexture0;
+uniform float r;
+void main() {
+	vec3 col = texture2D(inTexture0, fragCoord).xyz;
+	col = mix(col, vec3(1.0, 1.0, 0.0), 0.5);
+	fragColor = vec4(1.0, 0.0, 1.0, 1.0);
+#version 430
+in vec2 fragCoord;
+out vec4 fragColor;
+uniform sampler2D inTexture0;
+uniform float iGlobalTime;
+uniform float resolutionWidth;
+uniform float resolutionHeight;
+#ifndef FXAA_REDUCE_MIN
+    #define FXAA_REDUCE_MIN   (1.0/ 128.0)
+#endif
+#ifndef FXAA_REDUCE_MUL
+    #define FXAA_REDUCE_MUL   (1.0 / 8.0)
+#endif
+#ifndef FXAA_SPAN_MAX
+    #define FXAA_SPAN_MAX     8.0
+#endif
+vec4 fxaa(sampler2D tex, vec2 fragCoord, vec2 resolution,
+            vec2 v_rgbNW, vec2 v_rgbNE,
+            vec2 v_rgbSW, vec2 v_rgbSE,
+            vec2 v_rgbM) {
+    vec4 color;
+    mediump vec2 inverseVP = vec2(1.0 / resolution.x, 1.0 / resolution.y);
+    vec3 rgbNW = texture2D(tex, v_rgbNW).xyz;
+    vec3 rgbNE = texture2D(tex, v_rgbNE).xyz;
+    vec3 rgbSW = texture2D(tex, v_rgbSW).xyz;
+    vec3 rgbSE = texture2D(tex, v_rgbSE).xyz;
+    vec4 texColor = texture2D(tex, v_rgbM);
+    vec3 rgbM  = texColor.xyz;
+    vec3 luma = vec3(0.299, 0.587, 0.114);
+    float lumaNW = dot(rgbNW, luma);
+    float lumaNE = dot(rgbNE, luma);
+    float lumaSW = dot(rgbSW, luma);
+    float lumaSE = dot(rgbSE, luma);
+    float lumaM  = dot(rgbM,  luma);
+    float lumaMin = min(lumaM, min(min(lumaNW, lumaNE), min(lumaSW, lumaSE)));
+    float lumaMax = max(lumaM, max(max(lumaNW, lumaNE), max(lumaSW, lumaSE)));
+    mediump vec2 dir;
+    dir.x = -((lumaNW + lumaNE) - (lumaSW + lumaSE));
+    dir.y =  ((lumaNW + lumaSW) - (lumaNE + lumaSE));
+    float dirReduce = max((lumaNW + lumaNE + lumaSW + lumaSE) *
+                          (0.25 * FXAA_REDUCE_MUL), FXAA_REDUCE_MIN);
+    float rcpDirMin = 1.0 / (min(abs(dir.x), abs(dir.y)) + dirReduce);
+    dir = min(vec2(FXAA_SPAN_MAX, FXAA_SPAN_MAX),
+              max(vec2(-FXAA_SPAN_MAX, -FXAA_SPAN_MAX),
+              dir * rcpDirMin)) * inverseVP;
+    vec3 rgbA = 0.5 * (
+        texture2D(tex, fragCoord * inverseVP + dir * (1.0 / 3.0 - 0.5)).xyz +
+        texture2D(tex, fragCoord * inverseVP + dir * (2.0 / 3.0 - 0.5)).xyz);
+    vec3 rgbB = rgbA * 0.5 + 0.25 * (
+        texture2D(tex, fragCoord * inverseVP + dir * -0.5).xyz +
+        texture2D(tex, fragCoord * inverseVP + dir * 0.5).xyz);
+    float lumaB = dot(rgbB, luma);
+    if ((lumaB < lumaMin) || (lumaB > lumaMax))
+        color = vec4(rgbA, texColor.a);
+    else
+        color = vec4(rgbB, texColor.a);
+    return color;
+void main()
+	vec2 resolution = vec2(resolutionWidth, resolutionHeight);
+	vec2 inverseVP = 1.0 / resolution;
+	vec2 v_rgbNW = (fragCoord + vec2(-1.0, -1.0)) * inverseVP;
+	vec2 v_rgbNE = (fragCoord + vec2(1.0, -1.0)) * inverseVP;
+	vec2 v_rgbSW = (fragCoord + vec2(-1.0, 1.0)) * inverseVP;
+	vec2 v_rgbSE = (fragCoord + vec2(1.0, 1.0)) * inverseVP;
+	vec2 v_rgbM =  vec2(fragCoord * inverseVP);
+	vec4 texCol = texture2D(inTexture0, v_rgbM);
+	vec4 fxaCol =  fxaa(inTexture0, fragCoord, resolution, v_rgbNW, v_rgbNE, v_rgbSW, v_rgbSE, v_rgbM);
+	fragColor = vec4(fxaCol.xyz, 1.0);
+#version 430
+in vec2 fragCoord;
+out vec4 fragColor;
+// 3D Scene
+float udRoundBox( vec3 p, vec3 b, float r ) {
+  return length(max(abs(p)-b,0.0))-r;
+float map(vec3 p) {
+    vec2 s = vec2(5.0);
+    p.xz = mod(p.xz, s) - s * 0.5;
+	//return min(udRoundBox(p, vec3(1.0), 0.1), p.y + 4.0);
+    return min(length(p) - 1.5, min(p.y + 4.0, -p.y + 4.0));
+vec3 getNormal(vec3 p) {
+	vec3 normal;
+    vec3 ep = vec3(0.01, 0, 0);
+    normal.x = map(p + ep.xyz) - map(p - ep.xyz);
+    normal.y = map(p + ep.yxz) - map(p - ep.yxz);
+    normal.z = map(p + ep.yzx) - map(p - ep.yzx);
+    return normalize(normal);
+float specular(vec3 normal, vec3 light, vec3 viewdir, float s) {
+	float k = max(0.0, dot(viewdir, reflect(light, normal)));
+    return  pow(k, s);
+void main() {
+	float iGlobalTime = 0.0;
+	vec2 uv = (fragCoord * 2.0) - 1.0;
+    
+    vec3 ro = vec3(5., 1. , 2.5); //vec3(sin(iTime * 0.25) * 5.0, 3.0, cos(iTime * 0.25) * 5.0);
+    
+    vec3 tar = vec3(0.0, 0.0, 2.5);
+    vec3 dir = normalize(tar - ro);
+	vec3 right = normalize(cross(vec3(0.0, 1.0, 0.0), dir));
+	vec3 up = cross(dir, right);
+	vec3 rd = normalize(dir + right*uv.x + up*uv.y);
+    
+    vec3 color = vec3(0.0);
+    
+    vec3 p = ro;
+	vec3 firstP = ro;
+    vec3 start = ro;
+    vec3 end = vec3(0.0);
+    float ref = 0.0;
+    for (int jump = 0; jump < 5; jump++) {
+        float t = 0.0;
+        for (int i = 0; i < 100; i++) {
+            p = ro + rd * t;
+            float d = map(p);     
+            if (d < 0.01) {
+                if (jump == 0) {
+                    end = p;
+                }
+               	ref = 0.5;
+                vec3 col = vec3(0.);
+                if (p.y < - 3.0) {
+                    ref = 0.0;
+                    if (mod(floor(p.x) + floor(p.z), 2.0) > 0.5 ) {
+                    	 col = vec3(0.9, 0.2, 0.9);
+                    } else {
+                    	 col = vec3(0.5, 0.2, 0.9);
+                    }
+                   
+                } else if ( p.y > 3.0) {
+                    ref = 0.0;
+                    if (mod(floor(p.x) + floor(p.z), 2.0) > 0.5 ) {
+                    	 col = vec3(0.7, 0.5, 1.0);
+                    } else {
+                    	 col = vec3(0.3, 0.2, 1.0);
+                    }
+                    
+                } else {
+                    ref = 0.5;
+                	col = vec3(1.0); 
+                    
+                }
+                vec3 lpos = ro;
+                float dis = length(lpos - p);
+                vec3 invLight = normalize(lpos - p);
+                vec3 normal = getNormal(p);
+                float diffuse = max(0.0, dot(invLight, normal));
+                float spec = specular(normal, -invLight, normalize(ro - p), 250.0);
+                float str = 1.0;//1.0/(0.1*dis);
+                col = col * 0.8 * diffuse*str + spec * str * 5.0;
+              
+				rd = reflect(rd, normal);
+                ro = p + rd * .1;
+                color = mix(col, color, ref);
+				break;               
+                
+            }
+            t += d;
+        }
+		if (jump == 0) {
+			firstP = p;
+        if (ref < 0.01) {
+        	break;
+        }
+    }
+    float focus = abs(length(firstP - start) - (8.0 - 7.0 * sin(iGlobalTime * 1.0))) * 0.1;
+    focus = min(focus, 1.);
+	fragColor = vec4(color, focus);
+#version 430
+in vec2 fragCoord;
+out vec4 fragColor;
+uniform sampler2D inTexture0;
+// First blur
+#define dir vec2(1., 0.)
+void main()
+    vec2 uv = fragCoord.xy;
+    vec3 col = vec3(0.);
+    float samples = 20.;
+    float totalWeight = 0.;
+    float focus = texture(inTexture0, uv).a;
+    float dist = focus * 0.01;
+    for (float i = 0.; i < samples; i++) {
+        float f = (i - samples / 2.) / (samples / 2.);
+        float weight = 1. - f * f * f * f;
+		//float weight = 1. - pow(f, 4.);
+        float sampleFocus = texture(inTexture0, uv + dir * f * dist).a;
+        if (sampleFocus >= focus) {
+			weight *= max(0., 1. - abs(sampleFocus - focus) * 0.2);
+        }
+        totalWeight += weight;
+        
+        col += texture(inTexture0, uv + dir * f * dist).rgb * weight;
+    
+    }
+    fragColor.rgb = col / totalWeight; 
+    fragColor.a = focus;
+#version 430
+in vec2 fragCoord;
+out vec4 fragColor;
+uniform sampler2D inTexture0;
+// Second blur
+#define dir vec2(0., 1.)
+void main()
+    vec2 uv = fragCoord.xy;
+    vec3 col = vec3(0.);
+    float samples = 20.;
+    float totalWeight = 0.;
+    float focus = texture(inTexture0, uv).a;
+    float dist = focus * 0.01;
+    for (float i = 0.; i < samples; i++) {
+        float f = (i - samples / 2.) / (samples / 2.);
+        float weight = 1. - f * f * f * f;
+		//float weight = 1. - pow(f, 4.);
+        float sampleFocus = texture(inTexture0, uv + dir * f * dist).a;
+        if (sampleFocus >= focus) {
+            weight *= max(0., 1. - abs(sampleFocus - focus) * 0.2);
+        }
+        
+        totalWeight += weight;
+        
+        col += texture(inTexture0, uv + dir * f * dist).rgb * weight;
+    
+    }
+    fragColor.rgb = col / totalWeight; 
+    fragColor.a = focus;
+#version 430
+in vec2 fragCoord;
+out vec4 fragColor;
+uniform sampler2D inTexture0;
+uniform sampler2D inTexture1;
+uniform sampler2D inTexture2;
+void main()
+	vec2 uv = fragCoord.xy;
+    if (uv.x < 0.5) {
+        fragColor.rgb = texture(inTexture1, uv).rgb;
+        fragColor.a = 1.;
+    } else {
+    	fragColor = texture(inTexture0, uv);
+    }
+    
+    //fragColor = texture(inTexture0, uv);
+#version 430
+in vec2 fragCoord;
+out vec4 fragColor;
+uniform float iGlobalTime;
+uniform float CHANNEL_0_TIME_SINCE[41];
+uniform float CHANNEL_1_TIME_SINCE[23];
+uniform float CHANNEL_11_TIME_SINCE[28];
+uniform float CHANNEL_12_TIME_SINCE[2];
+uniform float CHANNEL_13_TIME_SINCE[1];
+uniform float CHANNEL_0_TIME_TO[41];
+uniform float CHANNEL_1_TIME_TO[23];
+uniform float CHANNEL_11_TIME_TO[28];
+uniform float CHANNEL_12_TIME_TO[2];
+uniform float CHANNEL_13_TIME_TO[1];
+uniform float CHANNEL_12_TOTAL;
+uniform float CHANNEL_13_TOTAL;
+//////////////////////////////////////////////////////
+vec2 un(vec2 a, vec2 b)
+	return a.x < b.x ? a : b;
+float sdBox( vec3 p, vec3 b )
+  vec3 d = abs(p) - b;
+  return min(max(d.x,max(d.y,d.z)),0.0) + length(max(d,0.0));
+float sdHexPrism( vec3 p, vec2 h )
+    vec3 q = abs(p);
+    return max(q.z-h.y,max((q.x*0.866025+q.y*0.5),q.y)-h.x);
+//float udBox( vec3 p, vec3 b )
+//  return length(max(abs(p)-b,0.0));
+float sdCylinder( vec3 p, float r )
+  return length(p.xz)-r;
+//vec4 texCube( sampler2D sam, in vec3 p, in vec3 n, in float k )
+//	vec4 x = texture2D( sam, p.yz );
+//	vec4 y = texture2D( sam, p.zx );
+//	vec4 z = texture2D( sam, p.xy );
+//    vec3 w = pow( abs(n), vec3(k) );
+//	return (x*w.x + y*w.y + z*w.z) / (w.x+w.y+w.z);
+float udRoundBox( vec3 p, vec3 b, float r )
+  return length(max(abs(p)-b,0.0))-r;
+float sdCappedCylinder( vec3 p, vec2 h )
+  vec2 d = abs(vec2(length(p.xz),p.y)) - h;
+  return min(max(d.x,d.y),0.0) + length(max(d,0.0));
+//float sdTorus( vec3 p, vec2 t )
+//  vec2 q = vec2(length(p.xz)-t.x,p.y);
+//  return length(q)-t.y;
+float specular(vec3 normal, vec3 light, vec3 viewdir, float s)
+	float nrm = (s + 8.0) / (3.1415 * 8.0);
+	float k = max(0.0, dot(viewdir, reflect(light, normal)));
+    return  pow(k, s);
+float smin( float a, float b)
+	float k = 0.1;
+    float h = clamp( 0.5+0.5*(b-a)/k, 0.0, 1.0 );
+    return mix( b, a, h ) - k*h*(1.0-h);
+//float smink( float a, float b, float k )
+//    float h = clamp( 0.5+0.5*(b-a)/k, 0.0, 1.0 );
+//    return mix( b, a, h ) - k*h*(1.0-h);
+//vec2 sun(vec2 a, vec2 b)
+//	float sm = smin(a.x,b.x);
+//	float ca = abs(sm -a.x);
+//	float cb = abs(sm -b.x);
+//	return ca < cb ? vec2(sm, a.y) : vec2(sm, b.y);
+//vec2 sunk(vec2 a, vec2 b, float k)
+//	float sm = smink(a.x,b.x, k);
+//	float m = min(a.x, b.x);
+//	float ca = abs(sm -a.x);
+//	float cb = abs(sm -b.x);
+//	return ca < cb ? vec2(sm, a.y) : vec2(m, b.y);
+#define FL_POS vec3(0, -3.5, 15.0)
+vec4 floorLight(vec3 p) {
+	vec3 o = p;
+	float s = 0.3;
+	p.x = mod(p.x, s) - s * 0.5;
+	float diss = sdCylinder(p.xzy - vec3(0, -3.0, 0).xzy, 0.00);
+	vec3 col = vec3(0.5,0.5,1);
+	float music = 0;
+	int index = int(o.x / s) + 15;
+	if (index >= 0 && index < 28) {
+		music = pow(0.99, CHANNEL_11_TIME_SINCE[index]);
+	vec3 points = col * 1.0  * music / (diss);
+	return vec4(points, diss);
+vec3 evaluateLight(vec3 pos, inout float dis)
+	//vec4 l = light(pos);
+	//vec4 sl = lights(pos);
+	//dis = min(l.w, sl.w);
+	//return l.xyz + sl.xyz;
+	vec4 fl = floorLight(pos);
+	dis = fl.w;
+	return fl.xyz;
+void addLightning(inout vec3 color, vec3 normal, vec3 eye, vec3 pos) {
+	vec3 invLights = normalize(-FL_POS);
+	float diffuses = max(0.0, dot(invLights, normal));
+	float specs = specular(normal, -invLights, normalize(eye - FL_POS), 50.0);
+	float diss = floorLight(pos).w;//length(-FL_POS);
+	float strs = 1.0/(0.5 + 0.01*diss + 0.1*diss*diss);
+	vec3 lpos = vec3(0,-1,1);
+	//float dis = length(lpos - pos);
+	//vec3 invLight = normalize(lpos - pos);
+	//float diffuse = max(0.0, dot(invLight, normal));
+	//float spec = specular(normal, -invLight, normalize(eye - pos), 220.0);
+	//float str = 1.0/(0.5 + 0.01*dis + 0.1*dis*dis);
+	float tmp = 0;
+	//color =  color * (0.05 + 0.9*diffuse*light(pos).xyz + 0.2 * diffuses * floorLight(pos).xyz ) + spec*str + specs*strs*0.5;
+	color =  color * (0.05 + 0.2 * diffuses * floorLight(pos).xyz ) + specs*strs*0.5;
+	color = clamp(color, vec3(0), vec3(1));
+#define TEX 0.2
+#define SIZE 8.0
+#define PI 3.1415
+#define MAT_GROUND 2.0
+#define MAT_PEND 3.0
+#define MAT_WATER 5.0
+#define MAT_TUNNEL 6.0
+#define MAT_THRESHOLD 7.0
+vec2 tunnel(vec3 p ) {
+	float d = -sdHexPrism(p, vec2(4.0, 99999.0));
+	return vec2(d, MAT_TUNNEL);
+vec2 threshold(vec3 p ) {
+	float d = sdHexPrism(p - vec3(0, 2.5, 3), vec2(1.0, 0.5));
+	return vec2(d, MAT_THRESHOLD);
+vec2 map(vec3 p, vec3 rd) {
+	vec2 res = tunnel(p);
+	res = un(res, threshold(p));
+	return res;
+vec3 getNormal(vec3 p, vec3 rd)
+	vec3 normal;
+    vec3 ep = vec3(0.01, 0, 0);
+    normal.x = map(p + ep.xyz, rd).x - map(p - ep.xyz, rd).x;
+    normal.y = map(p + ep.yxz, rd).x - map(p - ep.yxz, rd).x;
+    normal.z = map(p + ep.yzx, rd).x - map(p - ep.yzx, rd).x;
+    return normalize(normal);
+float occlusion(vec3 p, vec3 normal, vec3 rd)
+	float o = clamp(2*map(p + normal * 0.5, rd).x, 0, 1);
+	return 0.2 + 0.8*o;
+vec3 raymarch(vec3 ro, vec3 rd, vec3 eye) {
+	float t = 0.0;
+	int maxIter = 200;
+	const float maxDis = 200.0;
+	float d = 0.0;
+	vec3 p = vec3(-1.0, -1.0, -1.0);
+	vec3 col = vec3(0);
+	const int jumps = 3;
+	float ref = 1.0;
+	vec3 scatteredLight = vec3(0.0);
+	float transmittance = 1.0;
+//	for (int j = 0; j < jumps; j++) {
+		for (int i = 0; i < maxIter; i++) {
+			p = ro + rd * t;
+			vec2 res = map(p, rd);
+			d = res.x;
+//			d = min(d, 0.2);
+			float fogAmount = 0.01;
+			float lightDis = -1.0;
+			vec3 light = evaluateLight(p, lightDis);
+//			d = min(d, lightDis);
+			d = min(min(d, 1), max(lightDis*0.5, 0.05));
+			vec3 lightIntegrated = light - light * exp(-fogAmount * d);
+			scatteredLight += transmittance * lightIntegrated;
+			transmittance *= exp(-fogAmount * d);
+			t += d;
+			float m = res.y;
+			bool end = i == maxIter - 1 ||t > maxDis;
+			if (d < 0.01 || end) {
+				vec3 c = vec3(1);
+				vec3 normal = getNormal(p, rd);
+				if (m == MAT_GROUND) {
+//					c = mix(vec3(0.9,0.8,0.3), vec3(0.9,0.2,0.5), min(normal.y * 1.5, 1));
+					c = mix(vec3(0.3,0.9,0.3), vec3(0.9,0.8,0.3), min(normal.y * 1.0, 1));
+				} else if (m == MAT_PEND) {
+					c = vec3(1, 0.5, 1);
+				} else if (m == MAT_WATER) {
+					c = vec3(0, 0, 0);
+				} else if (m == MAT_TUNNEL) {
+					c = vec3(1, 0, 0);
+				} else if (m == MAT_THRESHOLD) {
+					c = vec3(0, 1, 0);
+				} 
+				c *= occlusion(p, normal, rd);
+				addLightning(c, normal, eye, p);
+				if (end) {
+					transmittance = 0;
+				}
+				col = mix(col, transmittance * c + scatteredLight, ref);
+//				col = mix(col, vec3(0.7), clamp(t * 0.01, 0, 1));
+				if (m == MAT_GROUND) {
+					return col;
+				} else if (m == MAT_PEND) {
+//					ref *= 0.9;
+					ref *= abs(normal.z);
+				} else {
+					ref *= 0.9;
+				}
+//				ref = 0.0;
+				rd = reflect(rd, getNormal(p, rd));
+				ro = p + rd*0.05;
+				t = 0;
+				i = 0;
+				maxIter = 0;
+			}
+//			if (t > maxDis) {
+//				return col;
+//			}
+//		if (ref < 0.1) {
+//			break;
+//		}
+//	}
+	return col;
+void main()
+	float u = fragCoord.x * 2.0 - 1.0;
+	float v = fragCoord.y * 2.0 - 1.0;
+    
+	float t = iGlobalTime * 0.5;
+    vec3 eye = vec3(0, 0, iGlobalTime);
+	vec3 tar = eye + vec3(0,0, 1); 
+	float r = 3 + 0.5 * sin(iGlobalTime);
+	vec3 dir = normalize(tar - eye);
+	vec3 right = normalize(cross(vec3(0, 1, 0), dir));
+	vec3 up = cross(dir, right);
+	vec3 ro = eye;
+	vec3 rd = normalize(dir + right*u + up*v);
+	vec3 light = vec3(0.0, 0.0, 26.0 );
+	float material = -1.0;
+	vec3 color = raymarch(ro, rd, eye);
+    fragColor = vec4(color, 1.0);
+    fragColor.rgb = fragColor.rgb / (fragColor.rgb + vec3(1.0));
+#version 430
+in vec2 fragCoord;
+out vec4 fragColor;
+uniform float iGlobalTime;
+uniform float CHANNEL_0_TIME_SINCE[41];
+uniform float CHANNEL_1_TIME_SINCE[23];
+uniform float CHANNEL_11_TIME_SINCE[28];
+uniform float CHANNEL_12_TIME_SINCE[2];
+uniform float CHANNEL_13_TIME_SINCE[1];
+uniform float CHANNEL_0_TIME_TO[41];
+uniform float CHANNEL_1_TIME_TO[23];
+uniform float CHANNEL_11_TIME_TO[28];
+uniform float CHANNEL_12_TIME_TO[2];
+uniform float CHANNEL_13_TIME_TO[1];
+uniform float CHANNEL_12_TOTAL;
+uniform float CHANNEL_13_TOTAL;
+uniform sampler2D image;
+float rect(vec2 p, vec2 size)
+	return max(abs(p.x) - size.x, abs(p.y) - size.y);
+float rect(vec2 p, float w, float h)
+	return rect(p, vec2(w, h));
+void mainImage()
+	vec2 p = fragCoord;
+	vec3 color = vec3(0.2);
+	if (rect(p - vec2(0.5, 0.1), 0.02, 0.02 * pow(0.995, CHANNEL_13_TIME_SINCE[0])) < 0.0 ) {
+		color = vec3(1.0, 0.0, 0.0);
+	if (rect(p - vec2(mod(CHANNEL_13_TOTAL * 0.1 - pow(0.995, CHANNEL_13_TIME_SINCE[0]) * 0.1, 1.0), 0.1), 0.02, 0.02) < 0.0 ) {
+		color = vec3(0.7, 0.8, 0.3);
+	for (int i = 0; i < 2; i++) {
+		if (rect(p - vec2(0.5 - 0.1 + 0.2 * i, 0.25), 0.02, 0.1 * CHANNEL_12_TIME_TO[i] / 1000.0) < 0.0 ) {
+			color = vec3(1.0, 1.0, 0.0);
+	if (rect(p - vec2(mod(CHANNEL_12_TOTAL * 0.1 - pow(0.995, CHANNEL_12_TIME_SINCE[0]) * 0.1, 1.0), 0.25), 0.02, 0.02) < 0.0 ) {
+		color = vec3(0.2, 0.3, 0.7);
+	for (int i = 0; i < 28; i++) {
+		if (rect(p - vec2(0.5 - 0.45 + 0.01 * i, 0.40), 0.005, 0.05 * pow(0.995, CHANNEL_11_TIME_SINCE[i])) < 0.0 ) {
+			color = vec3(1.0, 0.0, 1.0);
+	for (int i = 0; i < 23; i++) {
+		if (rect(p - vec2(0.5 - 0.45 + 0.01 * i, 0.55), 0.005, 0.05 * pow(0.995, CHANNEL_1_TIME_SINCE[i])) < 0.0 ) {
+			color = vec3(0.3, 1.0, 0.5);
+	for (int i = 0; i < 41; i++) {
+		if (rect(p - vec2(0.5 - 0.45 + 0.01 * i, 0.70), 0.005, 0.05 * pow(0.995, CHANNEL_0_TIME_SINCE[i])) < 0.0 ) {
+			color = vec3(0.5, 0.0, 0.5);
+	if (rect(p - vec2(0.5, 0.5), 0.01 * iGlobalTime,  0.04) < 0.0 ) {
+			color = vec3(1.0, 0.0, 1.0);
+	fragColor.rgb = color;
+void main()
+	mainImage();
+#version 440
+in vec2 fragCoord;
+out vec4 fragColor;
+uniform float iGlobalTime;
+uniform sampler2D inTexture0;
+uniform sampler2D inTexture1;
+uniform sampler2D inTexture2;
+uniform float CHANNEL_0_TIME_SINCE[41];
+uniform float CHANNEL_1_TIME_SINCE[23];
+uniform float CHANNEL_11_TIME_SINCE[28];
+uniform float CHANNEL_12_TIME_SINCE[2];
+uniform float CHANNEL_13_TIME_SINCE[1];
+uniform float CHANNEL_0_TIME_TO[41];
+uniform float CHANNEL_1_TIME_TO[23];
+uniform float CHANNEL_11_TIME_TO[28];
+uniform float CHANNEL_12_TIME_TO[2];
+uniform float CHANNEL_13_TIME_TO[1];
+uniform float CHANNEL_12_TOTAL;
+uniform float CHANNEL_13_TOTAL;
+//////////////////////////////////////////////////////
+#define PART_TWIST 15.0
+#define PI 3.141592
+vec2 un(vec2 a, vec2 b)
+	return a.x < b.x ? a : b;
+float sdCappedCylinder( vec3 p, vec2 h )
+  vec2 d = abs(vec2(length(p.xz),p.y)) - h;
+  return min(max(d.x,d.y),0.0) + length(max(d,0.0));
+float specular(vec3 normal, vec3 light, vec3 viewdir, float s)
+	float nrm = (s + 8.0) / (3.1415 * 8.0);
+	float k = max(0.0, dot(viewdir, reflect(light, normal)));
+    return  pow(k, s);
+#define REFLECTION
+#define VOLUMETRIC_LIGHTNING
+#define SHADOWS
+#define TONE_MAPPING
+#define MAT_FLOOR 1.0
+#define MAT_ROOF 2.0
+#define MAT_CORRIDOR 3.0
+float sdBox( vec3 p, vec3 b )
+  vec3 d = abs(p) - b;
+  return min(max(d.x,max(d.y,d.z)),0.0) + length(max(d,0.0));
+float sdCylinder( vec3 p, float r )
+  return length(p.xz)-r;
+float hash( in vec2 p ) {
+	float h = dot(p,vec2(127.1,311.7));	
+    return fract(sin(h)*43758.5453123);
+float noise( in vec2 p ) {
+    vec2 i = floor( p );
+    vec2 f = fract( p );	
+	vec2 u = f*f*(3.0-2.0*f);
+    return mix( mix( hash( i + vec2(0.0,0.0) ), 
+                     hash( i + vec2(1.0,0.0) ), u.x),
+                mix( hash( i + vec2(0.0,1.0) ), 
+                     hash( i + vec2(1.0,1.0) ), u.x), u.y);
+float noiseOctave(in vec2 p, int octaves, float persistence)
+	float n = 0.;
+	float amplitude = 1.;
+	float frequency = 1.;
+	float maxValue = 0.;
+	for(int i = 0; i < octaves; i++)
+		n += noise((p+float(i)) * frequency) * amplitude;
+		maxValue += amplitude;
+		amplitude *= persistence;
+		frequency *= 2.0;
+	return n / maxValue; 
+float BrickPattern(in vec2 p) 
+  p *= vec2 (1.0, 2.8);  // scale
+  vec2 f = floor (p);
+  if (2. * floor (f.y * 0.5) != f.y) 
+    p.x += 0.5;  // brick shift
+  p = smoothstep (0.03, 0.08, abs (fract (p + 0.5) - 0.5));
+  return 1. - 0.9 * p.x * p.y;
+float GridPattern(in vec2 uv)
+  return 0.5*clamp(10.*sin(PI*uv.x) + 10.5, 0.0, 1.0)
+       / 0.5*clamp(10.*sin(PI*uv.y) + 10.5, 0.0, 1.0);
+float SquareHolePattern(in vec2 uv)
+  float thickness = 0.4;
+  float t = cos(uv.x*2.0) * cos(uv.y*2.0) / thickness;
+  return smoothstep(0.1, 0.0, t*t);
+float floorPattern(vec2 p) {
+	 return SquareHolePattern(p*7.2 - vec2(0.0, 0.0));
+float roofPattern(vec2 p) {
+	return GridPattern(p*5.0);
+float corrNoise(vec3 p){
+	return 0.4*noiseOctave(vec2(p.z, abs(p.y) > 0.95 ? p.x : p.y) * 25.0, 3, 1.0); // Use same noise for walls and floor
+	//return noiseOctave(vec2(p.z, abs(p.y) > 0.95 ? p.x : p.y) * 5.0, 10, 0.7); // Use same noise for walls and floor
+vec3 distort(vec3 p) {
+	if (iGlobalTime > PART_TWIST) {
+		float a = atan(p.y, p.x);
+		float l = length(p.xy);
+		a += (p.z - PART_TWIST)*0.2*smoothstep(PART_TWIST + 5, PART_TWIST + 10, iGlobalTime);
+		a -= (p.z - PART_TWIST)*0.2*smoothstep(PART_TWIST + 10, PART_TWIST + 15, iGlobalTime);
+		return vec3(cos(a) * l, sin(a) * l, p.z);
+	return p;
+	/*float a = atan(p.y, p.x);
+	float l = length(p.xy);
+	a += 1.2*sin(p.z*0.4 + iGlobalTime*0.3);
+	return vec3(cos(a) * l, sin(a) * l, p.z);*/
+// Smooth min
+float smin( float a, float b)
+	float k = 0.1;
+    float h = clamp( 0.5+0.5*(b-a)/k, 0.0, 1.0 );
+    return mix( b, a, h ) - k*h*(1.0-h);
+// Smooth min. k determines smoothness
+float smink( float a, float b, float k, inout float h)
+    h = clamp( 0.5+0.5*(b-a)/k, 0.0, 1.0 );
+    return mix( b, a, h ) - k*h*(1.0-h);
+vec2 map(vec3 p, vec3 rd) 
+	p = distort(p);
+	float dc = -sdBox(p, vec3(1000.0));
+	vec2 res = vec2(dc, MAT_CORRIDOR);
+	return res;
+float sdTorus( vec3 p, vec2 t )
+	p.y *= 0.7;
+  vec2 q = vec2(length(p.xy)-t.x,p.z);
+  return length(q)-t.y;
+float sdTorusJ( vec3 p, vec2 t )
+  vec2 q = vec2(length(p.xy)-t.x,p.z);
+  float d = length(q)-t.y;
+	if (p.y > 0) {
+		d = max(d, p.y);
+	return d;
+vec3 lightAModifyPos(vec3 p)
+	float s = 2.0;
+	//p.z = mod(p.z + s*0.5, s) - s*0.5;
+	return p;
+vec4 lightA(vec3 p, vec3 realp)
+	float dis = sdCappedCylinder(p - vec3(0,-0.025,0), vec2(0.0, 0.325));
+	 dis = min(dis, sdCappedCylinder(p.yxz - vec3(0.3, -0.2, 0.0), vec2(0.0, 0.2)));
+	 dis = min(dis, sdTorusJ(p - vec3(-0.2, -0.35, 0.0), vec2(0.2, 0.0)));
+	 dis = min(dis, sdTorus(p - vec3(-0.9, -0.1, 0.0), vec2(0.3, 0.0)));
+	vec3 col = vec3(1.0, 1.0, 1.0);
+	float strength = 1.0;
+	int q = int((realp.z + 2.5) / 5.0);
+	if (iGlobalTime*4.0 +  q *5.0 > 60 && iGlobalTime <= PART_TWIST) {
+			col = vec3(0.0, 1.0, 0.2);
+			strength = smoothstep(0 + 1, 0 + 2 + 1, iGlobalTime);
+	vec3 res = col * strength / (dis * dis * dis);
+	return vec4(res, dis);
+vec4 lightUnion(vec4 a, vec4 b)
+	return vec4(a.rgb + b.rgb, min(a.w, b.w));
+vec4 evaluateLight(vec3 pos)
+	pos = distort(pos);
+	vec4 res = lightA(lightAModifyPos(pos), pos);
+	return res;
+#ifdef SHADOWS
+float shadowFunction(in vec3 ro, in vec3 rd, float mint, float maxt)
+    float t = 0.1;
+    for(float _ = 0.0; _ == 0.0; _ += 0.0)
+    {
+        if (t >= maxt) {
+        	return 1.0;
+        }
+        float h = map(ro + rd*t, rd).x;
+        if( h<0.01 )
+            return 0.0;
+        t += h;
+    }
+    return 1.0;
+#else
+#define shadowFunction(ro, rd, mint, maxt) 1.0
+#endif
+void addLight(inout vec3 diffRes, inout float specRes, vec3 normal, vec3 eye, vec3 lightPos, vec3 lightCol, float shadow, vec3 pos)
+	vec3 col = vec3(0.0);
+	vec3 invLight = normalize(lightPos - pos);
+	float diffuse = max(0.0, dot(invLight, normal));
+	float spec = specular(normal, -invLight, normalize(eye - pos), 100.0);
+	float dis = length(lightPos - pos);
+	float str = 1.0/(0.5 + 0.01*dis + 0.1*dis*dis);
+	float specStr = 1.0/(0.0 + 0.00*dis + dis*dis*dis);
+	diffRes += diffuse * lightCol * shadow;
+	specRes += spec  *  shadow  * 1.0 * length(lightCol);
+void addLightning(inout vec3 color, vec3 normal, vec3 eye, vec3 pos) {
+	vec3 diffuse = vec3(0.0);
+	float specular = 0.0;
+	const float ambient = 0.0;
+		vec3 dp = distort(pos);
+		vec3 posLightOrigo = lightAModifyPos(dp);
+		float s = 5.0;
+		int q = int(round(dp.z / s));
+		vec3 lightPos = distort(vec3(0.0, 0.8, q*s)); 
+		vec3 dir = lightPos - pos;
+		float shadow = 1.0;//shadowFunction(pos, normalize(dir), 0.1, length(dir));
+		addLight(diffuse, specular, normal, eye, lightPos, lightA(posLightOrigo, pos).rgb, shadow, pos);
+	color = color * (ambient + diffuse) + specular;
+vec3 getNormal(vec3 p, vec3 rd)
+	vec3 normal;
+    vec3 ep = vec3(0.01, 0, 0);
+    normal.x = map(p + ep.xyz, rd).x - map(p - ep.xyz, rd).x;
+    normal.y = map(p + ep.yxz, rd).x - map(p - ep.yxz, rd).x;
+    normal.z = map(p + ep.yzx, rd).x - map(p - ep.yzx, rd).x;
+    return normalize(normal);
+float occlusion(vec3 p, vec3 normal, vec3 rd)
+	float o = clamp(2*map(p + normal * 0.5, rd).x, 0, 1);
+	return 0.8 + 0.2*o;
+vec3 raymarch(vec3 ro, vec3 rd, vec3 eye) 
+	int maxIter = 300;
+	const float maxDis = 200.0;
+	const int jumps = 1;
+	vec3 col = vec3(0);	
+	float ref = 1.0;
+	vec3 scatteredLight = vec3(0.0);
+	float transmittance = 1.0;
+	for (int j = 0; j < jumps; j++) {
+		if (j == 1) {
+			maxIter = 10;
+		float t = 0.0;
+		for (int i = 0; i < maxIter; i++) {
+			vec3 p = ro + rd * t;
+			//p.x += sin(p.z*0.5);
+			vec2 res = map(p, rd);
+			float d = res.x;
+			float m = res.y;
+#ifdef VOLUMETRIC_LIGHTNING
+			float fogAmount = 0.001;
+			int q = int((p.z + 2.5) / 5.0);
+	if (iGlobalTime < PART_TWIST) {
+		fogAmount = mix(fogAmount, 0.5, smoothstep(70, 80, iGlobalTime*4.0 +  p.z));
+			vec4 lightColDis = evaluateLight(p);
+			vec3 light = lightColDis.rgb;
+			d = min(d, lightColDis.w);
+			vec3 lightIntegrated = light - light * exp(-fogAmount * d);
+			scatteredLight += transmittance * lightIntegrated;	
+			transmittance *= exp(-fogAmount * d);
+#endif
+			t += d;		
+			bool end = i == maxIter - 1 || t > maxDis;
+			if (d < 0.01 || end) {
+				vec3 c = vec3(1, 0, 1);
+				vec3 normal = getNormal(p, rd);
+				float fm = floor(m);
+				if (fm == MAT_CORRIDOR) {
+					vec3 dp = distort(p);
+					float pattern = BrickPattern(dp.zy * 2.1 + vec2(0.0, 0.0));
+					float n = noiseOctave(vec2(dp.z, dp.y) * 5.0, 10, 0.7);
+					vec3 brick = vec3(1.0, 0.6, 0.35)*(0.1 + 0.9 * n);
+					vec3 mortar = vec3(1.0);
+					c = mix(brick, mortar, pattern);
+					//c = vec3(n);
+				} else if (fm == MAT_ROOF) {
+					vec3 dp = distort(p);
+					float pattern = roofPattern(dp.xz);
+					c = mix(vec3(0.5), vec3(0.85, 0.75, 0.45), pattern);
+				} else if (fm == MAT_FLOOR) {
+					vec3 dp = distort(p);
+					float n = corrNoise(dp*4.0);
+					float pattern = floorPattern(dp.xz);
+					vec3 mortar = vec3(0.5);
+					vec3 tile = mix(vec3(0.4)*1.0, vec3(1.0), n);
+					/*vec3 tile = vec3(0.45, 0.55, 0.5)*0.8;
+					if (n > 0.5) {
+						tile = vec3(0.8);
+					}*/
+					c = mix(tile,mortar, pattern);
+					//c = tile;
+					//c = vec3(n);
+				}
+				float ms = mod(m, 1.0) * 2.0;
+				vec3 dp = distort(p);
+				vec3 pc = vec3(1.0, 0.0, 0.0);
+				c = mix(c, pc, ms);
+				//c = vec3(ms);
+				c *= occlusion(p, normal, rd);
+				addLightning(c, normal, eye, p);
+				
+				if (end) {
+					transmittance = 0;
+				}
+				col = mix(col, transmittance * c + scatteredLight, ref);
+				
+				if (ms > 0.05 ) {
+						ref *= ms * 0.2;
+				//} else if(floor(m) == MAT_ROOF) {
+				//	ref *= 0.3;
+				} else {
+					return col;
+				}
+#ifdef REFLECTION
+				rd = reflect(rd, getNormal(p, rd));
+#endif
+#ifdef REFRACTION
+				rd = refract(rd, getNormal(p, rd), 1/1.2);
+#endif
+				ro = p + rd*0.5;
+				t = 0;
+				break;
+			}
+	return col;
+void main()
+    float u = fragCoord.x * 2.0 - 1.0;
+	float v = fragCoord.y * 2.0 - 1.0;
+	u *= 16.0 / 9.0;
+	float y = 10.0*smoothstep(2.0, 7.0*2.0, iGlobalTime); // max(iGlobalTime - 3.0, 0.0) + 
+    vec3 eye = vec3( 0.5, y, -3); 
+	vec3 ed = distort(eye);
+	vec3 td = distort(eye + vec3(0, 0, 1));
+	td.x = -td.x;
+	eye.x = -ed.x;
+	vec3 tar = td;
+	vec3 dir = normalize(tar - eye);
+	vec3 right = normalize(cross(vec3(0, 1, 0), dir));
+	vec3 up = cross(dir, right);
+	vec3 ro = eye;
+	vec3 rd = normalize(dir + right*u*1.0 + up*v*1.0);
+	vec3 color = raymarch(ro, rd, eye);
+#ifdef TONE_MAPPING
+	color /= (color + vec3(1.0));
+#endif
+	float t = 0.5;
+	float a = abs(iGlobalTime - 0.0);
+		color = mix(color, vec3(0), clamp(1.0 - a / t + length(vec2(u,v)), 0, 1));
+	float b = abs(iGlobalTime - PART_TWIST);
+	color = mix(color, vec3(0), clamp(1.0 - b / t + length(vec2(u,v)), 0, 1));
+    fragColor = vec4(color, 1.0);
+#version 430
+in vec2 fragCoord;
+out vec4 fragColor;
+uniform float iGlobalTime;
+uniform sampler2D inTexture0;
+uniform sampler2D inTexture1;
+uniform sampler2D inTexture2;
+/*uniform float CHANNEL_0_TIME_SINCE[41];
+uniform float CHANNEL_1_TIME_SINCE[23];
+uniform float CHANNEL_11_TIME_SINCE[28];
+uniform float CHANNEL_12_TIME_SINCE[2];
+uniform float CHANNEL_13_TIME_SINCE[1];
+uniform float CHANNEL_0_TIME_TO[41];
+uniform float CHANNEL_1_TIME_TO[23];
+uniform float CHANNEL_11_TIME_TO[28];
+uniform float CHANNEL_12_TIME_TO[2];
+uniform float CHANNEL_13_TIME_TO[1];
+uniform float CHANNEL_12_TOTAL;
+uniform float CHANNEL_13_TOTAL;*/
+uniform float CHANNEL_11_SINCE;
+uniform float CHANNEL_11_TOTAL;
+uniform float CHANNEL_4_SINCE[2];
+//////////////////////////////////////////////////////
+#define REFLECTION
+//#define REFRACTION // TODO: I don't think this works perfectly.
+#define VOLUMETRIC_LIGHTNING
+#define SHADOWS
+#define TONE_MAPPING
+#define PART_FLY 22.5
+#define PART_WALK (PART_FLY + 15)
+#define PART_DRUM (PART_WALK + 20000)
+#define MAT_GRAVE 1.0
+#define MAT_GROUND 2.0
+#define MAT_PATH 3.0
+#define MAT_POLE 4.0
+#define MAT_WATER 5.0
+// Smooth min. k determines smoothness
+float smink( float a, float b, float k )
+    float h = clamp( 0.5+0.5*(b-a)/k, 0.0, 1.0 );
+    return mix( b, a, h ) - k*h*(1.0-h);
+vec2 un(vec2 a, vec2 b)
+	return a.x < b.x ? a : b;
+// Union with smink
+vec2 sunk(vec2 a, vec2 b, float k)
+	float sm = smink(a.x,b.x, k);
+	float m = min(a.x, b.x);
+	float ca = abs(sm -a.x);
+	float cb = abs(sm -b.x);
+	return ca < cb ? vec2(sm, a.y) : vec2(sm, b.y);
+float sdBox( vec3 p, vec3 b )
+  vec3 d = abs(p) - b;
+  return min(max(d.x,max(d.y,d.z)),0.0) + length(max(d,0.0));
+float sdCylinder( vec3 p, float r )
+  return length(p.xz)-r;
+float udRoundBox( vec3 p, vec3 b, float r )
+  return length(max(abs(p)-b,0.0))-r;
+float sdCappedCylinder( vec3 p, vec2 h )
+  vec2 d = abs(vec2(length(p.xz),p.y)) - h;
+  return min(max(d.x,d.y),0.0) + length(max(d,0.0));
+float hash( in vec2 p ) {
+	float h = dot(p,vec2(127.1,311.7));	
+    return fract(sin(h)*43758.5453123);
+float noise( in vec2 p ) {
+    vec2 i = floor( p );
+    vec2 f = fract( p );	
+	vec2 u = f*f*(3.0-2.0*f);
+    return mix( mix( hash( i + vec2(0.0,0.0) ), 
+                     hash( i + vec2(1.0,0.0) ), u.x),
+                mix( hash( i + vec2(0.0,1.0) ), 
+                     hash( i + vec2(1.0,1.0) ), u.x), u.y);
+float noiseOctave(in vec2 p, int octaves, float persistence)
+	float n = 0.;
+	float amplitude = 1.;
+	float frequency = 1.;
+	float maxValue = 0.;
+	for(int i = 0; i < octaves; i++)
+		n += noise((p+float(i)) * frequency) * amplitude;
+		maxValue += amplitude;
+		amplitude *= persistence;
+		frequency *= 2.0;
+	return n / maxValue; 
+float HexagonalGrid (in vec2 position         
+	                ,in float gridSize
+	                ,in float gridThickness) 
+  vec2 pos = position / gridSize; 
+  pos.x *= 0.57735 * 2.0;
+  pos.y += 0.5 * mod(floor(pos.x), 2.0);
+  pos = abs(fract(pos) - 0.5);
+  float d = abs(max(pos.x*1.5 + pos.y, pos.y*2.0) - 1.0);
+  return smoothstep(0.0, gridThickness, d);
+float pathPattern(in vec2 p) {
+	return HexagonalGrid(p, 0.3, 0.1);
+float specular(vec3 normal, vec3 light, vec3 viewdir, float s)
+	float nrm = (s + 8.0) / (3.1415 * 8.0);
+	float k = max(0.0, dot(viewdir, reflect(light, normal)));
+    return  pow(k, s);
+vec2 water(vec3 p, vec3 rd)
+	if (rd.y > 0) {
+		return vec2(99999, MAT_WATER);
+	//p -= - 3.5;
+	p.y += 0.5;
+	float t = iGlobalTime * 1.5;
+	float d = (sin(p.x + t*0.5) + sin(p.z  + t*0.5)) * 0.1 +
+		noiseOctave(p.xz*10.0 + vec2(0, t*0.1), 3, 0.7)*0.1 +
+		noiseOctave(p.xz*10.0 + vec2(t*0.13, 0), 3, 0.7)*0.1;
+			//length(texture(inTexture0, p.xz*0.8 + vec2(0, t*0.1)))*0.1 +
+			//length(texture(inTexture0, p.xz*0.8 + vec2(t*0.13, 0)))*0.1;
+	d *= 0.5;
+	float h = p.y - d * 0.1;
+	float dis = (0.1 -p.y)/rd.y;
+	return vec2(max(h, dis), MAT_WATER);
+#define LIGHT_WIDTH(p) (1.5) 
+#define LIGHT_SPACING 3.0
+#define LIGHT_HEIGHT 1.8
+vec2 map(vec3 p, vec3 rd) 
+	const float pathWidth = 1.5;
+	vec2 res = vec2(99999999, 0);
+	if (p.y < 0.5) {
+		float d = p.y;
+		d -= 0.08*noiseOctave(p.xz*10.0, 3, 0.7);
+		res = un(res, vec2(d, MAT_GROUND)); 
+	} else {
+		res = un(res, vec2(p.y, MAT_GROUND)); 
+		//res = un(res, water(p, rd));
+	//if (abs(p.z) > pathWidth) {
+	//if (p.x > 0.5){	
+		float s = 2.0;
+		vec3 q = mod(vec3(p.x, p.y, p.z) + s*0.5, s) - s * 0.5;
+		q.y = p.y;
+		float d = sdBox(q - vec3(0, 0.7, 0), vec3(0.1, 0.5, 0.02));
+		float d2 = sdBox(q - vec3(0, 0.85, 0), vec3(0.4, 0.1, 0.02));
+		res = sunk(vec2(min(d, d2) + max(0.0, 1.0 - abs(p.z)), MAT_GRAVE), res, 0.5);
+	//}
+	//}
+		vec3 q = p;
+		q.z = abs(p.z) - LIGHT_WIDTH(p);
+		float s = LIGHT_SPACING;
+		q.x = mod(p.x + s * 0.5, s) - s * 0.5;
+		float w = 0.02;// + max(0.0, -p.y*0.2 + 0.1);
+		float d = sdCappedCylinder(q, vec2(w, LIGHT_HEIGHT));
+		res = sunk(vec2(d, MAT_POLE), res, 0.5);
+	return res;
+vec3 lightAModifyPos(vec3 p)
+	//float size = 3.0;
+	//p.x = mod(p.x + size * 0.5, size) - size * 0.5;
+	//p.z = mod(p.z + size * 0.5, size) - size * 0.5;
+	return p - vec3(-20.0, 4.0, 10.0);
+vec4 lightA(vec3 p)
+	float dis = length(p);
+	vec3 col = vec3(1.0);
+	const float strength = 50.0;
+	vec3 res = col * strength / (dis * dis * dis);
+	return vec4(res, dis);
+vec3 lightPolesModifyPos(vec3 p) {
+	p.z = abs(p.z) - LIGHT_WIDTH(p);
+	p.y -= LIGHT_HEIGHT + 0.1;
+	p.x = mod(p.x + LIGHT_SPACING * 0.5, LIGHT_SPACING) - LIGHT_SPACING * 0.5;
+	return p;
+vec4 lightPoles(vec3 p) {
+	float dis = length(p);
+	vec3 col = vec3(1.0, 0.9, 0.6);
+	const float strength = 5.0;
+	vec3 res = col * strength / (dis * dis * dis);
+	return vec4(res, dis);
+vec3 lightShipModifyPos(vec3 p) {
+	return p - vec3( sin(iGlobalTime)*5.0, 2,10 +  cos(iGlobalTime)*5.0);
+vec4 lightShip(vec3 p) {
+	float dis = sdCylinder(p, 0.0);
+	vec3 col = vec3(1.0, 1.0, 1.0);
+	float strength = 20.0;
+	vec3 res = col * strength / (dis * dis * dis);
+	return vec4(res, dis);
+vec3 lightDrumModifyPos(vec3 p, float side) {
+	//p.x = abs(p.x) - 2.0;
+	return p- vec3(sign(side)*3.0, 2.0, 8.5);
+vec4 lightDrum(vec3 p, vec3 rp, float c) {
+	float dis = sdCylinder(p, 0.0);
+	vec3 col = vec3(1.0, 0.0, 0.0);
+	float strength = 20.0;
+	/*float c = CHANNEL_4_SINCE[0];
+	if (rp.x > 0.0) {
+		c = CHANNEL_4_SINCE[1];
+	}*/
+	strength *= max(0.0, 1.0 - c*2.0);
+	vec3 res = col * strength / (dis * dis * dis);
+	return vec4(res, dis);
+vec4 lightUnion(vec4 a, vec4 b)
+	return vec4(a.rgb + b.rgb, min(a.w, b.w));
+vec4 evaluateLight(vec3 pos)
+	//vec4 res = lightA(lightAModifyPos(pos));
+	//res = lightUnion(res, lightPoles(lightPolesModifyPos(pos)));
+	vec4 res = vec4(0);//lightPoles(lightPolesModifyPos(pos));
+	//res = lightUnion(res, lightShip(lightShipModifyPos(pos)));
+	//res = lightShip(lightShipModifyPos(pos));
+	if (iGlobalTime < PART_WALK) {
+		return  lightPoles(lightPolesModifyPos(pos));
+	} else if (iGlobalTime < PART_DRUM ) {
+		vec4 a = lightDrum(lightDrumModifyPos(pos, -1.0), pos, CHANNEL_4_SINCE[0]);
+		vec4 b = lightDrum(lightDrumModifyPos(pos, 1.0), pos, CHANNEL_4_SINCE[1]);
+		return lightUnion(a, b);
+	} else {
+		return lightShip(lightShipModifyPos(pos));
+#ifdef SHADOWS
+float shadowFunction(in vec3 ro, in vec3 rd, float mint, float maxt)
+    float t = 0.1;
+    for(float _ = 0.0; _ == 0.0; _ += 0.0)
+    {
+        if (t >= maxt) {
+        	return 1.0;
+        }
+        float h = map(ro + rd*t, rd).x;
+        if( h<0.01 )
+            return 0.0;
+        t += h;
+    }
+    return 1.0;
+#else
+#define shadowFunction(ro, rd, mint, maxt) 1.0
+#endif
+void addLight(inout vec3 diffRes, inout float specRes, vec3 normal, vec3 eye, vec3 lightPos, vec3 lightCol, float shadow, vec3 pos, float matSpec)
+	vec3 col = vec3(0.0);
+	vec3 invLight = normalize(lightPos - pos);
+	float diffuse = max(0.0, dot(invLight, normal));
+	float spec = specular(normal, -invLight, normalize(eye - pos), 80.0);
+	//float dis = length(lightPos);
+	float dis = length(lightPos - pos);
+	//float str = 1.0/(0.5 + 0.01*dis + 0.1*dis*dis); 
+	//diffRes += diffuse * lightCol * str * shadow;
+	//specRes += spec * str * shadow;
+	diffRes += diffuse * lightCol * shadow;
+	specRes += spec  *  shadow  * 1.0 * length(lightCol) * matSpec;
+void addLightning(inout vec3 color, vec3 normal, vec3 eye, vec3 pos, float mat) {
+	vec3 diffuse = vec3(0.0);
+	float specular = 0.0;
+	const float ambient = 0.0;
+	float matSpec = 1.0;
+	if (mat == MAT_GROUND) {
+		matSpec = 0.5;
+		//vec3 posLightOrigo = lightAModifyPos(pos);
+		//addLight(diffuse, specular, normal, eye, pos-posLightOrigo, lightA(posLightOrigo).rgb, 1.0, pos, matSpec);
+	if (iGlobalTime < PART_WALK){
+		int qx = int(round(pos.x / LIGHT_SPACING));
+		vec3 lightPos = vec3(qx*LIGHT_SPACING, LIGHT_HEIGHT + 0.1, sign(pos.z)*LIGHT_WIDTH(pos)*0.9); 
+		vec3 dir = lightPos - pos;
+		float shadow = shadowFunction(pos, normalize(dir), 0.1, length(dir));
+		vec3 posLightOrigo = lightPolesModifyPos(pos);
+		addLight(diffuse, specular, normal, eye, lightPos, lightPoles(posLightOrigo).rgb, shadow*0.5 + 0.5, pos, matSpec);
+	} else if (iGlobalTime < PART_DRUM) {
+			vec3 posLightOrigo = lightDrumModifyPos(pos, -1.0);
+			vec3 lightPos = pos - posLightOrigo;
+			vec3 dir = lightPos - pos;
+			float shadow = shadowFunction(pos, normalize(dir), 0.1, length(dir));
+			addLight(diffuse, specular, normal, eye, pos-posLightOrigo, lightDrum(posLightOrigo, pos, CHANNEL_4_SINCE[0]).rgb, shadow, pos, matSpec);
+			vec3 posLightOrigo = lightDrumModifyPos(pos, 1.0);
+			vec3 lightPos = pos - posLightOrigo;
+			vec3 dir = lightPos - pos;
+			float shadow = shadowFunction(pos, normalize(dir), 0.1, length(dir));
+			addLight(diffuse, specular, normal, eye, pos-posLightOrigo, lightDrum(posLightOrigo, pos, CHANNEL_4_SINCE[1]).rgb, shadow, pos, matSpec);
+	} else {
+		vec3 posLightOrigo = lightShipModifyPos(pos);
+		vec3 lightPos = pos - posLightOrigo;
+		vec3 dir = lightPos - pos;
+		float shadow = shadowFunction(pos, normalize(dir), 0.1, length(dir));
+		addLight(diffuse, specular, normal, eye, pos-posLightOrigo, lightShip(posLightOrigo).rgb, shadow, pos, matSpec);
+	color = color * (ambient + diffuse) + specular;
+vec3 getNormal(vec3 p, vec3 rd)
+	vec3 normal;
+    vec3 ep = vec3(0.01, 0, 0);
+    normal.x = map(p + ep.xyz, rd).x - map(p - ep.xyz, rd).x;
+    normal.y = map(p + ep.yxz, rd).x - map(p - ep.yxz, rd).x;
+    normal.z = map(p + ep.yzx, rd).x - map(p - ep.yzx, rd).x;
+    return normalize(normal);
+float occlusion(vec3 p, vec3 normal, vec3 rd)
+	float o = clamp(2*map(p + normal * 0.5, rd).x, 0, 1);
+	return 0.8 + 0.2*o;
+vec3 raymarch(vec3 ro, vec3 rd, vec3 eye) 
+	const int maxIter = 300;
+	const float maxDis = 100.0;
+	const int jumps = 1;
+	vec3 col = vec3(0);	
+	float ref = 1.0;
+	vec3 scatteredLight = vec3(0.0);
+	float transmittance = 1.0;
+	for (int j = 0; j < jumps; j++) {
+		float t = 0.0;
+		for (int i = 0; i < maxIter; i++) {
+			vec3 p = ro + rd * t;
+			vec2 res = map(p, rd);
+			float d = res.x;
+			float m = res.y;
+#ifdef VOLUMETRIC_LIGHTNING
+			float fogAmount = 0.5;
+			if (iGlobalTime < PART_WALK) {
+				fogAmount = 0.005;
+			}
+			vec4 lightColDis = evaluateLight(p);
+			vec3 light = lightColDis.rgb;
+			d = min(d, lightColDis.w);
+			vec3 lightIntegrated = light - light * exp(-fogAmount * d);
+			scatteredLight += transmittance * lightIntegrated;	
+			transmittance *= exp(-fogAmount * d);
+#endif
+			t += d;		
+			bool end = i == maxIter - 1 || t > maxDis;
+			if (d < 0.01 || end) {
+				vec3 c = vec3(1, 0, 1);
+				vec3 normal = getNormal(p, rd);
+				if (m == MAT_GRAVE) {
+					c = vec3(1.0);
+				} else if (m == MAT_GROUND) {
+					
+					c = vec3(1.0);
+				} else if (m == MAT_PATH) {
+					float n = noiseOctave(p.xz, 10, 0.8);
+					float p = pathPattern(p.xz);
+					vec3 brick = vec3(0.05, 0.1, 0.3);
+					vec3 mortar = vec3(0.5);
+					c = mix(mortar, brick, p);
+					c *= n;
+				} else if (m == MAT_POLE) {
+					c = vec3(1.0);
+				} else if (m == MAT_WATER) {
+					c = vec3(0);
+				}
+				c *= occlusion(p, normal, rd);
+				addLightning(c, normal, eye, p, m);
+				
+				if (end) {
+					transmittance = 0;
+				}
+				col = mix(col, transmittance * c + scatteredLight, ref);
+				if (m == MAT_WATER) {
+					ref *= 0.9;
+				} else {
+					//return vec3(float(i)/float(maxIter));
+					return col;
+				}
+#ifdef REFLECTION
+				rd = reflect(rd, getNormal(p, rd));
+#endif
+#ifdef REFRACTION
+				rd = refract(rd, getNormal(p, rd), 1/1.2);
+#endif
+				ro = p + rd*0.5;
+				t = 0;
+				break;
+			}
+	return col;
+void main()
+    float u = fragCoord.x * 2.0 - 1.0;
+	float v = fragCoord.y * 2.0 - 1.0;
+	float f = 1.0;
+	if (iGlobalTime < PART_FLY) {
+		f = 1.2;
+	u *= f;
+	v *= f;
+	float r = length(vec2(u,v));
+	float k1 = 0.001;
+	float k2 = 0.5;
+	 float k3 = 0.1;
+	if (iGlobalTime < PART_FLY) {
+		k1 = 0.0;
+		k2 = 0.0;
+		k3 = 0.0;
+ u = u * (1 + k1 * r * r + k2 * r * r * r * r + k3 * r * r * r * r * r * r);
+ v = v * (1 + k1 * r * r + k2 * r * r * r * r + k3 * r * r * r * r * r * r); 
+ u *= 16.0 / 9.0;
+   // vec3 eye = vec3(6 * sin(iGlobalTime) - 20.0, 3, 6 * cos(iGlobalTime));
+	//vec3 tar = vec3(-20 ,1, 0); 
+	 vec3 eye = vec3(4 * sin(iGlobalTime*0), 2, 4 * cos(iGlobalTime*0));
+	vec3 tar = vec3(0 ,1, 0); 
+	if (iGlobalTime < PART_FLY) {
+		float t = iGlobalTime - 0.0;
+		eye = vec3(0, 8, t-15.0);
+		float a = -3.1415 / 2;
+		float c = 0;
+		if (CHANNEL_11_TOTAL == 1) {
+			c =  min(1.0, CHANNEL_11_SINCE);
+		} else if (CHANNEL_11_TOTAL > 1) {
+			c = 1.0;
+		a += 3.1415* 0.5 * c;
+		tar = eye + vec3(0, sin(a), cos(a));
+		//tar = eye + vec3(0, -1, 0.01 + 0.5*max(0.0, t - PART_FLY + 5.0));
+	} else if (iGlobalTime < PART_WALK) {
+		float t = iGlobalTime - PART_FLY;
+			float bob = min(t, 10.0);
+			eye = vec3(bob, 1.2 + sin(bob*8.0)*0.05, 0);
+			float look = max(0.0, t - 10.0);
+			tar = eye + vec3(1, 0, sin(look));
+	} else if (iGlobalTime < PART_DRUM) {
+		float t = iGlobalTime - PART_WALK;
+		eye = vec3(0, 2, 4 + t*0.2);
+		tar = eye + vec3(0, -0.5, 1); 
+	} else {
+		eye = vec3(0, 2, 4);
+		tar = eye + vec3(0, -0.5, 1); 
+	vec3 dir = normalize(tar - eye);
+	vec3 right = normalize(cross(vec3(0, 1, 0), dir));
+	vec3 up = cross(dir, right);
+	vec3 ro = eye;
+	vec3 rd = normalize(dir + right*u + up*v);
+	vec3 color = raymarch(ro, rd, eye);
+	float trans = 0.5;
+	float a = abs(iGlobalTime - PART_FLY);
+	color = mix(color, vec3(0), clamp(1.0 - a / trans + length(vec2(u,v)), 0, 1));
+#ifdef TONE_MAPPING
+	color /= (color + vec3(1.0));
+#endif
+    fragColor = vec4(color, 1.0);
+#version 430
+in vec2 fragCoord;
+out vec4 fragColor;
+uniform sampler2D inTexture0;
+uniform float iGlobalTime;
+uniform float CHANNEL_11_SINCE;
+uniform float CHANNEL_4_TO;
+uniform float CHANNEL_4_TOTAL;
+void main()
+	vec2 uv = fragCoord.xy;
+	fragColor = texture(inTexture0, uv);
+	float red = clamp(2.0 - CHANNEL_11_SINCE, 0.0, 1.0);
+	//fragColor.rgb = mix(vec3(1,0,0), fragColor.rgb, min(red, 1.0));
+	float a = 0.5 + 0.5 * sin(iGlobalTime* 5.0);
+	//a = a * a * a;
+	a = 2.0 * red + red * sin(iGlobalTime * 100.0); //0.6
+	vec2 dir = normalize(uv - vec2(0.5));
+	float l = length(vec2(0.5) - uv);
+	fragColor.g = texture(inTexture0, uv + dir * a * 0.01*l).g;
+	fragColor.b = texture(inTexture0,  uv + dir * a * 0.02*l).b;
+	fragColor.rgb *=  0.9 + 0.1*clamp(sin(uv.y*1000) + 0.8, 0.0, 1.0);
+    
+	//fragColor.rgb = vec3(sin(iGlobalTime*1000.0));
+	/*if (CHANNEL_4_TO > 0.0 && CHANNEL_4_TOTAL < 0.5) {
+		fragColor.rgb = vec3(1,0,0);
+	} else {
+		fragColor.rgb = vec3(1,0,1);
+	}*/
+#version 440
+in vec2 fragCoord;
+out vec4 fragColor;
+uniform float iGlobalTime;
+uniform sampler2D inTexture0;
+uniform sampler2D inTexture1;
+uniform sampler2D inTexture2;
+uniform float CHANNEL_0_TIME_SINCE[41];
+uniform float CHANNEL_1_TIME_SINCE[23];
+uniform float CHANNEL_11_TIME_SINCE[28];
+uniform float CHANNEL_12_TIME_SINCE[2];
+uniform float CHANNEL_13_TIME_SINCE[1];
+uniform float CHANNEL_0_TIME_TO[41];
+uniform float CHANNEL_1_TIME_TO[23];
+uniform float CHANNEL_11_TIME_TO[28];
+uniform float CHANNEL_12_TIME_TO[2];
+uniform float CHANNEL_13_TIME_TO[1];
+uniform float CHANNEL_12_TOTAL;
+uniform float CHANNEL_13_TOTAL;
+//////////////////////////////////////////////////////
+#define PART_TWIST 15.0
+#define PI 3.141592
+vec2 un(vec2 a, vec2 b)
+	return a.x < b.x ? a : b;
+float sdCappedCylinder( vec3 p, vec2 h )
+  vec2 d = abs(vec2(length(p.xz),p.y)) - h;
+  return min(max(d.x,d.y),0.0) + length(max(d,0.0));
+float specular(vec3 normal, vec3 light, vec3 viewdir, float s)
+	float nrm = (s + 8.0) / (3.1415 * 8.0);
+	float k = max(0.0, dot(viewdir, reflect(light, normal)));
+    return  pow(k, s);
+#define REFLECTION
+#define VOLUMETRIC_LIGHTNING
+#define SHADOWS
+#define TONE_MAPPING
+#define MAT_FLOOR 1.0
+#define MAT_ROOF 2.0
+#define MAT_CORRIDOR 3.0
+float sdBox( vec3 p, vec3 b )
+  vec3 d = abs(p) - b;
+  return min(max(d.x,max(d.y,d.z)),0.0) + length(max(d,0.0));
+float sdCylinder( vec3 p, float r )
+  return length(p.xz)-r;
+float hash( in vec2 p ) {
+	float h = dot(p,vec2(127.1,311.7));	
+    return fract(sin(h)*43758.5453123);
+float noise( in vec2 p ) {
+    vec2 i = floor( p );
+    vec2 f = fract( p );	
+	vec2 u = f*f*(3.0-2.0*f);
+    return mix( mix( hash( i + vec2(0.0,0.0) ), 
+                     hash( i + vec2(1.0,0.0) ), u.x),
+                mix( hash( i + vec2(0.0,1.0) ), 
+                     hash( i + vec2(1.0,1.0) ), u.x), u.y);
+float noiseOctave(in vec2 p, int octaves, float persistence)
+	float n = 0.;
+	float amplitude = 1.;
+	float frequency = 1.;
+	float maxValue = 0.;
+	for(int i = 0; i < octaves; i++)
+		n += noise((p+float(i)) * frequency) * amplitude;
+		maxValue += amplitude;
+		amplitude *= persistence;
+		frequency *= 2.0;
+	return n / maxValue; 
+float BrickPattern(in vec2 p) 
+  p *= vec2 (1.0, 2.8);  // scale
+  vec2 f = floor (p);
+  if (2. * floor (f.y * 0.5) != f.y) 
+    p.x += 0.5;  // brick shift
+  p = smoothstep (0.03, 0.08, abs (fract (p + 0.5) - 0.5));
+  return 1. - 0.9 * p.x * p.y;
+float GridPattern(in vec2 uv)
+  return 0.5*clamp(10.*sin(PI*uv.x) + 10.5, 0.0, 1.0)
+       / 0.5*clamp(10.*sin(PI*uv.y) + 10.5, 0.0, 1.0);
+float SquareHolePattern(in vec2 uv)
+  float thickness = 0.4;
+  float t = cos(uv.x*2.0) * cos(uv.y*2.0) / thickness;
+  return smoothstep(0.1, 0.0, t*t);
+float floorPattern(vec2 p) {
+	 return SquareHolePattern(p*7.2 - vec2(0.0, 0.0));
+float roofPattern(vec2 p) {
+	return GridPattern(p*5.0);
+float corrNoise(vec3 p){
+	return 0.4*noiseOctave(vec2(p.z, abs(p.y) > 0.95 ? p.x : p.y) * 25.0, 3, 1.0); // Use same noise for walls and floor
+	//return noiseOctave(vec2(p.z, abs(p.y) > 0.95 ? p.x : p.y) * 5.0, 10, 0.7); // Use same noise for walls and floor
+vec3 distort(vec3 p) {
+	if (iGlobalTime > PART_TWIST) {
+		float a = atan(p.y, p.x);
+		float l = length(p.xy);
+		a += (p.z - PART_TWIST)*0.2*smoothstep(PART_TWIST + 5, PART_TWIST + 10, iGlobalTime);
+		a -= (p.z - PART_TWIST)*0.2*smoothstep(PART_TWIST + 10, PART_TWIST + 15, iGlobalTime);
+		return vec3(cos(a) * l, sin(a) * l, p.z);
+	return p;
+	/*float a = atan(p.y, p.x);
+	float l = length(p.xy);
+	a += 1.2*sin(p.z*0.4 + iGlobalTime*0.3);
+	return vec3(cos(a) * l, sin(a) * l, p.z);*/
+// Smooth min
+float smin( float a, float b)
+	float k = 0.1;
+    float h = clamp( 0.5+0.5*(b-a)/k, 0.0, 1.0 );
+    return mix( b, a, h ) - k*h*(1.0-h);
+// Smooth min. k determines smoothness
+float smink( float a, float b, float k, inout float h)
+    h = clamp( 0.5+0.5*(b-a)/k, 0.0, 1.0 );
+    return mix( b, a, h ) - k*h*(1.0-h);
+vec2 map(vec3 p, vec3 rd) 
+	p = distort(p);
+	float pattern = BrickPattern(p.zy * 2.1 + vec2(0.0, 0.0));
+	float n = corrNoise(p);
+	float dc = -sdBox(p - vec3(sign(p.x)*pattern * 0.02-n*0.05*sign(p.x), 0.0, 0.0), vec3(1.4, 10.0, 5000.0));
+	vec2 res = vec2(dc, MAT_CORRIDOR);
+	float fPattern = floorPattern(p.xz);
+	res = un(res, vec2(p.y + 1.0 + fPattern*0.01  - n*0.03, MAT_FLOOR));
+	float rPattern = roofPattern(p.xz);
+	res = un(res, vec2(-p.y + 1.0 -rPattern * 0.03 - n*0.01, MAT_ROOF));
+	if (iGlobalTime > PART_TWIST) {
+		vec3 sp = p;
+		float s = 5.0;
+		sp.z = mod(p.z + s*0.5, s) - s*0.5;
+		float rr = p.z;
+		vec2 rs = vec2(cos(rr)*p.x + sin(rr)*p.y ,sp.z);
+		float r = 0.1 + 0.3*(1.0 - smoothstep(0.0, 0.6, length(p.xy))) * (0.5 + 0.5 * sin(iGlobalTime* 5.0));
+		float d = length(rs - vec2(0, 1.5)) - r;
+		float h = -1;
+		d = smink(d, res.x, 0.5, h);
+		res.x = d;
+		res.y += h*0.5;
+	return res;
+vec3 lightAModifyPos(vec3 p)
+	float s = 5.0;
+	p.z = mod(p.z + s*0.5, s) - s * 0.5;
+	return p - vec3(0.0, 0.75, 0.0);
+vec4 lightA(vec3 p, vec3 realp)
+	float dis = sdCappedCylinder(p.zxy, vec2(0.0, 0.3));
+	vec3 col = vec3(1.0, 0.6, 0.6);
+	float strength = 1.0;
+	int q = int((realp.z + 2.5) / 5.0);
+	if (iGlobalTime*4.0 +  q *5.0 > 60 && iGlobalTime <= PART_TWIST) {
+			col = vec3(0.0, 1.0, 0.2);
+			strength = smoothstep(0 + 1, 0 + 2 + 1, iGlobalTime);
+	vec3 res = col * strength / (dis * dis * dis);
+	return vec4(res, dis);
+vec4 lightUnion(vec4 a, vec4 b)
+	return vec4(a.rgb + b.rgb, min(a.w, b.w));
+vec4 evaluateLight(vec3 pos)
+	pos = distort(pos);
+	vec4 res = lightA(lightAModifyPos(pos), pos);
+	return res;
+#ifdef SHADOWS
+float shadowFunction(in vec3 ro, in vec3 rd, float mint, float maxt)
+    float t = 0.1;
+    for(float _ = 0.0; _ == 0.0; _ += 0.0)
+    {
+        if (t >= maxt) {
+        	return 1.0;
+        }
+        float h = map(ro + rd*t, rd).x;
+        if( h<0.01 )
+            return 0.0;
+        t += h;
+    }
+    return 1.0;
+#else
+#define shadowFunction(ro, rd, mint, maxt) 1.0
+#endif
+void addLight(inout vec3 diffRes, inout float specRes, vec3 normal, vec3 eye, vec3 lightPos, vec3 lightCol, float shadow, vec3 pos)
+	vec3 col = vec3(0.0);
+	vec3 invLight = normalize(lightPos - pos);
+	float diffuse = max(0.0, dot(invLight, normal));
+	float spec = specular(normal, -invLight, normalize(eye - pos), 100.0);
+	float dis = length(lightPos - pos);
+	float str = 1.0/(0.5 + 0.01*dis + 0.1*dis*dis);
+	float specStr = 1.0/(0.0 + 0.00*dis + dis*dis*dis);
+	diffRes += diffuse * lightCol * shadow;
+	specRes += spec  *  shadow  * 1.0 * length(lightCol);
+void addLightning(inout vec3 color, vec3 normal, vec3 eye, vec3 pos) {
+	vec3 diffuse = vec3(0.0);
+	float specular = 0.0;
+	const float ambient = 0.0;
+		vec3 dp = distort(pos);
+		vec3 posLightOrigo = lightAModifyPos(dp);
+		float s = 5.0;
+		int q = int(round(dp.z / s));
+		vec3 lightPos = distort(vec3(0.0, 0.8, q*s)); 
+		vec3 dir = lightPos - pos;
+		float shadow = 1.0;//shadowFunction(pos, normalize(dir), 0.1, length(dir));
+		addLight(diffuse, specular, normal, eye, lightPos, lightA(posLightOrigo, pos).rgb, shadow, pos);
+	color = color * (ambient + diffuse) + specular;
+vec3 getNormal(vec3 p, vec3 rd)
+	vec3 normal;
+    vec3 ep = vec3(0.01, 0, 0);
+    normal.x = map(p + ep.xyz, rd).x - map(p - ep.xyz, rd).x;
+    normal.y = map(p + ep.yxz, rd).x - map(p - ep.yxz, rd).x;
+    normal.z = map(p + ep.yzx, rd).x - map(p - ep.yzx, rd).x;
+    return normalize(normal);
+float occlusion(vec3 p, vec3 normal, vec3 rd)
+	float o = clamp(2*map(p + normal * 0.5, rd).x, 0, 1);
+	return 0.8 + 0.2*o;
+vec3 raymarch(vec3 ro, vec3 rd, vec3 eye) 
+	int maxIter = 300;
+	const float maxDis = 200.0;
+	const int jumps = 2;
+	vec3 col = vec3(0);	
+	float ref = 1.0;
+	vec3 scatteredLight = vec3(0.0);
+	float transmittance = 1.0;
+	for (int j = 0; j < jumps; j++) {
+		if (j == 1) {
+			maxIter = 10;
+		float t = 0.0;
+		for (int i = 0; i < maxIter; i++) {
+			vec3 p = ro + rd * t;
+			//p.x += sin(p.z*0.5);
+			vec2 res = map(p, rd);
+			float d = res.x;
+			float m = res.y;
+#ifdef VOLUMETRIC_LIGHTNING
+			float fogAmount = 0.001;
+			int q = int((p.z + 2.5) / 5.0);
+	if (iGlobalTime < PART_TWIST) {
+		fogAmount = mix(fogAmount, 0.5, smoothstep(70, 80, iGlobalTime*4.0 +  p.z));
+			vec4 lightColDis = evaluateLight(p);
+			vec3 light = lightColDis.rgb;
+			d = min(d, lightColDis.w);
+			vec3 lightIntegrated = light - light * exp(-fogAmount * d);
+			scatteredLight += transmittance * lightIntegrated;	
+			transmittance *= exp(-fogAmount * d);
+#endif
+			t += d;		
+			bool end = i == maxIter - 1 || t > maxDis;
+			if (d < 0.01 || end) {
+				vec3 c = vec3(1, 0, 1);
+				vec3 normal = getNormal(p, rd);
+				float fm = floor(m);
+				if (fm == MAT_CORRIDOR) {
+					vec3 dp = distort(p);
+					float pattern = BrickPattern(dp.zy * 2.1 + vec2(0.0, 0.0));
+					float n = noiseOctave(vec2(dp.z, dp.y) * 5.0, 10, 0.7);
+					vec3 brick = vec3(1.0, 0.6, 0.35)*(0.1 + 0.9 * n);
+					vec3 mortar = vec3(1.0);
+					c = mix(brick, mortar, pattern);
+					//c = vec3(n);
+				} else if (fm == MAT_ROOF) {
+					vec3 dp = distort(p);
+					float pattern = roofPattern(dp.xz);
+					c = mix(vec3(0.5), vec3(0.85, 0.75, 0.45), pattern);
+				} else if (fm == MAT_FLOOR) {
+					vec3 dp = distort(p);
+					float n = corrNoise(dp*4.0);
+					float pattern = floorPattern(dp.xz);
+					vec3 mortar = vec3(0.5);
+					vec3 tile = mix(vec3(0.4)*1.0, vec3(1.0), n);
+					/*vec3 tile = vec3(0.45, 0.55, 0.5)*0.8;
+					if (n > 0.5) {
+						tile = vec3(0.8);
+					}*/
+					c = mix(tile,mortar, pattern);
+					//c = tile;
+					//c = vec3(n);
+				}
+				float ms = mod(m, 1.0) * 2.0;
+				vec3 dp = distort(p);
+				vec3 pc = vec3(1.0, 0.0, 0.0);
+				c = mix(c, pc, ms);
+				//c = vec3(ms);
+				c *= occlusion(p, normal, rd);
+				addLightning(c, normal, eye, p);
+				
+				if (end) {
+					transmittance = 0;
+				}
+				col = mix(col, transmittance * c + scatteredLight, ref);
+				
+				if (ms > 0.05 ) {
+						ref *= ms * 0.2;
+				//} else if(floor(m) == MAT_ROOF) {
+				//	ref *= 0.3;
+				} else {
+					return col;
+				}
+#ifdef REFLECTION
+				rd = reflect(rd, getNormal(p, rd));
+#endif
+#ifdef REFRACTION
+				rd = refract(rd, getNormal(p, rd), 1/1.2);
+#endif
+				ro = p + rd*0.5;
+				t = 0;
+				break;
+			}
+	return col;
+void main()
+    float u = fragCoord.x * 2.0 - 1.0;
+	float v = fragCoord.y * 2.0 - 1.0;
+	u *= 16.0 / 9.0;
+    vec3 eye = vec3( 0.0, 0.0, iGlobalTime); 
+	if (iGlobalTime > PART_TWIST) {
+		//vec3 sp = p;
+		//float s = 5.0;
+		//sp.z = mod(p.z + s*0.5, s) - s*0.5;	
+		//float rr = p.z;
+		//vec2 rs = vec2(cos(rr)*p.x + sin(rr)*p.y ,sp.z);
+		float o = 3.0;
+		eye.x = cos(eye.z * 0.2 + o) * 0.7;
+		eye.y = sin(eye.z * 0.2 + o) * 0.5;
+	vec3 ed = distort(eye);
+	vec3 td = distort(eye + vec3(0, 0, 1));
+	td.x = -td.x;
+	eye.x = -ed.x;
+	vec3 tar = td;
+	vec3 dir = normalize(tar - eye);
+	vec3 right = normalize(cross(vec3(0, 1, 0), dir));
+	vec3 up = cross(dir, right);
+	vec3 ro = eye;
+	vec3 rd = normalize(dir + right*u*1.0 + up*v*1.0);
+	vec3 color = raymarch(ro, rd, eye);
+#ifdef TONE_MAPPING
+	color /= (color + vec3(1.0));
+#endif
+	float t = 0.5;
+	float a = abs(iGlobalTime - 0.0);
+		color = mix(color, vec3(0), clamp(1.0 - a / t + length(vec2(u,v)), 0, 1));
+	float b = abs(iGlobalTime - PART_TWIST);
+	color = mix(color, vec3(0), clamp(1.0 - b / t + length(vec2(u,v)), 0, 1));
+    fragColor = vec4(color, 1.0);
+#version 430
+in vec2 fragCoord;
+out vec4 fragColor;
+uniform sampler2D inTexture0;
+uniform float iGlobalTime;
+void main()
+	vec2 uv = fragCoord.xy;
+	fragColor = texture(inTexture0, uv);
+		float a = 0.5 + 0.5 * sin(iGlobalTime* 5.0);
+		a = a * a * a;
+		a = 1.0;
+		vec2 dir = normalize(uv - vec2(0.5));
+		float l = length(vec2(0.5) - uv);
+		fragColor.g = texture(inTexture0, uv + dir * a * 0.01*l).g;
+		fragColor.b = texture(inTexture0,  uv + dir * a * 0.02*l).b;
+	fragColor.rgb *=  0.7 + 0.3*clamp(sin(uv.y*1000) + 0.8, 0.0, 1.0);
+#version 430
+layout (location = 0) in vec3 position;
+out vec2 fragCoord;
+void main()
+	fragCoord.x = (position.x + 1) * 1 / 2.0;
+	fragCoord.y = (position.y + 1) * 1 / 2.0;
+	gl_Position = vec4(position, 1);
+#version 430
+layout (location = 0) in vec3 position;
+out vec2 fragCoord;
+uniform float resolutionWidth;
+uniform float resolutionHeight;
+void main()
+	fragCoord.x = (position.x + 1)/2 * resolutionWidth;
+	fragCoord.y = (position.y + 1)/2 * resolutionHeight;
+    gl_Position = vec4(position, 1);
+demo.fs
+demo.vs
+main
+post.fs
+post.vs
+post
+dofScene.fs
+DOFScene
+dofBlur1.fs
+DOFBlur1
+dofBlur2.fs
+DOFBlur2
+dofFinal.fs
+DOFFinal
+tunnelScene.fs
+tunnel
+base
+introScene.fs
+intro
+graveScene.fs
+grave
+fxaa.fs
+fxaa.vs
+fxaa
+graveScenePost.fs
+gravePost
+roomScene.fs
+room
+roomScenePost.fs
+roomPost
+introScene
+graveScene
+roomScene
+baseScene
+tunnelScene
+imageScene
+examples/shaders/
+tunnel.fs
+iGlobalTime
+resolutionWidth
+resolutionHeight
+CHANNEL_4_TO
+CHANNEL_4_TOTAL
+CHANNEL_11_SINCE
+CHANNEL_11_TOTAL
+CHANNEL_4_SINCE
+deque<T> too long
+inTexture
+Unknown exception
+SetWindowLongPtr failed in Window
+opengl32.dll
+glActiveTexture
+glDebugMessageCallbackAMD
+glDebugMessageEnableAMD
+glDebugMessageInsertAMD
+glGetDebugMessageLogAMD
+glDebugMessageCallback
+glDebugMessageControl
+glGetActiveUniformBlockName
+glGetActiveUniformBlockiv
+glGetActiveUniformsiv
+glGetActiveUniformName
+glCompileShader
+glGetShaderiv
+glGetShaderInfoLog
+glCreateProgram
+glProgramBinary
+glCreateShader
+glShaderSource
+glDeleteShader
+glGetProgramiv
+glAttachShader
+glProgramParameteri
+glLinkProgram
+glDeleteProgram
+glUseProgram
+glGetUniformLocation
+glGetUniformBlockIndex
+glGetProgramBinary
+glGenVertexArrays
+glBindVertexArray
+glEnableVertexAttribArray
+glGenBuffers
+glBindBuffer
+glBufferData
+glVertexAttribPointer
+glDeleteBuffers
+glDeleteVertexArrays
+glUniform1f
+glUniform3fv
+glUniform4fv
+glUniformMatrix4fv
+glBindBufferBase
+glDispatchCompute
+glMemoryBarrier
+glMultiDrawArrays
+glDrawBuffers
+glGenFramebuffers
+glFramebufferTexture2D
+glCheckFramebufferStatus
+glBindFramebuffer
+glDeleteFramebuffers
+glGetQueryObjectiv
+glGetQueryObjectui64v
+glTexImage2DMultisample
+glGenerateMipmap
+glUniform1i
+glGetAttribLocation
+glBufferSubData
+glUniform4iv
+glDetachShader
+glValidateProgram
+glUniform1fv
+RSDS
+C:\dev\OJGL\bin\Win32\Release\Core.pdb
+GCTL
+.text
+.text$di
+.text$mn
+.text$x
+.text$yd
+.idata$5
+.00cfg
+.CRT$XCA
+.CRT$XCAA
+.CRT$XCU
+.CRT$XCZ
+.CRT$XIA
+.CRT$XIAA
+.CRT$XIAC
+.CRT$XIZ
+.CRT$XPA
+.CRT$XPZ
+.CRT$XTA
+.CRT$XTZ
+.rdata
+.rdata$r
+.rdata$zzzdbg
+.rtc$IAA
+.rtc$IZZ
+.rtc$TAA
+.rtc$TZZ
+.xdata$x
+.idata$2
+.idata$3
+.idata$4
+.idata$6
+.data
+.data$r
+.bss
+.rsrc$01
+.rsrc$02
+glViewport
+glClear
+glBindTexture
+glGenTextures
+glTexParameteri
+glDeleteTextures
+glDrawArrays
+glTexParameterf
+glTexImage2D
+glFinish
+glFlush
+wglCreateContext
+wglDeleteContext
+wglMakeCurrent
+wglGetProcAddress
+OPENGL32.dll
+SetLastError
+GetLastError
+GetModuleHandleW
+LoadLibraryA
+GetProcAddress
+CreateThread
+WaitForSingleObject
+SetThreadPriority
+InitializeCriticalSection
+EnterCriticalSection
+LeaveCriticalSection
+DeleteCriticalSection
+CreateEventA
+CloseHandle
+SetEvent
+KERNEL32.dll
+GetForegroundWindow
+EndPaint
+BeginPaint
+ReleaseDC
+PostQuitMessage
+SetWindowLongW
+LoadCursorW
+LoadIconW
+TranslateMessage
+RegisterClassW
+PeekMessageW
+DispatchMessageW
+ShowWindow
+CreateWindowExW
+MessageBoxW
+GetDC
+DestroyWindow
+PostMessageW
+DefWindowProcW
+GetWindowLongW
+USER32.dll
+SetPixelFormat
+ChoosePixelFormat
+DescribePixelFormat
+GDI32.dll
+?_Xlength_error@std@@YAXPBD@Z
+_Query_perf_frequency
+_Query_perf_counter
+_Mtx_destroy_in_situ
+_Mtx_init_in_situ
+?_Throw_C_error@std@@YAXH@Z
+_Mtx_lock
+_Mtx_unlock
+MSVCP140.dll
+DSOUND.dll
+__CxxFrameHandler3
+memmove
+__std_terminate
+_purecall
+__std_exception_destroy
+__std_exception_copy
+_CxxThrowException
+memset
+_except_handler4_common
+VCRUNTIME140.dll
+_invalid_parameter_noinfo_noreturn
+exit
+_callnewh
+malloc
+_configure_narrow_argv
+_initialize_narrow_environment
+_initialize_onexit_table
+_register_onexit_function
+_crt_atexit
+_cexit
+terminate
+_seh_filter_exe
+_set_app_type
+__setusermatherr
+_get_initial_narrow_environment
+_initterm
+_initterm_e
+_exit
+_set_fmode
+__p___argc
+__p___argv
+_c_exit
+_register_thread_local_exe_atexit_callback
+_configthreadlocale
+_set_new_mode
+__p__commode
+free
+_controlfp_s
+api-ms-win-crt-runtime-l1-1-0.dll
+api-ms-win-crt-heap-l1-1-0.dll
+api-ms-win-crt-math-l1-1-0.dll
+api-ms-win-crt-stdio-l1-1-0.dll
+api-ms-win-crt-locale-l1-1-0.dll
+UnhandledExceptionFilter
+SetUnhandledExceptionFilter
+GetCurrentProcess
+TerminateProcess
+IsProcessorFeaturePresent
+IsDebuggerPresent
+QueryPerformanceCounter
+GetCurrentProcessId
+GetCurrentThreadId
+GetSystemTimeAsFileTime
+InitializeSListHead
+memcpy
+_except1
+L?33
+Iff0B
+Ku?/+t?[ps?
+*p ?dP>B
+}@V@  
+J@ @
+@@  
+@@4~
+@@ ~
+@@ ~
+@@@@
+@@  
+n;	E
+m@)M
+;I?$@  K
+x;	3
+!DHAX_ !kwIH_k !br4AH_UHn !fAA_ks !jAH_mps !OW!vER_ !DHAX_ !lEY!zIY_ !dAA_g 
+.?AVtype_info@@
+.?AVbad_alloc@std@@
+.?AVbad_array_new_length@std@@
+.?AVUniform1f@ojgl@@
+.?AV?$_Ref_count@VBuffer@ojgl@@@std@@
+.?AV?$_Ref_count_obj@VUniform1f@ojgl@@@std@@
+.?AVUniform1fv@ojgl@@
+.?AV_Ref_count_base@std@@
+.?AV?$_Ref_count_obj@VUniform1fv@ojgl@@@std@@
+.?AVUniformBase@ojgl@@
+.?AVruntime_error@std@@
+.?AVexception@std@@
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<assembly xmlns='urn:schemas-microsoft-com:asm.v1' manifestVersion='1.0'>
+  <trustInfo xmlns="urn:schemas-microsoft-com:asm.v3">
+    <security>
+      <requestedPrivileges>
+        <requestedExecutionLevel level='asInvoker' uiAccess='false' />
+      </requestedPrivileges>
+    </security>
+  </trustInfo>
+</assembly>
+40{0
+0;1I1r1
+3 313b3
+4$4,444B4H4R4X4`4f4n4v4|4
+4(5@5F5Q5]5c5n5
+5[6o7
+959N9T9e9
+;$;M;o;
+;#<p<x<
+=&=b=
+>#>:>E>Y>e>k>z>
+?!?C?I?
+0e0k0
+3 3%3+3
+4@5F5X5l5
+6&6<6D6
+63797P7V7d7j7
+7R8X8^8
+9@9E9T9Z9
+:-:3:9:?:H:M:X:_:e:
+;%;.;<;r;z;
+<B<W<f<
+="=,=;=V=
+0$0*050;0G0M0[0a0
+2"343:3L3b3p3v3|3
+4)50565D5M5W5a5k5u5z5
+6'62686>6|6
+6(7M7X7k7
+8%9=9D9J9X9a9w9
+9F;Q<g<m<
+?!?+?I?V?f?x?
+010;0V0`0{0
+1Z1`1n1v1|1
+2-272
+5)5_5
+6F7U7o7|7
+8%868;8E8V8[8e8v8{8
+9%969;9E9V9[9e9v9{9
+:V:\:v:1;;;n;x;
+2"3D4N4}4
+7F8V8
+=+=_=f=
+>)>q>x>A?V?k?
+<0L0o0
+1'141H1U1
+202S2v2
+5(696y6
+7&7,72797r7
+8(8h8p8v8|8
+9!9(9a9r9
+:W:_:e:k:r:
+;P;a;
+<F<N<T<Z<a<
+=?=P=
+=5>=>C>I>P>
+>.???
+$0,02080?0x0
+1-171
+2'2/2>2O2e2z2
+687s7
+:`;z;
+;:<T<h<
+=.=B=
+0_0v0
+3&454
+5&6f6u6
+718f8u8
+;.<v<
+=1=`=
+001U1
+2@3e3
+3)4q4
+5L5q5
+516y6
+7P7u7
+<(=<=G=
+=&>5>x>
+3u465E5
+9e:/;G<V<h<
+1*3D3v5
+5\7v7
+>">;>F>S>`>
+4V5f5
+5c7v7
+7G8M8_9y9
+;s<?=
+6M7r7
+< <f<x<
+=[>a>o?
+2f6u6
+767H7
+=!=k=y=
+X0^0
+6f6s6
+8-888A8
+;*<B<H<V<g<
+=3=:=M=p=z=
+>V?e?
+050>0
+4-4;4D4e4l4
+465J5U5h5t5
+5	6$6)616=6B6I6e6
+7L7a7h7m7t7y7
+93:9:?:E:K:Q:W:]:c:i:o:
+;2;h;
+<"<)</<A<K<
+?7?L?Q?V?w?|?
+1#1+131?1H1M1S1]1g1w1
+2/2`2}2
+2X3a3i3
+5-575W5
+6k6p6
+7$7*7T7Z7
+8"8(8.848:8@8F8L8R8X8^8d8j8p8v8|8
+;3;{;
+;O<W<
+<!=_=
+>1>;>V>r>
+7B7b7
+7*8{8
+8"9T9r9
+;";G;o;
+<L<r<
+<'=1=;=C=R=\=
+>G>Q>[>c>r>|>
+?#?2?<?g?q?{?
+'010;0C0R0\0
+1G1Q1[1c1r1|1
+2#222<2g2q2{2
+2 2$2(2,2024282<2@2L2P2
+: :$:\:`:d:h:l:p:t:x:|:
+x=|=
+80<0@0 5$5(5,5054585<5@5D5H5L5P5T5X5\5`5d5h5l5p5t5x5|5
+8 80848<8T8d8h8x8|8
+9$9<9@9X9h9x9
+:$:<:@:D:L:P:d:t:x:|:
+; ;$;(;@;D;\;`;t;x;|;
+>@?P?\?d?
+0$0,040<0D0L0T0\0d0l0t0|0
+1$1,141<1D1L1T1\1d1l1t1|1
+2$2,242<2D2L2T2\2d2l2t2|2
+2,3L3T3\3d3l3t3|3
+4$4,444@4H4|4
+5 5(50585@5H5P5`5
+6$6,646<6H6l6t6|6
+787@7H7T7t7|7
+8X8h8t8|8
+989D9d9l9t9|9
+: :(:4:<:
+;$;0;T;\;d;l;t;|;
+;(<8<D<L<
+=P=`=l=t=
+>(>4><>p>
+? ?@?\?`?|?
+0 0(0<0D0H0
+D1H1L1P1T1X1\1`1d1h1l1p1t1x1|1
+2 2$2(2,2024282<2@2D2H2L2P2T2X2\2`2d2h2l2p2t2x2|2
+6T6t6

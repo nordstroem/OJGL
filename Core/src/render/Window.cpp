@@ -1,5 +1,5 @@
-#include "GLState.h"
 #include "Window.h"
+#include "GLState.h"
 #include <exception>
 #include <thread>
 
@@ -145,6 +145,7 @@ HWND Window::CreateOpenGLWindow(const char* title, int x, int y, BYTE type, DWOR
     return hWnd;
 }
 
+#include <iostream>
 LONG WINAPI Window::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     Window* pThis = reinterpret_cast<Window*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
@@ -171,6 +172,7 @@ LONG WINAPI Window::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
         return 0;
     case WM_KEYUP:
         if (pThis) {
+            std::cout << "1\n";
             pThis->_keys.push_back(wParam);
         }
         return 0;

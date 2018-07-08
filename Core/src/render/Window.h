@@ -2,6 +2,7 @@
 
 // clang-format off
 #include <windows.h>
+#include <vector>
 // clang-format on
 namespace ojgl {
 
@@ -32,5 +33,6 @@ private:
     unsigned _width;
     unsigned _height;
     std::vector<UINT> _keys;
+    bool _closed;
 };
 } //namespace ojgl

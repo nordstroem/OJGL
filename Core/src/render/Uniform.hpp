@@ -35,6 +35,25 @@ private:
     const float _x;
 };
 
+class Uniform2f : public UniformBase {
+public:
+    Uniform2f(const std::string& location, float x, float y)
+        : UniformBase(location)
+        , _x(x)
+        , _y(y)
+    {
+    }
+
+    void setUniform(int programID) override
+    {
+        glUniform2f(glGetUniformLocation(programID, _location.c_str()), this->_x, this->_y);
+    }
+
+private:
+    const float _x;
+    const float _y;
+};
+
 class Uniform1fv : public UniformBase {
 public:
     Uniform1fv(const std::string& location, const std::vector<float>& values)

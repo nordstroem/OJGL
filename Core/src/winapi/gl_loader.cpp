@@ -76,7 +76,8 @@ const char* gl_function_names[] = {
     "glUniform4iv",
     "glDetachShader",
     "glValidateProgram",
-    "glUniform1fv"
+    "glUniform1fv",
+    "glUniform2f"
 };
 
 void* gl_function_pointers[sizeof(gl_function_names) / sizeof(const char*)];

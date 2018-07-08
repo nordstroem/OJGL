@@ -21,6 +21,10 @@
     <None Include="examples\shaders\introScene.fs" />
     <None Include="examples\shaders\fxaa.fs" />
     <None Include="examples\shaders\fxaa.vs" />
+    <None Include="examples\shaders\edison.fs" />
+    <None Include="examples\shaders\edison.vs" />
+    <None Include="examples\done\lavaIntro.fs" />
+    <None Include="examples\done\tornado.fs" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="examples\Main.cpp" />
