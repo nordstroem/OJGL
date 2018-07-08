@@ -25,6 +25,7 @@
     <None Include="examples\shaders\edison.vs" />
     <None Include="examples\done\lavaIntro.fs" />
     <None Include="examples\done\tornado.fs" />
+    <None Include="examples\done\tornado2.fs" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="examples\Main.cpp" />

@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <None Include="examples\done\tornado2.fs" />
     <None Include="examples\done\tornado.fs" />
     <None Include="examples\done\lavaIntro.fs" />
     <None Include="examples\shaderlibs\distanceFunctions.fs" />

@@ -96,18 +96,29 @@ float smink( float a, float b, float k )
 
 float river(vec3 p) 
 {
-	float nv = noise((p.xy + vec2(iTime, 0)) * 3);
+	float time = mod(iTime, 22);
+
+	float nv = noise((p.xy + vec2(time, 0)) * 3);
 	vec3 noiseVec = 1*vec3(nv, 0, 0);
     float dis1 = sdBox(p + vec3(0.3*sin(p.y * 2.3), 0, -0.1) +  0.8*noiseVec, vec3(0.1, 5.0, 0.48));
 	
-	float height = sin(iTime);
+	float height = 1;//sin(time);
+	if (time < 5)
+		height = 0.05 + 1;
+	else if (time < 14)
+		height = 0.05 + 1 - smoothstep(5, 14, time);//cos(3.14 / 2 * (time - 7)/7);
+	else if (time < 18)
+		height = 0.05;
+	else if (time < 22)
+		height = 0.05 * (1 - 8 * smoothstep(18, 22, time));//0.1*cos(3.14 / 2 * (time - 17)/1);
+
 	
 	float dis =  sdTorus(p.yxz + 0.5*noiseVec - vec3(-0, 2, 0.56 + height), vec2(1, 0.01));
 	//return sdTorusJ(p.yxz + vec3(0, 1, 0), vec2(1, 0.6));
 
-	 dis = min(dis, sdCappedCylinder(p + 0.5*noiseVec - vec3(-2,1, 0.56 + height), vec2(0, 1)));
+	 dis = min(dis, sdCappedCylinder(p + 0.5*noiseVec - vec3(-2,1-0.6, 0.57 + height), vec2(0, 0.7)));
 	// dis = min(dis, sdCappedCylinder(p.yxz - vec3(0.3, -0.2, 0.0), vec2(0.0, 1)));
-	 dis = min(dis, sdTorusJ(p + 0.5*noiseVec - vec3(-1, 0, 0.56 + height), vec2(1, 0.02)));
+	 dis = min(dis, sdTorusJ(p + 0.5*noiseVec - vec3(-1, -0.2, 0.56 + height), vec2(1, 0.02)));
 	 return dis;
 }
 
@@ -134,7 +145,7 @@ void main() {
 	float v = fragCoord.y * 2.0 - 1.0;
 	u *= 16.0 / 9.0;
 
-    vec3 ro = vec3(0, -3, 6.0);
+    vec3 ro = vec3(0, -2, 6.0);
     vec3 tar = vec3(0, 0, 0);
     vec3 dir = normalize(tar - ro);
 	vec3 right = normalize(cross(vec3(0.0, 1.0, 0.0), dir));
