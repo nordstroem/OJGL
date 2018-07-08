@@ -8,7 +8,7 @@ uniform float iTime;
 uniform vec2 iResolution;
 
 // Globals
-vec3 lightPosition = vec3(4.0, 0, 4);
+vec3 lightPosition = vec3(-4.0, 5, -4);
 
 /// start of boiler-plate
 
@@ -92,61 +92,111 @@ float smink( float a, float b, float k )
     return mix( b, a, h ) - k*h*(1.0-h);
 
 }
+
+float smin( float a, float b)
+{
+	float k = 2.0;
+    float h = clamp( 0.5+0.5*(b-a)/k, 0.0, 1.0 );
+    return mix( b, a, h ) - k*h*(1.0-h);
+}
+
+vec4 sun(vec4 a, vec4 b)
+{
+	float sm = smin(a.x,b.x);
+	float ca = abs(sm -a.x);
+	float cb = abs(sm -b.x);
+
+	return ca < cb ? vec4(sm, a.yzw) : vec4(sm, b.yzw);
+}
+
 /// end of boiler-plate
 
 float river(vec3 p) 
 {
-	float time = mod(iTime, 22);
-
-	float nv = noise((p.xy + vec2(time, 0)) * 3);
+	float nv = noise((p.xy + vec2(iTime, 0)) * 3);
 	vec3 noiseVec = 1*vec3(nv, 0, 0);
-    float dis1 = sdBox(p + vec3(0.3*sin(p.y * 2.3), 0, -0.1) +  0.8*noiseVec, vec3(0.1, 5.0, 0.48));
-	
-	float height = 1;//sin(time);
-	if (time < 5)
-		height = 0.05 + 1;
-	else if (time < 14)
-		height = 0.05 + 1 - smoothstep(5, 14, time);//cos(3.14 / 2 * (time - 7)/7);
-	else if (time < 18)
-		height = 0.05;
-	else if (time < 22)
-		height = 0.05 * (1 - 8 * smoothstep(18, 22, time));//0.1*cos(3.14 / 2 * (time - 17)/1);
-
-	
-	float dis =  sdTorus(p.yxz + 0.5*noiseVec - vec3(-0, 2, 0.56 + height), vec2(1, 0.01));
-	//return sdTorusJ(p.yxz + vec3(0, 1, 0), vec2(1, 0.6));
-
-	 dis = min(dis, sdCappedCylinder(p + 0.5*noiseVec - vec3(-2,1-0.6, 0.57 + height), vec2(0, 0.7)));
-	// dis = min(dis, sdCappedCylinder(p.yxz - vec3(0.3, -0.2, 0.0), vec2(0.0, 1)));
-	 dis = min(dis, sdTorusJ(p + 0.5*noiseVec - vec3(-1, -0.2, 0.56 + height), vec2(1, 0.02)));
-	 return dis;
+	//float dis = sdCappedCylinder(p - vec3(sin(iTime*20), 0.6*cos(sin(iTime)*10), sin(iTime)), vec2(1 + 0.03*sin(20*p.y + 200*iTime) + 0.6 + 1*sin(0.3*p.y), 5.0));
+	float dis = sdCappedCylinder(p - vec3(0, 5, 2), vec2(abs(0.5*p.y), 5.0));
+	return dis;
 }
 
-float map(vec3 p) 
+// a < b
+float inverseMix(float value, float a, float b)
 {
-	float noiseValue = noise(p.xy * 2 + 1*(p.xy + vec2(1.3,1.3))); 
-	vec3 n = vec3(0, 0, noiseValue);
-    float d1 = udRoundBox(p + 0.02 * n, vec3(100.0, 100.0, 0.5), 0.1);
-	float d2 = river(p + vec3(10, 0, 0));
-	return max(d1, -d2);
+	return clamp((value - a) / (b - a), 0, 1);
 }
 
-vec3 getNormal(vec3 p) {
+float posSin(float value) 
+{
+	return 0.5 * (1 + sin(value));
+}
+
+vec3 tornadoPos(float time)
+{
+	return vec3(10*cos(2*sin(0.5*time) + 3*sin(time + noise(vec2(time)))), -5, 10*sin(0.5*time + 2*cos(0.5*time)));
+}
+
+vec4 tornado(vec3 p)
+{
+	float time = mod(iTime*1, 100);
+	vec3 q = p;
+	q.z = mod(p.z, 5) - 0.5 * 5;
+
+	float d2 = sdCappedCylinder(q.zxy - vec3(0, 0, 0), vec2(0.2, 230)); 
+
+	p -= tornadoPos(time);
+	float l = 10;
+	float bw = 3;
+	float ph = inverseMix(p.y, -l/2, l/2);
+	float noise = 0.03 * posSin(20.0 * p.y + 12 * time + p.x) + 0.05*posSin(2 * p.y + 5*time) + 0.03*posSin(5 * p.y + 5*time + 1);
+	float buckle = 1 + posSin(3*p.y*sin(2*time) + p.x * cos(2*time));
+	float d1 = sdCappedCylinder(p, vec2(bw * ph + 0.8*noise + 0.04*pow(buckle, 3.1), l/2));
+	return vec4(min(d1, 5000), 0.1+1*ph, 0.1*ph, 0);
+}
+
+vec4 disMin(vec4 a, vec4 b)
+{
+	return a.x < b.x ? a : b;
+}
+
+vec4 map(vec3 p, vec3 rd) 
+{
+	vec3 s = vec3(1);
+	vec3 q = mod(p,s)-0.5*s;
+	ivec3 n = ivec3(floor(p / s));
+	float dis = -sdBox(p, vec3(23, 10, 23));
+	/*if (dis < 0.0) {
+		dis = min(dis, udRoundBox(q, vec3(0.3), 0.23));
+	} else {
+		vec3 d = (s * 0.5 -  sign(rd)* q) / abs(rd);
+		float b = min(d.x, min(d.y, d.z));
+		float eps = 0.01;
+		float a = max(dis - 1.73, b + eps); // TODO 1.73 kan vara for mycket 
+		dis = min(dis, max(eps, a));
+	}*/
+		
+	vec4 box = vec4(dis, vec3(0.2, 0.5, 0.5));
+	return disMin(tornado(p), box);
+}
+
+vec3 getNormal(vec3 p, vec3 rd) {
 	vec3 ep = vec3(0.01, 0, 0);
     vec3 normal;
-    normal.x = map(p + ep.xyz) - map(p - ep.xyz);
-    normal.y = map(p + ep.yxz) - map(p - ep.yxz);
-    normal.z = map(p + ep.yzx) - map(p - ep.yzx);
+    normal.x = map(p + ep.xyz, rd).x - map(p - ep.xyz, rd).x;
+    normal.y = map(p + ep.yxz, rd).x - map(p - ep.yxz, rd).x;
+    normal.z = map(p + ep.yzx, rd).x - map(p - ep.yzx, rd).x;
     return normalize(normal);
 }
 
 void main() {
     float u = fragCoord.x * 2.0 - 1.0;
 	float v = fragCoord.y * 2.0 - 1.0;
+	float k = 1;// + 1*posSin(5*cos(iTime));
 	u *= 16.0 / 9.0;
-
-    vec3 ro = vec3(0, -2, 6.0);
-    vec3 tar = vec3(0, 0, 0);
+	u *= k;
+	v *= k;
+    vec3 ro = vec3(-2, -3, -15.0);
+    vec3 tar = vec3(0, -3, 0);//vec3(0.2*cos(20*iTime), 0.2*cos(10*iTime), 0.2*cos(10*iTime));
     vec3 dir = normalize(tar - ro);
 	vec3 right = normalize(cross(vec3(0.0, 1.0, 0.0), dir));
 	vec3 up = cross(dir, right);
@@ -154,18 +204,21 @@ void main() {
                     
                     
     float t = 0.0;
-    vec3 color = vec3(0.5);
+    vec3 color = vec3(0.0);
 	float transmittance = 1.0;
 	vec3 scatteredLight = vec3(0.0);
 
     
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < 200; i++) {
     	vec3 p = ro + rd * t;
         
-        float d = map(p);
+        vec4 disColor = map(p, rd);
+		float d = disColor.x;
+		color = disColor.yzw;
         float fogAmount = 0.005;
-		float lol = river(p);
-		vec3 light = 50.0 * vec3(1, 0.1, 0) / (lol*lol);
+		vec4 lightDisColor = tornado(p);
+		float lol = lightDisColor.x;
+		vec3 light = 40.0 * lightDisColor.yzw / (lol*lol);
 		//vec4 lightColDis = vec4(1, 0, 0, );
 		//vec3 light = lightColDis.rgb;
 
@@ -173,31 +226,31 @@ void main() {
 		scatteredLight += transmittance * lightIntegrated;	
 		transmittance *= exp(-fogAmount * d);
         
-		if (d < 0.01 || i == 99) {
-            color = vec3(0.01);
+		if (d < 0.01) {
+           // color = vec3(0.6, 0.2, 0.1);
          
-            float dis = length(river(p) - p);
+            float dis = tornado(p).x;
             vec3 invLight = normalize(lightPosition - p);
             
-            vec3 normal = getNormal(p);
+            vec3 normal = getNormal(p, rd);
             
             float diffuse = max(0.0, dot(invLight, normal));
             float s = 10.0;
             float k = max(0.0, dot(rd, reflect(invLight, normal)));
             float spec =  pow(k, s);
-            float str = 15.0/(0.1 + 0.2*dis + 0.01*dis*dis);
-            color *= (0.75 + 0.25*diffuse);
+            float str = 10.0/(0.01 + 0.4*dis + 0.03*dis*dis);
+            color *= (0.4 + 0.2*diffuse);
+		//	color += spec;
+			//float lavaDistance = length(river(p));
 
-			float lavaDistance = length(river(p));
-
-			float lavaLight = 3 / (1 + 1 * lavaDistance + 500*lavaDistance * lavaDistance * lavaDistance);
+			//float lavaLight = 3 / (1 + 1 * lavaDistance + 500*lavaDistance * lavaDistance * lavaDistance);
 			//color += vec3(min(0.1, lavaLight));
 
 			color = transmittance * color + scatteredLight;
-			//color *= str;
+			color *= str;
             break;
         }
-        t += d;
+        t += 0.5*d;
     }    
 	fragColor = vec4(color, 1.0);
     fragColor.rgb = fragColor.rgb / (fragColor.rgb + vec3(1.0));
