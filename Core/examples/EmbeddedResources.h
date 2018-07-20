@@ -14,6 +14,27 @@ namespace resources {
 #include "shaders/fxaa.fs"
         };
 
+		std::string lavaIntro{
+#include "done/lavaIntro.fs"
+        };
+
+		std::string mountain{
+#include "done/mountain.fs"
+        };
+
+		std::string mountainNoise{
+#include "done/mountainNoise.fs"
+        };
+
+		std::string mountainPost{
+#include "done/mountainPost.fs"
+        };
+        std::string lavaScene2{
+#include "done/lavaScene2.fs"
+        };
+        std::string outro{
+#include "done/outro.fs"
+        };        
         std::string dofScene{
 #include "shaders/dofScene.fs"
         };
@@ -68,7 +89,9 @@ namespace resources {
         std::string post{
 #include "shaders/post.vs"
         };
-
+        std::string edison{
+#include "shaders/edison.vs"
+        };
         std::string fxaa{
 #include "shaders/fxaa.vs"
         };

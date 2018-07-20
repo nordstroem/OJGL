@@ -5,7 +5,7 @@
 #include <functional>
 #include <iostream>
 #include <memory>
-#include <set>e
+#include <set>
 #include <sstream>
 #include <streambuf>
 #include <string>
@@ -27,15 +27,15 @@ void buildSceneGraph(GLState& glState, int x, int y)
         auto noise = Buffer::construct(x, y, "intro", "shaders/demo.vs", "done/mountainNoise.fs");
         auto mountain = Buffer::construct(x, y, "fxaa", "shaders/demo.vs", "done/mountain.fs", noise);
         auto fxaa = Buffer::construct(x, y, "fxaa", "shaders/fxaa.vs", "shaders/fxaa.fs", mountain);
-        auto post = Buffer::construct(x, y, "post", "shaders/demo.vs", "mountainPost.fs", fxaa);
-        glState.addScene("introScene", post, Duration::seconds(90));
+        auto post = Buffer::construct(x, y, "post", "shaders/demo.vs", "done/mountainPost.fs", fxaa);
+        glState.addScene("introScene", post, Duration::seconds(76));
     }
 
     {
         auto edison = Buffer::construct(x, y, "intro", "shaders/edison.vs", "done/lavaScene2.fs");
         auto fxaa = Buffer::construct(x, y, "fxaa", "shaders/fxaa.vs", "shaders/fxaa.fs", edison);
         auto post = Buffer::construct(x, y, "post", "shaders/post.vs", "shaders/post.fs", fxaa);
-        glState.addScene("introScene", post, Duration::seconds(50));
+        glState.addScene("introScene", post, Duration::seconds(40));
     }
     {
         auto edison = Buffer::construct(x, y, "intro", "shaders/edison.vs", "done/outro.fs");
@@ -53,11 +53,26 @@ void buildSceneGraph(GLState& glState, int x, int y)
 
 int main()
 {
-    int width = 1920 / 2;
-    int height = 1080 / 2;
+    int width = 1920;
+    int height = 1080;
     ShaderReader::setBasePath("examples/");
+    
+	ShaderReader::preLoad("shaders/edison.vs", resources::vertex::edison);
+    ShaderReader::preLoad("shaders/demo.vs", resources::vertex::demo);
+    ShaderReader::preLoad("shaders/post.vs", resources::vertex::post);
+    ShaderReader::preLoad("shaders/fxaa.vs", resources::vertex::fxaa);
+    ShaderReader::preLoad("shaders/fxaa.fs", resources::fragment::fxaa);
+    ShaderReader::preLoad("shaders/post.fs", resources::fragment::post);
+    ShaderReader::preLoad("done/lavaIntro.fs", resources::fragment::lavaIntro);
+	ShaderReader::preLoad("done/mountain.fs", resources::fragment::mountain);
+    ShaderReader::preLoad("done/mountainNoise.fs", resources::fragment::mountainNoise);
+    ShaderReader::preLoad("done/mountainPost.fs", resources::fragment::mountainPost);
+    ShaderReader::preLoad("done/lavaScene2.fs", resources::fragment::lavaScene2);
+    ShaderReader::preLoad("done/outro.fs", resources::fragment::outro);
 
-    Window window(width, height, false);
+
+
+    Window window(width, height, true);
     GLState glState;
 
     Music music(resources::songs::song);
@@ -68,11 +83,10 @@ int main()
     glState.setStartTime(Timepoint::now());
 
     auto previousPrintTime = Timepoint::now();
-    while (true) {
+    while (!glState.end()) {
         Timer timer;
         timer.start();
         window.getMessages();
-
         for (auto key : window.getPressedKeys()) {
             LOG_INFO("Key pressed: " << key);
             bool timeChanged = false;
@@ -112,11 +126,11 @@ int main()
                 glState.previousScene();
                 timeChanged = true;
                 break;
+#endif
             }
 
             if (!glState.isPaused() && timeChanged)
                 music.setTime(glState.elapsedTime());
-#endif
         }
 
         glState << Uniform1f("iTime", glState.relativeSceneTime().toSeconds());

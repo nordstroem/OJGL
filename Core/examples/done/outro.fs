@@ -150,7 +150,7 @@ float cros(vec3 p)
 {
 	float time = mod(iTime, 40);
 	//time += 19;
-	float k1 = smoothstep(1, 3, time);
+	float k1 = smoothstep(2.5, 3.5, time);
 	float k2 = smoothstep(17, 18, time);
 	float k3 = smoothstep(20.4, 21.5, time);
 	float k4 = smoothstep(23.0, 24.0, time);
@@ -243,7 +243,7 @@ void main() {
 	vec3 rd = normalize(dir + right*u + up*v);
 	float time = mod(iTime, 40);
 	
-	float k1 = smoothstep(1, 3, time);
+	float k1 = smoothstep(2.5, 3.6, time);
                     
     float t = 0.0;
     vec3 color = vec3(0.0);

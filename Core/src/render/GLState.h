@@ -22,6 +22,7 @@ public:
     void togglePause();
     bool isPaused();
     void clearScenes();
+    bool end();
 
     Timepoint startTime() const;
     Duration relativeSceneTime() const;

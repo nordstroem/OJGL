@@ -381,6 +381,8 @@ void main()
          vec4 lightColDis = evaluateLight(p);
          vec3 light = lightColDis.rgb;
          d = min(d, max(0.01, lightColDis.w * 0.25));
+		 if (iGlobalTime < PART_BOTTOM && iGlobalTime > PART_FLY)
+			d *= 0.8;
 		 //d = max(d*0.2, 0.01);
 		 //d *= 0.5;
          vec3 lightIntegrated = light - light * exp(-fogAmount * d);

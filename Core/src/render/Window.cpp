@@ -9,7 +9,9 @@ Window::Window(unsigned width, unsigned height, bool fullScreen)
     : _width(width)
     , _height(height)
 {
-    _hWnd = CreateOpenGLWindow("minimal", 0, 0, PFD_TYPE_RGBA, 0, fullScreen);
+    ShowCursor(false);
+ 
+	_hWnd = CreateOpenGLWindow("minimal", 0, 0, PFD_TYPE_RGBA, 0, fullScreen);
     if (_hWnd == nullptr) {
         exit(1);
     }
@@ -172,7 +174,6 @@ LONG WINAPI Window::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
         return 0;
     case WM_KEYUP:
         if (pThis) {
-            std::cout << "1\n";
             pThis->_keys.push_back(wParam);
         }
         return 0;

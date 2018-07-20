@@ -14,7 +14,7 @@ vec3 lightPosition = vec3(4.0, 0, 4);
 
 float timeScene0 = 8-8;
 float timeScene1 = 16-16;
-float timeScene2 = 40-10;
+float timeScene2 = 30-10;
 
 mat3 rotateZ(float theta) {
     float c = cos(theta);
@@ -80,15 +80,16 @@ float noiseOctave(in vec2 p, int octaves, float persistence)
 float lines(vec3 p, float time)
 {
     float k1 = smoothstep(timeScene1 + 2, timeScene2, time);
-    float k2 = smoothstep(timeScene1 + 8, timeScene2, time);
-    float k3 = smoothstep(timeScene1 + 30, timeScene1+40, time);
+    float k2 = smoothstep(timeScene1 + 8, timeScene2+8, time);
+    float k3 = smoothstep(timeScene1 + 30, timeScene2, time);
+	float k4 = smoothstep(18, 25, time);
     float nv = noise((p.xy + vec2(iTime, 0)) * 3);
     vec3 noiseVec = 1*vec3(nv, 0, 0);
-    float d1 = sdBox(p + vec3(0.3*sin(p.y * 2.3), 0, -0.1) +  0.8*noiseVec, vec3(0.2, 25.0 * k1, 0.48));
+    float d1 = sdBox(p + vec3(0.3*sin(p.y * 2.3), 0, -0.1) + 0.8*noiseVec, vec3(mix(1, cos(time), k3)*0.2, 25.0 * k1, 0.48));
     //time *= 1.5;s
-    float d2 = sdBox(p.yxz + vec3(0.3*sin(p.y * 2.3), 0, -0.1) +  0.8*noiseVec, vec3(0.2, 25.0 * k2, 0.48));
+    float d2 = sdBox(p.yxz + vec3(0.3*sin(p.y * 2.3), 0, -0.1) +  0.8*noiseVec, vec3(mix(1, sin(time), k3)*0.2, 25.0 * k2, 0.48));
     float d3 = sdBox(p.xzy + vec3(0.3*sin(p.y * 2.3), 0, -0.1) +  0.8*noiseVec, vec3(0.01, 25.0 * k3, 0.1));
-    return min(min(d1, d2), 6000*d3);
+    return min(d1, d2);
 }
 
 float river(vec3 p)
@@ -101,9 +102,9 @@ float river(vec3 p)
     mat3 m2 = rotateZ(3.14/2);
 
     float d1 = lines(p, time);
-    float d2 = lines(inverse(m)*p, time - 15);
-    float d3 = lines(inverse(m2)*p, time - 25);
-    return min(d1, min(d2, 600*d3));
+    float d2 = lines(inverse(m)*p, time - 10);
+    float d3 = lines(inverse(m2)*p, time - 20);
+    return min(d1, d2);
 }
 
 float map(vec3 p)
@@ -134,15 +135,15 @@ void main() {
     float k2 = smoothstep(timeScene1+5, timeScene2+13, time);
     float k3 = smoothstep(timeScene1, timeScene1+1, time);
     float k4 = smoothstep(timeScene1, timeScene1 + 5, time);
-    float k5 = smoothstep(timeScene1 + 32, timeScene1 + 50, time);
+    float k5 = smoothstep(timeScene1 + 32, timeScene1 + 36, time);
 
     u *= 16.0 / 9.0;
     u *= 1 + 0*(k - k3)*0.3*sin(cos(time));
     v *= 1 + 0*(k - k3)*0.5*cos(cos(time));
 
-    vec3 ro = vec3(0.3 - cos(time) + (k - k3)*0*sin(time*40)*0.5*cos(70*sin(cos(time))), k5*10+(-8 - 5*k2) + (k - k3)*0*0.1*sin(30*time), (4.0 + k2 * 20));
+    vec3 ro = vec3(0.3 - cos(time) + (k - k3)*0*sin(time*40)*0.5*cos(70*sin(cos(time))), k5*6+(-8 - 5*k2) + (k - k3)*0*0.1*sin(30*time), (4.0 + k2 * 20));
     //vec3 ro = vec3(10*cos(time), 10*sin(time), 10);
-    vec3 tar = vec3(0.1*k * sin(time- timeScene0), 3, 0.1*k*sin(time- timeScene0));
+    vec3 tar = vec3(0.1*k * sin(time- timeScene0), 0, 0.1*k*sin(time- timeScene0));
     vec3 dir = normalize(tar - ro);
     vec3 right = normalize(cross(vec3(0.0, 0.0, 1.0), dir));
     vec3 up = cross(dir, right);
@@ -162,7 +163,7 @@ void main() {
         float d = map(p);
         float fogAmount = 0.005;
         float lol = river(p);
-        float str = 50 - 48 * 1 + k5 * 5;
+        float str = 50 - 48 * 1 + k5 * 10;
         vec3 light = str * vec3(1, 0.1 + (1-k4)*(1 + sin(time))*0.1, 0) / (lol*lol);
         //vec4 lightColDis = vec4(1, 0, 0, );
         //vec3 light = lightColDis.rgb;
@@ -197,7 +198,7 @@ void main() {
         }
         t += d;
     }
-    float fstr = smoothstep(46, 50, time);
+    float fstr = smoothstep(37, 40, time);
     float fstr2 = smoothstep(0, 2, time);
     fragColor = vec4(color, 1.0);
     fragColor.rgb = fstr2 * (1 - fstr) * smoothstep(0, timeScene0, time) * fragColor.rgb / (fragColor.rgb + vec3(1.0));

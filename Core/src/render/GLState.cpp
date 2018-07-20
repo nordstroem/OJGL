@@ -18,6 +18,21 @@ GLState::GLState()
     setupQuad();
 }
 
+bool GLState::end()
+{
+    auto t = Duration::milliseconds(0);
+    auto elapsed = elapsedTime();
+    
+	for (auto& v : _scenes) {
+        if (elapsed < v.duration() + t) {
+            v.render();
+            return false;
+        }
+        t = t + v.duration();
+    }
+    return true;
+}
+
 GLState::~GLState()
 {
     glDeleteVertexArrays(1, &_vaoID);
