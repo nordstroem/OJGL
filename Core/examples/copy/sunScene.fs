@@ -28,25 +28,6 @@ float sdBox( vec3 p, vec3 b )
   return min(max(d.x,max(d.y,d.z)),0.0) + length(max(d,0.0));
 }
 
-float sdTorus(vec3 p, vec2 t)
-{
-	p.y *= 0.7;
-  vec2 q = vec2(length(p.xy)-t.x,p.z);
-  return length(q)-t.y;
-}
-
-float sdTorusJ(vec3 p, vec2 t)
-{
-	
-  vec2 q = vec2(length(p.xy)-t.x,p.z);
-  float d = length(q)-t.y;
-
-	if (p.y > 0) {
-		d = max(d, p.y);
-	}
-	return d;
-}
-
 float hash( in vec2 p ) {
 	float h = dot(p,vec2(127.1,311.7));	
     return fract(sin(h)*43758.5453123);
@@ -79,47 +60,20 @@ float noiseOctave(in vec2 p, int octaves, float persistence)
 	return n / maxValue; 
 }
 
-float sdCappedCylinder( vec3 p, vec2 h )
-{
-  vec2 d = abs(vec2(length(p.xz),p.y)) - h;
-  return min(max(d.x,d.y),0.0) + length(max(d,0.0));
-}
-
-// Smooth min. k determines smoothness
-float smink( float a, float b, float k )
-{
-    float h = clamp( 0.5+0.5*(b-a)/k, 0.0, 1.0 );
-    return mix( b, a, h ) - k*h*(1.0-h);
-
-}
 /// end of boiler-plate
 
 float river(vec3 p) 
 {
-	float time = mod(iTime, 22);
-
-	float nv = noise((p.xy + vec2(time, 0)) * 3);
+	float time = mod(iTime, 13);
+	float nv = noise((p.xy + vec2(iTime, 0)) * 3);
 	vec3 noiseVec = 1*vec3(nv, 0, 0);
-    float dis1 = sdBox(p + vec3(0.3*sin(p.y * 2.3), 0, -0.1) +  0.8*noiseVec, vec3(0.1, 5.0, 0.48));
-	
-	float height = 1;//sin(time);
-	if (time < 5)
-		height = 0.05 + 1;
-	else if (time < 14)
-		height = 0.05 + 1 - smoothstep(5, 14, time);//cos(3.14 / 2 * (time - 7)/7);
-	else if (time < 18)
-		height = 0.05;
-	else if (time < 22)
-		height = 0.05 * (1 - 8 * smoothstep(18, 22, time));//0.1*cos(3.14 / 2 * (time - 17)/1);
-
-	
-	float dis =  sdTorus(p.yxz + 0.5*noiseVec - vec3(-0, 2, 0.56 + height), vec2(1, 0.01));
-	//return sdTorusJ(p.yxz + vec3(0, 1, 0), vec2(1, 0.6));
-
-	 dis = min(dis, sdCappedCylinder(p + 0.5*noiseVec - vec3(-2,1-0.6, 0.57 + height), vec2(0, 0.7)));
-	// dis = min(dis, sdCappedCylinder(p.yxz - vec3(0.3, -0.2, 0.0), vec2(0.0, 1)));
-	 dis = min(dis, sdTorusJ(p + 0.5*noiseVec - vec3(-1, -0.2, 0.56 + height), vec2(1, 0.02)));
-	 return dis;
+    float d1 = sdBox(p + vec3(0.3*sin(p.y * 2.3), 0, -0.1) +  0.8*noiseVec, vec3(0.2, 30.0 * (sin(time * 0.2)), 0.48));
+	time -= 3;
+	//time *= 1.5;
+    float d2 = sdBox(p.yxz + vec3(0.3*sin(p.y * 2.3), 0, -0.1) +  0.8*noiseVec, vec3(0.2, 40.0 * (sin(time * 0.2)), 0.48));
+	time -= 3;
+    float d3 = sdBox(p.xzy + vec3(0.3*sin(p.y * 2.3), 0, -0.1) +  0.8*noiseVec, vec3(0.02, 40.0 * (sin(time * 0.2)), 0.02));
+	return min(min(d1, d2), d3);
 }
 
 float map(vec3 p) 
@@ -127,7 +81,7 @@ float map(vec3 p)
 	float noiseValue = noise(p.xy * 2 + 1*(p.xy + vec2(1.3,1.3))); 
 	vec3 n = vec3(0, 0, noiseValue);
     float d1 = udRoundBox(p + 0.02 * n, vec3(100.0, 100.0, 0.5), 0.1);
-	float d2 = river(p + vec3(10, 0, 0));
+	float d2 = river(p);
 	return max(d1, -d2);
 }
 
@@ -145,8 +99,9 @@ void main() {
 	float v = fragCoord.y * 2.0 - 1.0;
 	u *= 16.0 / 9.0;
 
-    vec3 ro = vec3(0, -2, 6.0);
-    vec3 tar = vec3(0, 0, 0);
+	float time = mod(iTime, 13);
+    vec3 ro = vec3(0.5*cos(iTime*0.5) + 1.5, -6 + 1*sin(iTime*0.5), 5.0 + time*2);
+    vec3 tar = vec3(0);
     vec3 dir = normalize(tar - ro);
 	vec3 right = normalize(cross(vec3(0.0, 1.0, 0.0), dir));
 	vec3 up = cross(dir, right);
@@ -165,10 +120,11 @@ void main() {
         float d = map(p);
         float fogAmount = 0.005;
 		float lol = river(p);
-		vec3 light = 50.0 * vec3(1, 0.1, 0) / (lol*lol);
+		float str = 10 + 0 * smoothstep(0, 12, time);
+		vec3 light = str * vec3(1, 0.1, 0) / (lol*lol);
 		//vec4 lightColDis = vec4(1, 0, 0, );
 		//vec3 light = lightColDis.rgb;
-
+		d = min(d, lol);
 		vec3 lightIntegrated = light - light * exp(-fogAmount * d);
 		scatteredLight += transmittance * lightIntegrated;	
 		transmittance *= exp(-fogAmount * d);
@@ -194,14 +150,13 @@ void main() {
 			//color += vec3(min(0.1, lavaLight));
 
 			color = transmittance * color + scatteredLight;
-			//color *= str;
+			color *= str;
             break;
         }
         t += d;
     }    
-	float fstr = smoothstep(21.0, 22.0, iTime);
 	fragColor = vec4(color, 1.0);
-    fragColor.rgb = fragColor.rgb / (fragColor.rgb + vec3(1.0)) * (1 -fstr);
+    fragColor.rgb = fragColor.rgb / (fragColor.rgb + vec3(1.0));
 }
 
 )""  

@@ -5,7 +5,7 @@
 #include <functional>
 #include <iostream>
 #include <memory>
-#include <set>
+#include <set>e
 #include <sstream>
 #include <streambuf>
 #include <string>
@@ -17,17 +17,45 @@ using namespace ojgl;
 void buildSceneGraph(GLState& glState, int x, int y)
 {
     glState.clearScenes();
+	{
+		auto edison = Buffer::construct(x, y, "intro", "shaders/edison.vs", "done/lavaIntro.fs");
+		auto fxaa = Buffer::construct(x, y, "fxaa", "shaders/fxaa.vs", "shaders/fxaa.fs", edison);
+		auto post = Buffer::construct(x, y, "post", "shaders/post.vs", "shaders/post.fs", fxaa);
+		glState.addScene("introScene", post, Duration::seconds(22));
+    }
+    {
+        auto noise = Buffer::construct(x, y, "intro", "shaders/demo.vs", "done/mountainNoise.fs");
+        auto mountain = Buffer::construct(x, y, "fxaa", "shaders/demo.vs", "done/mountain.fs", noise);
+        auto fxaa = Buffer::construct(x, y, "fxaa", "shaders/fxaa.vs", "shaders/fxaa.fs", mountain);
+        auto post = Buffer::construct(x, y, "post", "shaders/demo.vs", "mountainPost.fs", fxaa);
+        glState.addScene("introScene", post, Duration::seconds(90));
+    }
 
-    auto edison = Buffer::construct(x, y, "intro", "edison.vs", "edison.fs");
-    auto post = Buffer::construct(x, y, "post", "post.vs", "post.fs", edison);
-    glState.addScene("introScene", post, Duration::maximum());
+    {
+        auto edison = Buffer::construct(x, y, "intro", "shaders/edison.vs", "done/lavaScene2.fs");
+        auto fxaa = Buffer::construct(x, y, "fxaa", "shaders/fxaa.vs", "shaders/fxaa.fs", edison);
+        auto post = Buffer::construct(x, y, "post", "shaders/post.vs", "shaders/post.fs", fxaa);
+        glState.addScene("introScene", post, Duration::seconds(50));
+    }
+    {
+        auto edison = Buffer::construct(x, y, "intro", "shaders/edison.vs", "done/outro.fs");
+        auto fxaa = Buffer::construct(x, y, "fxaa", "shaders/fxaa.vs", "shaders/fxaa.fs", edison);
+        auto post = Buffer::construct(x, y, "post", "shaders/post.vs", "shaders/post.fs", fxaa);
+        glState.addScene("introScene", post, Duration::seconds(40));
+    }
+	
+	/*auto edison = Buffer::construct(x, y, "intro", "shaders/edison.vs", "done/outro.fs");
+    auto fxaa = Buffer::construct(x, y, "fxaa", "shaders/fxaa.vs", "shaders/fxaa.fs", edison);
+    auto post = Buffer::construct(x, y, "post", "shaders/post.vs", "shaders/post.fs", fxaa);
+	glState.addScene("introScene", post, Duration::seconds(40));
+	*/
 }
 
 int main()
 {
     int width = 1920 / 2;
     int height = 1080 / 2;
-    ShaderReader::setBasePath("examples/shaders/");
+    ShaderReader::setBasePath("examples/");
 
     Window window(width, height, false);
     GLState glState;
@@ -54,12 +82,12 @@ int main()
                 return 0;
 #ifdef _DEBUG
             case Window::KEY_LEFT:
-                glState.changeTime(Duration::milliseconds(-1000));
+                glState.changeTime(Duration::milliseconds(-5000));
                 timeChanged = true;
                 break;
 
             case Window::KEY_RIGHT:
-                glState.changeTime(Duration::milliseconds(1000));
+                glState.changeTime(Duration::milliseconds(5000));
                 timeChanged = true;
                 break;
 
@@ -92,6 +120,7 @@ int main()
         }
 
         glState << Uniform1f("iTime", glState.relativeSceneTime().toSeconds());
+        glState << Uniform1f("iGlobalTime", glState.relativeSceneTime().toSeconds());
         glState << Uniform2f("iResolution", static_cast<float>(width), static_cast<float>(height));
 
         glState.render();

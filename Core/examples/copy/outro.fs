@@ -157,8 +157,8 @@ float cros(vec3 p)
 	float k5 = smoothstep(30.0, 40.0, time);
 	float k6 = smoothstep(20.0, 37.0, time);
 	float nv = noise((p.xy + vec2(iTime, 0)) * 3);
-	float d = sdCappedCylinder(p, vec2(0.05 -k6*2*nv+ 0.4*nv, 4.0+ (k2 - k3)*0)); 
-	float d2 = sdCappedCylinder(p.zxy, vec2(0.05 -k6*2*nv+ 0.4*nv, 4.0+ (k2 - k3)*0)); 
+	float d = sdCappedCylinder(p, vec2(0.05 -k6*2*nv+ 0.3*nv, 4.0+ (k2 - k3)*0)); 
+	float d2 = sdCappedCylinder(p.zxy, vec2(0.05 -k6*2*nv+ 0.3*nv, 4.0+ (k2 - k3)*0)); 
 	return min(d, d2);
 }
 

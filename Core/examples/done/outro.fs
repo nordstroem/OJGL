@@ -150,15 +150,15 @@ float cros(vec3 p)
 {
 	float time = mod(iTime, 40);
 	//time += 19;
-	float k1 = smoothstep(6, 7, time);
+	float k1 = smoothstep(1, 3, time);
 	float k2 = smoothstep(17, 18, time);
 	float k3 = smoothstep(20.4, 21.5, time);
 	float k4 = smoothstep(23.0, 24.0, time);
 	float k5 = smoothstep(30.0, 40.0, time);
 	float k6 = smoothstep(20.0, 37.0, time);
 	float nv = noise((p.xy + vec2(iTime, 0)) * 3);
-	float d = sdCappedCylinder(p, vec2(0.05 -k6*2*nv+ 0.4*nv, 4.0+ (k2 - k3)*0)); 
-	float d2 = sdCappedCylinder(p.zxy, vec2(0.05 -k6*2*nv+ 0.4*nv, 4.0+ (k2 - k3)*0)); 
+	float d = sdCappedCylinder(p, vec2(0.05 -k6*2*nv+ 0.1*nv + k1*0.3*nv, 4.0+ (k2 - k3)*0)); 
+	float d2 = sdCappedCylinder(p.zxy, vec2(0.05 -k6*2*nv+ 0.1*nv+ k1*0.3*nv, 4.0+ (k2 - k3)*0)); 
 	return min(d, d2);
 }
 
@@ -241,7 +241,9 @@ void main() {
 	vec3 right = normalize(cross(vec3(0.0, 1.0, 0.0), dir));
 	vec3 up = cross(dir, right);
 	vec3 rd = normalize(dir + right*u + up*v);
-                    
+	float time = mod(iTime, 40);
+	
+	float k1 = smoothstep(1, 3, time);
                     
     float t = 0.0;
     vec3 color = vec3(0.0);
@@ -278,7 +280,7 @@ void main() {
             float s = 10.0;
             float k = max(0.0, dot(rd, reflect(invLight, normal)));
             float spec =  pow(k, s);
-            float str = 12.0/(0.01 + 0.4*dis + 0.03*dis*dis);
+            float str = (3 + 6*k1)/(0.01 + 0.4*dis + 0.03*dis*dis);
             color *= (0.4 + 0.5*diffuse);
 		//	color += spec;
 			//float lavaDistance = length(river(p));
@@ -292,7 +294,6 @@ void main() {
         }
         t += 0.5*d;
     }   
-	float time = mod(iTime, 40);
 	float fstr = smoothstep(0, 2, time);
 	float fstr2 = smoothstep(30, 40, time);
 	fragColor = vec4(color, 1.0);

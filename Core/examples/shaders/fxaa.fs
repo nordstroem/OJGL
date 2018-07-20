@@ -7,8 +7,7 @@ out vec4 fragColor;
 uniform sampler2D inTexture0;
 uniform float iGlobalTime;
 
-uniform float resolutionWidth;
-uniform float resolutionHeight;
+uniform vec2 iResolution;
 
 #ifndef FXAA_REDUCE_MIN
     #define FXAA_REDUCE_MIN   (1.0/ 128.0)
@@ -73,7 +72,7 @@ vec4 fxaa(sampler2D tex, vec2 fragCoord, vec2 resolution,
 void main()
 {
 
-	vec2 resolution = vec2(resolutionWidth, resolutionHeight);
+	vec2 resolution = vec2(iResolution.x, iResolution.y);
 	vec2 inverseVP = 1.0 / resolution;
 	vec2 v_rgbNW = (fragCoord + vec2(-1.0, -1.0)) * inverseVP;
 	vec2 v_rgbNE = (fragCoord + vec2(1.0, -1.0)) * inverseVP;

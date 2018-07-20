@@ -19,6 +19,19 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <None Include="examples\copy\lavaIntro.fs" />
+    <None Include="examples\copy\lavaScene2.fs" />
+    <None Include="examples\copy\outro.fs" />
+    <None Include="examples\copy\sunScene.fs" />
+    <None Include="examples\copy\tornado.fs" />
+    <None Include="examples\copy\tornado2.fs" />
+    <None Include="examples\copy\tornado3.fs" />
+    <None Include="examples\done\mountain.fs" />
+    <None Include="examples\done\mountainNoise.fs" />
+    <None Include="examples\done\mountainPost.fs" />
+    <None Include="examples\done\outro.fs" />
+    <None Include="examples\done\lavaScene2.fs" />
+    <None Include="examples\done\tornado3.fs" />
     <None Include="examples\done\sunScene.fs" />
     <None Include="examples\done\tornado2.fs" />
     <None Include="examples\done\tornado.fs" />
@@ -93,7 +106,7 @@
     <ProjectGuid>{7AF8FBC7-C228-41B3-A7BB-119C1B83A171}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>Core</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
