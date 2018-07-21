@@ -35,25 +35,6 @@ namespace resources {
         std::string outro{
 #include "done/outro.fs"
         };        
-        std::string dofScene{
-#include "shaders/dofScene.fs"
-        };
-
-        std::string dofBlur1{
-#include "shaders/dofBlur1.fs"
-        };
-
-        std::string dofBlur2{
-#include "shaders/dofBlur2.fs"
-        };
-
-        std::string dofFinal{
-#include "shaders/dofFinal.fs"
-        };
-
-        std::string tunnel{
-#include "shaders/tunnelScene.fs"
-        };
 
         std::string demo{
 #include "shaders/demo.fs"
@@ -61,22 +42,6 @@ namespace resources {
 
         std::string intro{
 #include "shaders/introScene.fs"
-        };
-
-        std::string grave{
-#include "shaders/graveScene.fs"
-        };
-
-        std::string gravePost{
-#include "shaders/graveScenePost.fs"
-        };
-
-        std::string room{
-#include "shaders/roomScene.fs"
-        };
-
-        std::string roomPost{
-#include "shaders/roomScenePost.fs"
         };
     } //namespace fragment
 
