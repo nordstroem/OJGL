@@ -150,7 +150,7 @@ float cros(vec3 p)
 {
 	float time = mod(iTime, 40);
 	//time += 19;
-	float k1 = smoothstep(2.5, 3.5, time);
+	float k1 = smoothstep(5.0, 6.0, time);
 	float k2 = smoothstep(17, 18, time);
 	float k3 = smoothstep(20.4, 21.5, time);
 	float k4 = smoothstep(23.0, 24.0, time);
@@ -209,12 +209,11 @@ vec4 map(vec3 p, vec3 rd)
 	vec4 floor = vec4(sdBox(vec3(q1.x, p.y + 10.5, q1.z), vec3(1, 1, 1)), vec3(0.3, 0.3, 0.3));
 	//floor = disMin(floor, vec4(sdBox(vec3(q1.x, p.y - 13.5, q1.z), vec3(1, 1, 1)), vec3(0.3, 0.3, 0.3)));
 
-	float c = 25;
-	vec3 q = vec3(mod(p.x, c)- 0.5*c, p.y, p.z);
-
+	vec2 c = vec2(25, 7);
+	vec3 q = vec3(mod(p.x, c.x)- 0.5*c.x, p.y, mod(p.z, c.y) - 0.5*c.y);
 	vec4 table = vec4(sdBox(p - vec3(0, -7, 22), vec3(6, 3, 5)), vec3(0.2, 0.2, 0.2));
 	table = sun(table, vec4(sdBox(p - vec3(0, -7, 22), vec3(4, 4, 5.3)), vec3(0.2, 0.2, 0.2)));
-	vec4 pillars = vec4(sdBox(q - vec3(0, -9, 22), vec3(0.5, 22, 0.5)), vec3(0.2, 0.2, 0.2));
+	vec4 pillars = vec4(sdBox(q - vec3(0, -9, 0), vec3(0.5, 22, 0.5)), vec3(0.2, 0.2, 0.2));
 	vec4 disRoom = sun(floor, sun(pillars, sun(table, box)));
 	return disMin(symbol(p), disRoom);
 }
@@ -235,7 +234,7 @@ void main() {
 	u *= 16.0 / 9.0;
 	u *= k;
 	v *= k;
-    vec3 ro = vec3(0,  -1+0.8*cos(iTime), -15.0);
+    vec3 ro = vec3(0,  -1.9+0.8*cos(iTime), -15.0);
     vec3 tar = vec3(0, 0, 0);//vec3(0.2*cos(20*iTime), 0.2*cos(10*iTime), 0.2*cos(10*iTime));
     vec3 dir = normalize(tar - ro);
 	vec3 right = normalize(cross(vec3(0.0, 1.0, 0.0), dir));
@@ -243,7 +242,7 @@ void main() {
 	vec3 rd = normalize(dir + right*u + up*v);
 	float time = mod(iTime, 40);
 	
-	float k1 = smoothstep(2.5, 3.6, time);
+	float k1 = smoothstep(5.0, 6.0, time);
                     
     float t = 0.0;
     vec3 color = vec3(0.0);
@@ -280,7 +279,7 @@ void main() {
             float s = 10.0;
             float k = max(0.0, dot(rd, reflect(invLight, normal)));
             float spec =  pow(k, s);
-            float str = (3 + 6*k1)/(0.01 + 0.4*dis + 0.03*dis*dis);
+            float str = (1 + 5*k1)/(0.01 + 0.4*dis + 0.03*dis*dis);
             color *= (0.4 + 0.5*diffuse);
 		//	color += spec;
 			//float lavaDistance = length(river(p));

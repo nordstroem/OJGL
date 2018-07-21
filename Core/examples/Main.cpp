@@ -28,7 +28,7 @@ void buildSceneGraph(GLState& glState, int x, int y)
         auto mountain = Buffer::construct(x, y, "fxaa", "shaders/demo.vs", "done/mountain.fs", noise);
         auto fxaa = Buffer::construct(x, y, "fxaa", "shaders/fxaa.vs", "shaders/fxaa.fs", mountain);
         auto post = Buffer::construct(x, y, "post", "shaders/demo.vs", "done/mountainPost.fs", fxaa);
-        glState.addScene("introScene", post, Duration::seconds(76));
+        glState.addScene("introScene", post, Duration::seconds(77));
     }
 
     {
@@ -51,11 +51,25 @@ void buildSceneGraph(GLState& glState, int x, int y)
 	*/
 }
 
-int main()
+int main(int argc, char* argv[])
 {
-    int width = 1920;
+	
+	int width = 1920;
     int height = 1080;
-    ShaderReader::setBasePath("examples/");
+    bool full = true;
+
+#ifdef _DEBUG
+    full = false;
+#endif
+    if (argc >= 3) {
+        width = std::stoi(argv[1]);
+        height = std::stoi(argv[2]);
+        if (argc >= 4) {
+            full = static_cast<bool>(std::stoi(argv[3]));
+        }
+    }
+
+	ShaderReader::setBasePath("examples/");
     
 	ShaderReader::preLoad("shaders/edison.vs", resources::vertex::edison);
     ShaderReader::preLoad("shaders/demo.vs", resources::vertex::demo);
@@ -70,16 +84,12 @@ int main()
     ShaderReader::preLoad("done/lavaScene2.fs", resources::fragment::lavaScene2);
     ShaderReader::preLoad("done/outro.fs", resources::fragment::outro);
 
-
-
-    Window window(width, height, true);
+    Window window(width, height, full);
     GLState glState;
 
     Music music(resources::songs::song);
     music.play();
-
     buildSceneGraph(glState, width, height);
-
     glState.setStartTime(Timepoint::now());
 
     auto previousPrintTime = Timepoint::now();
@@ -134,7 +144,7 @@ int main()
         }
 
         glState << Uniform1f("iTime", glState.relativeSceneTime().toSeconds());
-        glState << Uniform1f("iGlobalTime", glState.relativeSceneTime().toSeconds());
+        glState << Uniform1f("iGlobalTime", glState.relativeSceneTime().toSeconds() - 2.f);
         glState << Uniform2f("iResolution", static_cast<float>(width), static_cast<float>(height));
 
         glState.render();

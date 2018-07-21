@@ -235,7 +235,7 @@ void main() {
 	u *= 16.0 / 9.0;
 	u *= k;
 	v *= k;
-    vec3 ro = vec3(0,  -1+0.8*cos(iTime), -15.0);
+    vec3 ro = vec3(0,  -1+0.55*cos(iTime), -15.0);
     vec3 tar = vec3(0, 0, 0);//vec3(0.2*cos(20*iTime), 0.2*cos(10*iTime), 0.2*cos(10*iTime));
     vec3 dir = normalize(tar - ro);
 	vec3 right = normalize(cross(vec3(0.0, 1.0, 0.0), dir));

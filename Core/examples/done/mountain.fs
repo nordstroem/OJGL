@@ -205,14 +205,20 @@ vec4 evaluateLight(vec3 p)
 	strength = 0.0;
 	if (iGlobalTime > PART_SPIN) {
 		float p = iGlobalTime - PART_SPIN;
+		if (o.x < -2500)
+			p += 1;
 		float c = floor((o.x - 350.0) / 400.0);
 		strength = 20000.0 * smoothstep(2.0, 5.0, p +  c * 5.0 );
 	}
-
 	if (iGlobalTime > PART_FAR && o.x < -2500.0) {
-		float t = iGlobalTime - PART_TRAVEL;
-		float s = smoothstep(14.0, 16.0, t);
-		dis = min(dis, sdCylinder(p, vec3(2.0, 0.0 , 0.0)));
+		float t = iGlobalTime - PART_FAR;
+		float s = smoothstep(15.0, 17.0, t);
+
+		dis = min(dis, sdCylinder(p + vec3(0.0, 0.0, 
+					sin(o.y + iGlobalTime * 13.0) * 0.7 +
+					sin(o.y * 0.5 + iGlobalTime * 10.0) * 1.5 +
+					sin(o.y * 0.9 + iGlobalTime * 14.0) * 1.5 +
+					sin(o.y * 0.4 + iGlobalTime * 8.0) * 2.5) * s, vec3(2.0, 0.0 , 0.0)));
 		strength *= 10.0;// * s;
 	}
 	if (o.x < -2800.0) {
@@ -382,7 +388,7 @@ void main()
          vec3 light = lightColDis.rgb;
          d = min(d, max(0.01, lightColDis.w * 0.25));
 		 if (iGlobalTime < PART_BOTTOM && iGlobalTime > PART_FLY)
-			d *= 0.8;
+			d *= 0.7;
 		 //d = max(d*0.2, 0.01);
 		 //d *= 0.5;
          vec3 lightIntegrated = light - light * exp(-fogAmount * d);
