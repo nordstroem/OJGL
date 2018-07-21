@@ -102,7 +102,7 @@ HWND Window::CreateOpenGLWindow(const char* title, int x, int y, BYTE type, DWOR
         }
     }
 
-    hWnd = CreateWindow(L"OpenGL", L"Hej", WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN,
+    hWnd = CreateWindow(L"OpenGL", L"Eldur - OJ", WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN,
         x, y, this->_width, this->_height, NULL, NULL, hInstance, NULL);
     if (fullScreen) {
         hWnd = CreateFullscreenWindow(hWnd, hInstance);
