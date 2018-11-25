@@ -14,6 +14,7 @@
 //
 
 #include "../fakelibs/fakelib.h"
+#include "../src/render/GLState.h"
 #include "../src/render/Texture.h"
 #include "../src/render/Window.h"
 using namespace ojgl;
@@ -90,7 +91,7 @@ int main(int argc, char* argv[])
 
     Window window(width, height, false);
 
-    /*GLState glState;*/
+    GLState glState;
 
     /* Music music(resources::songs::song);
     music.play();

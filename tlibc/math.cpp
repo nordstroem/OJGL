@@ -4,8 +4,8 @@
 
 // 08/20/05 (mv)
 
-#include <windows.h>
 #include "libct.h"
+#include <windows.h>
 
 BEGIN_EXTERN_C
 
@@ -14,23 +14,23 @@ int _fltused = 0;
 
 int abs(int n)
 {
-	return (n>0)?n:-n;
+    return (n > 0) ? n : -n;
 }
 
 void srand(unsigned int seed)
 {
-	lastrand = seed;
+    lastrand = seed;
 }
 
 int rand()
 {
-	return (((lastrand = lastrand * 214013L + 2531011L) >> 16) & 0x7FFF);
+    return (((lastrand = lastrand * 214013L + 2531011L) >> 16) & 0x7FFF);
 }
 
 __declspec(naked) void _CIacos()
 {
-	__asm
-	{
+    __asm
+    {
 		fld		st(0)
 		fld		st(0)
 		fmul
@@ -40,13 +40,12 @@ __declspec(naked) void _CIacos()
 		fxch
 		fpatan
 		ret
-	}
+    }
 }
 
 __declspec(naked) void _ftol2()
 {
-	__asm
-	{
+    __asm {
 		push        ebp
 		mov         ebp,esp
 		sub         esp,20h
@@ -88,7 +87,7 @@ __declspec(naked) void _ftol2()
 	localexit:
   		leave
   		ret
-	}
+    }
 }
 
 END_EXTERN_C

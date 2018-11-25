@@ -1,11 +1,9 @@
 #pragma once
 
+#include "../../fakelibs/fakelib.h"
 #include "../utility/Timer.hpp"
 #include "../winapi/gl_loader.h"
 #include "Scene.h"
-#include <functional>
-#include <string>
-#include <vector>
 
 namespace ojgl {
 
@@ -29,7 +27,7 @@ public:
     Duration elapsedTime() const;*/
 
     Scene& operator[](size_t i);
-    Scene& operator[](const std::string& name);
+    Scene& operator[](const fl::string& name);
 
 public:
     template <typename... Args>
@@ -52,7 +50,7 @@ public:
 private:
     void setupQuad();
 
-    std::vector<Scene> _scenes;
+    fl::vector<Scene> _scenes;
     /*Timepoint _startTime;
     Timepoint _pauseTime;*/
     GLuint _vaoID;

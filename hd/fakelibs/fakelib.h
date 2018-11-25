@@ -111,6 +111,11 @@ public:
         return length == 0;
     }
 
+    void clear()
+    {
+        length = 0;
+    }
+
 private:
     const int MAX_SIZE = 100;
     int length = 0;

@@ -1,4 +1,4 @@
-#include "../winapi\gl_loader.h"
+#include "../winapi/gl_loader.h"
 #include "Texture.h"
 //#include <iostream>
 //#include <memory>

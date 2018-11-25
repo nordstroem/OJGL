@@ -107,6 +107,7 @@
       <PrecompiledHeader />
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
     </ClCompile>
     <Link>
       <OutputFile>$(OutDir)hd.exe</OutputFile>
@@ -127,7 +128,7 @@
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
-      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>false</MinimalRebuild>
@@ -229,6 +230,7 @@
     <ClCompile Include="examples\Main.cpp" />
     <ClCompile Include="hd.cpp" />
     <ClCompile Include="src\render\Buffer.cpp" />
+    <ClCompile Include="src\render\GLState.cpp" />
     <ClCompile Include="src\render\Scene.cpp" />
     <ClCompile Include="src\render\Texture.cpp" />
     <ClCompile Include="src\render\Window.cpp" />
@@ -240,6 +242,7 @@
     <ClInclude Include="fakelibs\fakelib.h" />
     <ClInclude Include="src\OJGL.h" />
     <ClInclude Include="src\render\Buffer.h" />
+    <ClInclude Include="src\render\GLState.h" />
     <ClInclude Include="src\render\Scene.h" />
     <ClInclude Include="src\render\Texture.h" />
     <ClInclude Include="src\render\Uniform.hpp" />
