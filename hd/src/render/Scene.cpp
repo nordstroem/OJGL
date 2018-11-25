@@ -1,12 +1,12 @@
 #include "Scene.h"
 //#include "utility\Log.h"
-#include <algorithm>
-#include <stdexcept>
-#include <unordered_set>
+//#include <algorithm>
+//#include <stdexcept>
+#include "..\..\fakelibs\fakelib.h"
 
 namespace ojgl {
 
-Scene::Scene(const std::string& name, const std::shared_ptr<Buffer>& buffer /*, Duration duration*/)
+Scene::Scene(const fl::string& name, const fl::shared_ptr<Buffer>& buffer /*, Duration duration*/)
     : _mainBuffer(std::move(buffer))
     /*, _duration(duration)*/
     , _name(name)
@@ -14,33 +14,33 @@ Scene::Scene(const std::string& name, const std::shared_ptr<Buffer>& buffer /*, 
 {
     for (auto& b : buffers()) {
         if (b != _mainBuffer) {
-            b->generateFBO();
+            b->generateFBO(); // error C2662: 'void ojgl::Buffer::generateFBO(void)': cannot convert 'this' pointer from 'const T' to 'ojgl::Buffer &'
         }
     }
 }
 
-Scene::Scene(const std::shared_ptr<Buffer>& buffer /*, Duration duration*/)
+Scene::Scene(const fl::shared_ptr<Buffer>& buffer /*, Duration duration*/)
     : Scene("default", buffer /*, duration*/)
 {
 }
 
-std::string Scene::name() const
+fl::string Scene::name() const
 {
     return _name;
 }
 
-Buffer& Scene::operator[](const std::string& name)
+Buffer& Scene::operator[](const fl::string& name)
 {
     auto buffers = this->buffers();
-    auto res = std::find_if(buffers.begin(), buffers.end(), [&](auto b) { return b->name() == name; });
+    auto res = fl::find_if(buffers.begin(), buffers.end(), [&](auto b) { return b->name() == name; });
     _ASSERTE(res != buffers.end());
     return **res;
 }
 
-std::unordered_set<std::shared_ptr<Buffer>> Scene::buffers()
+fl::vector<fl::shared_ptr<Buffer>> Scene::buffers()
 {
-    std::unordered_set<std::shared_ptr<Buffer>> available;
-    std::unordered_set<std::shared_ptr<Buffer>> checked;
+    fl::vector<fl::shared_ptr<Buffer>> available;
+    fl::vector<fl::shared_ptr<Buffer>> checked;
     available.insert(_mainBuffer);
 
     while (!available.empty()) {
@@ -70,7 +70,7 @@ void Scene::render()
 {
 
     auto available = buffers();
-    std::unordered_set<std::shared_ptr<Buffer>> rendered;
+    fl::vector<fl::shared_ptr<Buffer>> rendered;
 
     auto curIter = available.begin();
 
