@@ -1,4 +1,5 @@
 #pragma once
+#include "../../fakelibs/fakelib.h"
 #include "Texture.h"
 #include "Uniform.hpp"
 #include <iostream>
@@ -11,19 +12,19 @@ namespace ojgl {
 
 class Buffer {
 
-    using BufferPtr = std::shared_ptr<Buffer>;
+    using BufferPtr = fl::shared_ptr<Buffer>;
 
 public:
     ~Buffer();
     unsigned getProgramID() const;
     unsigned fboTextureID();
     void render();
-    std::string name() const;
+    fl::string name() const;
     void generateFBO();
 
 private:
     template <typename... Args>
-    Buffer(unsigned width, unsigned height, const std::string& name, const std::string& vertexPath, const std::string& fragmentPath, Args&&... buffers)
+    Buffer(unsigned width, unsigned height, const fl::string& name, const fl::string& vertexPath, const fl::string& fragmentPath, Args&&... buffers)
         : _inputs({ std::forward<Args>(buffers)... })
         , _name(name)
         , _width(width)
@@ -36,17 +37,17 @@ private:
 
     void loadShader();
 
-    std::vector<BufferPtr> _inputs;
-    const std::string _name;
+    fl::vector<BufferPtr> _inputs;
+    const fl::string _name;
     unsigned _programID = 0;
     unsigned _fboID = 0;
     unsigned _fboTextureID = 0;
     const unsigned _width;
     const unsigned _height;
-    std::unordered_map<std::string, std::shared_ptr<UniformBase>> _uniforms;
-    std::unordered_map<std::string, std::shared_ptr<Uniform1t>> _textures;
-    std::string _vertexPath;
-    std::string _fragmentPath;
+    fl::unordered_map<fl::string, fl::shared_ptr<UniformBase>> _uniforms;
+    fl::unordered_map<fl::string, fl::shared_ptr<Uniform1t>> _textures;
+    fl::string _vertexPath;
+    fl::string _fragmentPath;
 
     static constexpr unsigned vertexCount = 6;
 
@@ -54,7 +55,7 @@ public:
     template <typename... Args>
     static BufferPtr construct(Args&&... args)
     {
-        return std::shared_ptr<Buffer>(new Buffer(std::forward<Args>(args)...));
+        return fl::shared_ptr<Buffer>(new Buffer(std::forward<Args>(args)...));
     }
 
     template <typename T>
@@ -66,7 +67,7 @@ public:
 
     inline Buffer& operator<<(const Uniform1t& b)
     {
-        _textures[b.location()] = std::make_shared<Uniform1t>(b);
+        _textures[b.location()] = fl::make_shared<Uniform1t>(b);
         return *this;
     }
 

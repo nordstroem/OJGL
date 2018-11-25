@@ -1,24 +1,24 @@
 #pragma once
 
-#include ""
+#include "../../fakelibs/fakelib.h"
 
 namespace ojgl {
 
 struct ShaderContent {
-    char* content;
+    fl::string content;
     long long modifyTime;
 };
 
 class ShaderReader {
 
 public:
-    static void preLoad(const char* path, const char* content);
-    static void setBasePath(const std::string& basePath);
-    static bool modified(const char* path);
-    static const char* get(const char* path);
+    static void preLoad(const fl::string& path, const fl::string& content);
+    static void setBasePath(const fl::string& basePath);
+    static bool modified(const fl::string& path);
+    static const fl::string& get(const fl::string& path);
 
 private:
-    static fl::unordered_map<const char*, ShaderContent> _shaders;
-    static char* _basePath;
+    static fl::unordered_map<fl::string, ShaderContent> _shaders;
+    static fl::string _basePath;
 };
 }

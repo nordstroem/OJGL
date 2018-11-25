@@ -20,7 +20,7 @@ Buffer::~Buffer()
     glDeleteProgram(_programID);
 }
 
-std::string Buffer::name() const
+fl::string Buffer::name() const
 {
     return _name;
 }
