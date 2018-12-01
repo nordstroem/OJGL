@@ -23,6 +23,11 @@ public:
     {
     }
 
+    shared_ptr()
+    {
+        this->_ptr = nullptr;
+    }
+
     T* operator->() const
     {
         return _ptr;
@@ -41,6 +46,11 @@ public:
     bool operator!=(shared_ptr<T> other) const
     {
         return _ptr != this->_ptr;
+    }
+
+    bool operator==(shared_ptr<T> other) const
+    {
+        return _ptr == this->_ptr;
     }
 
 private:
@@ -180,7 +190,7 @@ public:
 
     T* find(const T& val)
     {
-        return values.find(val);
+        return find_if(this->begin(), this->end(), [&val](const auto& v) { return v == val; });
     }
 
     T* erase(T* it)

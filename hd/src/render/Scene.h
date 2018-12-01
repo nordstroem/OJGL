@@ -15,7 +15,7 @@ public:
     fl::string name() const;
     Buffer& operator[](const fl::string& name);
     /*Duration duration() const;*/
-    fl::vector<fl::shared_ptr<Buffer>> buffers();
+    fl::unordered_set<fl::shared_ptr<Buffer>> buffers();
 
 private:
     fl::shared_ptr<Buffer> _mainBuffer;

@@ -37,10 +37,10 @@ Buffer& Scene::operator[](const fl::string& name)
     return **res;
 }
 
-fl::vector<fl::shared_ptr<Buffer>> Scene::buffers()
+fl::unordered_set<fl::shared_ptr<Buffer>> Scene::buffers()
 {
-    fl::vector<fl::shared_ptr<Buffer>> available;
-    fl::vector<fl::shared_ptr<Buffer>> checked;
+    fl::unordered_set<fl::shared_ptr<Buffer>> available;
+    fl::unordered_set<fl::shared_ptr<Buffer>> checked;
     available.insert(_mainBuffer);
 
     while (!available.empty()) {
@@ -70,7 +70,7 @@ void Scene::render()
 {
 
     auto available = buffers();
-    fl::vector<fl::shared_ptr<Buffer>> rendered;
+    fl::unordered_set<fl::shared_ptr<Buffer>> rendered;
 
     auto curIter = available.begin();
 
