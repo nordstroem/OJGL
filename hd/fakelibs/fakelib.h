@@ -5,6 +5,16 @@
 
 namespace fl {
 
+template <class ForwardIt, class UnaryPredicate>
+ForwardIt find_if(ForwardIt first, ForwardIt last, UnaryPredicate p)
+{
+    for (auto it = first; it != last; it++) {
+        if (p(*it)) {
+            return it;
+        }
+    }
+    return last;
+}
 template <typename T>
 class shared_ptr {
 public:
@@ -63,10 +73,12 @@ public:
     {
         return length;
     }
+
     T& operator[](int index) const
     {
         return values[index];
     }
+
     T* begin()
     {
         return values;
@@ -87,23 +99,18 @@ public:
         return values + length;
     }
 
-    void insert(T val)
-    {
-    }
-
-    T* find(T val)
-    {
-        return nullptr;
-    }
-
     T* erase(T* it)
     {
-        return nullptr;
-    }
-
-    size_t erase(T val)
-    {
-        return 0;
+        if (it >= this->begin() && it < this->end()) {
+            for (auto itt = it; itt < (this->end() - 1); itt++)
+                *itt = *(itt + 1);
+            this->length--;
+            if ((it + 1) == this->end())
+                return this->end();
+            else
+                return it;
+        } else
+            return this->end();
     }
 
     bool empty()
@@ -129,70 +136,85 @@ public:
     {
     }
 
-    V operator[](K key)
+    V& operator[](const K& key)
     {
-        return values[0]; // TODO
+        auto it = find_if(this->keys.begin(), this->keys.end(), [&key](const auto& k) { return k == key; });
+        if (it == this->keys.end()) {
+            this->keys.push_back(key);
+            this->values.push_back(V());
+            return this->values[this->values.size() - 1];
+        } else {
+            return values[static_cast<int>(it - this->keys.begin())];
+        }
     }
 
-    int find(K key)
+    K* find(const K& key)
     {
-        return 0; // TODO
+        return find_if(this->keys.begin(), this->keys.end(), [&key](const auto& k) { return k == key; });
     }
 
 private:
-    V* values;
+    vector<K> keys;
+    vector<V> values;
 };
 
-//template <typename T>
-//class unordered_set {
-//public:
-//    T* begin()
-//    {
-//        return v.begin();
-//    }
-//
-//    T* end()
-//    {
-//        return values + length;
-//    }
-//
-//    void insert(T val)
-//    {
-//    }
-//
-//    T* find(T val)
-//    {
-//        return nullptr;
-//    }
-//
-//    T* erase(T* it)
-//    {
-//        return nullptr;
-//    }
-//
-//    size_t erase(T val)
-//    {
-//        return 0;
-//    }
-//
-//    const T* cbegin() const
-//    {
-//        return values; // TODO
-//    }
-//
-//    const T* cend() const
-//    {
-//        return values + length; // TODO
-//    }
-//
-//    bool empty()
-//    {
-//        return true;
-//    }
-//
-//private:
-//    vector v;
-//};
+template <typename T>
+class unordered_set {
+public:
+    T* begin()
+    {
+        return values.begin();
+    }
+
+    T* end()
+    {
+        return values.end();
+    }
+
+    void insert(const T& val)
+    {
+        auto it = find_if(this->begin(), this->end(), [&val](const auto& v) { return v == val; });
+        if (it == this->end())
+            this->values.push_back(val);
+    }
+
+    T* find(const T& val)
+    {
+        return values.find(val);
+    }
+
+    T* erase(T* it)
+    {
+        return this->values.erase(it);
+    }
+
+    size_t erase(const T& val)
+    {
+        int nprev = this->values.size();
+        auto it = find_if(this->begin(), this->end(), [&val](const auto& v) { return v == val; });
+        this->erase(it);
+        int npost = this->values.size();
+        return nprev - npost;
+    }
+
+    const T* cbegin() const
+    {
+        return values.cbegin();
+    }
+
+    const T* cend() const
+    {
+        return values.cend();
+    }
+
+    bool empty()
+    {
+        return this->values.size() == 0;
+    }
+
+private:
+    vector<T> values;
+};
 
 class string {
 public:
@@ -228,14 +250,4 @@ private:
     int len;
 };
 
-template <class ForwardIt, class UnaryPredicate>
-ForwardIt find_if(ForwardIt first, ForwardIt last, UnaryPredicate p)
-{
-    for (auto it = first; it != last; it++) {
-        if (p(*it)) {
-            return it;
-        }
-    }
-    return last;
-}
 } //end namespace fl
