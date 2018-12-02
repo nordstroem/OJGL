@@ -6,9 +6,9 @@
 
 namespace ojgl {
 
-Scene::Scene(const fl::string& name, const fl::shared_ptr<Buffer>& buffer /*, Duration duration*/)
+Scene::Scene(const fl::string& name, const fl::shared_ptr<Buffer>& buffer, Duration duration)
     : _mainBuffer(std::move(buffer))
-    /*, _duration(duration)*/
+    , _duration(duration)
     , _name(name)
 
 {
@@ -19,8 +19,8 @@ Scene::Scene(const fl::string& name, const fl::shared_ptr<Buffer>& buffer /*, Du
     }
 }
 
-Scene::Scene(const fl::shared_ptr<Buffer>& buffer /*, Duration duration*/)
-    : Scene("default", buffer /*, duration*/)
+Scene::Scene(const fl::shared_ptr<Buffer>& buffer, Duration duration)
+    : Scene("default", buffer, duration)
 {
 }
 
@@ -61,10 +61,10 @@ fl::unordered_set<fl::shared_ptr<Buffer>> Scene::buffers()
     return checked;
 }
 
-//Duration Scene::duration() const
-//{
-//    return this->_duration;
-//}
+Duration Scene::duration() const
+{
+    return this->_duration;
+}
 
 void Scene::render()
 {

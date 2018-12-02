@@ -9,6 +9,11 @@ namespace resources {
         fl::string test{
 #include "shaders/test.fs"
         };
+
+        fl::string test2{
+#include "shaders/test2.fs"
+        };
+
     } //namespace fragment
 
     namespace vertex {

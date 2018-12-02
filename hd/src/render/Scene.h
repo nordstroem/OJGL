@@ -8,18 +8,18 @@ namespace ojgl {
 
 class Scene {
 public:
-    Scene(const fl::shared_ptr<Buffer>& buffer /*, Duration duration*/);
-    Scene(const fl::string& name, const fl::shared_ptr<Buffer>& buffer /*, Duration duration*/);
+    Scene(const fl::shared_ptr<Buffer>& buffer, Duration duration);
+    Scene(const fl::string& name, const fl::shared_ptr<Buffer>& buffer, Duration duration);
 
     void render();
     fl::string name() const;
     Buffer& operator[](const fl::string& name);
-    /*Duration duration() const;*/
+    Duration duration() const;
     fl::unordered_set<fl::shared_ptr<Buffer>> buffers();
 
 private:
     fl::shared_ptr<Buffer> _mainBuffer;
-    /*Duration _duration;*/
+    Duration _duration;
     fl::string _name;
 };
 } //namespace ojgl

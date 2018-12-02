@@ -2,11 +2,7 @@
 #include "../../fakelibs/fakelib.h"
 #include "Texture.h"
 #include "Uniform.hpp"
-#include <iostream>
-#include <memory>
-#include <string>
-#include <unordered_map>
-#include <vector>
+#include <type_traits>
 
 namespace ojgl {
 
@@ -61,7 +57,7 @@ public:
     template <typename T>
     typename std::enable_if_t<std::is_base_of_v<UniformBase, typename std::remove_reference<T>::type>, Buffer&> operator<<(T&& b)
     {
-        _uniforms[b.location()] = std::make_shared<typename std::remove_reference<T>::type>(std::forward<T>(b));
+        _uniforms[b.location()] = fl::make_shared<typename std::remove_reference<T>::type>(std::forward<T>(b));
         return *this;
     }
 

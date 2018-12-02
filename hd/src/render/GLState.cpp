@@ -6,9 +6,9 @@
 namespace ojgl {
 
 GLState::GLState()
-    : /*_startTime(Timepoint::now())
-    , _pauseTime(Timepoint::now())*/
-    /*,*/ _paused(false)
+    : _startTime(Timepoint::now())
+    , _pauseTime(Timepoint::now())
+    , _paused(false)
 {
     load_gl_functions();
     setupQuad();
@@ -16,7 +16,7 @@ GLState::GLState()
 
 bool GLState::end()
 {
-    /* auto t = Duration::milliseconds(0);
+    auto t = Duration::milliseconds(0);
     auto elapsed = elapsedTime();
 
     for (auto& v : _scenes) {
@@ -26,8 +26,7 @@ bool GLState::end()
         }
         t = t + v.duration();
     }
-    return true;*/
-    return false;
+    return true;
 }
 
 GLState::~GLState()
@@ -36,17 +35,17 @@ GLState::~GLState()
     glDeleteBuffers(1, &_vboID);
 }
 
-//void GLState::setStartTime(Timepoint time)
-//{
-//    _startTime = time;
-//}
+void GLState::setStartTime(Timepoint time)
+{
+    _startTime = time;
+}
 
 void GLState::render()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glBindVertexArray(_vaoID);
 
-    /*auto t = Duration::milliseconds(0);
+    auto t = Duration::milliseconds(0);
     auto elapsed = elapsedTime();
     for (auto& v : _scenes) {
         if (elapsed < v.duration() + t) {
@@ -54,8 +53,7 @@ void GLState::render()
             break;
         }
         t = t + v.duration();
-    }*/
-    _scenes[0].render(); // TODO!
+    }
 
     glBindVertexArray(0);
     glFlush();
@@ -92,14 +90,14 @@ void GLState::setupQuad()
     glBindVertexArray(0);
 }
 
-//Duration GLState::elapsedTime() const
-//{
-//    auto elapsed = Timepoint::now() - _startTime;
-//    if (_paused) {
-//        elapsed = _pauseTime - _startTime;
-//    }
-//    return elapsed;
-//}
+Duration GLState::elapsedTime() const
+{
+    auto elapsed = Timepoint::now() - _startTime;
+    if (_paused) {
+        elapsed = _pauseTime - _startTime;
+    }
+    return elapsed;
+}
 
 bool GLState::isPaused()
 {
@@ -111,64 +109,64 @@ void GLState::clearScenes()
     _scenes.clear();
 }
 
-//Timepoint GLState::startTime() const
-//{
-//    return this->_startTime;
-//}
+Timepoint GLState::startTime() const
+{
+    return this->_startTime;
+}
 
 void GLState::togglePause()
 {
-    /*if (_paused) {
+    if (_paused) {
         _startTime += Timepoint::now() - _pauseTime;
     }
     _paused = !_paused;
-    _pauseTime = Timepoint::now();*/
+    _pauseTime = Timepoint::now();
 }
 
-//Duration GLState::relativeSceneTime() const
-//{
-//    auto t = Duration::milliseconds(0);
-//    auto elapsed = elapsedTime();
-//    for (auto& v : _scenes) {
-//        if (elapsed < v.duration() + t) {
-//            break;
-//        }
-//        t = t + v.duration();
-//    }
-//    return elapsed - t;
-//}
+Duration GLState::relativeSceneTime()
+{
+    auto t = Duration::milliseconds(0);
+    auto elapsed = elapsedTime();
+    for (auto& v : _scenes) {
+        if (elapsed < v.duration() + t) {
+            break;
+        }
+        t = t + v.duration();
+    }
+    return elapsed - t;
+}
 
 void GLState::restart()
 {
-    /*_startTime = Timepoint::now();
-    _pauseTime = _startTime;*/
+    _startTime = Timepoint::now();
+    _pauseTime = _startTime;
 }
 
 void GLState::nextScene()
 {
-    //auto t = Duration::milliseconds(0);
-    //auto elapsed = elapsedTime();
-    //for (auto& v : _scenes) {
-    //    if (elapsed < v.duration() + t) {
-    //        changeTime(v.duration() - relativeSceneTime());
-    //        break;
-    //    }
-    //    t = t + v.duration();
-    //}
+    auto t = Duration::milliseconds(0);
+    auto elapsed = elapsedTime();
+    for (auto& v : _scenes) {
+        if (elapsed < v.duration() + t) {
+            changeTime(v.duration() - relativeSceneTime());
+            break;
+        }
+        t = t + v.duration();
+    }
 }
 
 void GLState::previousScene()
 {
-    //auto t = Duration::milliseconds(0);
-    //auto prevDur = Duration::milliseconds(0);
-    //auto elapsed = elapsedTime();
-    //for (auto& v : _scenes) {
-    //    if (elapsed < v.duration() + t) {
-    //        changeTime(-relativeSceneTime() - prevDur);
-    //        break;
-    //    }
-    //    t = t + v.duration();
-    //    prevDur = v.duration();
-    //}
+    auto t = Duration::milliseconds(0);
+    auto prevDur = Duration::milliseconds(0);
+    auto elapsed = elapsedTime();
+    for (auto& v : _scenes) {
+        if (elapsed < v.duration() + t) {
+            changeTime(-relativeSceneTime() - prevDur);
+            break;
+        }
+        t = t + v.duration();
+        prevDur = v.duration();
+    }
 }
 } //namespace ojgl

@@ -23,6 +23,13 @@ public:
     {
     }
 
+    template <typename B>
+    shared_ptr& operator=(const shared_ptr<B>& other)
+    {
+        _ptr = other._ptr;
+        return *this;
+    }
+
     shared_ptr()
     {
         this->_ptr = nullptr;
@@ -53,7 +60,7 @@ public:
         return _ptr == this->_ptr;
     }
 
-private:
+    //private:
     T* _ptr;
 };
 

@@ -13,7 +13,7 @@ public:
     ~GLState();
 
     void render();
-    /*void setStartTime(Timepoint time);*/
+    void setStartTime(Timepoint time);
     void restart();
     void nextScene();
     void previousScene();
@@ -22,9 +22,9 @@ public:
     void clearScenes();
     bool end();
 
-    /*Timepoint startTime() const;
-    Duration relativeSceneTime() const;
-    Duration elapsedTime() const;*/
+    Timepoint startTime() const;
+    Duration relativeSceneTime();
+    Duration elapsedTime() const;
 
     Scene& operator[](size_t i);
     Scene& operator[](const fl::string& name);
@@ -40,7 +40,7 @@ public:
     GLState& operator<<(T&& b)
     {
         for (auto& scene : this->_scenes) {
-            const auto buffers = scene.buffers();
+            auto buffers = scene.buffers();
             for (auto& buffer : buffers)
                 *buffer << b;
         }
@@ -51,19 +51,19 @@ private:
     void setupQuad();
 
     fl::vector<Scene> _scenes;
-    /*Timepoint _startTime;
-    Timepoint _pauseTime;*/
+    Timepoint _startTime;
+    Timepoint _pauseTime;
     GLuint _vaoID;
     GLuint _vboID;
     bool _paused;
 
 public:
-    /*void changeTime(Duration time);*/
+    void changeTime(Duration time);
 };
 
-//inline void GLState::changeTime(Duration time)
-//{
-//    _startTime -= time;
-//}
+inline void GLState::changeTime(Duration time)
+{
+    _startTime -= time;
+}
 
 } // namespace ojgl

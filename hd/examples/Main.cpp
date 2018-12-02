@@ -1,4 +1,4 @@
-#include "EmbeddedResources.h"
+
 //#include "../src/OJGL.h"
 //#include "utility\ShaderReader.h"
 //#include <fstream>
@@ -18,15 +18,24 @@
 #include "../src/render/Texture.h"
 #include "../src/render/Window.h"
 #include "../src/utility/ShaderReader.h"
+#include "EmbeddedResources.h"
+#include <Windows.h>
 using namespace ojgl;
 
 void buildSceneGraph(GLState& glState, int x, int y)
 {
     glState.clearScenes();
+
+    {
+        auto test = Buffer::construct(x, y, "intro2", "shaders/test.vs", "shaders/test2.fs");
+        glState.addScene("test2", test, Duration::seconds(1));
+    }
+
     {
         auto test = Buffer::construct(x, y, "intro", "shaders/test.vs", "shaders/test.fs");
-        glState.addScene("test", test);
+        glState.addScene("test", test, Duration::seconds(50));
     }
+
     /*{
         auto edison = Buffer::construct(x, y, "intro", "shaders/edison.vs", "done/lavaIntro.fs");
         auto fxaa = Buffer::construct(x, y, "fxaa", "shaders/fxaa.vs", "shaders/fxaa.fs", edison);
@@ -64,8 +73,8 @@ void buildSceneGraph(GLState& glState, int x, int y)
 int main(int argc, char* argv[])
 {
 
-    int width = 1920;
-    int height = 1080;
+    int width = 1280;
+    int height = 720;
     bool full = true;
 
     //#ifdef _DEBUG
@@ -97,12 +106,22 @@ int main(int argc, char* argv[])
     ShaderReader::setBasePath("examples/");
     ShaderReader::preLoad("shaders/test.vs", resources::vertex::test);
     ShaderReader::preLoad("shaders/test.fs", resources::fragment::test);
+    ShaderReader::preLoad("shaders/test2.fs", resources::fragment::test2);
 
     Window window(width, height, false);
     GLState glState;
     buildSceneGraph(glState, width, height);
     while (!glState.end()) {
+        Timer timer;
+        timer.start();
         glState.render();
+        window.getMessages();
+
+        glState << Uniform1f("iTime", glState.relativeSceneTime().toSeconds());
+
+        timer.end();
+
+        Sleep(16); // Are OpenGL calls async
     }
 
     /* Music music(resources::songs::song);

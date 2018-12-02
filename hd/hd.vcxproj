@@ -142,6 +142,7 @@
       <PrecompiledHeader />
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AdditionalOptions>/Zc:sizedDealloc- %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <OutputFile>$(OutDir)hd.exe</OutputFile>
@@ -236,6 +237,7 @@
     <ClCompile Include="src\render\Window.cpp" />
     <ClCompile Include="src\utility\Duration.cpp" />
     <ClCompile Include="src\utility\ShaderReader.cpp" />
+    <ClCompile Include="src\utility\Timepoint.cpp" />
     <ClCompile Include="src\winapi\gl_loader.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -251,6 +253,7 @@
     <ClInclude Include="src\utility\Duration.h" />
     <ClInclude Include="src\utility\Log.h" />
     <ClInclude Include="src\utility\ShaderReader.h" />
+    <ClInclude Include="src\utility\Timepoint.h" />
     <ClInclude Include="src\utility\Timer.hpp" />
     <ClInclude Include="src\winapi\glext.h" />
     <ClInclude Include="src\winapi\gl_loader.h" />
@@ -259,6 +262,7 @@
   <ItemGroup>
     <None Include="examples\shaders\test.vs" />
     <None Include="examples\shaders\test.fs" />
+    <None Include="examples\shaders\test2.fs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
