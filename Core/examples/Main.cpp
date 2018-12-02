@@ -17,7 +17,8 @@ using namespace ojgl;
 void buildSceneGraph(GLState& glState, int x, int y)
 {
     glState.clearScenes();
-	{
+
+    /*{
 		auto edison = Buffer::construct(x, y, "intro", "shaders/edison.vs", "done/lavaIntro.fs");
 		auto fxaa = Buffer::construct(x, y, "fxaa", "shaders/fxaa.vs", "shaders/fxaa.fs", edison);
 		auto post = Buffer::construct(x, y, "post", "shaders/post.vs", "shaders/post.fs", fxaa);
@@ -42,9 +43,9 @@ void buildSceneGraph(GLState& glState, int x, int y)
         auto fxaa = Buffer::construct(x, y, "fxaa", "shaders/fxaa.vs", "shaders/fxaa.fs", edison);
         auto post = Buffer::construct(x, y, "post", "shaders/post.vs", "shaders/post.fs", fxaa);
         glState.addScene("introScene", post, Duration::seconds(40));
-    }
-	
-	/*auto edison = Buffer::construct(x, y, "intro", "shaders/edison.vs", "done/outro.fs");
+    }*/
+
+    /*auto edison = Buffer::construct(x, y, "intro", "shaders/edison.vs", "done/outro.fs");
     auto fxaa = Buffer::construct(x, y, "fxaa", "shaders/fxaa.vs", "shaders/fxaa.fs", edison);
     auto post = Buffer::construct(x, y, "post", "shaders/post.vs", "shaders/post.fs", fxaa);
 	glState.addScene("introScene", post, Duration::seconds(40));
@@ -53,8 +54,8 @@ void buildSceneGraph(GLState& glState, int x, int y)
 
 int main(int argc, char* argv[])
 {
-	
-	int width = 1920;
+
+    int width = 1920;
     int height = 1080;
     bool full = true;
 
@@ -69,16 +70,16 @@ int main(int argc, char* argv[])
         }
     }
 
-	ShaderReader::setBasePath("examples/");
-    
-	ShaderReader::preLoad("shaders/edison.vs", resources::vertex::edison);
+    ShaderReader::setBasePath("examples/");
+
+    ShaderReader::preLoad("shaders/edison.vs", resources::vertex::edison);
     ShaderReader::preLoad("shaders/demo.vs", resources::vertex::demo);
     ShaderReader::preLoad("shaders/post.vs", resources::vertex::post);
     ShaderReader::preLoad("shaders/fxaa.vs", resources::vertex::fxaa);
     ShaderReader::preLoad("shaders/fxaa.fs", resources::fragment::fxaa);
     ShaderReader::preLoad("shaders/post.fs", resources::fragment::post);
     ShaderReader::preLoad("done/lavaIntro.fs", resources::fragment::lavaIntro);
-	ShaderReader::preLoad("done/mountain.fs", resources::fragment::mountain);
+    ShaderReader::preLoad("done/mountain.fs", resources::fragment::mountain);
     ShaderReader::preLoad("done/mountainNoise.fs", resources::fragment::mountainNoise);
     ShaderReader::preLoad("done/mountainPost.fs", resources::fragment::mountainPost);
     ShaderReader::preLoad("done/lavaScene2.fs", resources::fragment::lavaScene2);

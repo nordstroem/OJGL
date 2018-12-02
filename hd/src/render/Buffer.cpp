@@ -33,19 +33,19 @@ unsigned Buffer::fboTextureID()
 void Buffer::render()
 {
     /*if (ShaderReader::modified(_vertexPath) || ShaderReader::modified(_fragmentPath))
-        loadShader();
+        loadShader();*/
 
     glBindFramebuffer(GL_FRAMEBUFFER, _fboID);
     glViewport(0, 0, _width, _height);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glUseProgram(_programID);
-    for (size_t i = 0; i < _inputs.size(); i++) {
+    /*for (size_t i = 0; i < _inputs.size(); i++) {
         std::string uniform = "inTexture" + std::to_string(i);
         glUniform1i(glGetUniformLocation(_programID, uniform.c_str()), i);
-    }
+    }*/
 
-    size_t index = 0;
+    /*size_t index = 0;
     for (auto[location, texture] : _textures) {
         glUniform1i(glGetUniformLocation(_programID, location.c_str()), _inputs.size() + index);
         index++;
@@ -65,12 +65,12 @@ void Buffer::render()
 
     for (auto& um : _uniforms) {
         um.second->setUniform(_programID);
-    }
+    }*/
 
     glDrawArrays(GL_TRIANGLES, 0, Buffer::vertexCount);
 
     glUseProgram(0);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);*/
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void Buffer::generateFBO()

@@ -31,7 +31,8 @@ void ShaderReader::setBasePath(const fl::string& basePath)
 bool ShaderReader::modified(const fl::string& path)
 {
 #ifdef _DEBUG
-    return modifyTime(ShaderReader::_basePath + path) != ShaderReader::_shaders[path].modifyTime;
+    //return modifyTime(ShaderReader::_basePath + path) != ShaderReader::_shaders[path].modifyTime;
+    return false;
 #else
     return false;
 #endif
@@ -40,7 +41,7 @@ bool ShaderReader::modified(const fl::string& path)
 const fl::string& ShaderReader::get(const fl::string& path)
 {
 #ifdef _DEBUG
-    if (modified(path)) {
+    /*if (modified(path)) {
         auto fullPath = _basePath + path;
         LOG_INFO("[" << path << "]"
                      << " modified");
@@ -57,7 +58,7 @@ const fl::string& ShaderReader::get(const fl::string& path)
         std::string shader = fileContents.substr(start + pre.length(), end - start - pre.length());
         ShaderReader::_shaders[path].content = shader;
         ShaderReader::_shaders[path].modifyTime = modifyTime(fullPath);
-    }
+    }*/
 #else
     auto itr = ShaderReader::_shaders.find(path);
     /*_ASSERTE(itr != ShaderReader::_shaders.end());*/

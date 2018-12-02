@@ -239,6 +239,7 @@
     <ClCompile Include="src\winapi\gl_loader.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="examples\EmbeddedResources.h" />
     <ClInclude Include="fakelibs\fakelib.h" />
     <ClInclude Include="src\OJGL.h" />
     <ClInclude Include="src\render\Buffer.h" />
@@ -254,6 +255,10 @@
     <ClInclude Include="src\winapi\glext.h" />
     <ClInclude Include="src\winapi\gl_loader.h" />
     <ClInclude Include="src\winapi\wglext.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="examples\shaders\test.vs" />
+    <None Include="examples\shaders\test.fs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

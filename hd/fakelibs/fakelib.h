@@ -74,6 +74,13 @@ public:
     {
         free(this->values);
     }
+
+    template <class... Args>
+    void emplace_back(Args&&... args)
+    {
+        values[length] = T(std::forward<Args>(args)...);
+        length++;
+    }
     void push_back(const T& val)
     {
         values[length] = val;

@@ -7,9 +7,9 @@
 // 08/12/06 (mv)
 
 /*#include <windows.h>
-#include <stdio.h>
-#include <stdarg.h>
 #include "libct.h"
+#include <stdarg.h>
+#include <stdio.h>
 
 // Force the linker to include USER32.LIB
 #pragma comment(linker, "/defaultlib:user32.lib")
