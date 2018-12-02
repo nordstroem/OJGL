@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <utility>
 
 namespace fl {
 
@@ -153,6 +154,17 @@ private:
     T* values;
 };
 
+template <typename First, typename Second>
+struct Pair {
+    Pair(const First& first, const Second& second)
+        : first(first)
+        , second(second)
+    {
+    }
+    First first;
+    Second second;
+};
+
 template <typename K, typename V>
 class unordered_map {
 public:
@@ -162,24 +174,32 @@ public:
 
     V& operator[](const K& key)
     {
-        auto it = find_if(this->keys.begin(), this->keys.end(), [&key](const auto& k) { return k == key; });
-        if (it == this->keys.end()) {
-            this->keys.push_back(key);
-            this->values.push_back(V());
-            return this->values[this->values.size() - 1];
+        auto it = find_if(this->keyValuePairs.begin(), this->keyValuePairs.end(), [&key](const auto& kvp) { return kvp.first == key; });
+        if (it == this->keyValuePairs.end()) {
+            this->keyValuePairs.emplace_back(key, V());
+            return this->keyValuePairs[this->keyValuePairs.size() - 1].second;
         } else {
-            return values[static_cast<int>(it - this->keys.begin())];
+            return it->second;
         }
     }
 
-    K* find(const K& key)
+    Pair<K, V>* find(const K& key)
     {
-        return find_if(this->keys.begin(), this->keys.end(), [&key](const auto& k) { return k == key; });
+        return find_if(this->keyValuePairs.begin(), this->keyValuePairs.end(), [&key](const auto& kvp) { return kvp.first == key; });
+    }
+
+    Pair<K, V>* begin()
+    {
+        return keyValuePairs.begin();
+    }
+
+    Pair<K, V>* end()
+    {
+        return keyValuePairs.end();
     }
 
 private:
-    vector<K> keys;
-    vector<V> values;
+    vector<Pair<K, V>> keyValuePairs;
 };
 
 template <typename T>
@@ -243,15 +263,20 @@ private:
 class string {
 public:
     string(const char* str)
-        : content(str)
-        , len(strlen(str))
+        : len(strlen(str))
     {
+        content = (char*)malloc(sizeof(char) * len);
+        strcpy(content, str);
     }
 
     string()
-        : content("")
+        : content(nullptr)
         , len(0)
     {
+    }
+    ~string()
+    {
+        //free(content);
     }
 
     bool operator==(const string& other) const
@@ -269,9 +294,25 @@ public:
         return this->len;
     }
 
+    //void append(const fl::string& other)
+    //{
+    //    char* tmp = content;
+    //    content = (char*)malloc(sizeof(char) * (len + other.len));
+    //    strcpy(content, tmp);
+    //    strcpy(content + len, other.content);
+    //    this->len = this->len + other.len;
+    //    //free(tmp);
+    //}
+
 private:
-    const char* content;
+    char* content;
     int len;
 };
+
+//string to_string(size_t i)
+//{
+//    char c = '0' + i;
+//    return string(&c);
+//}
 
 } //end namespace fl

@@ -9,7 +9,7 @@ uniform vec2 iResolution;
 
 void main() {
     
-    fragColor.rgb = vec3(fragCoord.x, 1.0, 0.0);
+    fragColor.rgb = vec3(fragCoord.x, 0.5 + 0.5 * sin(iTime), 0.0);
 }
 
 )""  

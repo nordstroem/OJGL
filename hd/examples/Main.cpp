@@ -121,7 +121,7 @@ int main(int argc, char* argv[])
 
         timer.end();
 
-        Sleep(16); // Are OpenGL calls async
+        Sleep(16); // Are OpenGL calls async?
     }
 
     /* Music music(resources::songs::song);
