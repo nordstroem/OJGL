@@ -76,7 +76,7 @@ class vector {
 public:
     vector()
     {
-        this->values = (T*)malloc(sizeof(T) * MAX_SIZE);
+        this->values = (T*)calloc(MAX_SIZE, sizeof(T));
     }
     ~vector()
     {
@@ -265,26 +265,40 @@ public:
     string(const char* str)
         : len(strlen(str))
     {
-        content = (char*)malloc(sizeof(char) * len);
+        content = (char*)malloc(sizeof(char) * (len + 1));
         strcpy(content, str);
     }
-
+    string(const string& str)
+        : len(str.length())
+    {
+        content = (char*)malloc(sizeof(char) * (len + 1));
+        strcpy(content, str.c_str());
+    }
     string()
-        : content(nullptr)
-        , len(0)
+        : string("")
     {
     }
     ~string()
     {
-        //free(content);
+		if (this->content != nullptr)
+			free(content);
     }
 
     bool operator==(const string& other) const
     {
         return strcmp(this->content, other.content) == 0;
     }
-
-    const char* c_str() const
+	string& operator=(const string& other)
+    {
+		if (this->content != nullptr) {
+            free(this->content);
+		}
+        this->content = (char*)malloc(sizeof(char) * (other.length() + 1));
+        strcpy(content, other.c_str());
+        this->len = other.length();
+		return *this;
+	}
+	const char* c_str() const
     {
         return this->content;
     }
@@ -305,8 +319,8 @@ public:
     //}
 
 private:
-    char* content;
-    int len;
+    char* content = nullptr;
+    int len = 0;
 };
 
 //string to_string(size_t i)
