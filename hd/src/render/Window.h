@@ -2,7 +2,7 @@
 
 // clang-format off
 #include <windows.h>
-//#include <vector>
+#include "../../fakelibs/fakelib.h"
 // clang-format on
 namespace ojgl {
 
@@ -11,7 +11,7 @@ public:
     Window(unsigned width, unsigned height, bool fullScreen);
     ~Window();
     void getMessages();
-	//    std::vector<UINT> getPressedKeys();
+    fl::vector<UINT> getPressedKeys();
     static constexpr int KEY_LEFT = 37;
     static constexpr int KEY_UP = 38;
     static constexpr int KEY_RIGHT = 39;
@@ -32,7 +32,7 @@ private:
     MSG _msg; // message
     unsigned _width;
     unsigned _height;
-	//std::vector<UINT> _keys;
+    fl::vector<UINT> _keys;
     bool _closed;
 };
 } //namespace ojgl

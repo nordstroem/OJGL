@@ -1,5 +1,5 @@
-#include "GLState.h"
 #include "Window.h"
+#include "GLState.h"
 //#include <exception>
 //#include <thread>
 
@@ -46,13 +46,12 @@ void Window::getMessages()
     }
 }
 
-/*
-std::vector<UINT> Window::getPressedKeys()
+fl::vector<UINT> Window::getPressedKeys()
 {
     auto keys = _keys;
     _keys.clear();
     return keys;
-}*/
+}
 
 HWND Window::CreateFullscreenWindow(HWND hwnd, HINSTANCE hInstance)
 {
@@ -148,7 +147,6 @@ HWND Window::CreateOpenGLWindow(const char* title, int x, int y, BYTE type, DWOR
     return hWnd;
 }
 
-//#include <iostream>
 LONG WINAPI Window::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     Window* pThis = reinterpret_cast<Window*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
@@ -175,7 +173,7 @@ LONG WINAPI Window::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
         return 0;
     case WM_KEYUP:
         if (pThis) {
-            //pThis->_keys.push_back(wParam);
+            pThis->_keys.push_back(wParam);
         }
         return 0;
     case WM_CLOSE:

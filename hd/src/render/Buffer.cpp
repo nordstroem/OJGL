@@ -1,6 +1,6 @@
+#include "Buffer.h"
 #include "..\utility\Log.h"
 #include "..\utility\ShaderReader.h"
-#include "Buffer.h"
 #include "GLState.h"
 
 namespace ojgl {
@@ -37,14 +37,14 @@ void Buffer::render()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glUseProgram(_programID);
-    /* for (size_t i = 0; i < _inputs.size(); i++) {
+    for (size_t i = 0; i < _inputs.size(); i++) {
         fl::string uniform("inTexture");
         uniform.append(fl::to_string(i));
         glUniform1i(glGetUniformLocation(_programID, uniform.c_str()), i);
-    }*/
+    }
 
     size_t index = 0;
-    for (auto[location, texture] : _textures) {
+    for (auto [location, texture] : _textures) {
         glUniform1i(glGetUniformLocation(_programID, location.c_str()), _inputs.size() + index);
         index++;
     }
@@ -55,7 +55,7 @@ void Buffer::render()
     }
 
     index = 0;
-    for (auto[location, texture] : _textures) {
+    for (auto [location, texture] : _textures) {
         glActiveTexture(GL_TEXTURE0 + _inputs.size() + index);
         glBindTexture(GL_TEXTURE_2D, texture->textureID());
         index++;

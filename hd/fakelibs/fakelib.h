@@ -315,25 +315,26 @@ public:
         return this->len;
     }
 
-    //void append(const fl::string& other)
-    //{
-    //    char* tmp = content;
-    //    content = (char*)malloc(sizeof(char) * (len + other.len));
-    //    strcpy(content, tmp);
-    //    strcpy(content + len, other.content);
-    //    this->len = this->len + other.len;
-    //    //free(tmp);
-    //}
+    void append(const fl::string& other)
+    {
+        char* tmp = content;
+        content = (char*)malloc(sizeof(char) * (len + other.len + 1));
+        strcpy(content, tmp);
+        strcpy(content + len, other.content);
+        this->len = this->len + other.len;
+        free(tmp);
+    }
 
 private:
     char* content = nullptr;
     int len = 0;
 };
 
-//string to_string(size_t i)
-//{
-//    char c = '0' + i;
-//    return string(&c);
-//}
+inline string to_string(size_t i)
+{
+    _ASSERTE(i < 10);
+    char c[2] = { '0' + i, '\0' };
+    return string(c);
+}
 
 } //end namespace fl

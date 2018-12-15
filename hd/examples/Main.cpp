@@ -119,7 +119,45 @@ int main(int argc, char* argv[])
         window.getMessages();
 
         glState << Uniform1f("iTime", glState.relativeSceneTime().toSeconds());
+        for (auto key : window.getPressedKeys()) {
+            bool timeChanged = false;
 
+            switch (key) {
+            case Window::KEY_ESCAPE:
+                return 0;
+#ifdef _DEBUG
+            case Window::KEY_LEFT:
+                glState.changeTime(Duration::milliseconds(-5000));
+                timeChanged = true;
+                break;
+
+            case Window::KEY_RIGHT:
+                glState.changeTime(Duration::milliseconds(5000));
+                timeChanged = true;
+                break;
+
+            case Window::KEY_SPACE:
+                glState.togglePause();
+                timeChanged = true;
+                break;
+
+            case Window::KEY_R:
+                glState.restart();
+                timeChanged = true;
+                break;
+
+            case Window::KEY_UP:
+                glState.nextScene();
+                timeChanged = true;
+                break;
+
+            case Window::KEY_DOWN:
+                glState.previousScene();
+                timeChanged = true;
+                break;
+#endif
+            }
+        }
         timer.end();
 
         Sleep(16); // Are OpenGL calls async?
