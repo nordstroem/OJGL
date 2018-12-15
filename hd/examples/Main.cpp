@@ -20,6 +20,7 @@
 #include "../src/utility/ShaderReader.h"
 #include "EmbeddedResources.h"
 #include <Windows.h>
+
 using namespace ojgl;
 
 void buildSceneGraph(GLState& glState, int x, int y)

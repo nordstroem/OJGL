@@ -82,7 +82,14 @@ public:
     {
         free(this->values);
     }
-
+    vector(const vector<T>& other)
+    {
+        this->values = (T*)calloc(MAX_SIZE, sizeof(T));
+        this->length = other.size();
+        for (int i = 0; i < other.size(); i++) {
+            this->values[i] = other[i];
+        }
+    }
     template <class... Args>
     void emplace_back(Args&&... args)
     {
@@ -280,25 +287,25 @@ public:
     }
     ~string()
     {
-		if (this->content != nullptr)
-			free(content);
+        if (this->content != nullptr)
+            free(content);
     }
 
     bool operator==(const string& other) const
     {
         return strcmp(this->content, other.content) == 0;
     }
-	string& operator=(const string& other)
+    string& operator=(const string& other)
     {
-		if (this->content != nullptr) {
+        if (this->content != nullptr) {
             free(this->content);
-		}
+        }
         this->content = (char*)malloc(sizeof(char) * (other.length() + 1));
         strcpy(content, other.c_str());
         this->len = other.length();
-		return *this;
-	}
-	const char* c_str() const
+        return *this;
+    }
+    const char* c_str() const
     {
         return this->content;
     }
