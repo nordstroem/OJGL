@@ -53,12 +53,12 @@ public:
 
     bool operator!=(shared_ptr<T> other) const
     {
-        return _ptr != this->_ptr;
+        return _ptr != other._ptr;
     }
 
     bool operator==(shared_ptr<T> other) const
     {
-        return _ptr == this->_ptr;
+        return _ptr == other._ptr;
     }
 
     //private:
@@ -90,6 +90,17 @@ public:
             this->values[i] = other[i];
         }
     }
+
+    vector(const std::initializer_list<T>& other)
+    {
+        this->values = (T*)calloc(MAX_SIZE, sizeof(T));
+        this->length = other.size();
+        int i = 0;
+        for (auto& x : other) {
+            this->values[i] = x;
+        }
+    }
+
     template <class... Args>
     void emplace_back(Args&&... args)
     {

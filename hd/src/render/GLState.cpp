@@ -21,7 +21,6 @@ bool GLState::end()
 
     for (auto& v : _scenes) {
         if (elapsed < v.duration() + t) {
-            v.render();
             return false;
         }
         t = t + v.duration();
