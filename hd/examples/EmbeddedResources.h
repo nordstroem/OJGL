@@ -22,5 +22,12 @@ namespace resources {
 #include "shaders/test.vs"
         };
     } //namespace vertex
+
+    namespace songs {
+
+        unsigned char song[] = {
+#include "songs/song.inc"
+        };
+    } //namespace songs
 }
 }

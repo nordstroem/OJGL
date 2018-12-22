@@ -6,6 +6,15 @@
 
 namespace fl {
 
+template <class InputIt, class T>
+T accumulate(InputIt first, InputIt last, T init)
+{
+    for (; first != last; ++first) {
+        init = std::move(init) + *first;
+    }
+    return init;
+}
+
 template <class ForwardIt, class UnaryPredicate>
 ForwardIt find_if(ForwardIt first, ForwardIt last, UnaryPredicate p)
 {
@@ -65,10 +74,10 @@ public:
     T* _ptr;
 };
 
-template <typename T>
-shared_ptr<T> make_shared(T value)
+template <typename T, typename... Args>
+shared_ptr<T> make_shared(Args... args)
 {
-    return shared_ptr<T>(new T(value));
+    return shared_ptr<T>(new T(args...));
 }
 
 template <typename T>
@@ -122,12 +131,12 @@ public:
         return values[index];
     }
 
-    T* begin()
+    T* begin() const
     {
         return values;
     }
 
-    T* end()
+    T* end() const
     {
         return values + length;
     }
@@ -156,7 +165,7 @@ public:
             return this->end();
     }
 
-    bool empty()
+    bool empty() const
     {
         return length == 0;
     }
@@ -164,6 +173,20 @@ public:
     void clear()
     {
         length = 0;
+    }
+
+    vector<T>& operator=(const vector<T>& other)
+    {
+        if (this->values != nullptr) {
+            free(this->values);
+        }
+        this->values = (T*)calloc(MAX_SIZE, sizeof(T));
+        this->length = other.size();
+        int i = 0;
+        for (auto& x : other) {
+            this->values[i] = x;
+        }
+        return *this;
     }
 
 private:
@@ -347,5 +370,32 @@ inline string to_string(size_t i)
     char c[2] = { '0' + i, '\0' };
     return string(c);
 }
+
+class mutex {
+public:
+	void lock()
+    {
+    }
+
+    void unlock()
+    {
+    }
+};
+
+template <typename T>
+class lock_guard {
+public:
+    lock_guard(T& v)
+	: _v(v)
+	{
+        _v.lock();
+    }
+    ~lock_guard()
+    {
+        _v.unlock();
+    }
+private:
+	T& _v;
+};
 
 } //end namespace fl

@@ -14,6 +14,7 @@
 //
 
 #include "../fakelibs/fakelib.h"
+#include "../src/music/Music.h"
 #include "../src/render/GLState.h"
 #include "../src/render/Texture.h"
 #include "../src/render/Window.h"
@@ -111,6 +112,10 @@ int main(int argc, char* argv[])
 
     Window window(width, height, false);
     GLState glState;
+
+    Music music(resources::songs::song);
+    music.play();
+
     buildSceneGraph(glState, width, height);
     while (!glState.end()) {
         Timer timer;

@@ -22,7 +22,7 @@
     <ProjectGuid>{340966A2-A0AD-4E81-9E82-D2D92359ACE9}</ProjectGuid>
     <RootNamespace>hd</RootNamespace>
     <Keyword>Win32Proj</Keyword>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Unicode Debug|Win32'" Label="Configuration">
@@ -113,7 +113,9 @@
       <ProgramDatabaseFile>$(OutDir)hd.pdb</ProgramDatabaseFile>
       <SubSystem>Console</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalDependencies>opengl32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libv2.lib;opengl32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\Oskar\Source\Repos\OJGL2\hd\src\thirdparty;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
     <PostBuildEvent>
       <Command />
@@ -142,7 +144,7 @@
       <PrecompiledHeader />
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalOptions>/Zc:sizedDealloc-  /std:c++17 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:sizedDealloc-  /std:c++17 /arch:IA32 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <OutputFile>$(OutDir)hd.exe</OutputFile>
@@ -153,7 +155,9 @@
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalDependencies>opengl32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>DDraw.lib;DSound.lib;Dinput8.lib;libv2.lib;opengl32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\Oskar\Source\Repos\OJGL2\hd\src\thirdparty;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
     <PostBuildEvent>
       <Command />
@@ -230,6 +234,9 @@
   <ItemGroup>
     <ClCompile Include="examples\Main.cpp" />
     <ClCompile Include="hd.cpp" />
+    <ClCompile Include="src\music\Music.cpp" />
+    <ClCompile Include="src\music\SyncChannel.cpp" />
+    <ClCompile Include="src\music\V2MPlayer.cpp" />
     <ClCompile Include="src\render\Buffer.cpp" />
     <ClCompile Include="src\render\GLState.cpp" />
     <ClCompile Include="src\render\Scene.cpp" />
@@ -243,6 +250,10 @@
   <ItemGroup>
     <ClInclude Include="examples\EmbeddedResources.h" />
     <ClInclude Include="fakelibs\fakelib.h" />
+    <ClInclude Include="src\music\Music.h" />
+    <ClInclude Include="src\music\SyncChannel.h" />
+    <ClInclude Include="src\music\SyncEvent.hpp" />
+    <ClInclude Include="src\music\V2MPlayer.h" />
     <ClInclude Include="src\OJGL.h" />
     <ClInclude Include="src\render\Buffer.h" />
     <ClInclude Include="src\render\GLState.h" />
@@ -250,6 +261,7 @@
     <ClInclude Include="src\render\Texture.h" />
     <ClInclude Include="src\render\Uniform.hpp" />
     <ClInclude Include="src\render\Window.h" />
+    <ClInclude Include="src\thirdparty\libv2.h" />
     <ClInclude Include="src\utility\Duration.h" />
     <ClInclude Include="src\utility\Log.h" />
     <ClInclude Include="src\utility\ShaderReader.h" />
@@ -263,6 +275,7 @@
     <None Include="examples\shaders\test.vs" />
     <None Include="examples\shaders\test.fs" />
     <None Include="examples\shaders\test2.fs" />
+    <None Include="examples\songs\song.inc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
