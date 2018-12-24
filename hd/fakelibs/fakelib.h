@@ -114,12 +114,12 @@ public:
     template <class... Args>
     void emplace_back(Args&&... args)
     {
-        values[length] = T(std::forward<Args>(args)...);
+        new (values + length) T(std::forward<Args>(args)...);
         length++;
     }
     void push_back(const T& val)
     {
-        values[length] = val;
+        new (values + length) T(val);
         length++;
     }
     int size() const
