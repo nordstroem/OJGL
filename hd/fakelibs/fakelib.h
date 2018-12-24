@@ -107,6 +107,7 @@ public:
         int i = 0;
         for (auto& x : other) {
             this->values[i] = x;
+            i++;
         }
     }
 
@@ -182,15 +183,14 @@ public:
         }
         this->values = (T*)calloc(MAX_SIZE, sizeof(T));
         this->length = other.size();
-        int i = 0;
-        for (auto& x : other) {
-            this->values[i] = x;
+        for (int i = 0; i < other.size(); i++) {
+            this->values[i] = other[i];
         }
         return *this;
     }
 
 private:
-    const int MAX_SIZE = 100;
+    static constexpr int MAX_SIZE = 5000;
     int length = 0;
     T* values;
 };
@@ -373,7 +373,7 @@ inline string to_string(size_t i)
 
 class mutex {
 public:
-	void lock()
+    void lock()
     {
     }
 
@@ -386,16 +386,17 @@ template <typename T>
 class lock_guard {
 public:
     lock_guard(T& v)
-	: _v(v)
-	{
+        : _v(v)
+    {
         _v.lock();
     }
     ~lock_guard()
     {
         _v.unlock();
     }
+
 private:
-	T& _v;
+    T& _v;
 };
 
 } //end namespace fl

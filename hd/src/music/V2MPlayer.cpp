@@ -10,9 +10,9 @@
 
 // Small additions concerning sync made by OJ
 
+#include "V2MPlayer.h"
 #include "..\thirdparty/libv2.h"
 #include "Music.h"
-#include "V2MPlayer.h"
 
 #define sTRUE (!0)
 #define sFALSE 0
@@ -264,7 +264,7 @@ void V2MPlayer::Tick()
             UPDATENT2(sc.notenr, sc.notent, sc.noteptr, bc.notenum);
             int index = m_state.bar * 32 + (m_state.beat * 128 + m_state.tick) / 16;
             Duration time = Duration::milliseconds(_barTickToMs[index]);
-			fl::lock_guard<fl::mutex> lock(_syncEventsMutex);
+            fl::lock_guard<fl::mutex> lock(_syncEventsMutex);
             _syncEvents.push_back(SyncEvent(ch, sc.lastnte, sc.lastvel, time));
         }
         UPDATENT3(sc.notenr, sc.notent, sc.noteptr, bc.notenum);

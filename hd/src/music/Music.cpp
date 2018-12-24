@@ -1,7 +1,7 @@
+#include "Music.h"
 #include "../../fakelibs/fakelib.h"
 #include "../render/Window.h"
 #include "../utility/Log.h"
-#include "Music.h"
 
 namespace ojgl {
 
@@ -50,7 +50,7 @@ void Music::_initSync()
     for (auto& c : channels) {
         int numNotes = channelMaxNote[c] - channelMinNote[c] + 1;
         LOG_INFO("Channel " << c << " with " << numNotes << " notes");
-        _syncChannels[c] = SyncChannel(numNotes, channelMinNote[c], c);
+        this->_syncChannels[c] = SyncChannel(numNotes, channelMinNote[c], c);
     }
 
     for (auto& se : events) {

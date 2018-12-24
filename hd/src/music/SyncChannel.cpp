@@ -1,6 +1,6 @@
+#include "SyncChannel.h"
 #include "..\..\fakelibs\fakelib.h"
 #include "..\utility\Log.h"
-#include "SyncChannel.h"
 
 namespace ojgl {
 
@@ -9,9 +9,11 @@ SyncChannel::SyncChannel(int numNotes, int minNote, int channel)
     , channel(channel)
     , _minNote(minNote)
 {
-    /*_lastTimePerNote.resize(numNotes);
-    _timesPerNote.resize(numNotes);
-    _totalHitsPerNote.resize(numNotes);*/
+    for (int i = 0; i < numNotes; i++) {
+        _lastTimePerNote.push_back(Duration(0));
+        _timesPerNote.push_back(fl::vector<Duration>());
+        _totalHitsPerNote.push_back(0);
+    }
 }
 
 void SyncChannel::pushNote(int absoluteNote, Duration time)
