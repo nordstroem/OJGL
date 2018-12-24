@@ -6,6 +6,12 @@
 
 namespace fl {
 
+template <typename T>
+T max2(const T& a, const T& b)
+{
+    return a >= b ? a : b;
+}
+
 template <class InputIt, class T>
 T accumulate(InputIt first, InputIt last, T init)
 {
@@ -25,6 +31,7 @@ ForwardIt find_if(ForwardIt first, ForwardIt last, UnaryPredicate p)
     }
     return last;
 }
+
 template <typename T>
 class shared_ptr {
 public:
@@ -85,16 +92,21 @@ class vector {
 public:
     vector()
     {
-        this->values = (T*)calloc(MAX_SIZE, sizeof(T));
+        this->values = (T*)calloc(this->capacity, sizeof(T));
     }
     ~vector()
     {
-        free(this->values);
+        if (this->values) {
+            for (auto i = 0u; i < this->length; i++)
+                this->values[i].~T();
+            free(this->values);
+        }
     }
     vector(const vector<T>& other)
     {
-        this->values = (T*)calloc(MAX_SIZE, sizeof(T));
+        this->values = (T*)calloc(other.size(), sizeof(T));
         this->length = other.size();
+        this->capacity = other.size();
         for (int i = 0; i < other.size(); i++) {
             this->values[i] = other[i];
         }
@@ -102,8 +114,9 @@ public:
 
     vector(const std::initializer_list<T>& other)
     {
-        this->values = (T*)calloc(MAX_SIZE, sizeof(T));
+        this->values = (T*)calloc(other.size(), sizeof(T));
         this->length = other.size();
+        this->capacity = other.size();
         int i = 0;
         for (auto& x : other) {
             this->values[i] = x;
@@ -114,11 +127,15 @@ public:
     template <class... Args>
     void emplace_back(Args&&... args)
     {
+        if (length == capacity)
+            this->resize(max2(MIN_CAPACITY, this->capacity * 2));
         new (values + length) T(std::forward<Args>(args)...);
         length++;
     }
     void push_back(const T& val)
     {
+        if (length == capacity)
+            this->resize(max2(MIN_CAPACITY, this->capacity * 2));
         new (values + length) T(val);
         length++;
     }
@@ -155,6 +172,7 @@ public:
     T* erase(T* it)
     {
         if (it >= this->begin() && it < this->end()) {
+            it->~T();
             for (auto itt = it; itt < (this->end() - 1); itt++)
                 *itt = *(itt + 1);
             this->length--;
@@ -173,16 +191,28 @@ public:
 
     void clear()
     {
+        for (auto i = 0u; i < this->length; i++)
+            this->values[i].~T();
         length = 0;
     }
-
+    void resize(int size)
+    {
+        T* newBuffer = (T*)calloc(size, sizeof(T));
+        _ASSERTE(size >= this->length);
+        memcpy(newBuffer, this->values, sizeof(T) * this->length);
+        if (this->values)
+            free(this->values);
+        this->values = newBuffer;
+        this->capacity = size;
+    }
     vector<T>& operator=(const vector<T>& other)
     {
         if (this->values != nullptr) {
             free(this->values);
         }
-        this->values = (T*)calloc(MAX_SIZE, sizeof(T));
+        this->values = (T*)calloc(other.size(), sizeof(T));
         this->length = other.size();
+        this->capacity = other.size();
         for (int i = 0; i < other.size(); i++) {
             this->values[i] = other[i];
         }
@@ -190,8 +220,9 @@ public:
     }
 
 private:
-    static constexpr int MAX_SIZE = 5000;
+    static int constexpr MIN_CAPACITY = 10;
     int length = 0;
+    int capacity = MIN_CAPACITY;
     T* values;
 };
 
