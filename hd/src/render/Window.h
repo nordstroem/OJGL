@@ -2,7 +2,7 @@
 
 // clang-format off
 #include <windows.h>
-#include "../utility/OJstd.h"
+#include "utility/OJstd.h"
 // clang-format on
 namespace ojgl {
 

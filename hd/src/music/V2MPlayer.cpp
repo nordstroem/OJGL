@@ -11,7 +11,7 @@
 // Small additions concerning sync made by OJ
 
 #include "V2MPlayer.h"
-#include "..\thirdparty/libv2.h"
+#include "thirdparty/libv2.h"
 #include "Music.h"
 
 #define sTRUE (!0)

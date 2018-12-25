@@ -1,7 +1,7 @@
 #include "ShaderReader.h"
 #include "Log.h"
 
-#include "../utility/OJstd.h"
+#include "utility/OJstd.h"
 #ifdef _DEBUG
 #include <fstream>
 #include <sstream>

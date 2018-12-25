@@ -1,6 +1,6 @@
 #include "SyncChannel.h"
 #include "utility/OJstd.h"
-#include "..\utility\Log.h"
+#include "utility\Log.h"
 
 namespace ojgl {
 

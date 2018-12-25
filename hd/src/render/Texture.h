@@ -1,6 +1,6 @@
 #pragma once
 //#include <memory>
-#include "../utility/OJstd.h"
+#include "utility/OJstd.h"
 
 namespace ojgl {
 class Texture {

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../utility/OJstd.h"
-#include "../utility/Timer.hpp"
-#include "../winapi/gl_loader.h"
 #include "Scene.h"
+#include "utility/OJstd.h"
+#include "utility/Timer.hpp"
+#include "winapi/gl_loader.h"
 
 namespace ojgl {
 

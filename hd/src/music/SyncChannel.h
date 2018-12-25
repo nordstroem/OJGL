@@ -1,6 +1,6 @@
 #pragma once
-#include "..\utility\Timer.hpp"
 #include "utility/OJstd.h"
+#include "utility\Timer.hpp"
 
 namespace ojgl {
 

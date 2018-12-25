@@ -1,6 +1,6 @@
 #include "Buffer.h"
-#include "..\utility\Log.h"
-#include "..\utility\ShaderReader.h"
+#include "utility\Log.h"
+#include "utility\ShaderReader.h"
 #include "GLState.h"
 
 namespace ojgl {

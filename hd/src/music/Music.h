@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../utility/OJstd.h"
-#include "..\utility\Timer.hpp"
 #include "SyncChannel.h"
 #include "V2MPlayer.h"
+#include "utility/OJstd.h"
+#include "utility\Timer.hpp"
 
 namespace ojgl {
 

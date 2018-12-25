@@ -12,9 +12,9 @@
 
 #pragma once
 
-#include "../utility/OJstd.h"
-#include "..\thirdparty/libv2.h"
-#include "..\utility\Timer.hpp"
+#include "utility/OJstd.h"
+#include "thirdparty/libv2.h"
+#include "utility\Timer.hpp"
 #include "SyncEvent.hpp"
 
 namespace ojgl {

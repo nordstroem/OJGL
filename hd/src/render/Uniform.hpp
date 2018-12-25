@@ -1,6 +1,6 @@
 #pragma once
-#include "../utility/OJstd.h"
-#include "../winapi/gl_loader.h"
+#include "utility/OJstd.h"
+#include "winapi/gl_loader.h"
 
 namespace ojgl {
 

@@ -1,7 +1,7 @@
 #include "Music.h"
-#include "../utility/OJstd.h"
-#include "../render/Window.h"
-#include "../utility/Log.h"
+#include "render/Window.h"
+#include "utility/Log.h"
+#include "utility/OJstd.h"
 
 namespace ojgl {
 

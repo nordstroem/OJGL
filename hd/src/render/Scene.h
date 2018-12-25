@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../utility/Timer.hpp"
 #include "Buffer.h"
 #include "utility/OJstd.h"
+#include "utility/Timer.hpp"
 
 namespace ojgl {
 
