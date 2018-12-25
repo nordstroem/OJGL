@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../fakelibs/fakelib.h"
+#include "../utility/OJstd.h"
 #include "..\utility\Timer.hpp"
 #include "SyncChannel.h"
 #include "V2MPlayer.h"
@@ -18,14 +18,14 @@ public:
     void setTime(Duration time);
     void stop();
 
-    fl::unordered_map<int, SyncChannel>& syncChannels();
+    ojstd::unordered_map<int, SyncChannel>& syncChannels();
 
 private:
     void _initSync();
     unsigned char* _song;
-    fl::shared_ptr<V2MPlayer> _player;
+    ojstd::shared_ptr<V2MPlayer> _player;
     Timepoint _startTime;
-    fl::unordered_map<int, SyncChannel> _syncChannels;
+    ojstd::unordered_map<int, SyncChannel> _syncChannels;
 };
 
 } //namespace ojgl

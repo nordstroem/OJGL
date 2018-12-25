@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include "../../fakelibs/fakelib.h"
+#include "../utility/OJstd.h"
 #include "..\thirdparty/libv2.h"
 #include "..\utility\Timer.hpp"
 #include "SyncEvent.hpp"
@@ -41,7 +41,7 @@ typedef int sBool; // use for boolean function results
 
 class V2MPlayer {
 public:
-    fl::vector<ojgl::SyncEvent> popSyncEvents();
+    ojstd::vector<ojgl::SyncEvent> popSyncEvents();
 
     void Tick();
     // init
@@ -177,9 +177,9 @@ public:
     PlayerState m_state;
 
 private:
-    fl::mutex _syncEventsMutex;
-    fl::vector<ojgl::SyncEvent> _syncEvents;
-    fl::unordered_map<int, int> _barTickToMs;
+    ojstd::mutex _syncEventsMutex;
+    ojstd::vector<ojgl::SyncEvent> _syncEvents;
+    ojstd::unordered_map<int, int> _barTickToMs;
     // struct defs
 
     // General info from V2M file

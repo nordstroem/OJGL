@@ -175,9 +175,9 @@ void V2MPlayer::Reset()
     }
 }
 
-fl::vector<ojgl::SyncEvent> V2MPlayer::popSyncEvents()
+ojstd::vector<ojgl::SyncEvent> V2MPlayer::popSyncEvents()
 {
-    fl::lock_guard<fl::mutex> lock(_syncEventsMutex);
+    ojstd::lock_guard<ojstd::mutex> lock(_syncEventsMutex);
     return std::move(_syncEvents);
 }
 
@@ -264,7 +264,7 @@ void V2MPlayer::Tick()
             UPDATENT2(sc.notenr, sc.notent, sc.noteptr, bc.notenum);
             int index = m_state.bar * 32 + (m_state.beat * 128 + m_state.tick) / 16;
             Duration time = Duration::milliseconds(_barTickToMs[index]);
-            fl::lock_guard<fl::mutex> lock(_syncEventsMutex);
+            ojstd::lock_guard<ojstd::mutex> lock(_syncEventsMutex);
             _syncEvents.push_back(SyncEvent(ch, sc.lastnte, sc.lastvel, time));
         }
         UPDATENT3(sc.notenr, sc.notent, sc.noteptr, bc.notenum);

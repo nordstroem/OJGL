@@ -1,16 +1,17 @@
 #pragma once
-#include "../fakelibs/fakelib.h"
+#include "utility/OJstd.h"
+
 namespace ojgl {
 
 namespace resources {
 
     namespace fragment {
 
-        fl::string test{
+        ojstd::string test {
 #include "shaders/test.fs"
         };
 
-        fl::string test2{
+        ojstd::string test2 {
 #include "shaders/test2.fs"
         };
 
@@ -18,7 +19,7 @@ namespace resources {
 
     namespace vertex {
 
-        fl::string test{
+        ojstd::string test {
 #include "shaders/test.vs"
         };
     } //namespace vertex

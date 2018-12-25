@@ -1,27 +1,27 @@
 #pragma once
-#include "../../fakelibs/fakelib.h"
+#include "../utility/OJstd.h"
 #include "../winapi/gl_loader.h"
 
 namespace ojgl {
 
 class UniformBase {
 public:
-    UniformBase(const fl::string& location)
+    UniformBase(const ojstd::string& location)
         : _location(location)
     {
     }
     virtual ~UniformBase() = default;
 
     virtual void setUniform(int programID) = 0;
-    fl::string location() const { return _location; }
+    ojstd::string location() const { return _location; }
 
 protected:
-    const fl::string _location;
+    const ojstd::string _location;
 };
 
 class Uniform1f : public UniformBase {
 public:
-    Uniform1f(const fl::string& location, float x)
+    Uniform1f(const ojstd::string& location, float x)
         : UniformBase(location)
         , _x(x){};
     void setUniform(int programID) override
@@ -35,7 +35,7 @@ private:
 
 class Uniform2f : public UniformBase {
 public:
-    Uniform2f(const fl::string& location, float x, float y)
+    Uniform2f(const ojstd::string& location, float x, float y)
         : UniformBase(location)
         , _x(x)
         , _y(y)
@@ -54,7 +54,7 @@ private:
 
 class Uniform1fv : public UniformBase {
 public:
-    Uniform1fv(const fl::string& location, const fl::vector<float>& values)
+    Uniform1fv(const ojstd::string& location, const ojstd::vector<float>& values)
         : UniformBase(location)
         , _values(values){};
     void setUniform(int programID) override
@@ -63,15 +63,15 @@ public:
     }
 
 private:
-    const fl::vector<float> _values;
+    const ojstd::vector<float> _values;
 };
 
 class Uniform1t {
 public:
-    Uniform1t(const fl::string& location, const fl::shared_ptr<Texture>& texture)
+    Uniform1t(const ojstd::string& location, const ojstd::shared_ptr<Texture>& texture)
         : _location(location)
         , _texture(texture){};
-    fl::string location() const { return _location; }
+    ojstd::string location() const { return _location; }
     int textureID() const
     {
         /*return _texture->textureID();*/
@@ -80,7 +80,7 @@ public:
     }
 
 private:
-    const fl::string _location;
-    const fl::shared_ptr<Texture> _texture;
+    const ojstd::string _location;
+    const ojstd::shared_ptr<Texture> _texture;
 };
 } //namespace ojgl

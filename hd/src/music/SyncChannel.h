@@ -1,6 +1,6 @@
 #pragma once
-#include "..\..\fakelibs\fakelib.h"
 #include "..\utility\Timer.hpp"
+#include "utility/OJstd.h"
 
 namespace ojgl {
 
@@ -14,14 +14,14 @@ public:
     Duration getTimeSinceLast(int relativeNote) const;
     int getTotalHitsPerNote(int relativeNote) const;
     int getTotalHits() const;
-    int numNotes{ -1 };
-    int channel{ -1 };
+    int numNotes { -1 };
+    int channel { -1 };
 
 private:
-    int _minNote{ -1 };
+    int _minNote { -1 };
     Duration _currentTime;
-    fl::vector<Duration> _lastTimePerNote;
-    fl::vector<fl::vector<Duration>> _timesPerNote;
-    fl::vector<int> _totalHitsPerNote;
+    ojstd::vector<Duration> _lastTimePerNote;
+    ojstd::vector<ojstd::vector<Duration>> _timesPerNote;
+    ojstd::vector<int> _totalHitsPerNote;
 };
 } //namespace ojgl

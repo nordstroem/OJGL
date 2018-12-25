@@ -64,9 +64,9 @@ Scene& GLState::operator[](size_t i)
     return _scenes[i];
 }
 
-Scene& GLState::operator[](const fl::string& name)
+Scene& GLState::operator[](const ojstd::string& name)
 {
-    auto res = fl::find_if(_scenes.begin(), _scenes.end(), [&](const auto& s) { return s.name() == name; });
+    auto res = ojstd::find_if(_scenes.begin(), _scenes.end(), [&](const auto& s) { return s.name() == name; });
     _ASSERTE(res != _scenes.end());
     return *res;
 }

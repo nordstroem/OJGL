@@ -2,11 +2,11 @@
 //#include "utility\Log.h"
 //#include <algorithm>
 //#include <stdexcept>
-#include "..\..\fakelibs\fakelib.h"
+#include "utility/OJstd.h"
 
 namespace ojgl {
 
-Scene::Scene(const fl::string& name, const fl::shared_ptr<Buffer>& buffer, Duration duration)
+Scene::Scene(const ojstd::string& name, const ojstd::shared_ptr<Buffer>& buffer, Duration duration)
     : _mainBuffer(std::move(buffer))
     , _duration(duration)
     , _name(name)
@@ -19,28 +19,28 @@ Scene::Scene(const fl::string& name, const fl::shared_ptr<Buffer>& buffer, Durat
     }
 }
 
-Scene::Scene(const fl::shared_ptr<Buffer>& buffer, Duration duration)
+Scene::Scene(const ojstd::shared_ptr<Buffer>& buffer, Duration duration)
     : Scene("default", buffer, duration)
 {
 }
 
-fl::string Scene::name() const
+ojstd::string Scene::name() const
 {
     return _name;
 }
 
-Buffer& Scene::operator[](const fl::string& name)
+Buffer& Scene::operator[](const ojstd::string& name)
 {
     auto buffers = this->buffers();
-    auto res = fl::find_if(buffers.begin(), buffers.end(), [&](auto b) { return b->name() == name; });
+    auto res = ojstd::find_if(buffers.begin(), buffers.end(), [&](auto b) { return b->name() == name; });
     _ASSERTE(res != buffers.end());
     return **res;
 }
 
-fl::unordered_set<fl::shared_ptr<Buffer>> Scene::buffers()
+ojstd::unordered_set<ojstd::shared_ptr<Buffer>> Scene::buffers()
 {
-    fl::unordered_set<fl::shared_ptr<Buffer>> available;
-    fl::unordered_set<fl::shared_ptr<Buffer>> checked;
+    ojstd::unordered_set<ojstd::shared_ptr<Buffer>> available;
+    ojstd::unordered_set<ojstd::shared_ptr<Buffer>> checked;
     available.insert(_mainBuffer);
 
     while (!available.empty()) {
@@ -70,7 +70,7 @@ void Scene::render()
 {
 
     auto available = buffers();
-    fl::unordered_set<fl::shared_ptr<Buffer>> rendered;
+    ojstd::unordered_set<ojstd::shared_ptr<Buffer>> rendered;
 
     auto curIter = available.begin();
 

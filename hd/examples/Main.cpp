@@ -1,26 +1,12 @@
 
-//#include "../src/OJGL.h"
-//#include "utility\ShaderReader.h"
-//#include <fstream>
-//#include <functional>
-//#include <iostream>
-//#include <memory>
-//#include <set>
-//#include <sstream>
-//#include <streambuf>
-//#include <string>
-//#include <thread>
-//#include <unordered_map>
-//
-
-#include "../fakelibs/fakelib.h"
-#include "../src/music/Music.h"
-#include "../src/render/GLState.h"
-#include "../src/render/Texture.h"
-#include "../src/render/Window.h"
-#include "../src/utility/Log.h"
-#include "../src/utility/ShaderReader.h"
 #include "EmbeddedResources.h"
+#include "music/Music.h"
+#include "render/GLState.h"
+#include "render/Texture.h"
+#include "render/Window.h"
+#include "utility/Log.h"
+#include "utility/OJstd.h"
+#include "utility/ShaderReader.h"
 #include <Windows.h>
 
 using namespace ojgl;

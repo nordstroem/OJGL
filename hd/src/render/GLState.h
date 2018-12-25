@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../fakelibs/fakelib.h"
+#include "../utility/OJstd.h"
 #include "../utility/Timer.hpp"
 #include "../winapi/gl_loader.h"
 #include "Scene.h"
@@ -27,7 +27,7 @@ public:
     Duration elapsedTime() const;
 
     Scene& operator[](size_t i);
-    Scene& operator[](const fl::string& name);
+    Scene& operator[](const ojstd::string& name);
 
 public:
     template <typename... Args>
@@ -50,7 +50,7 @@ public:
 private:
     void setupQuad();
 
-    fl::vector<Scene> _scenes;
+    ojstd::vector<Scene> _scenes;
     Timepoint _startTime;
     Timepoint _pauseTime;
     GLuint _vaoID;

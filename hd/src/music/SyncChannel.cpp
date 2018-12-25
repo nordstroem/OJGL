@@ -1,5 +1,5 @@
 #include "SyncChannel.h"
-#include "..\..\fakelibs\fakelib.h"
+#include "utility/OJstd.h"
 #include "..\utility\Log.h"
 
 namespace ojgl {
@@ -11,7 +11,7 @@ SyncChannel::SyncChannel(int numNotes, int minNote, int channel)
 {
     for (int i = 0; i < numNotes; i++) {
         _lastTimePerNote.push_back(Duration(0));
-        _timesPerNote.push_back(fl::vector<Duration>());
+        _timesPerNote.push_back(ojstd::vector<Duration>());
         _totalHitsPerNote.push_back(0);
     }
 }
@@ -25,7 +25,7 @@ void SyncChannel::tick(Duration currentTime)
 {
     _currentTime = currentTime;
     for (int note = 0; note < numNotes; note++) {
-        fl::vector<Duration>& s = _timesPerNote[note];
+        ojstd::vector<Duration>& s = _timesPerNote[note];
         while (!s.empty() && s[0] <= _currentTime) {
             _lastTimePerNote[note] = _currentTime;
             _totalHitsPerNote[note]++;
@@ -36,7 +36,7 @@ void SyncChannel::tick(Duration currentTime)
 
 Duration SyncChannel::getTimeToNext(int relativeNote) const
 {
-    const fl::vector<Duration>& times = _timesPerNote[relativeNote];
+    const ojstd::vector<Duration>& times = _timesPerNote[relativeNote];
     if (times.empty()) {
         return Duration::maximum();
     }
@@ -58,6 +58,6 @@ int SyncChannel::getTotalHitsPerNote(int relativeNote) const
 
 int SyncChannel::getTotalHits() const
 {
-    return fl::accumulate(_totalHitsPerNote.begin(), _totalHitsPerNote.end(), 0);
+    return ojstd::accumulate(_totalHitsPerNote.begin(), _totalHitsPerNote.end(), 0);
 }
 } //namespace ojgl

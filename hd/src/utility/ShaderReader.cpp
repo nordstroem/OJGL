@@ -1,7 +1,7 @@
 #include "ShaderReader.h"
 #include "Log.h"
 
-#include "../../fakelibs/fakelib.h"
+#include "../utility/OJstd.h"
 #ifdef _DEBUG
 #include <fstream>
 #include <sstream>
@@ -15,7 +15,7 @@ using namespace ojgl;
 
 namespace {
 #ifdef _DEBUG
-long long modifyTime(const fl::string& path)
+long long modifyTime(const ojstd::string& path)
 {
     struct stat fileStat;
     return stat(path.c_str(), &fileStat) == 0 ? fileStat.st_mtime : 0;
@@ -23,17 +23,17 @@ long long modifyTime(const fl::string& path)
 #endif
 }
 
-void ShaderReader::preLoad(const fl::string& path, const fl::string& content)
+void ShaderReader::preLoad(const ojstd::string& path, const ojstd::string& content)
 {
     ShaderReader::_shaders[path].content = content;
 }
 
-void ShaderReader::setBasePath(const fl::string& basePath)
+void ShaderReader::setBasePath(const ojstd::string& basePath)
 {
     ShaderReader::_basePath = basePath;
 }
 
-bool ShaderReader::modified(const fl::string& path)
+bool ShaderReader::modified(const ojstd::string& path)
 {
 #ifdef _DEBUG
     return modifyTime(ShaderReader::_basePath + path) != ShaderReader::_shaders[path].modifyTime;
@@ -42,7 +42,7 @@ bool ShaderReader::modified(const fl::string& path)
 #endif
 }
 
-const fl::string& ShaderReader::get(const fl::string& path)
+const ojstd::string& ShaderReader::get(const ojstd::string& path)
 {
 #ifdef _DEBUG
     if (modified(path)) {
@@ -60,7 +60,7 @@ const fl::string& ShaderReader::get(const fl::string& path)
         size_t start = fileContents.find(pre);
         size_t end = fileContents.rfind(post);
         std::string shader = fileContents.substr(start + pre.length(), end - start - pre.length());
-        ShaderReader::_shaders[path].content = fl::string(shader.c_str());
+        ShaderReader::_shaders[path].content = ojstd::string(shader.c_str());
         ShaderReader::_shaders[path].modifyTime = modifyTime(fullPath);
     }
 #else
@@ -70,5 +70,5 @@ const fl::string& ShaderReader::get(const fl::string& path)
     return ShaderReader::_shaders[path].content;
 }
 
-fl::unordered_map<fl::string, ShaderContent> ShaderReader::_shaders;
-fl::string ShaderReader::_basePath;
+ojstd::unordered_map<ojstd::string, ShaderContent> ShaderReader::_shaders;
+ojstd::string ShaderReader::_basePath;

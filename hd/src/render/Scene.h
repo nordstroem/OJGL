@@ -1,25 +1,25 @@
 #pragma once
 
-#include "../../fakelibs/fakelib.h"
 #include "../utility/Timer.hpp"
 #include "Buffer.h"
+#include "utility/OJstd.h"
 
 namespace ojgl {
 
 class Scene {
 public:
-    Scene(const fl::shared_ptr<Buffer>& buffer, Duration duration);
-    Scene(const fl::string& name, const fl::shared_ptr<Buffer>& buffer, Duration duration);
+    Scene(const ojstd::shared_ptr<Buffer>& buffer, Duration duration);
+    Scene(const ojstd::string& name, const ojstd::shared_ptr<Buffer>& buffer, Duration duration);
 
     void render();
-    fl::string name() const;
-    Buffer& operator[](const fl::string& name);
+    ojstd::string name() const;
+    Buffer& operator[](const ojstd::string& name);
     Duration duration() const;
-    fl::unordered_set<fl::shared_ptr<Buffer>> buffers();
+    ojstd::unordered_set<ojstd::shared_ptr<Buffer>> buffers();
 
 private:
-    fl::shared_ptr<Buffer> _mainBuffer;
+    ojstd::shared_ptr<Buffer> _mainBuffer;
     Duration _duration;
-    fl::string _name;
+    ojstd::string _name;
 };
 } //namespace ojgl

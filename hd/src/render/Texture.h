@@ -1,11 +1,11 @@
 #pragma once
 //#include <memory>
-#include "../../fakelibs/fakelib.h"
+#include "../utility/OJstd.h"
 
 namespace ojgl {
 class Texture {
 public:
-    static fl::shared_ptr<Texture> construct(int width, int height, int channels, unsigned char* img);
+    static ojstd::shared_ptr<Texture> construct(int width, int height, int channels, unsigned char* img);
     ~Texture();
     unsigned textureID();
 

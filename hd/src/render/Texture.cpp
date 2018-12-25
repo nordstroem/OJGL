@@ -13,9 +13,9 @@ Texture::Texture(int width, int height, int channels, unsigned char* img)
     load(img);
 }
 
-fl::shared_ptr<Texture> Texture::construct(int width, int height, int channels, unsigned char* img)
+ojstd::shared_ptr<Texture> Texture::construct(int width, int height, int channels, unsigned char* img)
 {
-    return fl::shared_ptr<Texture>(new Texture(width, height, channels, img));
+    return ojstd::shared_ptr<Texture>(new Texture(width, height, channels, img));
 }
 
 Texture::~Texture()

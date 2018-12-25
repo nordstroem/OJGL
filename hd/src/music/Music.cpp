@@ -1,5 +1,5 @@
 #include "Music.h"
-#include "../../fakelibs/fakelib.h"
+#include "../utility/OJstd.h"
 #include "../render/Window.h"
 #include "../utility/Log.h"
 
@@ -7,7 +7,7 @@ namespace ojgl {
 
 Music::Music(unsigned char* song)
     : _song(song)
-    , _player(fl::make_shared<V2MPlayer>())
+    , _player(ojstd::make_shared<V2MPlayer>())
     , _startTime(Timepoint::now())
 {
 }
@@ -26,9 +26,9 @@ void Music::play()
 
 void Music::_initSync()
 {
-    fl::unordered_map<int, int> channelMinNote;
-    fl::unordered_map<int, int> channelMaxNote;
-    fl::unordered_set<int> channels;
+    ojstd::unordered_map<int, int> channelMinNote;
+    ojstd::unordered_map<int, int> channelMaxNote;
+    ojstd::unordered_set<int> channels;
     auto events = _player->popSyncEvents();
     for (auto& se : events) {
         int channel = se.channel;
@@ -71,7 +71,7 @@ void Music::stop()
     this->_player->Stop();
 }
 
-fl::unordered_map<int, SyncChannel>& Music::syncChannels()
+ojstd::unordered_map<int, SyncChannel>& Music::syncChannels()
 {
     return _syncChannels;
 }

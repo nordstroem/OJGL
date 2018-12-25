@@ -17,7 +17,7 @@ Buffer::~Buffer()
     glDeleteProgram(_programID);
 }
 
-fl::string Buffer::name() const
+ojstd::string Buffer::name() const
 {
     return _name;
 }
@@ -38,8 +38,8 @@ void Buffer::render()
 
     glUseProgram(_programID);
     for (size_t i = 0; i < _inputs.size(); i++) {
-        fl::string uniform("inTexture");
-        uniform.append(fl::to_string(i));
+        ojstd::string uniform("inTexture");
+        uniform.append(ojstd::to_string(i));
         glUniform1i(glGetUniformLocation(_programID, uniform.c_str()), i);
     }
 
