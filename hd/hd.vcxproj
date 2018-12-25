@@ -23,6 +23,7 @@
     <RootNamespace>hd</RootNamespace>
     <Keyword>Win32Proj</Keyword>
     <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <ProjectName>hd</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Unicode Debug|Win32'" Label="Configuration">
@@ -235,7 +236,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="examples\Main.cpp" />
-    <ClCompile Include="hd.cpp" />
     <ClCompile Include="src\music\Music.cpp" />
     <ClCompile Include="src\music\SyncChannel.cpp" />
     <ClCompile Include="src\music\V2MPlayer.cpp" />
