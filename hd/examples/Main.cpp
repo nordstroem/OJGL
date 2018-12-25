@@ -18,6 +18,7 @@
 #include "../src/render/GLState.h"
 #include "../src/render/Texture.h"
 #include "../src/render/Window.h"
+#include "../src/utility/Log.h"
 #include "../src/utility/ShaderReader.h"
 #include "EmbeddedResources.h"
 #include <Windows.h>

@@ -370,6 +370,17 @@ public:
         this->len = other.length();
         return *this;
     }
+
+    string operator+(const string& other)
+    {
+        char* str = (char*)malloc(sizeof(char) * (len + other.len + 1));
+        strcpy(str, this->content);
+        strcpy(str + len, other.content);
+        string flString = string(str);
+        free(str);
+        return flString;
+    }
+
     const char* c_str() const
     {
         return this->content;

@@ -29,8 +29,8 @@ unsigned Buffer::fboTextureID()
 
 void Buffer::render()
 {
-    /*if (ShaderReader::modified(_vertexPath) || ShaderReader::modified(_fragmentPath))
-        loadShader();*/
+    if (ShaderReader::modified(_vertexPath) || ShaderReader::modified(_fragmentPath))
+        loadShader();
 
     glBindFramebuffer(GL_FRAMEBUFFER, _fboID);
     glViewport(0, 0, _width, _height);

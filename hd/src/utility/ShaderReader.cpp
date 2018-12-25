@@ -1,22 +1,27 @@
-#include "Log.h"
 #include "ShaderReader.h"
-//#include <fstream>
-//#include <iostream>
-//#include <sstream>
-//#include <streambuf>
+#include "Log.h"
+
 #include "../../fakelibs/fakelib.h"
-//#include <sys/stat.h>
-//#include <sys/types.h>
+#ifdef _DEBUG
+#include <fstream>
+#include <sstream>
+#include <streambuf>
+#include <string>
+#include <sys/stat.h>
+#include <sys/types.h>
+#endif
 
 using namespace ojgl;
 
-//namespace {
-//long long modifyTime(const fl::string& path)
-//{
-//    struct stat fileStat;
-//    return stat(path.c_str(), &fileStat) == 0 ? fileStat.st_mtime : 0;
-//}
-//}
+namespace {
+#ifdef _DEBUG
+long long modifyTime(const fl::string& path)
+{
+    struct stat fileStat;
+    return stat(path.c_str(), &fileStat) == 0 ? fileStat.st_mtime : 0;
+}
+#endif
+}
 
 void ShaderReader::preLoad(const fl::string& path, const fl::string& content)
 {
@@ -31,8 +36,7 @@ void ShaderReader::setBasePath(const fl::string& basePath)
 bool ShaderReader::modified(const fl::string& path)
 {
 #ifdef _DEBUG
-    //return modifyTime(ShaderReader::_basePath + path) != ShaderReader::_shaders[path].modifyTime;
-    return false;
+    return modifyTime(ShaderReader::_basePath + path) != ShaderReader::_shaders[path].modifyTime;
 #else
     return false;
 #endif
@@ -41,11 +45,11 @@ bool ShaderReader::modified(const fl::string& path)
 const fl::string& ShaderReader::get(const fl::string& path)
 {
 #ifdef _DEBUG
-    /*if (modified(path)) {
+    if (modified(path)) {
         auto fullPath = _basePath + path;
-        LOG_INFO("[" << path << "]"
+        LOG_INFO("[" << path.c_str() << "]"
                      << " modified");
-        std::ifstream shaderFile(fullPath);
+        std::ifstream shaderFile(fullPath.c_str());
         _ASSERTE(!shaderFile.fail());
 
         std::stringstream buffer;
@@ -56,12 +60,12 @@ const fl::string& ShaderReader::get(const fl::string& path)
         size_t start = fileContents.find(pre);
         size_t end = fileContents.rfind(post);
         std::string shader = fileContents.substr(start + pre.length(), end - start - pre.length());
-        ShaderReader::_shaders[path].content = shader;
+        ShaderReader::_shaders[path].content = fl::string(shader.c_str());
         ShaderReader::_shaders[path].modifyTime = modifyTime(fullPath);
-    }*/
+    }
 #else
     auto itr = ShaderReader::_shaders.find(path);
-    /*_ASSERTE(itr != ShaderReader::_shaders.end());*/
+    _ASSERTE(itr != ShaderReader::_shaders.end());
 #endif
     return ShaderReader::_shaders[path].content;
 }
