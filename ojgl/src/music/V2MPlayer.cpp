@@ -11,8 +11,9 @@
 // Small additions concerning sync made by OJ
 
 #include "V2MPlayer.h"
-#include "thirdparty/libv2.h"
 #include "Music.h"
+#include "thirdparty/libv2.h"
+#include "utility/Macros.h"
 
 #define sTRUE (!0)
 #define sFALSE 0
@@ -350,6 +351,7 @@ void V2MPlayer::Play(sU32 a_time)
         int bar = (sp & 0xFFFF0000) >> 16;
         int tick = (sp & 0x0000FF00) >> 8;
         int nn = sp & 0x000000FF;
+        OJ_UNUSED(nn);
         int index = bar * 32 + tick;
         _barTickToMs[index] = ms;
     }

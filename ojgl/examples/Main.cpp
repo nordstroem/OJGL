@@ -5,6 +5,7 @@
 #include "render/Texture.h"
 #include "render/Window.h"
 #include "utility/Log.h"
+#include "utility/Macros.h"
 #include "utility/OJstd.h"
 #include "utility/ShaderReader.h"
 #include <Windows.h>
@@ -61,10 +62,11 @@ void buildSceneGraph(GLState& glState, int x, int y)
 
 int main(int argc, char* argv[])
 {
-
+    OJ_UNUSED(argc);
+    OJ_UNUSED(argv);
     int width = 1280;
     int height = 720;
-    bool full = true;
+    //bool full = true;
 
     //#ifdef _DEBUG
     //    full = false;
@@ -112,7 +114,7 @@ int main(int argc, char* argv[])
 
         glState << Uniform1f("iTime", glState.relativeSceneTime().toSeconds());
         for (auto key : window.getPressedKeys()) {
-            bool timeChanged = false;
+            OJ_DEBUG(bool timeChanged = false);
 
             switch (key) {
             case Window::KEY_ESCAPE:

@@ -7,9 +7,7 @@ namespace ojgl {
 
 class Timepoint {
 
-    using Backend = DWORD;
-
-    explicit Timepoint(Backend timepoint)
+    explicit Timepoint(long timepoint)
         : _timepoint(timepoint)
     {
     }
@@ -25,6 +23,6 @@ public:
     friend Duration operator-(const Timepoint& left, const Timepoint& right) { return Duration(left._timepoint - right._timepoint); }
 
 private:
-    Backend _timepoint;
+    long _timepoint;
 };
 }

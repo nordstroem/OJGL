@@ -37,19 +37,19 @@ void Buffer::render()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glUseProgram(_programID);
-    for (size_t i = 0; i < _inputs.size(); i++) {
+    for (int i = 0; i < _inputs.size(); i++) {
         ojstd::string uniform("inTexture");
         uniform.append(ojstd::to_string(i));
         glUniform1i(glGetUniformLocation(_programID, uniform.c_str()), i);
     }
 
-    size_t index = 0;
+    int index = 0;
     for (auto [location, texture] : _textures) {
         glUniform1i(glGetUniformLocation(_programID, location.c_str()), _inputs.size() + index);
         index++;
     }
 
-    for (size_t i = 0; i < _inputs.size(); i++) {
+    for (int i = 0; i < _inputs.size(); i++) {
         glActiveTexture(GL_TEXTURE0 + i);
         glBindTexture(GL_TEXTURE_2D, _inputs[i]->fboTextureID());
     }

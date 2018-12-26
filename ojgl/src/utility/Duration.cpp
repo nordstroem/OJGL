@@ -1,4 +1,9 @@
 #include "Duration.h"
+#include <limits>
+
+#ifdef max
+#undef max
+#endif
 
 namespace ojgl {
 
@@ -16,7 +21,7 @@ Duration& Duration::operator+=(const Duration& other)
 
 Duration Duration::maximum()
 {
-    return Duration(~0u); //Duration(std::chrono::nanoseconds(std::numeric_limits<long long>::max()));
+    return Duration(std::numeric_limits<long>::max());
 }
 
 //std::ostream& operator<<(std::ostream& left, const Duration& right)

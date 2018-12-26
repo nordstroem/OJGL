@@ -1,6 +1,6 @@
 #include "ShaderReader.h"
 #include "Log.h"
-
+#include "utility/Macros.h"
 #include "utility/OJstd.h"
 #ifdef _DEBUG
 #include <fstream>
@@ -38,6 +38,7 @@ bool ShaderReader::modified(const ojstd::string& path)
 #ifdef _DEBUG
     return modifyTime(ShaderReader::_basePath + path) != ShaderReader::_shaders[path].modifyTime;
 #else
+    OJ_UNUSED(path);
     return false;
 #endif
 }
@@ -63,9 +64,6 @@ const ojstd::string& ShaderReader::get(const ojstd::string& path)
         ShaderReader::_shaders[path].content = ojstd::string(shader.c_str());
         ShaderReader::_shaders[path].modifyTime = modifyTime(fullPath);
     }
-#else
-    auto itr = ShaderReader::_shaders.find(path);
-    _ASSERTE(itr != ShaderReader::_shaders.end());
 #endif
     return ShaderReader::_shaders[path].content;
 }

@@ -11,7 +11,7 @@ Window::Window(unsigned width, unsigned height, bool fullScreen)
 {
     ShowCursor(false);
 
-    _hWnd = CreateOpenGLWindow("minimal", 0, 0, PFD_TYPE_RGBA, 0, fullScreen);
+    _hWnd = CreateOpenGLWindow("Eldur - OJ", 0, 0, PFD_TYPE_RGBA, 0, fullScreen);
     if (_hWnd == nullptr) {
         exit(1);
     }
@@ -102,7 +102,7 @@ HWND Window::CreateOpenGLWindow(const char* title, int x, int y, BYTE type, DWOR
         }
     }
 
-    hWnd = CreateWindow("OpenGL", "Eldur - OJ", WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN,
+    hWnd = CreateWindow("OpenGL", title, WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN,
         x, y, this->_width, this->_height, NULL, NULL, hInstance, NULL);
     if (fullScreen) {
         hWnd = CreateFullscreenWindow(hWnd, hInstance);

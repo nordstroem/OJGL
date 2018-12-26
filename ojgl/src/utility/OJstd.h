@@ -97,7 +97,7 @@ public:
     ~vector()
     {
         if (this->values) {
-            for (auto i = 0u; i < this->length; i++)
+            for (int i = 0; i < this->length; i++)
                 this->values[i].~T();
             free(this->values);
         }
@@ -191,7 +191,7 @@ public:
 
     void clear()
     {
-        for (auto i = 0u; i < this->length; i++)
+        for (int i = 0; i < this->length; i++)
             this->values[i].~T();
         length = 0;
     }
@@ -409,7 +409,7 @@ private:
 inline string to_string(size_t i)
 {
     _ASSERTE(i < 10);
-    char c[2] = { '0' + i, '\0' };
+    char c[2] = { '0' + static_cast<char>(i), '\0' };
     return string(c);
 }
 
