@@ -281,9 +281,18 @@
     <ClInclude Include="src\winapi\wglext.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="examples\shaders\test.vs" />
-    <None Include="examples\shaders\test.fs" />
-    <None Include="examples\shaders\test2.fs" />
+    <None Include="examples\shaders\demo.vs" />
+    <None Include="examples\shaders\edison.vs" />
+    <None Include="examples\shaders\fxaa.fs" />
+    <None Include="examples\shaders\fxaa.vs" />
+    <None Include="examples\shaders\lavaIntro.fs" />
+    <None Include="examples\shaders\lavaScene2.fs" />
+    <None Include="examples\shaders\mountain.fs" />
+    <None Include="examples\shaders\mountainNoise.fs" />
+    <None Include="examples\shaders\mountainPost.fs" />
+    <None Include="examples\shaders\outro.fs" />
+    <None Include="examples\shaders\post.fs" />
+    <None Include="examples\shaders\post.vs" />
     <None Include="examples\songs\song.inc" />
   </ItemGroup>
   <ItemGroup>
