@@ -102,18 +102,18 @@ public:
     }
     vector(const vector<T>& other)
     {
-        this->values = (T*)calloc(other.size(), sizeof(T));
+        this->capacity = max2(MIN_CAPACITY, other.size());
+        this->values = (T*)calloc(this->capacity, sizeof(T));
         this->length = other.size();
-        this->capacity = other.size();
         for (int i = 0; i < other.size(); i++) {
             new (values + i) T(other[i]);
         }
     }
     vector(const std::initializer_list<T>& other)
     {
-        this->values = (T*)calloc(other.size(), sizeof(T));
+        this->capacity = max2(MIN_CAPACITY, static_cast<int>(other.size()));
+        this->values = (T*)calloc(this->capacity, sizeof(T));
         this->length = other.size();
-        this->capacity = other.size();
         int i = 0;
         for (auto& x : other) {
             new (values + i) T(x);
@@ -135,9 +135,9 @@ public:
         this->clear();
         if (this->values)
             free(this->values);
-        this->values = (T*)calloc(other.size(), sizeof(T));
+        this->capacity = max2(MIN_CAPACITY, other.size());
+        this->values = (T*)calloc(this->capacity, sizeof(T));
         this->length = other.size();
-        this->capacity = other.size();
         for (int i = 0; i < other.size(); i++) {
             new (values + i) T(other[i]);
         }
