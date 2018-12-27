@@ -8,7 +8,6 @@
 #include "utility/Macros.h"
 #include "utility/OJstd.h"
 #include "utility/ShaderReader.h"
-#include <Windows.h>
 
 using namespace ojgl;
 
@@ -154,7 +153,7 @@ int main(int argc, char* argv[])
         }
         timer.end();
 
-        Sleep(16); // Are OpenGL calls async?
+        ojstd::sleep(16); // Are OpenGL calls async?
     }
 
     /* Music music(resources::songs::song);
@@ -236,7 +235,7 @@ int main(int argc, char* argv[])
     return 0;*/
 }
 
-extern "C" int _tmain(int argc, TCHAR** argv)
+extern "C" int _tmain(int argc, char** argv)
 {
     return main(argc, argv);
 }

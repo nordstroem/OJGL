@@ -114,4 +114,9 @@ void mutex::unlock()
     auto release_result = ReleaseMutex(_priv->w_mutex);
     _ASSERTE(release_result);
 }
+
+void sleep(int milliseconds)
+{
+    Sleep(milliseconds);
+}
 }
