@@ -1,5 +1,6 @@
 #include "GLState.h"
 #include "Uniform.hpp"
+#include "utility/Timepoint.h"
 #include "winapi/gl_loader.h"
 
 namespace ojgl {
