@@ -143,7 +143,12 @@ public:
         }
         return *this;
     }
-    T& operator[](int index) const { return values[index]; }
+    T& operator[](int index) const
+    {
+        _ASSERTE(index >= 0);
+        _ASSERTE(index < length);
+        return values[index];
+    }
 
 public:
     int size() const { return length; }
@@ -357,16 +362,18 @@ inline string to_string(size_t i)
     return string(c);
 }
 
-// @todo move implementation of this to cpp file and use windows.h mutex.
 class mutex {
 public:
-    void lock()
-    {
-    }
+    mutex();
+    mutex(const mutex& other) = delete;
+    mutex& operator=(const mutex& other) = delete;
+    ~mutex();
+    void lock();
+    void unlock();
 
-    void unlock()
-    {
-    }
+private:
+    class details;
+    shared_ptr<details> _priv; // @todo make ojstd::unique_ptr.
 };
 
 template <typename T>

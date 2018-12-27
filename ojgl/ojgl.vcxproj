@@ -248,6 +248,7 @@
     <ClCompile Include="src\render\Uniform.cpp" />
     <ClCompile Include="src\render\Window.cpp" />
     <ClCompile Include="src\utility\Duration.cpp" />
+    <ClCompile Include="src\utility\OJstd.cpp" />
     <ClCompile Include="src\utility\ShaderReader.cpp" />
     <ClCompile Include="src\utility\Timepoint.cpp" />
     <ClCompile Include="src\winapi\gl_loader.cpp" />
