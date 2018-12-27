@@ -7,14 +7,14 @@
 namespace ojgl {
 
 Scene::Scene(const ojstd::string& name, const ojstd::shared_ptr<Buffer>& buffer, Duration duration)
-    : _mainBuffer(std::move(buffer))
+    : _mainBuffer(buffer)
     , _duration(duration)
     , _name(name)
 
 {
-    for (auto& b : buffers()) {
+    for (auto& b : this->buffers()) {
         if (b != _mainBuffer) {
-            b->generateFBO(); // error C2662: 'void ojgl::Buffer::generateFBO(void)': cannot convert 'this' pointer from 'const T' to 'ojgl::Buffer &'
+            b->generateFBO();
         }
     }
 }
