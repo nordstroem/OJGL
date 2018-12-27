@@ -3,13 +3,14 @@
 #include "Scene.h"
 #include "utility/OJstd.h"
 #include "utility/Timer.hpp"
-#include "winapi/gl_loader.h"
 
 namespace ojgl {
 
 class GLState {
 public:
     GLState();
+    GLState(const GLState& other) = delete;
+    GLState& operator=(const GLState& other) = delete;
     ~GLState();
 
     void render();
@@ -53,8 +54,8 @@ private:
     ojstd::vector<Scene> _scenes;
     Timepoint _startTime;
     Timepoint _pauseTime;
-    GLuint _vaoID;
-    GLuint _vboID;
+    unsigned int _vaoID;
+    unsigned int _vboID;
     bool _paused;
 
 public:

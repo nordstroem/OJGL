@@ -1,7 +1,9 @@
 #include "Music.h"
-#include "render/Window.h"
+#include "V2MPlayer.h"
 #include "utility/Log.h"
 #include "utility/OJstd.h"
+#include <limits>
+#include <windows.h>
 
 namespace ojgl {
 
@@ -43,8 +45,8 @@ void Music::_initSync()
             channelMaxNote[channel] = std::numeric_limits<int>::lowest();
         }
 
-        channelMinNote[channel] = min(channelMinNote[channel], note);
-        channelMaxNote[channel] = max(channelMaxNote[channel], note);
+        channelMinNote[channel] = ojstd::min2(channelMinNote[channel], note);
+        channelMaxNote[channel] = ojstd::max2(channelMaxNote[channel], note);
     }
 
     for (auto& c : channels) {

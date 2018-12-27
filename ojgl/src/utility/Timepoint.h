@@ -1,7 +1,5 @@
 #pragma once
 #include "Duration.h"
-#include <Windows.h>
-#include <chrono>
 
 namespace ojgl {
 
@@ -18,8 +16,7 @@ public:
     Timepoint& operator-=(const Duration& other);
     Timepoint& operator+=(const Duration& other);
 
-    inline static auto now() { return Timepoint(GetTickCount()); }
-
+    static Timepoint now();
     friend Duration operator-(const Timepoint& left, const Timepoint& right) { return Duration(left._timepoint - right._timepoint); }
 
 private:

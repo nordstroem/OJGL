@@ -1,8 +1,5 @@
-#include "winapi/gl_loader.h"
 #include "Texture.h"
-//#include <iostream>
-//#include <memory>
-//#include <string>
+#include "winapi/gl_loader.h"
 
 namespace ojgl {
 Texture::Texture(int width, int height, int channels, unsigned char* img)

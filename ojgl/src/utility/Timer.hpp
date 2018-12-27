@@ -2,7 +2,7 @@
 
 #include "Duration.h"
 #include "Timepoint.h"
-//#include <chrono>
+
 namespace ojgl {
 
 class Timer {

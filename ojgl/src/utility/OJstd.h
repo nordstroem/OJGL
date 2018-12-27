@@ -12,6 +12,12 @@ T max2(const T& a, const T& b)
     return a >= b ? a : b;
 }
 
+template <typename T>
+T min2(const T& a, const T& b)
+{
+    return a <= b ? a : b;
+}
+
 template <class InputIt, class T>
 T accumulate(InputIt first, InputIt last, T init)
 {

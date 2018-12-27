@@ -1,31 +1,50 @@
 #include "Window.h"
-#include "GLState.h"
-//#include <exception>
-//#include <thread>
+#include <utility/Log.h>
+#include <windows.h>
 
 namespace ojgl {
 
+class Window::Details {
+public:
+    Details(unsigned width, unsigned height)
+        : _width(width)
+        , _height(height)
+    {
+    }
+    HWND CreateOpenGLWindow(const char* title, int x, int y, BYTE type, DWORD flags, bool fullScreen);
+    HWND CreateFullscreenWindow(HWND hwnd, HINSTANCE hInstance);
+    static LONG WINAPI WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
+    HDC _hDC; // device context
+    HGLRC _hRC; // opengl context
+    HWND _hWnd; // window
+    MSG _msg; // message
+    unsigned _width;
+    unsigned _height;
+    ojstd::vector<UINT> _keys;
+    bool _closed;
+};
+
 Window::Window(unsigned width, unsigned height, bool fullScreen)
-    : _width(width)
-    , _height(height)
+    : _priv(ojstd::make_shared<Details>(width, height))
 {
     ShowCursor(false);
 
-    _hWnd = CreateOpenGLWindow("Eldur - OJ", 0, 0, PFD_TYPE_RGBA, 0, fullScreen);
-    if (_hWnd == nullptr) {
+    _priv->_hWnd = _priv->CreateOpenGLWindow("Eldur - OJ", 0, 0, PFD_TYPE_RGBA, 0, fullScreen);
+    if (_priv->_hWnd == nullptr) {
         exit(1);
     }
 
-    _hDC = GetDC(_hWnd);
-    _hRC = wglCreateContext(_hDC);
-    wglMakeCurrent(_hDC, _hRC);
-    ShowWindow(_hWnd, 1);
+    _priv->_hDC = GetDC(_priv->_hWnd);
+    _priv->_hRC = wglCreateContext(_priv->_hDC);
+    wglMakeCurrent(_priv->_hDC, _priv->_hRC);
+    ShowWindow(_priv->_hWnd, 1);
 
     Window* pThis = this;
     SetLastError(0);
-    if (!SetWindowLongPtr(_hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pThis))) {
+    if (!SetWindowLongPtr(_priv->_hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pThis))) {
         if (GetLastError() != 0) {
-            //throw std::runtime_error("SetWindowLongPtr failed in Window");
+            LOG_ERROR("SetWindowLongPtr failed in Window");
         }
     }
 }
@@ -33,27 +52,27 @@ Window::Window(unsigned width, unsigned height, bool fullScreen)
 Window::~Window()
 {
     wglMakeCurrent(nullptr, nullptr);
-    ReleaseDC(_hWnd, _hDC);
-    wglDeleteContext(_hRC);
-    DestroyWindow(_hWnd);
+    ReleaseDC(_priv->_hWnd, _priv->_hDC);
+    wglDeleteContext(_priv->_hRC);
+    DestroyWindow(_priv->_hWnd);
 }
 
 void Window::getMessages()
 {
-    while (PeekMessage(&_msg, nullptr, 0, 0, PM_REMOVE)) {
-        TranslateMessage(&_msg);
-        DispatchMessage(&_msg);
+    while (PeekMessage(&_priv->_msg, nullptr, 0, 0, PM_REMOVE)) {
+        TranslateMessage(&_priv->_msg);
+        DispatchMessage(&_priv->_msg);
     }
 }
 
-ojstd::vector<UINT> Window::getPressedKeys()
+ojstd::vector<unsigned int> Window::getPressedKeys()
 {
-    auto keys = _keys;
-    _keys.clear();
+    auto keys = this->_priv->_keys;
+    this->_priv->_keys.clear();
     return keys;
 }
 
-HWND Window::CreateFullscreenWindow(HWND hwnd, HINSTANCE hInstance)
+HWND Window::Details::CreateFullscreenWindow(HWND hwnd, HINSTANCE hInstance)
 {
     HMONITOR hmon = MonitorFromWindow(hwnd,
         MONITOR_DEFAULTTONEAREST);
@@ -71,7 +90,7 @@ HWND Window::CreateFullscreenWindow(HWND hwnd, HINSTANCE hInstance)
         hwnd, nullptr, hInstance, nullptr);
 }
 
-HWND Window::CreateOpenGLWindow(const char* title, int x, int y, BYTE type, DWORD flags, bool fullScreen)
+HWND Window::Details::CreateOpenGLWindow(const char* title, int x, int y, BYTE type, DWORD flags, bool fullScreen)
 {
     int pf;
     HDC hDC;
@@ -147,7 +166,7 @@ HWND Window::CreateOpenGLWindow(const char* title, int x, int y, BYTE type, DWOR
     return hWnd;
 }
 
-LONG WINAPI Window::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+LONG WINAPI Window::Details::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     Window* pThis = reinterpret_cast<Window*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
 
@@ -173,7 +192,7 @@ LONG WINAPI Window::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
         return 0;
     case WM_KEYUP:
         if (pThis) {
-            pThis->_keys.push_back(wParam);
+            pThis->_priv->_keys.push_back(wParam);
         }
         return 0;
     case WM_CLOSE:

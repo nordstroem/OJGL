@@ -1,7 +1,6 @@
 #include "GLState.h"
 #include "Uniform.hpp"
-//#include "music/Music.h"
-//#include "utility\Timer.hpp"
+#include "winapi/gl_loader.h"
 
 namespace ojgl {
 

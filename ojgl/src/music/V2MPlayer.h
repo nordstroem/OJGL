@@ -12,10 +12,10 @@
 
 #pragma once
 
-#include "utility/OJstd.h"
-#include "thirdparty/libv2.h"
-#include "utility\Timer.hpp"
 #include "SyncEvent.hpp"
+#include "thirdparty/libv2.h"
+#include "utility/OJstd.h"
+#include "utility/Timer.hpp"
 
 namespace ojgl {
 

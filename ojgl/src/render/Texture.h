@@ -1,5 +1,4 @@
 #pragma once
-//#include <memory>
 #include "utility/OJstd.h"
 
 namespace ojgl {

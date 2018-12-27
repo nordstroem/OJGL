@@ -1,10 +1,5 @@
 #pragma once
 
-#include "Windows.h"
-//#include <chrono>
-//#include <ostream>
-//#include <cstdint>
-
 namespace ojgl {
 
 class Duration {

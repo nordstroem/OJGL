@@ -1,17 +1,19 @@
 #pragma once
 
-// clang-format off
-#include <windows.h>
 #include "utility/OJstd.h"
-// clang-format on
+
 namespace ojgl {
 
 class Window {
 public:
     Window(unsigned width, unsigned height, bool fullScreen);
+    Window(const Window& other) = delete;
+    Window& operator=(const Window& other) = delete;
     ~Window();
     void getMessages();
-    ojstd::vector<UINT> getPressedKeys();
+    ojstd::vector<unsigned int> getPressedKeys();
+
+public:
     static constexpr int KEY_LEFT = 37;
     static constexpr int KEY_UP = 38;
     static constexpr int KEY_RIGHT = 39;
@@ -22,17 +24,7 @@ public:
     static constexpr int KEY_F1 = 112;
 
 private:
-    HWND CreateOpenGLWindow(const char* title, int x, int y, BYTE type, DWORD flags, bool fullScreen);
-    HWND CreateFullscreenWindow(HWND hwnd, HINSTANCE hInstance);
-    static LONG WINAPI WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-
-    HDC _hDC; // device context
-    HGLRC _hRC; // opengl context
-    HWND _hWnd; // window
-    MSG _msg; // message
-    unsigned _width;
-    unsigned _height;
-    ojstd::vector<UINT> _keys;
-    bool _closed;
+    class Details;
+    ojstd::shared_ptr<Details> _priv; // @todo make ojstd::unique_ptr
 };
 } //namespace ojgl

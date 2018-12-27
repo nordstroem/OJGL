@@ -245,6 +245,7 @@
     <ClCompile Include="src\render\GLState.cpp" />
     <ClCompile Include="src\render\Scene.cpp" />
     <ClCompile Include="src\render\Texture.cpp" />
+    <ClCompile Include="src\render\Uniform.cpp" />
     <ClCompile Include="src\render\Window.cpp" />
     <ClCompile Include="src\utility\Duration.cpp" />
     <ClCompile Include="src\utility\ShaderReader.cpp" />

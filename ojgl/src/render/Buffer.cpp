@@ -1,7 +1,7 @@
 #include "Buffer.h"
-#include "GLState.h"
-#include "utility\Log.h"
-#include "utility\ShaderReader.h"
+#include "utility/Log.h"
+#include "utility/ShaderReader.h"
+#include "winapi/gl_loader.h"
 
 namespace ojgl {
 

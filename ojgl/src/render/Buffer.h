@@ -1,9 +1,6 @@
 #pragma once
-#include "Texture.h"
 #include "Uniform.hpp"
 #include "utility/OJstd.h"
-#include <type_traits>
-#include <utility>
 
 namespace ojgl {
 
@@ -12,6 +9,7 @@ class Buffer {
     using BufferPtr = ojstd::shared_ptr<Buffer>;
 
 public:
+    Buffer(const Buffer& other) = delete;
     ~Buffer();
     unsigned getProgramID() const;
     unsigned fboTextureID();

@@ -1,11 +1,12 @@
 #pragma once
 
 #include "SyncChannel.h"
-#include "V2MPlayer.h"
 #include "utility/OJstd.h"
-#include "utility\Timer.hpp"
+#include "utility/Timer.hpp"
 
 namespace ojgl {
+
+class V2MPlayer;
 
 class Music {
 
@@ -21,9 +22,9 @@ public:
     ojstd::unordered_map<int, SyncChannel>& syncChannels();
 
 private:
+    ojstd::shared_ptr<V2MPlayer> _player;
     void _initSync();
     unsigned char* _song;
-    ojstd::shared_ptr<V2MPlayer> _player;
     Timepoint _startTime;
     ojstd::unordered_map<int, SyncChannel> _syncChannels;
 };

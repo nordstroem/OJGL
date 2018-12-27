@@ -1,7 +1,4 @@
 #include "Scene.h"
-//#include "utility\Log.h"
-//#include <algorithm>
-//#include <stdexcept>
 #include "utility/OJstd.h"
 
 namespace ojgl {
