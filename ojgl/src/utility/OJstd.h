@@ -79,10 +79,11 @@ public:
     T* operator->() const { return _ptr; }
     T& operator*() const noexcept { return *_ptr; }
     T* get() const { return _ptr; }
-    bool operator!=(const shared_ptr<T>& other) const { return _ptr != other._ptr || _count != other._count; }
     bool operator==(const shared_ptr<T>& other) const { return _ptr == other._ptr && _count == other._count; }
+    bool operator!=(const shared_ptr<T>& other) const { return !(*this == other); }
+    bool operator==(std::nullptr_t other) const { return _ptr == nullptr; }
 
-    int* _count; // @todo make private and thread-safe.
+    int* _count = nullptr; // @todo make private and thread-safe.
 private:
     T* _ptr = nullptr;
 };
