@@ -22,7 +22,7 @@ public:
     unsigned _width;
     unsigned _height;
     ojstd::vector<UINT> _keys;
-    bool _closed;
+    bool _close = false;
 };
 
 Window::Window(unsigned width, unsigned height, ojstd::string title, bool fullScreen, bool showCursor)
@@ -70,6 +70,11 @@ ojstd::vector<unsigned int> Window::getPressedKeys()
     auto keys = this->_priv->_keys;
     this->_priv->_keys.clear();
     return keys;
+}
+
+bool Window::isClosePressed() const
+{
+    return _priv->_close;
 }
 
 HWND Window::Details::CreateFullscreenWindow(HWND hwnd, HINSTANCE hInstance)
@@ -196,7 +201,7 @@ LONG WINAPI Window::Details::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPA
         }
         return 0;
     case WM_CLOSE:
-        PostQuitMessage(0);
+        pThis->_priv->_close = true;
         return 0;
     }
 

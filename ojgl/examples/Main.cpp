@@ -87,7 +87,7 @@ int main(int argc, char* argv[])
     buildSceneGraph(glState, width, height);
     glState.setStartTime(Timepoint::now());
 
-    while (!glState.end()) {
+    while (!glState.end() && !window.isClosePressed()) {
         Timer timer;
         timer.start();
         window.getMessages();
