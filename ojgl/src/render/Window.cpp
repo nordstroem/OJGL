@@ -12,7 +12,6 @@ public:
     {
     }
     HWND CreateOpenGLWindow(const char* title, int x, int y, BYTE type, DWORD flags, bool fullScreen);
-    HWND CreateFullscreenWindow(HWND hwnd, HINSTANCE hInstance);
     static LONG WINAPI WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
     HDC _hDC; // device context
@@ -77,24 +76,6 @@ bool Window::isClosePressed() const
     return _priv->_close;
 }
 
-HWND Window::Details::CreateFullscreenWindow(HWND hwnd, HINSTANCE hInstance)
-{
-    HMONITOR hmon = MonitorFromWindow(hwnd,
-        MONITOR_DEFAULTTONEAREST);
-    MONITORINFO mi = { sizeof(mi) };
-    if (!GetMonitorInfo(hmon, &mi)) {
-        return nullptr;
-    }
-    return CreateWindow(TEXT("static"),
-        TEXT("something interesting might go here"),
-        WS_POPUP | WS_VISIBLE,
-        mi.rcMonitor.left,
-        mi.rcMonitor.top,
-        mi.rcMonitor.right - mi.rcMonitor.left,
-        mi.rcMonitor.bottom - mi.rcMonitor.top,
-        hwnd, nullptr, hInstance, nullptr);
-}
-
 HWND Window::Details::CreateOpenGLWindow(const char* title, int x, int y, BYTE type, DWORD flags, bool fullScreen)
 {
     int pf;
@@ -103,6 +84,7 @@ HWND Window::Details::CreateOpenGLWindow(const char* title, int x, int y, BYTE t
     WNDCLASS wc;
     PIXELFORMATDESCRIPTOR pfd;
     static HINSTANCE hInstance = nullptr;
+    ojstd::string lpszClassName = "OpenGL";
 
     /* only register the window class once - use hInstance as a flag. */
     if (!hInstance) {
@@ -116,20 +98,25 @@ HWND Window::Details::CreateOpenGLWindow(const char* title, int x, int y, BYTE t
         wc.hCursor = LoadCursor(NULL, IDC_ARROW);
         wc.hbrBackground = NULL;
         wc.lpszMenuName = NULL;
-        wc.lpszClassName = "OpenGL"; //L"OpenGL";
+        wc.lpszClassName = lpszClassName.c_str();
 
         if (!RegisterClass(&wc)) {
-            MessageBox(NULL, "RegisterClass() failed:  "
-                             "Cannot register window class.",
-                "Error", MB_OK);
+            MessageBox(NULL, "RegisterClass() failed:  Cannot register window class.", "Error", MB_OK);
             return NULL;
         }
     }
 
-    hWnd = CreateWindow("OpenGL", title, WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN,
+    hWnd = CreateWindow(lpszClassName.c_str(), title, WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN,
         x, y, this->_width, this->_height, NULL, NULL, hInstance, NULL);
+
     if (fullScreen) {
-        hWnd = CreateFullscreenWindow(hWnd, hInstance);
+        HMONITOR hmon = MonitorFromWindow(hWnd, MONITOR_DEFAULTTONEAREST);
+        MONITORINFO mi = { sizeof(mi) };
+        if (!GetMonitorInfo(hmon, &mi)) {
+            LOG_INFO("Can not retrieve monitor info.");
+        }
+        hWnd = CreateWindow(lpszClassName.c_str(), title, WS_POPUP | WS_VISIBLE, mi.rcMonitor.left, mi.rcMonitor.top,
+            mi.rcMonitor.right - mi.rcMonitor.left, mi.rcMonitor.bottom - mi.rcMonitor.top, hWnd, nullptr, hInstance, nullptr);
     }
 
     if (hWnd == NULL) {
