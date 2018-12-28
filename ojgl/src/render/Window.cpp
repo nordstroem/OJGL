@@ -25,12 +25,12 @@ public:
     bool _closed;
 };
 
-Window::Window(unsigned width, unsigned height, bool fullScreen)
+Window::Window(unsigned width, unsigned height, ojstd::string title, bool fullScreen, bool showCursor)
     : _priv(ojstd::make_shared<Details>(width, height))
 {
-    ShowCursor(false);
+    ShowCursor(showCursor);
 
-    _priv->_hWnd = _priv->CreateOpenGLWindow("Eldur - OJ", 0, 0, PFD_TYPE_RGBA, 0, fullScreen);
+    _priv->_hWnd = _priv->CreateOpenGLWindow(title.c_str(), 0, 0, PFD_TYPE_RGBA, 0, fullScreen);
     if (_priv->_hWnd == nullptr) {
         exit(1);
     }

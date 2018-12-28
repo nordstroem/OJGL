@@ -49,18 +49,21 @@ int main(int argc, char* argv[])
     OJ_UNUSED(argv);
     int width = 1280;
     int height = 720;
-    /*bool full = true;
+    bool fullScreen = false;
+    bool showCursor = true;
 
-#ifdef _DEBUG
-    full = false;
-#endif
+    /*#ifndef _DEBUG
+    fullScreen = true;
+    showMouse = false;
+	#endif
     if (argc >= 3) {
         width = std::stoi(argv[1]);
         height = std::stoi(argv[2]);
         if (argc >= 4) {
             full = static_cast<bool>(std::stoi(argv[3]));
         }
-    }*/
+    }
+    */
 
     ShaderReader::setBasePath("examples/");
     ShaderReader::preLoad("shaders/edison.vs", resources::vertex::edison);
@@ -76,7 +79,7 @@ int main(int argc, char* argv[])
     ShaderReader::preLoad("shaders/lavaScene2.fs", resources::fragment::lavaScene2);
     ShaderReader::preLoad("shaders/outro.fs", resources::fragment::outro);
 
-    Window window(width, height, false);
+    Window window(width, height, "Eldur - OJ", fullScreen, showCursor);
     GLState glState;
 
     Music music(resources::songs::song);
