@@ -17,6 +17,7 @@ Music::Music(unsigned char* song)
 Music::~Music()
 {
     this->_player->Close();
+    dsClose();
 }
 
 void Music::play()
