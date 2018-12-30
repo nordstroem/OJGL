@@ -5,13 +5,15 @@
 
 namespace ojgl {
 
-GLState::GLState()
+GLState::GLState(unsigned char* song)
     : _startTime(Timepoint::now())
     , _pauseTime(Timepoint::now())
     , _paused(false)
+    , _music(song)
 {
     load_gl_functions();
     setupQuad();
+    _music.play();
 }
 
 bool GLState::end()
@@ -57,6 +59,10 @@ void GLState::render()
     glBindVertexArray(0);
     glFlush();
     glFinish();
+
+    // @todo move this.
+    if (!this->isPaused())
+        _music.updateSync();
 }
 
 Scene& GLState::operator[](size_t i)
@@ -120,6 +126,7 @@ void GLState::togglePause()
     }
     _paused = !_paused;
     _pauseTime = Timepoint::now();
+    _music.setTime(this->elapsedTime());
 }
 
 Duration GLState::relativeSceneTime()
@@ -139,6 +146,7 @@ void GLState::restart()
 {
     _startTime = Timepoint::now();
     _pauseTime = _startTime;
+    _music.setTime(this->elapsedTime());
 }
 
 void GLState::nextScene()
@@ -152,6 +160,7 @@ void GLState::nextScene()
         }
         t = t + v.duration();
     }
+    _music.setTime(this->elapsedTime());
 }
 
 void GLState::previousScene()
@@ -167,5 +176,6 @@ void GLState::previousScene()
         t = t + v.duration();
         prevDur = v.duration();
     }
+    _music.setTime(this->elapsedTime());
 }
 } //namespace ojgl

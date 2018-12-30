@@ -1,6 +1,5 @@
 
 #include "EmbeddedResources.h"
-#include "music/Music.h"
 #include "render/GLState.h"
 #include "render/Texture.h"
 #include "render/Window.h"
@@ -80,10 +79,8 @@ int main(int argc, char* argv[])
     ShaderReader::preLoad("shaders/outro.fs", resources::fragment::outro);
 
     Window window(width, height, "Eldur - OJ", fullScreen, showCursor);
-    GLState glState;
+    GLState glState(resources::songs::song);
 
-    Music music(resources::songs::song);
-    music.play();
     buildSceneGraph(glState, width, height);
     glState.setStartTime(Timepoint::now());
 
@@ -93,46 +90,35 @@ int main(int argc, char* argv[])
         window.getMessages();
 
         for (auto key : window.getPressedKeys()) {
-            bool timeChanged = false;
-
             switch (key) {
             case Window::KEY_ESCAPE:
                 return 0;
 #ifdef _DEBUG
             case Window::KEY_LEFT:
                 glState.changeTime(Duration::milliseconds(-5000));
-                timeChanged = true;
                 break;
 
             case Window::KEY_RIGHT:
                 glState.changeTime(Duration::milliseconds(5000));
-                timeChanged = true;
                 break;
 
             case Window::KEY_SPACE:
                 glState.togglePause();
-                timeChanged = true;
                 break;
 
             case Window::KEY_R:
                 glState.restart();
-                timeChanged = true;
                 break;
 
             case Window::KEY_UP:
                 glState.nextScene();
-                timeChanged = true;
                 break;
 
             case Window::KEY_DOWN:
                 glState.previousScene();
-                timeChanged = true;
                 break;
 #endif
             }
-
-            if (!glState.isPaused() && timeChanged)
-                music.setTime(glState.elapsedTime());
         }
 
         glState << Uniform1f("iTime", glState.relativeSceneTime().toSeconds());
@@ -140,9 +126,6 @@ int main(int argc, char* argv[])
         glState << Uniform2f("iResolution", static_cast<float>(width), static_cast<float>(height));
 
         glState.render();
-
-        if (!glState.isPaused())
-            music.updateSync();
 
         timer.end();
         ojstd::sleep(16); // Are OpenGL calls async?

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Scene.h"
+#include "music/Music.h"
 #include "utility/OJstd.h"
 #include "utility/Timer.hpp"
 
@@ -8,13 +9,14 @@ namespace ojgl {
 
 class GLState {
 public:
-    GLState();
+    explicit GLState(unsigned char* song);
     GLState(const GLState& other) = delete;
     GLState& operator=(const GLState& other) = delete;
     ~GLState();
 
     void render();
     void setStartTime(Timepoint time);
+    void changeTime(Duration time);
     void restart();
     void nextScene();
     void previousScene();
@@ -57,14 +59,13 @@ private:
     unsigned int _vaoID;
     unsigned int _vboID;
     bool _paused;
-
-public:
-    void changeTime(Duration time);
+    Music _music;
 };
 
 inline void GLState::changeTime(Duration time)
 {
     _startTime -= time;
+    _music.setTime(this->elapsedTime());
 }
 
 } // namespace ojgl
