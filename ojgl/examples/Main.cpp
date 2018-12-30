@@ -80,9 +80,8 @@ int main(int argc, char* argv[])
 
     Window window(width, height, "Eldur - OJ", fullScreen, showCursor);
     GLState glState(resources::songs::song);
-
     buildSceneGraph(glState, width, height);
-    glState.setStartTime(Timepoint::now());
+    glState.initialize();
 
     while (!glState.end() && !window.isClosePressed()) {
         Timer timer;

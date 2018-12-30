@@ -13,7 +13,6 @@ GLState::GLState(unsigned char* song)
 {
     load_gl_functions();
     setupQuad();
-    _music.play();
 }
 
 bool GLState::end()
@@ -36,9 +35,10 @@ GLState::~GLState()
     glDeleteBuffers(1, &_vboID);
 }
 
-void GLState::setStartTime(Timepoint time)
+void GLState::initialize()
 {
-    _startTime = time;
+    _startTime = Timepoint::now();
+    _music.play();
 }
 
 void GLState::render()
@@ -117,6 +117,12 @@ void GLState::clearScenes()
 Timepoint GLState::startTime() const
 {
     return this->_startTime;
+}
+
+void GLState::changeTime(Duration time)
+{
+    _startTime -= time;
+    _music.setTime(this->elapsedTime());
 }
 
 void GLState::togglePause()

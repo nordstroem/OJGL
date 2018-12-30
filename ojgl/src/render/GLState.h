@@ -14,8 +14,8 @@ public:
     GLState& operator=(const GLState& other) = delete;
     ~GLState();
 
+    void initialize();
     void render();
-    void setStartTime(Timepoint time);
     void changeTime(Duration time);
     void restart();
     void nextScene();
@@ -61,11 +61,5 @@ private:
     bool _paused;
     Music _music;
 };
-
-inline void GLState::changeTime(Duration time)
-{
-    _startTime -= time;
-    _music.setTime(this->elapsedTime());
-}
 
 } // namespace ojgl
