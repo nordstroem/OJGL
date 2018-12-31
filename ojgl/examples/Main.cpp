@@ -129,7 +129,7 @@ int main(int argc, char* argv[])
         glState.update();
 
         timer.end();
-        ojstd::sleep(1); // Are OpenGL calls async?
+        ojstd::sleep(10); // Are OpenGL calls async?
     }
 }
 

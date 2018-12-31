@@ -6,13 +6,19 @@
 
 namespace ojgl {
 
-GLState::GLState(unsigned char* song, Clock clock)
+GLState::GLState()
     : _paused(false)
-    , _music(song)
-    , _clock(clock)
+    , _clock(Clock::System)
 {
     load_gl_functions();
     setupQuad();
+}
+
+GLState::GLState(unsigned char* song, Clock clock)
+    : GLState()
+{
+    _clock = clock;
+    _music = ojstd::make_shared<Music>(song);
 }
 
 bool GLState::end()
@@ -38,7 +44,8 @@ GLState::~GLState()
 void GLState::initialize()
 {
     _systemClockStartTime = Timepoint::now();
-    _music.play();
+    if (_music != nullptr)
+        _music->play();
 }
 
 void GLState::render()
@@ -77,7 +84,8 @@ void GLState::update()
 {
     this->render();
     if (!this->isPaused())
-        _music.updateSync();
+        if (_music != nullptr)
+            _music->updateSync();
 }
 
 void GLState::setupQuad()
@@ -106,7 +114,7 @@ Duration GLState::elapsedTime() const
         return Timepoint::now() - _systemClockStartTime;
     } else {
         // @todo assert that the DirectSound is active.
-        return _music.elapsedTime();
+        return _music->elapsedTime();
     }
 }
 
@@ -128,7 +136,8 @@ void GLState::changeTime(Duration time)
 void GLState::setTime(Duration time)
 {
     _systemClockStartTime = Timepoint::now() - time;
-    _music.setTime(time);
+    if (_music != nullptr)
+        _music->setTime(time);
     _pauseTime = time;
 }
 
@@ -136,7 +145,8 @@ void GLState::togglePause()
 {
     if (!_paused) {
         _pauseTime = this->elapsedTime();
-        _music.stop();
+        if (_music != nullptr)
+            _music->stop();
     } else {
         this->setTime(_pauseTime);
     }
@@ -160,7 +170,8 @@ void GLState::restart()
 {
     _systemClockStartTime = Timepoint::now();
     _paused = false;
-    _music.setTime(Duration::milliseconds(0));
+    if (_music != nullptr)
+        _music->setTime(Duration::milliseconds(0));
 }
 
 void GLState::nextScene()

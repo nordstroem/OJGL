@@ -66,7 +66,7 @@ private:
     unsigned int _vaoID;
     unsigned int _vboID;
     bool _paused;
-    Music _music;
+    ojstd::shared_ptr<Music> _music = nullptr;
     Clock _clock = Clock::System;
 };
 

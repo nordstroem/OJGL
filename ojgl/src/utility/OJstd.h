@@ -57,6 +57,51 @@ public:
     ~shared_ptr()
     {
         (*_count)--;
+        try_free();
+    }
+    shared_ptr& operator=(const shared_ptr& other)
+    {
+        if (*this != other) {
+            (*_count)--;
+            try_free();
+            this->_ptr = other.get();
+            this->_count = other._count;
+            (*this->_count)++;
+        }
+        return *this;
+    }
+    template <typename B>
+    shared_ptr<T>& operator=(const shared_ptr<B>& other)
+    {
+        if (*this != other) {
+            (*_count)--;
+            try_free();
+            this->_ptr = other.get();
+            this->_count = other._count;
+            (*this->_count)++;
+        }
+        return *this;
+    }
+    T* operator->() const { return _ptr; }
+    T& operator*() const noexcept { return *_ptr; }
+    T* get() const { return _ptr; }
+    bool operator==(const shared_ptr<T>& other) const { return _ptr == other._ptr && _count == other._count; }
+    bool operator!=(const shared_ptr<T>& other) const { return !(*this == other); }
+
+    template <typename B>
+    bool operator==(const shared_ptr<B>& other) const { return _ptr == other._ptr && _count == other._count; }
+    template <typename B>
+    bool operator!=(const shared_ptr<B>& other) const { return !(*this == other); }
+
+    bool operator==(std::nullptr_t other) const { return _ptr == nullptr; }
+    bool operator!=(std::nullptr_t other) const { return _ptr != nullptr; }
+
+    int* _count = nullptr; // @todo make private and thread-safe.
+    T* _ptr = nullptr;
+
+private:
+    void try_free()
+    {
         _ASSERTE(*_count >= 0);
         if (*_count == 0) {
             if (_count)
@@ -65,24 +110,6 @@ public:
                 delete _ptr;
         }
     }
-    template <typename B>
-    shared_ptr& operator=(const shared_ptr<B>& other)
-    {
-        this->_ptr = other.get();
-        this->_count = other._count;
-        (*this->_count)++;
-        return *this;
-    }
-    T* operator->() const { return _ptr; }
-    T& operator*() const noexcept { return *_ptr; }
-    T* get() const { return _ptr; }
-    bool operator==(const shared_ptr<T>& other) const { return _ptr == other._ptr && _count == other._count; }
-    bool operator!=(const shared_ptr<T>& other) const { return !(*this == other); }
-    bool operator==(std::nullptr_t other) const { return _ptr == nullptr; }
-
-    int* _count = nullptr; // @todo make private and thread-safe.
-private:
-    T* _ptr = nullptr;
 };
 
 template <typename T, typename... Args>
@@ -175,8 +202,7 @@ public:
     {
         if (it >= this->begin() && it < this->end()) {
             it->~T();
-            for (auto itt = it; itt < (this->end() - 1); itt++)
-                *itt = *(itt + 1);
+            memmove(it, it + 1, sizeof(T) * (this->end() - it - 1));
             this->length--;
             if ((it + 1) == this->end())
                 return this->end();
