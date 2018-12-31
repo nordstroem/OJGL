@@ -93,8 +93,8 @@ public:
     template <typename B>
     bool operator!=(const shared_ptr<B>& other) const { return !(*this == other); }
 
-    bool operator==(std::nullptr_t other) const { return _ptr == nullptr; }
-    bool operator!=(std::nullptr_t other) const { return _ptr != nullptr; }
+    bool operator==(std::nullptr_t other) const { return _ptr == other; }
+    bool operator!=(std::nullptr_t other) const { return _ptr != other; }
 
     int* _count = nullptr; // @todo make private and thread-safe.
     T* _ptr = nullptr;

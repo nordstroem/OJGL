@@ -68,6 +68,12 @@ void GLState::render()
     glFinish();
 }
 
+Music& GLState::music()
+{
+    _ASSERTE(_music != nullptr);
+    return *_music;
+}
+
 Scene& GLState::operator[](size_t i)
 {
     return _scenes[i];

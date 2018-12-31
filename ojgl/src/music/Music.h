@@ -12,6 +12,8 @@ class Music {
 
 public:
     explicit Music(unsigned char* song);
+    Music(const Music& other) = delete;
+    Music& operator=(const Music& other) = delete;
     ~Music();
 
     void play();

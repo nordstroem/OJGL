@@ -32,6 +32,7 @@ public:
     void clearScenes();
     bool end();
 
+    Music& music();
     Duration relativeSceneTime();
     Duration elapsedTime() const;
 
