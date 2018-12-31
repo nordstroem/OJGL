@@ -78,6 +78,9 @@ int main(int argc, char* argv[])
     ShaderReader::preLoad("shaders/lavaScene2.fs", resources::fragment::lavaScene2);
     ShaderReader::preLoad("shaders/outro.fs", resources::fragment::outro);
 
+    // @todo move this into GLState? We can return a const reference to window.
+    // and perhaps have a unified update() which does getMessages(), music sync update and
+    // so on.
     Window window(width, height, "Eldur - OJ", fullScreen, showCursor);
     GLState glState(resources::songs::song);
     buildSceneGraph(glState, width, height);
@@ -123,11 +126,10 @@ int main(int argc, char* argv[])
         glState << Uniform1f("iTime", glState.relativeSceneTime().toSeconds());
         glState << Uniform1f("iGlobalTime", glState.relativeSceneTime().toSeconds() - 2.f);
         glState << Uniform2f("iResolution", static_cast<float>(width), static_cast<float>(height));
-
-        glState.render();
+        glState.update();
 
         timer.end();
-        ojstd::sleep(16); // Are OpenGL calls async?
+        ojstd::sleep(1); // Are OpenGL calls async?
     }
 }
 

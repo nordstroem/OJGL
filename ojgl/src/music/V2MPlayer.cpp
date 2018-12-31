@@ -266,7 +266,8 @@ void V2MPlayer::Tick()
             int index = m_state.bar * 32 + (m_state.beat * 128 + m_state.tick) / 16;
             Duration time = Duration::milliseconds(_barTickToMs[index]);
             ojstd::lock_guard<ojstd::mutex> lock(_syncEventsMutex);
-            _syncEvents.push_back(SyncEvent(ch, sc.lastnte, sc.lastvel, time));
+            if (sc.lastvel > 0) // @todo support note ending.
+                _syncEvents.push_back(SyncEvent(ch, sc.lastnte, sc.lastvel, time));
         }
         UPDATENT3(sc.notenr, sc.notent, sc.noteptr, bc.notenum);
     }

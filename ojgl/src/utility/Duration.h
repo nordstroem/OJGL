@@ -38,7 +38,7 @@ public:
     //friend std::ostream& operator<<(std::ostream& left, const Duration& right);
 
 public:
-    static Duration seconds(long s) { return Duration(s * 1000); }
+    static Duration seconds(double s) { return Duration(static_cast<long>(s * 1000)); }
     static Duration milliseconds(long ms) { return Duration(ms); }
     //static Duration nanoseconds(long long ns) { return Duration(std::chrono::nanoseconds(ns)); }
     static Duration maximum();

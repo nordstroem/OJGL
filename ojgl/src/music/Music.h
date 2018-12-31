@@ -18,14 +18,14 @@ public:
     void updateSync();
     void setTime(Duration time);
     void stop();
-
+    Duration elapsedTime() const;
     ojstd::unordered_map<int, SyncChannel>& syncChannels();
 
 private:
     ojstd::shared_ptr<V2MPlayer> _player;
     void _initSync();
     unsigned char* _song;
-    Timepoint _startTime;
+    Duration _syncOffset;
     ojstd::unordered_map<int, SyncChannel> _syncChannels;
 };
 

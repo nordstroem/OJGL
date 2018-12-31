@@ -1,15 +1,15 @@
 #include "GLState.h"
 #include "Uniform.hpp"
+#include "utility/Log.h"
 #include "utility/Timepoint.h"
 #include "winapi/gl_loader.h"
 
 namespace ojgl {
 
-GLState::GLState(unsigned char* song)
-    : _startTime(Timepoint::now())
-    , _pauseTime(Timepoint::now())
-    , _paused(false)
+GLState::GLState(unsigned char* song, Clock clock)
+    : _paused(false)
     , _music(song)
+    , _clock(clock)
 {
     load_gl_functions();
     setupQuad();
@@ -37,7 +37,7 @@ GLState::~GLState()
 
 void GLState::initialize()
 {
-    _startTime = Timepoint::now();
+    _systemClockStartTime = Timepoint::now();
     _music.play();
 }
 
@@ -59,10 +59,6 @@ void GLState::render()
     glBindVertexArray(0);
     glFlush();
     glFinish();
-
-    // @todo move this.
-    if (!this->isPaused())
-        _music.updateSync();
 }
 
 Scene& GLState::operator[](size_t i)
@@ -75,6 +71,13 @@ Scene& GLState::operator[](const ojstd::string& name)
     auto res = ojstd::find_if(_scenes.begin(), _scenes.end(), [&](const auto& s) { return s.name() == name; });
     _ASSERTE(res != _scenes.end());
     return *res;
+}
+
+void GLState::update()
+{
+    this->render();
+    if (!this->isPaused())
+        _music.updateSync();
 }
 
 void GLState::setupQuad()
@@ -97,11 +100,14 @@ void GLState::setupQuad()
 
 Duration GLState::elapsedTime() const
 {
-    auto elapsed = Timepoint::now() - _startTime;
-    if (_paused) {
-        elapsed = _pauseTime - _startTime;
+    if (_paused)
+        return _pauseTime;
+    if (_clock == Clock::System) {
+        return Timepoint::now() - _systemClockStartTime;
+    } else {
+        // @todo assert that the DirectSound is active.
+        return _music.elapsedTime();
     }
-    return elapsed;
 }
 
 bool GLState::isPaused()
@@ -114,25 +120,27 @@ void GLState::clearScenes()
     _scenes.clear();
 }
 
-Timepoint GLState::startTime() const
-{
-    return this->_startTime;
-}
-
 void GLState::changeTime(Duration time)
 {
-    _startTime -= time;
-    _music.setTime(this->elapsedTime());
+    this->setTime(this->elapsedTime() + time);
+}
+
+void GLState::setTime(Duration time)
+{
+    _systemClockStartTime = Timepoint::now() - time;
+    _music.setTime(time);
+    _pauseTime = time;
 }
 
 void GLState::togglePause()
 {
-    if (_paused) {
-        _startTime += Timepoint::now() - _pauseTime;
+    if (!_paused) {
+        _pauseTime = this->elapsedTime();
+        _music.stop();
+    } else {
+        this->setTime(_pauseTime);
     }
     _paused = !_paused;
-    _pauseTime = Timepoint::now();
-    _music.setTime(this->elapsedTime());
 }
 
 Duration GLState::relativeSceneTime()
@@ -150,9 +158,9 @@ Duration GLState::relativeSceneTime()
 
 void GLState::restart()
 {
-    _startTime = Timepoint::now();
-    _pauseTime = _startTime;
-    _music.setTime(this->elapsedTime());
+    _systemClockStartTime = Timepoint::now();
+    _paused = false;
+    _music.setTime(Duration::milliseconds(0));
 }
 
 void GLState::nextScene()
@@ -166,7 +174,6 @@ void GLState::nextScene()
         }
         t = t + v.duration();
     }
-    _music.setTime(this->elapsedTime());
 }
 
 void GLState::previousScene()
@@ -182,6 +189,5 @@ void GLState::previousScene()
         t = t + v.duration();
         prevDur = v.duration();
     }
-    _music.setTime(this->elapsedTime());
 }
 } //namespace ojgl

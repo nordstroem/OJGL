@@ -10,7 +10,6 @@ namespace ojgl {
 Music::Music(unsigned char* song)
     : _song(song)
     , _player(ojstd::make_shared<V2MPlayer>())
-    , _startTime(Timepoint::now())
 {
 }
 
@@ -63,10 +62,15 @@ void Music::_initSync()
 
 void Music::updateSync()
 {
-    auto time = Timepoint::now() - _startTime;
+    auto time = this->elapsedTime();
     for (auto& kv : _syncChannels) {
         kv.second.tick(time);
     }
+}
+
+Duration Music::elapsedTime() const
+{
+    return Duration::seconds(dsGetCurSmp() / (44100 * 4.0)) + _syncOffset;
 }
 
 void Music::stop()
@@ -93,6 +97,6 @@ void Music::setTime(Duration time)
     _initSync();
     dsInit(this->_player->RenderProxy, this->_player.get(), GetForegroundWindow());
     this->_player->Play(ms);
-    _startTime = Timepoint::now() - time;
+    _syncOffset = time;
 }
 } //namespace ojgl

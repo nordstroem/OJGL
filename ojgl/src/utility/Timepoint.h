@@ -4,13 +4,15 @@
 namespace ojgl {
 
 class Timepoint {
-
+public:
     explicit Timepoint(long timepoint)
         : _timepoint(timepoint)
     {
     }
-
-public:
+    Timepoint()
+        : _timepoint(0)
+    {
+    }
     Timepoint operator-(const Duration& other) { return Timepoint(_timepoint - other._duration); }
     Timepoint operator+(const Duration& other) { return Timepoint(_timepoint + other._duration); }
     Timepoint& operator-=(const Duration& other);

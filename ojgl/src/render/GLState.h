@@ -7,16 +7,23 @@
 
 namespace ojgl {
 
+enum class Clock {
+    System,
+    Music
+};
+
 class GLState {
 public:
-    explicit GLState(unsigned char* song);
+    GLState();
+    explicit GLState(unsigned char* song, Clock clock = Clock::Music);
     GLState(const GLState& other) = delete;
     GLState& operator=(const GLState& other) = delete;
     ~GLState();
 
     void initialize();
-    void render();
+    void update();
     void changeTime(Duration time);
+    void setTime(Duration time);
     void restart();
     void nextScene();
     void previousScene();
@@ -25,7 +32,6 @@ public:
     void clearScenes();
     bool end();
 
-    Timepoint startTime() const;
     Duration relativeSceneTime();
     Duration elapsedTime() const;
 
@@ -52,14 +58,16 @@ public:
 
 private:
     void setupQuad();
+    void render();
 
     ojstd::vector<Scene> _scenes;
-    Timepoint _startTime;
-    Timepoint _pauseTime;
+    Timepoint _systemClockStartTime;
+    Duration _pauseTime;
     unsigned int _vaoID;
     unsigned int _vboID;
     bool _paused;
     Music _music;
+    Clock _clock = Clock::System;
 };
 
 } // namespace ojgl
