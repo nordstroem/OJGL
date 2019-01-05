@@ -44,6 +44,11 @@ void buildSceneGraph(GLState& glState, int x, int y)
 
 int main(int argc, char* argv[])
 {
+    Window popup;
+    /* while (true) {
+        ojstd::sleep(10);
+    }*/
+
     OJ_UNUSED(argc);
     OJ_UNUSED(argv);
     int width = 1280;

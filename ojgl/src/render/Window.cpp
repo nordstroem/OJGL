@@ -24,6 +24,97 @@ public:
     bool _close = false;
 };
 
+#ifndef UNICODE
+#define UNICODE
+#endif
+
+#include <windows.h>
+
+LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
+int WINAPI wWinMain(HINSTANCE hInstance)
+{
+    // Register the window class.
+    ojstd::string CLASS_NAME = "Sample Window Class";
+
+    WNDCLASS wc = {};
+
+    wc.lpfnWndProc = WindowProc;
+    wc.hInstance = hInstance;
+    wc.lpszClassName = CLASS_NAME.c_str();
+
+    RegisterClass(&wc);
+
+    // Create the window.
+
+    HWND hwnd = CreateWindowEx(0, CLASS_NAME.c_str(), "Learn to Program Windows",
+        WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+        NULL, NULL, hInstance, NULL);
+
+    if (hwnd == NULL) {
+        return 0;
+    }
+
+    //HWND checkbox = CreateWindowEx(NULL, CLASS_NAME.c_str(), "Checkbox", BS_CHECKBOX, 50, 50, 50, 50, hwnd, NULL, NULL, NULL);
+
+    ShowWindow(hwnd, 1);
+
+    // Run the message loop.
+
+    MSG msg = {};
+    while (GetMessage(&msg, NULL, 0, 0)) {
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
+
+    return 0;
+}
+
+LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+    switch (uMsg) {
+    case WM_DESTROY:
+        PostQuitMessage(0);
+        return 0;
+    case WM_CREATE: {
+        CreateWindow(TEXT("button"), TEXT("Play"),
+            WS_VISIBLE | WS_CHILD,
+            20, 50, 80, 25,
+            hwnd, (HMENU)1, NULL, NULL);
+
+        CreateWindow(TEXT("button"), TEXT("Quit"),
+            WS_VISIBLE | WS_CHILD,
+            120, 50, 80, 25,
+            hwnd, (HMENU)2, NULL, NULL);
+
+        CreateWindow(TEXT("BUTTON"), "Fullscreen", BS_CHECKBOX | WS_VISIBLE | WS_CHILD, 250, 50, 150, 150, hwnd, (HMENU)3, NULL, NULL);
+        break;
+    }
+    case WM_PAINT: {
+        PAINTSTRUCT ps;
+        HDC hdc = BeginPaint(hwnd, &ps);
+
+        FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
+        EndPaint(hwnd, &ps);
+        break;
+    }
+    case WM_CLOSE:
+        DestroyWindow(hwnd);
+        //PostQuitMessage(0);
+        return 0;
+    }
+    return DefWindowProc(hwnd, uMsg, wParam, lParam);
+}
+
+Window::Window()
+{
+    static HINSTANCE hInstance = nullptr;
+
+    hInstance = GetModuleHandle(NULL);
+
+    wWinMain(hInstance);
+}
+
 Window::Window(unsigned width, unsigned height, ojstd::string title, bool fullScreen, bool showCursor)
     : _priv(ojstd::make_shared<Details>(width, height))
 {
