@@ -10,6 +10,7 @@
 #include <windows.h>
 #include <string.h>
 #include "libct.h"
+#include <malloc.h>
 
 BEGIN_EXTERN_C
 

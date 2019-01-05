@@ -1,6 +1,4 @@
 #include "gl_loader.h"
-#define WIN32_LEAN_AND_MEAN
-#define WIN32_EXTRA_LEAN
 #include "Windows.h"
 
 void* GetAnyGLFuncAddress(const char* name)

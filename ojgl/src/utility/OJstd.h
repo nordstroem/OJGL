@@ -4,13 +4,13 @@
 namespace ojstd {
 
 template <typename T>
-T max2(const T& a, const T& b)
+T max(const T& a, const T& b)
 {
     return a >= b ? a : b;
 }
 
 template <typename T>
-T min2(const T& a, const T& b)
+T min(const T& a, const T& b)
 {
     return a <= b ? a : b;
 }
@@ -127,7 +127,7 @@ public:
     }
     vector(const vector<T>& other)
     {
-        this->capacity = max2(MIN_CAPACITY, other.size());
+        this->capacity = max(MIN_CAPACITY, other.size());
         this->values = (T*)calloc(this->capacity, sizeof(T));
         this->length = other.size();
         for (int i = 0; i < other.size(); i++) {
@@ -136,7 +136,7 @@ public:
     }
     vector(const std::initializer_list<T>& other)
     {
-        this->capacity = max2(MIN_CAPACITY, static_cast<int>(other.size()));
+        this->capacity = max(MIN_CAPACITY, static_cast<int>(other.size()));
         this->values = (T*)calloc(this->capacity, sizeof(T));
         this->length = other.size();
         int i = 0;
@@ -160,7 +160,7 @@ public:
         this->clear();
         if (this->values)
             free(this->values);
-        this->capacity = max2(MIN_CAPACITY, other.size());
+        this->capacity = max(MIN_CAPACITY, other.size());
         this->values = (T*)calloc(this->capacity, sizeof(T));
         this->length = other.size();
         for (int i = 0; i < other.size(); i++) {
@@ -187,14 +187,14 @@ public:
     void emplace_back(Args&&... args)
     {
         if (length == capacity)
-            this->resize(max2(MIN_CAPACITY, this->capacity * 2));
+            this->resize(max(MIN_CAPACITY, this->capacity * 2));
         new (values + length) T(std::forward<Args>(args)...);
         length++;
     }
     void push_back(const T& val)
     {
         if (length == capacity)
-            this->resize(max2(MIN_CAPACITY, this->capacity * 2));
+            this->resize(max(MIN_CAPACITY, this->capacity * 2));
         new (values + length) T(val);
         length++;
     }

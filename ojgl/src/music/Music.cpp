@@ -45,8 +45,8 @@ void Music::_initSync()
             channelMaxNote[channel] = std::numeric_limits<int>::lowest();
         }
 
-        channelMinNote[channel] = ojstd::min2(channelMinNote[channel], note);
-        channelMaxNote[channel] = ojstd::max2(channelMaxNote[channel], note);
+        channelMinNote[channel] = ojstd::min(channelMinNote[channel], note);
+        channelMaxNote[channel] = ojstd::max(channelMaxNote[channel], note);
     }
 
     for (auto& c : channels) {
