@@ -55,7 +55,55 @@ int WINAPI wWinMain(HINSTANCE hInstance)
         return 0;
     }
 
+    DEVMODE dm = { 0 };
+    dm.dmSize = sizeof(dm);
+    ojstd::vector<ojstd::Pair<int, int>> resolutions;
+    ojstd::unordered_set<ojstd::Pair<int, int>> checkedResolutions;
+
+    for (int iModeNum = 0; EnumDisplaySettings(NULL, iModeNum, &dm) != 0; iModeNum++) {
+        ojstd::Pair<int, int> res(dm.dmPelsWidth, dm.dmPelsHeight);
+        if (checkedResolutions.find(res) == checkedResolutions.end()) {
+            resolutions.push_back(res);
+            checkedResolutions.insert(res);
+        }
+        LOG_INFO("Mode #" << iModeNum << " = " << dm.dmPelsWidth << "x" << dm.dmPelsHeight << " dmBitsPerPel " << dm.dmBitsPerPel << " dmDisplayFrequency " << dm.dmDisplayFrequency);
+    }
+
+    for (int i = 0; i < resolutions.size(); i++) {
+        LOG_INFO("Res " << resolutions[i].first << "x" << resolutions[i].second);
+    }
+
     //HWND checkbox = CreateWindowEx(NULL, CLASS_NAME.c_str(), "Checkbox", BS_CHECKBOX, 50, 50, 50, 50, hwnd, NULL, NULL, NULL);
+
+    CreateWindow(TEXT("button"), TEXT("Play"),
+        WS_VISIBLE | WS_CHILD,
+        20, 50, 80, 25,
+        hwnd, (HMENU)1, NULL, NULL);
+
+    CreateWindow(TEXT("button"), TEXT("Quit"),
+        WS_VISIBLE | WS_CHILD,
+        120, 50, 80, 25,
+        hwnd, (HMENU)2, NULL, NULL);
+
+    CreateWindow(TEXT("BUTTON"), "Fullscreen", BS_CHECKBOX | WS_VISIBLE | WS_CHILD, 250, 50, 150, 150, hwnd, (HMENU)3, NULL, NULL);
+
+    HWND hWndComboBox = CreateWindow("ComboBox", TEXT(""),
+        CBS_DROPDOWN | CBS_HASSTRINGS | WS_CHILD | WS_OVERLAPPED | WS_VISIBLE | WS_VSCROLL,
+        400, 50, 200, 200, hwnd, (HMENU)4, NULL, // HINST_THISCOMPONENT
+        NULL);
+
+    for (int i = 0; i < resolutions.size(); ++i) {
+        ojstd::string res;
+        res.append(ojstd::to_string(resolutions[i].first));
+        res.append("x");
+        res.append(ojstd::to_string(resolutions[i].second));
+        // Add string to combobox.
+        SendMessage(hWndComboBox, (UINT)CB_ADDSTRING, (WPARAM)0, (LPARAM)res.c_str());
+    }
+
+    // Send the CB_SETCURSEL message to display an initial item
+    //  in the selection field
+    SendMessage(hWndComboBox, CB_SETCURSEL, (WPARAM)2, (LPARAM)0);
 
     ShowWindow(hwnd, 1);
 
@@ -77,17 +125,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         PostQuitMessage(0);
         return 0;
     case WM_CREATE: {
-        CreateWindow(TEXT("button"), TEXT("Play"),
-            WS_VISIBLE | WS_CHILD,
-            20, 50, 80, 25,
-            hwnd, (HMENU)1, NULL, NULL);
 
-        CreateWindow(TEXT("button"), TEXT("Quit"),
-            WS_VISIBLE | WS_CHILD,
-            120, 50, 80, 25,
-            hwnd, (HMENU)2, NULL, NULL);
-
-        CreateWindow(TEXT("BUTTON"), "Fullscreen", BS_CHECKBOX | WS_VISIBLE | WS_CHILD, 250, 50, 150, 150, hwnd, (HMENU)3, NULL, NULL);
         break;
     }
     case WM_PAINT: {

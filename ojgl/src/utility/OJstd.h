@@ -242,6 +242,8 @@ struct Pair {
         , second(second)
     {
     }
+	bool operator==(const Pair<First, Second>& other) const { return first == other.first && second == other.second; }
+
     First first;
     Second second;
 };

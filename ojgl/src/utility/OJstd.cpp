@@ -1,5 +1,5 @@
-#include "OJstd.h"
 #include "Macros.h"
+#include "OJstd.h"
 #include "windows.h"
 #include <stdlib.h>
 #include <string.h>
@@ -80,9 +80,16 @@ void string::append(const string& other)
 
 string to_string(size_t i)
 {
-    _ASSERTE(i < 10);
-    char c[2] = { '0' + static_cast<char>(i), '\0' };
-    return string(c);
+    _ASSERTE(i >= 0);
+    int len = 1;
+    string s;
+    do {
+        char c[2] = { '0' + static_cast<char>(i % 10), '\0' };
+        s = string(c) + s;
+        i /= 10;
+    } while (i != 0);
+
+    return s;
 }
 
 class mutex::details {
