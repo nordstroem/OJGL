@@ -32,6 +32,11 @@ public:
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
+constexpr int PLAY = 1;
+constexpr int QUIT = 2;
+constexpr int FULL = 3;
+constexpr int RESOLUTION = 4;
+
 int WINAPI wWinMain(HINSTANCE hInstance)
 {
     // Register the window class.
@@ -78,18 +83,18 @@ int WINAPI wWinMain(HINSTANCE hInstance)
     CreateWindow(TEXT("button"), TEXT("Play"),
         WS_VISIBLE | WS_CHILD,
         20, 50, 80, 25,
-        hwnd, (HMENU)1, NULL, NULL);
+        hwnd, (HMENU)PLAY, NULL, NULL);
 
     CreateWindow(TEXT("button"), TEXT("Quit"),
         WS_VISIBLE | WS_CHILD,
         120, 50, 80, 25,
-        hwnd, (HMENU)2, NULL, NULL);
+        hwnd, (HMENU)QUIT, NULL, NULL);
 
-    CreateWindow(TEXT("BUTTON"), "Fullscreen", BS_CHECKBOX | WS_VISIBLE | WS_CHILD, 250, 50, 150, 150, hwnd, (HMENU)3, NULL, NULL);
+    CreateWindow(TEXT("BUTTON"), "Fullscreen", BS_CHECKBOX | WS_VISIBLE | WS_CHILD, 250, 50, 150, 150, hwnd, (HMENU)FULL, NULL, NULL);
 
     HWND hWndComboBox = CreateWindow("ComboBox", TEXT(""),
         CBS_DROPDOWN | CBS_HASSTRINGS | WS_CHILD | WS_OVERLAPPED | WS_VISIBLE | WS_VSCROLL,
-        400, 50, 200, 200, hwnd, (HMENU)4, NULL, // HINST_THISCOMPONENT
+        400, 50, 200, 200, hwnd, (HMENU)RESOLUTION, NULL, // HINST_THISCOMPONENT
         NULL);
 
     for (int i = 0; i < resolutions.size(); ++i) {
@@ -140,6 +145,27 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         DestroyWindow(hwnd);
         //PostQuitMessage(0);
         return 0;
+    case WM_COMMAND:
+        if (HIWORD(wParam) == BN_CLICKED && LOWORD(wParam) == PLAY) {
+            LOG_INFO("Play button clicked");
+            DestroyWindow(hwnd);
+        }
+
+        if (HIWORD(wParam) == CBN_SELCHANGE && LOWORD(wParam) == RESOLUTION) {
+            int index = SendMessage((HWND)lParam, (UINT)CB_GETCURSEL, (WPARAM)0, (LPARAM)0);
+            LOG_INFO("Selected list item " << index);
+        }
+
+        if (LOWORD(wParam) == FULL) {
+            if (IsDlgButtonChecked(hwnd, FULL)) {
+                LOG_INFO("Fullscreen unchecked");
+                CheckDlgButton(hwnd, FULL, BST_UNCHECKED);
+            } else {
+                LOG_INFO("Fullscreen checked");
+                CheckDlgButton(hwnd, FULL, BST_CHECKED);
+            }
+        }
+        break;
     }
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
