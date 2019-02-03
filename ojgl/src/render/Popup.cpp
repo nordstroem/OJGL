@@ -41,14 +41,28 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         EndPaint(hwnd, &ps);
         break;
     }
+    case WM_CTLCOLORSTATIC: {
+        static HBRUSH hBrushColor;
+        if (!hBrushColor) {
+            hBrushColor = CreateSolidBrush(RGB(255, 255, 255));
+            SetBkColor((HDC)wParam, RGB(255, 255, 255));
+        }
+        return (LRESULT)hBrushColor;
+    }
     case WM_CLOSE:
         DestroyWindow(hwnd);
         //PostQuitMessage(0);
+        exit(0);
         return 0;
     case WM_COMMAND:
         if (HIWORD(wParam) == BN_CLICKED && LOWORD(wParam) == PLAY) {
             LOG_INFO("Play button clicked");
             DestroyWindow(hwnd);
+        }
+
+        if (HIWORD(wParam) == BN_CLICKED && LOWORD(wParam) == QUIT) {
+            LOG_INFO("Quit button clicked");
+            exit(0);
         }
 
         if (HIWORD(wParam) == CBN_SELCHANGE && LOWORD(wParam) == RESOLUTION) {
@@ -81,7 +95,7 @@ popup::Data popup::show()
     hInstance = GetModuleHandle(NULL);
 
     // Register the window class.
-    ojstd::string CLASS_NAME = "Sample Window Class";
+    ojstd::string CLASS_NAME = "OJ Class";
 
     WNDCLASS wc = {};
 
@@ -91,11 +105,25 @@ popup::Data popup::show()
 
     RegisterClass(&wc);
 
-    // Create the window.
+    constexpr int width = 200;
+    constexpr int height = 200;
 
+    // Create the window.
+    auto style = WS_OVERLAPPED | WS_SYSMENU;
+    style &= ~(WS_CAPTION | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU);
     HWND hwnd = CreateWindowEx(0, CLASS_NAME.c_str(), "OJ",
-        WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+        style, CW_USEDEFAULT, CW_USEDEFAULT, width, height,
         NULL, NULL, hInstance, NULL);
+
+    HMONITOR hmon = MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST);
+    MONITORINFO mi = { sizeof(mi) };
+    if (!GetMonitorInfo(hmon, &mi)) {
+        LOG_INFO("Can not retrieve monitor info.");
+    }
+
+    int defaultWidth = mi.rcMonitor.right - mi.rcMonitor.left;
+    int defaultHeight = mi.rcMonitor.bottom - mi.rcMonitor.top;
+    SetWindowPos(hwnd, HWND_TOP, defaultWidth / 2 - width / 2, defaultHeight / 2 - height / 2, width, height, SWP_SHOWWINDOW | SWP_NOZORDER);
 
     if (hwnd == NULL) {
         LOG_ERROR("hwnd == NULL");
@@ -130,19 +158,19 @@ popup::Data popup::show()
 
     CreateWindow(TEXT("button"), TEXT("Play"),
         WS_VISIBLE | WS_CHILD,
-        20, 50, 80, 25,
+        10, 100, 60, 25,
         hwnd, (HMENU)PLAY, NULL, NULL);
 
     CreateWindow(TEXT("button"), TEXT("Quit"),
         WS_VISIBLE | WS_CHILD,
-        120, 50, 80, 25,
+        100, 100, 60, 25,
         hwnd, (HMENU)QUIT, NULL, NULL);
 
-    CreateWindow(TEXT("BUTTON"), "Fullscreen", BS_CHECKBOX | WS_VISIBLE | WS_CHILD, 250, 50, 150, 150, hwnd, (HMENU)FULL, NULL, NULL);
+    CreateWindow(TEXT("BUTTON"), "Fullscreen", BS_CHECKBOX | WS_VISIBLE | WS_CHILD, 10, 50, 150, 40, hwnd, (HMENU)FULL, NULL, NULL);
 
     HWND hWndComboBox = CreateWindow("ComboBox", TEXT(""),
         CBS_DROPDOWN | CBS_HASSTRINGS | WS_CHILD | WS_OVERLAPPED | WS_VISIBLE | WS_VSCROLL,
-        400, 50, 200, 200, hwnd, (HMENU)RESOLUTION, NULL, // HINST_THISCOMPONENT
+        10, 20, 150, 150, hwnd, (HMENU)RESOLUTION, NULL, // HINST_THISCOMPONENT
         NULL);
 
     for (int i = 0; i < resolutions.size(); ++i) {
@@ -156,7 +184,13 @@ popup::Data popup::show()
 
     // Send the CB_SETCURSEL message to display an initial item
     //  in the selection field
-    SendMessage(hWndComboBox, CB_SETCURSEL, (WPARAM)2, (LPARAM)0);
+    auto pred = [defaultWidth, defaultHeight](auto p) { return p.first == defaultWidth && p.second == defaultHeight; };
+    int index = ojstd::find_if(resolutions.begin(), resolutions.end(), pred) - resolutions.begin();
+    _ASSERTE(index < resolutions.size());
+    if (index >= resolutions.size())
+        index = 0;
+    SendMessage(hWndComboBox, CB_SETCURSEL, (WPARAM)index, (LPARAM)0);
+    callbackData.reslistindex = index;
 
     ShowWindow(hwnd, 1);
 
