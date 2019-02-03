@@ -1,6 +1,7 @@
 
 #include "EmbeddedResources.h"
 #include "render/GLState.h"
+#include "render/Popup.h"
 #include "render/Texture.h"
 #include "render/Window.h"
 #include "utility/Log.h"
@@ -44,17 +45,17 @@ void buildSceneGraph(GLState& glState, int x, int y)
 
 int main(int argc, char* argv[])
 {
-    Window popup;
+    auto popupData = popup::show();
     /* while (true) {
         ojstd::sleep(10);
     }*/
 
     OJ_UNUSED(argc);
     OJ_UNUSED(argv);
-    int width = 1280;
-    int height = 720;
-    bool fullScreen = false;
-    bool showCursor = true;
+    int width = popupData.width;
+    int height = popupData.height;
+    bool fullScreen = popupData.full;
+    bool showCursor = !fullScreen;
 
     /*#ifndef _DEBUG
     fullScreen = true;

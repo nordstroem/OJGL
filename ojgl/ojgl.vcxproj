@@ -246,6 +246,7 @@
     <ClCompile Include="src\music\V2MPlayer.cpp" />
     <ClCompile Include="src\render\Buffer.cpp" />
     <ClCompile Include="src\render\GLState.cpp" />
+    <ClCompile Include="src\render\Popup.cpp" />
     <ClCompile Include="src\render\Scene.cpp" />
     <ClCompile Include="src\render\Texture.cpp" />
     <ClCompile Include="src\render\Uniform.cpp" />
@@ -265,6 +266,7 @@
     <ClInclude Include="src\OJGL.h" />
     <ClInclude Include="src\render\Buffer.h" />
     <ClInclude Include="src\render\GLState.h" />
+    <ClInclude Include="src\render\Popup.h" />
     <ClInclude Include="src\render\Scene.h" />
     <ClInclude Include="src\render\Texture.h" />
     <ClInclude Include="src\render\Uniform.hpp" />

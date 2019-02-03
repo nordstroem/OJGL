@@ -5,6 +5,7 @@
 namespace ojgl {
 
 class Window {
+
 public:
     Window();
     Window(unsigned width, unsigned height, ojstd::string title, bool fullScreen, bool showCursor);
