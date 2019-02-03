@@ -46,9 +46,6 @@ void buildSceneGraph(GLState& glState, int x, int y)
 int main(int argc, char* argv[])
 {
     auto popupData = popup::show();
-    /* while (true) {
-        ojstd::sleep(10);
-    }*/
 
     OJ_UNUSED(argc);
     OJ_UNUSED(argv);
