@@ -16,12 +16,10 @@ void buildSceneGraph(GLState& glState, int x, int y)
     glState.clearScenes();
 
     {
-        auto edison = Buffer::construct(x, y, "intro", "shaders/edison.vs", "shaders/lavaIntro.fs");
-        auto fxaa = Buffer::construct(x, y, "fxaa", "shaders/fxaa.vs", "shaders/fxaa.fs", edison);
-        auto post = Buffer::construct(x, y, "post", "shaders/post.vs", "shaders/post.fs", fxaa);
-        glState.addScene("introScene", post, Duration::seconds(22));
+        auto edison = Buffer::construct(BufferFormat::Meshes, x, y, "intro", "shaders/edison.vs", "shaders/lavaIntro.fs");
+        glState.addScene("introScene", edison, Duration::seconds(22));
     }
-    {
+    /*{
         auto noise = Buffer::construct(x, y, "intro", "shaders/demo.vs", "shaders/mountainNoise.fs");
         auto mountain = Buffer::construct(x, y, "fxaa", "shaders/demo.vs", "shaders/mountain.fs", noise);
         auto fxaa = Buffer::construct(x, y, "fxaa", "shaders/fxaa.vs", "shaders/fxaa.fs", mountain);
@@ -40,18 +38,18 @@ void buildSceneGraph(GLState& glState, int x, int y)
         auto fxaa = Buffer::construct(x, y, "fxaa", "shaders/fxaa.vs", "shaders/fxaa.fs", edison);
         auto post = Buffer::construct(x, y, "post", "shaders/post.vs", "shaders/post.fs", fxaa);
         glState.addScene("introScene", post, Duration::seconds(40));
-    }
+    }*/
 }
 
 int main(int argc, char* argv[])
 {
-    auto popupData = popup::show();
+    //auto popupData = popup::show();
 
     OJ_UNUSED(argc);
     OJ_UNUSED(argv);
-    int width = popupData.width;
-    int height = popupData.height;
-    bool fullScreen = popupData.full;
+    int width = 1920; //popupData.width;
+    int height = 1080; //popupData.height;
+    bool fullScreen = false; //popupData.full;
     bool showCursor = !fullScreen;
 
     /*#ifndef _DEBUG
@@ -125,6 +123,8 @@ int main(int argc, char* argv[])
 #endif
             }
         }
+
+        //glState["scene"]["buffer"] << { Mesh, ModelMatrix }; //Assert correct buffer format.
 
         glState << Uniform1f("iTime", glState.relativeSceneTime().toSeconds());
         glState << Uniform1f("iGlobalTime", glState.relativeSceneTime().toSeconds() - 2.f);

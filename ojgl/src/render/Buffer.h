@@ -1,8 +1,14 @@
 #pragma once
+#include "Mesh.h"
 #include "Uniform.hpp"
 #include "utility/OJstd.h"
 
 namespace ojgl {
+
+enum class BufferFormat {
+    Quad,
+    Meshes
+};
 
 class Buffer {
 
@@ -19,8 +25,9 @@ public:
 
 private:
     template <typename... Args>
-    Buffer(unsigned width, unsigned height, const ojstd::string& name, const ojstd::string& vertexPath, const ojstd::string& fragmentPath, Args&&... buffers)
-        : _inputs({ std::forward<Args>(buffers)... })
+    Buffer(BufferFormat format, unsigned width, unsigned height, const ojstd::string& name, const ojstd::string& vertexPath, const ojstd::string& fragmentPath, Args&&... buffers)
+        : _format(format)
+        , _inputs({ std::forward<Args>(buffers)... })
         , _name(name)
         , _width(width)
         , _height(height)
@@ -28,10 +35,12 @@ private:
         , _fragmentPath(fragmentPath)
     {
         loadShader();
+        _meshes.push_back(Mesh::constructQuad());
     }
 
     void loadShader();
 
+private:
     ojstd::vector<BufferPtr> _inputs;
     const ojstd::string _name;
     unsigned _programID = 0;
@@ -43,6 +52,8 @@ private:
     ojstd::unordered_map<ojstd::string, ojstd::shared_ptr<Uniform1t>> _textures;
     ojstd::string _vertexPath;
     ojstd::string _fragmentPath;
+    BufferFormat _format;
+    ojstd::vector<ojstd::shared_ptr<Mesh>> _meshes;
 
     static constexpr unsigned vertexCount = 6;
 

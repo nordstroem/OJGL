@@ -51,7 +51,6 @@ void GLState::initialize()
 void GLState::render()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glBindVertexArray(_vaoID);
 
     auto t = Duration::milliseconds(0);
     auto elapsed = elapsedTime();
