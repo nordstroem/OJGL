@@ -1,11 +1,44 @@
-#include "Macros.h"
 #include "OJstd.h"
+#include "Macros.h"
+#include "utility/Log.h"
 #include "windows.h"
 #include <stdlib.h>
 #include <string.h>
 #include <utility>
 
 namespace ojstd {
+
+static constexpr float pi = 3.14159265f;
+
+static constexpr float pow(float x, int h)
+{
+    float result = 1.0;
+    for (int i = 0; i < h; i++) {
+        result *= x;
+    }
+    return result;
+}
+
+float sin(float angle)
+{
+    int k = ftoi(angle / pi);
+
+    if ((k > 0 ? k : -k) % 2 == 1)
+        k = k + (angle > 0 ? 1 : -1);
+
+    float sAngle = angle - k * pi;
+    return sAngle - pow(sAngle, 3) / 6.f + pow(sAngle, 5) / 120.f - pow(sAngle, 7) / 5040.f + pow(sAngle, 9) / 362880.f;
+}
+
+float cos(float angle)
+{
+    return sin(angle + pi / 2);
+}
+
+float tan(float angle)
+{
+    return sin(angle) / cos(angle);
+}
 
 string::string(const char* str)
     : len(strlen(str))
@@ -126,4 +159,50 @@ void sleep(int milliseconds)
 {
     Sleep(milliseconds);
 }
+
+int ftoi(float value)
+{
+    int i;
+    _asm {
+        mov  eax,value; //loaded mem to acc
+        rcl  eax,1; //left shift acc to remove the sign
+        mov  ebx,eax; //save the acc
+        mov  edx,4278190080; //clear reg edx;
+        and  eax,edx; //and acc to retrieve the exponent
+        shr  eax,24;
+        sub  eax,7fh; //subtract 7fh(127) to get the actual power 
+        mov  edx,eax; //save acc val power
+        mov  eax,ebx; //retrieve from ebx
+        rcl  eax,8; //trim the left 8 bits that contain the power
+        mov  ebx,eax; //store
+        mov  ecx, 1fh; //subtract 17 h
+        sub  ecx,edx; 
+        mov  edx,00000000h;
+        cmp  ecx,0;
+        je   loop2;
+        shr  eax,1;
+        or   eax,80000000h;        
+loop1:    
+        shr  eax,1; //shift (total bits - power bits);
+        sub  ecx,1;
+        add  edx,1;
+        cmp  ecx,0;
+        ja   loop1;
+loop2:  
+        mov  i, eax;
+
+        //check sign +/-        
+sign:
+        mov  eax,value;
+        and  eax,80000000h;
+        cmp  eax,80000000h;
+        je     putsign;
+    }
+
+    return i;
+
+putsign:
+    return -i;
+}
+
 }

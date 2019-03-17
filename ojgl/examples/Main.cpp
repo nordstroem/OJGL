@@ -80,6 +80,8 @@ int main(int argc, char* argv[])
     ShaderReader::preLoad("shaders/mountainPost.fs", resources::fragment::mountainPost);
     ShaderReader::preLoad("shaders/lavaScene2.fs", resources::fragment::lavaScene2);
     ShaderReader::preLoad("shaders/outro.fs", resources::fragment::outro);
+    ShaderReader::preLoad("shaders/mesh.fs", resources::fragment::mesh);
+    ShaderReader::preLoad("shaders/mesh.vs", resources::vertex::mesh);
 
     // @todo move this into GLState? We can return a const reference to window.
     // and perhaps have a unified update() which does getMessages(), music sync update and
@@ -143,9 +145,8 @@ int main(int argc, char* argv[])
         glState << Uniform1f("iTime", glState.relativeSceneTime().toSeconds());
         glState << Uniform1f("iGlobalTime", glState.relativeSceneTime().toSeconds() - 2.f);
         glState << Uniform2f("iResolution", static_cast<float>(width), static_cast<float>(height));
-        glState << UniformMatrix4fv("M", Matrix::scaling(0.1));
+        glState << UniformMatrix4fv("M", Matrix::scaling(ojstd::sin(glState.relativeSceneTime().toSeconds())));
         glState.update();
-
         timer.end();
         ojstd::sleep(10); // Are OpenGL calls async?
     }
