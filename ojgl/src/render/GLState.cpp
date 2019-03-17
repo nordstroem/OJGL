@@ -55,7 +55,6 @@ void GLState::render()
         t = t + v.duration();
     }
 
-    glBindVertexArray(0);
     glFlush();
     glFinish();
 }
@@ -84,6 +83,13 @@ void GLState::update()
     if (!this->isPaused())
         if (_music != nullptr)
             _music->updateSync();
+
+    // Clear meshes
+    for (auto& v : _scenes) {
+        auto buffers = v.buffers();
+        for (auto& b : buffers)
+            b->clearMeshes();
+    }
 }
 
 Duration GLState::elapsedTime() const
@@ -181,4 +187,18 @@ void GLState::previousScene()
         prevDur = v.duration();
     }
 }
+
+ojstd::string GLState::currentScene()
+{
+    auto t = Duration::milliseconds(0);
+    auto elapsed = elapsedTime();
+    for (auto& v : _scenes) {
+        if (elapsed < v.duration() + t) {
+            return v.name();
+        }
+        t = t + v.duration();
+    }
+    return "";
+}
+
 } //namespace ojgl

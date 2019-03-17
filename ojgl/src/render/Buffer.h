@@ -36,7 +36,7 @@ private:
     {
         loadShader();
         if (_format == BufferFormat::Quad)
-            _meshes.push_back(Mesh::constructQuad());
+            _meshes.push_back({ Mesh::constructQuad(), Matrix::identity() });
     }
 
     void loadShader();
@@ -54,9 +54,7 @@ private:
     ojstd::string _vertexPath;
     ojstd::string _fragmentPath;
     BufferFormat _format;
-    ojstd::vector<ojstd::shared_ptr<Mesh>> _meshes;
-
-    static constexpr unsigned vertexCount = 6;
+    ojstd::vector<ojstd::Pair<ojstd::shared_ptr<Mesh>, Matrix>> _meshes;
 
 public:
     template <typename... Args>
@@ -78,17 +76,16 @@ public:
         return *this;
     }
 
-    inline Buffer& operator<<(const ojstd::shared_ptr<Mesh>& m)
+    inline void insertMesh(const ojstd::shared_ptr<Mesh>& mesh, const Matrix& modelMatrix)
     {
         _ASSERTE(_format == BufferFormat::Meshes);
-        _meshes.push_back(m);
-        return *this;
+        _meshes.push_back({ mesh, modelMatrix });
     }
 
     inline void clearMeshes()
     {
-        _ASSERTE(_format == BufferFormat::Meshes);
-        _meshes.clear();
+        if (_format == BufferFormat::Meshes)
+            _meshes.clear();
     }
 
     auto begin() { return _inputs.begin(); }
