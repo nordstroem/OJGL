@@ -246,6 +246,7 @@
     <ClCompile Include="src\music\V2MPlayer.cpp" />
     <ClCompile Include="src\render\Buffer.cpp" />
     <ClCompile Include="src\render\GLState.cpp" />
+    <ClCompile Include="src\render\Matrix.cpp" />
     <ClCompile Include="src\render\Mesh.cpp" />
     <ClCompile Include="src\render\Popup.cpp" />
     <ClCompile Include="src\render\Scene.cpp" />
@@ -267,6 +268,7 @@
     <ClInclude Include="src\OJGL.h" />
     <ClInclude Include="src\render\Buffer.h" />
     <ClInclude Include="src\render\GLState.h" />
+    <ClInclude Include="src\render\Matrix.h" />
     <ClInclude Include="src\render\Mesh.h" />
     <ClInclude Include="src\render\Popup.h" />
     <ClInclude Include="src\render\Scene.h" />
@@ -292,6 +294,8 @@
     <None Include="examples\shaders\fxaa.vs" />
     <None Include="examples\shaders\lavaIntro.fs" />
     <None Include="examples\shaders\lavaScene2.fs" />
+    <None Include="examples\shaders\mesh.fs" />
+    <None Include="examples\shaders\mesh.vs" />
     <None Include="examples\shaders\mountain.fs" />
     <None Include="examples\shaders\mountainNoise.fs" />
     <None Include="examples\shaders\mountainPost.fs" />

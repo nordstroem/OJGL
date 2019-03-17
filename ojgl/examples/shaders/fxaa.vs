@@ -6,7 +6,6 @@ out vec2 fragCoord;
 
 uniform vec2 iResolution;
 
-
 void main()
 {
 	fragCoord.x = (position.x + 1)/2 * iResolution.x;

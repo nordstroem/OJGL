@@ -11,7 +11,6 @@ GLState::GLState()
     , _clock(Clock::System)
 {
     load_gl_functions();
-    setupQuad();
 }
 
 GLState::GLState(unsigned char* song, Clock clock)
@@ -33,12 +32,6 @@ bool GLState::end()
         t = t + v.duration();
     }
     return true;
-}
-
-GLState::~GLState()
-{
-    glDeleteVertexArrays(1, &_vaoID);
-    glDeleteBuffers(1, &_vboID);
 }
 
 void GLState::initialize()
@@ -91,24 +84,6 @@ void GLState::update()
     if (!this->isPaused())
         if (_music != nullptr)
             _music->updateSync();
-}
-
-void GLState::setupQuad()
-{
-    float vertices[] = {
-        -1, 1, 0, -1, -1, 0, 1, -1, 0,
-        1, -1, 0, 1, 1, 0, -1, 1, 0
-    };
-
-    glGenVertexArrays(1, &_vaoID);
-    glBindVertexArray(_vaoID);
-    glEnableVertexAttribArray(0);
-    glGenBuffers(1, &_vboID);
-    glBindBuffer(GL_ARRAY_BUFFER, _vboID);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), &vertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
 }
 
 Duration GLState::elapsedTime() const

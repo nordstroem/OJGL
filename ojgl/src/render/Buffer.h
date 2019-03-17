@@ -35,7 +35,8 @@ private:
         , _fragmentPath(fragmentPath)
     {
         loadShader();
-        _meshes.push_back(Mesh::constructQuad());
+        if (_format == BufferFormat::Quad)
+            _meshes.push_back(Mesh::constructQuad());
     }
 
     void loadShader();
@@ -75,6 +76,19 @@ public:
     {
         _textures[b.location()] = ojstd::make_shared<Uniform1t>(b);
         return *this;
+    }
+
+    inline Buffer& operator<<(const ojstd::shared_ptr<Mesh>& m)
+    {
+        _ASSERTE(_format == BufferFormat::Meshes);
+        _meshes.push_back(m);
+        return *this;
+    }
+
+    inline void clearMeshes()
+    {
+        _ASSERTE(_format == BufferFormat::Meshes);
+        _meshes.clear();
     }
 
     auto begin() { return _inputs.begin(); }

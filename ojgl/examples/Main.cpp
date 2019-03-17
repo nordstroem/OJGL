@@ -16,8 +16,10 @@ void buildSceneGraph(GLState& glState, int x, int y)
     glState.clearScenes();
 
     {
-        auto edison = Buffer::construct(BufferFormat::Meshes, x, y, "intro", "shaders/edison.vs", "shaders/lavaIntro.fs");
-        glState.addScene("introScene", edison, Duration::seconds(22));
+        auto edison = Buffer::construct(BufferFormat::Meshes, x, y, "intro", "shaders/mesh.vs", "shaders/mesh.fs");
+        auto mountain = Buffer::construct(BufferFormat::Quad, x, y, "fxaa", "shaders/edison.vs", "shaders/lavaScene2.fs", edison);
+
+        glState.addScene("introScene", mountain, Duration::seconds(22));
     }
     /*{
         auto noise = Buffer::construct(x, y, "intro", "shaders/demo.vs", "shaders/mountainNoise.fs");
@@ -87,6 +89,20 @@ int main(int argc, char* argv[])
     buildSceneGraph(glState, width, height);
     glState.initialize();
 
+    ojstd::vector<float> vertices1 = {
+        -0.5, 0.5, 0, -0.5, -0.5, 0, 0.5, -0.5, 0
+    };
+
+    ojstd::vector<float> vertices2 = {
+        -0, 0.5, 0, -0.5, -0.5, 0, 0.5, -0.5, 0
+    };
+
+    auto mesh = Mesh::construct(vertices1);
+    auto mesh2 = Mesh::construct(vertices2);
+
+    glState["introScene"]["intro"] << mesh;
+    glState["introScene"]["intro"] << mesh2;
+
     while (!glState.end() && !window.isClosePressed()) {
         Timer timer;
         timer.start();
@@ -124,11 +140,10 @@ int main(int argc, char* argv[])
             }
         }
 
-        //glState["scene"]["buffer"] << { Mesh, ModelMatrix }; //Assert correct buffer format.
-
         glState << Uniform1f("iTime", glState.relativeSceneTime().toSeconds());
         glState << Uniform1f("iGlobalTime", glState.relativeSceneTime().toSeconds() - 2.f);
         glState << Uniform2f("iResolution", static_cast<float>(width), static_cast<float>(height));
+        glState << UniformMatrix4fv("M", Matrix::scaling(0.1));
         glState.update();
 
         timer.end();

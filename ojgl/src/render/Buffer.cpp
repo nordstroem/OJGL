@@ -67,7 +67,7 @@ void Buffer::render()
 
     for (const auto& mesh : _meshes) {
         glBindVertexArray(mesh->vaoID());
-        glDrawArrays(GL_TRIANGLES, 0, Buffer::vertexCount);
+        glDrawArrays(GL_TRIANGLES, 0, mesh->verticesCount());
     }
 
     glBindVertexArray(0);
