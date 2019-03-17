@@ -1,5 +1,4 @@
 #include "Uniform.hpp"
-#include "utility/Log.h"
 #include "winapi/gl_loader.h"
 
 namespace ojgl {

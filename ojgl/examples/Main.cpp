@@ -16,42 +16,42 @@ void buildSceneGraph(GLState& glState, int x, int y)
     glState.clearScenes();
 
     {
-        auto edison = Buffer::construct(BufferFormat::Meshes, x, y, "intro", "shaders/mesh.vs", "shaders/mesh.fs");
-        auto mountain = Buffer::construct(BufferFormat::Quad, x, y, "fxaa", "shaders/edison.vs", "shaders/lavaScene2.fs", edison);
-
-        glState.addScene("introScene", mountain, Duration::seconds(22));
+        auto edison = Buffer::construct(BufferFormat::Quad, x, y, "intro", "shaders/edison.vs", "shaders/lavaIntro.fs");
+        auto fxaa = Buffer::construct(BufferFormat::Quad, x, y, "fxaa", "shaders/fxaa.vs", "shaders/fxaa.fs", edison);
+        auto post = Buffer::construct(BufferFormat::Quad, x, y, "post", "shaders/post.vs", "shaders/post.fs", fxaa);
+        glState.addScene("introScene", post, Duration::seconds(22));
     }
-    /*{
-        auto noise = Buffer::construct(x, y, "intro", "shaders/demo.vs", "shaders/mountainNoise.fs");
-        auto mountain = Buffer::construct(x, y, "fxaa", "shaders/demo.vs", "shaders/mountain.fs", noise);
-        auto fxaa = Buffer::construct(x, y, "fxaa", "shaders/fxaa.vs", "shaders/fxaa.fs", mountain);
-        auto post = Buffer::construct(x, y, "post", "shaders/demo.vs", "shaders/mountainPost.fs", fxaa);
+    {
+        auto noise = Buffer::construct(BufferFormat::Quad, x, y, "intro", "shaders/demo.vs", "shaders/mountainNoise.fs");
+        auto mountain = Buffer::construct(BufferFormat::Quad, x, y, "fxaa", "shaders/demo.vs", "shaders/mountain.fs", noise);
+        auto fxaa = Buffer::construct(BufferFormat::Quad, x, y, "fxaa", "shaders/fxaa.vs", "shaders/fxaa.fs", mountain);
+        auto post = Buffer::construct(BufferFormat::Quad, x, y, "post", "shaders/demo.vs", "shaders/mountainPost.fs", fxaa);
         glState.addScene("introScene", post, Duration::seconds(77));
     }
 
     {
-        auto edison = Buffer::construct(x, y, "intro", "shaders/edison.vs", "shaders/lavaScene2.fs");
-        auto fxaa = Buffer::construct(x, y, "fxaa", "shaders/fxaa.vs", "shaders/fxaa.fs", edison);
-        auto post = Buffer::construct(x, y, "post", "shaders/post.vs", "shaders/post.fs", fxaa);
+        auto edison = Buffer::construct(BufferFormat::Quad, x, y, "intro", "shaders/edison.vs", "shaders/lavaScene2.fs");
+        auto fxaa = Buffer::construct(BufferFormat::Quad, x, y, "fxaa", "shaders/fxaa.vs", "shaders/fxaa.fs", edison);
+        auto post = Buffer::construct(BufferFormat::Quad, x, y, "post", "shaders/post.vs", "shaders/post.fs", fxaa);
         glState.addScene("introScene", post, Duration::seconds(40));
     }
     {
-        auto edison = Buffer::construct(x, y, "intro", "shaders/edison.vs", "shaders/outro.fs");
-        auto fxaa = Buffer::construct(x, y, "fxaa", "shaders/fxaa.vs", "shaders/fxaa.fs", edison);
-        auto post = Buffer::construct(x, y, "post", "shaders/post.vs", "shaders/post.fs", fxaa);
+        auto edison = Buffer::construct(BufferFormat::Quad, x, y, "intro", "shaders/edison.vs", "shaders/outro.fs");
+        auto fxaa = Buffer::construct(BufferFormat::Quad, x, y, "fxaa", "shaders/fxaa.vs", "shaders/fxaa.fs", edison);
+        auto post = Buffer::construct(BufferFormat::Quad, x, y, "post", "shaders/post.vs", "shaders/post.fs", fxaa);
         glState.addScene("introScene", post, Duration::seconds(40));
-    }*/
+    }
 }
 
 int main(int argc, char* argv[])
 {
-    //auto popupData = popup::show();
+    auto popupData = popup::show();
 
     OJ_UNUSED(argc);
     OJ_UNUSED(argv);
-    int width = 1920; //popupData.width;
-    int height = 1080; //popupData.height;
-    bool fullScreen = false; //popupData.full;
+    int width = popupData.width;
+    int height = popupData.height;
+    bool fullScreen = popupData.full;
     bool showCursor = !fullScreen;
 
     /*#ifndef _DEBUG
@@ -80,8 +80,6 @@ int main(int argc, char* argv[])
     ShaderReader::preLoad("shaders/mountainPost.fs", resources::fragment::mountainPost);
     ShaderReader::preLoad("shaders/lavaScene2.fs", resources::fragment::lavaScene2);
     ShaderReader::preLoad("shaders/outro.fs", resources::fragment::outro);
-    ShaderReader::preLoad("shaders/mesh.fs", resources::fragment::mesh);
-    ShaderReader::preLoad("shaders/mesh.vs", resources::vertex::mesh);
 
     // @todo move this into GLState? We can return a const reference to window.
     // and perhaps have a unified update() which does getMessages(), music sync update and
@@ -90,20 +88,6 @@ int main(int argc, char* argv[])
     GLState glState(resources::songs::song);
     buildSceneGraph(glState, width, height);
     glState.initialize();
-
-    ojstd::vector<float> vertices1 = {
-        -0.5, 0.5, 0, -0.5, -0.5, 0, 0.5, -0.5, 0
-    };
-
-    ojstd::vector<float> vertices2 = {
-        -0, 0.5, 0, -0.5, -0.5, 0, 0.5, -0.5, 0
-    };
-
-    auto mesh = Mesh::construct(vertices1);
-    auto mesh2 = Mesh::construct(vertices2);
-
-    glState["introScene"]["intro"] << mesh;
-    glState["introScene"]["intro"] << mesh2;
 
     while (!glState.end() && !window.isClosePressed()) {
         Timer timer;
@@ -145,8 +129,8 @@ int main(int argc, char* argv[])
         glState << Uniform1f("iTime", glState.relativeSceneTime().toSeconds());
         glState << Uniform1f("iGlobalTime", glState.relativeSceneTime().toSeconds() - 2.f);
         glState << Uniform2f("iResolution", static_cast<float>(width), static_cast<float>(height));
-        glState << UniformMatrix4fv("M", Matrix::scaling(ojstd::sin(glState.relativeSceneTime().toSeconds())));
         glState.update();
+
         timer.end();
         ojstd::sleep(10); // Are OpenGL calls async?
     }

@@ -6,7 +6,6 @@ out vec4 fragColor;
 
 uniform float iTime;
 uniform vec2 iResolution;
-uniform sampler2D inTexture0;
 
 // Globals
 vec3 lightPosition = vec3(4.0, 0, 4);
@@ -203,9 +202,6 @@ void main() {
     float fstr2 = smoothstep(0, 2, time);
     fragColor = vec4(color, 1.0);
     fragColor.rgb = fstr2 * (1 - fstr) * smoothstep(0, timeScene0, time) * fragColor.rgb / (fragColor.rgb + vec3(1.0));
-
-	fragColor = mix(texture(inTexture0, fragCoord), fragColor, 0.5);
-	fragColor.w = 1.0;
 }	
 
 )""  

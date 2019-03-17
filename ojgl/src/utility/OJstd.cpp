@@ -1,6 +1,5 @@
 #include "OJstd.h"
 #include "Macros.h"
-#include "utility/Log.h"
 #include "windows.h"
 #include <stdlib.h>
 #include <string.h>
