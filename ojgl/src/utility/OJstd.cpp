@@ -24,7 +24,7 @@ float sin(float angle)
     int k = ftoi(angle / pi);
 
     if ((k > 0 ? k : -k) % 2 == 1)
-        k = k + (angle > 0 ? 1 : -1);
+        k = k + (k > 0 ? 1 : -1);
 
     float sAngle = angle - k * pi;
     return sAngle - pow(sAngle, 3) / 6.f + pow(sAngle, 5) / 120.f - pow(sAngle, 7) / 5040.f + pow(sAngle, 9) / 362880.f;
