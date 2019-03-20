@@ -476,7 +476,7 @@ void main()
 	if (iGlobalTime > 35.5) {
 	// 	fragColor.rgb = vec3(1.0, 0.0, 0.0);
 	}
-	
+
 }
 
 )""

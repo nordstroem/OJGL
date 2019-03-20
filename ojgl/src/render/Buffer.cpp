@@ -65,7 +65,12 @@ void Buffer::render()
         um.second->setUniform(_programID);
     }
 
-    glDrawArrays(GL_TRIANGLES, 0, Buffer::vertexCount);
+    for (const auto& mesh : _meshes) {
+        glBindVertexArray(mesh->vaoID());
+        glDrawArrays(GL_TRIANGLES, 0, mesh->verticesCount());
+    }
+
+    glBindVertexArray(0);
 
     glUseProgram(0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);

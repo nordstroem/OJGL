@@ -1,4 +1,5 @@
 #pragma once
+#include "Matrix.h"
 #include "Texture.h"
 #include "utility/OJstd.h"
 
@@ -44,6 +45,20 @@ public:
 private:
     const float _x;
     const float _y;
+};
+
+class UniformMatrix4fv : public UniformBase {
+public:
+    UniformMatrix4fv(const ojstd::string& location, Matrix matrix)
+        : UniformBase(location)
+        , _matrix(matrix)
+    {
+    }
+
+    void setUniform(int programID) override;
+
+private:
+    const Matrix _matrix;
 };
 
 class Uniform1fv : public UniformBase {

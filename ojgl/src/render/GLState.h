@@ -18,7 +18,6 @@ public:
     explicit GLState(unsigned char* song, Clock clock = Clock::Music);
     GLState(const GLState& other) = delete;
     GLState& operator=(const GLState& other) = delete;
-    ~GLState();
 
     void initialize();
     void update();
@@ -58,14 +57,11 @@ public:
     }
 
 private:
-    void setupQuad();
     void render();
 
     ojstd::vector<Scene> _scenes;
     Timepoint _systemClockStartTime;
     Duration _pauseTime;
-    unsigned int _vaoID;
-    unsigned int _vboID;
     bool _paused;
     ojstd::shared_ptr<Music> _music = nullptr;
     Clock _clock = Clock::System;

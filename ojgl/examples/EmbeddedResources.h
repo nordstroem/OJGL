@@ -36,6 +36,9 @@ namespace resources {
         ojstd::string outro {
 #include "shaders/outro.fs"
         };
+        ojstd::string mesh {
+#include "shaders/mesh.fs"
+        };
 
     } //namespace fragment
 
@@ -53,6 +56,9 @@ namespace resources {
         };
         ojstd::string fxaa {
 #include "shaders/fxaa.vs"
+        };
+        ojstd::string mesh {
+#include "shaders/mesh.vs"
         };
     } //namespace vertex
 

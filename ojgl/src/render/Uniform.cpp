@@ -18,4 +18,9 @@ void Uniform1fv::setUniform(int programID)
     glUniform1fv(glGetUniformLocation(programID, this->_location.c_str()), _values.size(), &_values[0]);
 }
 
+void UniformMatrix4fv::setUniform(int programID)
+{
+    glUniformMatrix4fv(glGetUniformLocation(programID, this->_location.c_str()), 1, false, _matrix.data());
+}
+
 }

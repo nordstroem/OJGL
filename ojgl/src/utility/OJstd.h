@@ -3,6 +3,11 @@
 
 namespace ojstd {
 
+float sin(float angle);
+float cos(float angle);
+float tan(float angle);
+int ftoi(float value);
+
 template <typename T>
 T max(const T& a, const T& b)
 {
@@ -242,7 +247,7 @@ struct Pair {
         , second(second)
     {
     }
-	bool operator==(const Pair<First, Second>& other) const { return first == other.first && second == other.second; }
+    bool operator==(const Pair<First, Second>& other) const { return first == other.first && second == other.second; }
 
     First first;
     Second second;
