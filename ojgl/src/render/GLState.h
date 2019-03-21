@@ -30,6 +30,7 @@ public:
     bool isPaused();
     void clearScenes();
     bool end();
+    ojstd::string currentScene();
 
     Music& music();
     Duration relativeSceneTime();
