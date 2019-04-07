@@ -16,10 +16,13 @@ void buildSceneGraph(GLState& glState, int x, int y)
     glState.clearScenes();
 
     {
-        auto edison = Buffer::construct(BufferFormat::Quad, x, y, "intro", "shaders/edison.vs", "shaders/lavaIntro.fs");
-        auto fxaa = Buffer::construct(BufferFormat::Quad, x, y, "fxaa", "shaders/fxaa.vs", "shaders/fxaa.fs", edison);
-        auto post = Buffer::construct(BufferFormat::Quad, x, y, "post", "shaders/post.vs", "shaders/post.fs", fxaa);
-        glState.addScene("introScene", post, Duration::seconds(22));
+        //auto edison = Buffer::construct(BufferFormat::Quad, x, y, "intro", "shaders/edison.vs", "shaders/lavaIntro.fs");
+        //auto fxaa = Buffer::construct(BufferFormat::Quad, x, y, "fxaa", "shaders/fxaa.vs", "shaders/fxaa.fs", edison);
+        //auto post = Buffer::construct(BufferFormat::Quad, x, y, "post", "shaders/post.vs", "shaders/post.fs", fxaa);
+
+        auto mesh = Buffer::construct(BufferFormat::Meshes, x, y, "mesh", "shaders/mesh.vs", "shaders/mesh.fs");
+
+        glState.addScene("meshScene", mesh, Duration::seconds(22));
     }
     {
         auto noise = Buffer::construct(BufferFormat::Quad, x, y, "intro", "shaders/demo.vs", "shaders/mountainNoise.fs");
@@ -80,6 +83,8 @@ int main(int argc, char* argv[])
     ShaderReader::preLoad("shaders/mountainPost.fs", resources::fragment::mountainPost);
     ShaderReader::preLoad("shaders/lavaScene2.fs", resources::fragment::lavaScene2);
     ShaderReader::preLoad("shaders/outro.fs", resources::fragment::outro);
+    ShaderReader::preLoad("shaders/mesh.vs", resources::vertex::mesh);
+    ShaderReader::preLoad("shaders/mesh.fs", resources::fragment::mesh);
 
     // @todo move this into GLState? We can return a const reference to window.
     // and perhaps have a unified update() which does getMessages(), music sync update and
@@ -88,6 +93,8 @@ int main(int argc, char* argv[])
     GLState glState(resources::songs::song);
     buildSceneGraph(glState, width, height);
     glState.initialize();
+
+    auto mesh = Mesh::constructCube();
 
     while (!glState.end() && !window.isClosePressed()) {
         Timer timer;
@@ -125,6 +132,9 @@ int main(int argc, char* argv[])
 #endif
             }
         }
+
+        glState["meshScene"]["mesh"].insertMesh(mesh, Matrix::scaling(0.5f));
+        glState["meshScene"]["mesh"].insertMesh(mesh, Matrix::scaling(0.4f) * Matrix::translation(0.3, ojstd::sin(glState.relativeSceneTime().toSeconds()), 0.0));
 
         glState << Uniform1f("iTime", glState.relativeSceneTime().toSeconds());
         glState << Uniform1f("iGlobalTime", glState.relativeSceneTime().toSeconds() - 2.f);
