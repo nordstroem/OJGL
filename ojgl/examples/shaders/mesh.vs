@@ -6,10 +6,11 @@ out vec3 fragPos;
 out vec3 fragNormal;
 
 uniform mat4 M;
+uniform mat4 P;
 
 void main()
 {
-	gl_Position = M * vec4(position, 1.0);
+	gl_Position = P * M * vec4(position, 1.0);
 	fragPos = (M*vec4(position, 1.0)).xyz;
 	fragNormal = normalize(mat3(M)*normal);
 }

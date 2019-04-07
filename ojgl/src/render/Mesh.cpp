@@ -16,15 +16,15 @@ static BufferIndices generateVAO(const ojstd::vector<float>& vertices, const ojs
 
     glGenVertexArrays(1, &vaoID);
     glBindVertexArray(vaoID);
-    
-	if (!vertices.empty()) {
-		glEnableVertexAttribArray(0);
-		glGenBuffers(1, &vboID);
-		glBindBuffer(GL_ARRAY_BUFFER, vboID);
-		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.begin(), GL_STATIC_DRAW);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
-	}
-	
+
+    if (!vertices.empty()) {
+        glEnableVertexAttribArray(0);
+        glGenBuffers(1, &vboID);
+        glBindBuffer(GL_ARRAY_BUFFER, vboID);
+        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.begin(), GL_STATIC_DRAW);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+    }
+
     if (!normals.empty()) {
         glGenBuffers(1, &nboID);
         glBindBuffer(GL_ARRAY_BUFFER, nboID);
@@ -66,21 +66,132 @@ ojstd::shared_ptr<Mesh> Mesh::construct(const ojstd::vector<float>& vertices)
 ojstd::shared_ptr<Mesh> Mesh::constructQuad()
 {
     ojstd::vector<float> vertices = {
-        -1, 1, 0, -1, -1, 0, 1, -1, 0,
-        1, -1, 0, 1, 1, 0, -1, 1, 0
+        -1, 1, 0,
+        -1, -1, 0,
+        1, -1, 0,
+        1, -1, 0,
+        1, 1, 0,
+        -1, 1, 0
     };
-    return new Mesh(vertices);
+    ojstd::vector<float> normals = {
+        0, 0, 1,
+        0, 0, 1,
+        0, 0, 1,
+        0, 0, 1,
+        0, 0, 1,
+        0, 0, 1,
+    };
+    return new Mesh(vertices, normals);
 }
 
 ojstd::shared_ptr<Mesh> Mesh::constructCube()
 {
+    // clang-format off
     ojstd::vector<float> vertices = {
-        -1, 1, 0, -1, -1, 0, 1, -1, 0,
-        1, -1, 0, 1, 1, 0, -1, 1, 0
+        // Front face
+        -1.0, -1.0, 1.0,
+         1.0, -1.0, 1.0,
+         1.0,  1.0, 1.0,
+
+        -1.0,  1.0, 1.0,
+         1.0,  1.0, 1.0,
+        -1.0, -1.0, 1.0,
+
+        // Back face
+         1.0, -1.0, -1.0,
+        -1.0, -1.0, -1.0,
+         1.0,  1.0, -1.0,
+
+        -1.0,  1.0, -1.0,
+         1.0,  1.0, -1.0,
+        -1.0, -1.0, -1.0,
+
+        // Top face
+        -1.0, 1.0, -1.0, 
+         1.0, 1.0, -1.0, 
+         1.0, 1.0,  1.0, 
+
+        -1.0, 1.0,  1.0, 
+         1.0, 1.0,  1.0, 
+        -1.0, 1.0, -1.0, 
+
+        // Bottom face
+        -1.0, -1.0, -1.0, 
+         1.0, -1.0, -1.0, 
+         1.0, -1.0,  1.0, 
+
+        -1.0, -1.0,  1.0, 
+         1.0, -1.0,  1.0, 
+        -1.0, -1.0, -1.0,
+
+        // Right face
+        1.0, -1.0, -1.0, 
+        1.0,  1.0, -1.0, 
+        1.0,  1.0,  1.0, 
+
+        1.0, -1.0,  1.0, 
+        1.0,  1.0,  1.0, 
+        1.0, -1.0, -1.0, 
+
+        // Left face
+        -1.0, -1.0, -1.0, 
+        -1.0,  1.0, -1.0, 
+        -1.0,  1.0,  1.0, 
+        
+        -1.0, -1.0,  1.0, 
+        -1.0,  1.0,  1.0, 
+        -1.0, -1.0, -1.0, 
     };
+    // clang-format on
+
     ojstd::vector<float> normal = {
-        -1, 1, 0, -1, -1, 0, 1, -1, 0,
-        1, -1, 0, 1, 1, 0, -1, 1, 0
+        // Front face
+        0.0, 0.0, 1.0,
+        0.0, 0.0, 1.0,
+        0.0, 0.0, 1.0,
+        0.0, 0.0, 1.0,
+        0.0, 0.0, 1.0,
+        0.0, 0.0, 1.0,
+
+        // Back face
+        0.0, 0.0, -1.0,
+        0.0, 0.0, -1.0,
+        0.0, 0.0, -1.0,
+        0.0, 0.0, -1.0,
+        0.0, 0.0, -1.0,
+        0.0, 0.0, -1.0,
+
+        // Top face
+        0.0, 1.0, 0.0,
+        0.0, 1.0, 0.0,
+        0.0, 1.0, 0.0,
+        0.0, 1.0, 0.0,
+        0.0, 1.0, 0.0,
+        0.0, 1.0, 0.0,
+
+        // Bottom face
+        0.0, -1.0, 0.0,
+        0.0, -1.0, 0.0,
+        0.0, -1.0, 0.0,
+        0.0, -1.0, 0.0,
+        0.0, -1.0, 0.0,
+        0.0, -1.0, 0.0,
+
+        // Right face
+        1.0, 0.0, 0.0,
+        1.0, 0.0, 0.0,
+        1.0, 0.0, 0.0,
+        1.0, 0.0, 0.0,
+        1.0, 0.0, 0.0,
+        1.0, 0.0, 0.0,
+
+        // Left face
+        -1.0, 0.0, 0.0,
+        -1.0, 0.0, 0.0,
+        -1.0, 0.0, 0.0,
+        -1.0, 0.0, 0.0,
+        -1.0, 0.0, 0.0,
+        -1.0, 0.0, 0.0
     };
     return new Mesh(vertices, normal);
 }
