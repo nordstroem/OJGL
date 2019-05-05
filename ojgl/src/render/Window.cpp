@@ -20,7 +20,7 @@ public:
     MSG _msg; // message
     unsigned _width;
     unsigned _height;
-    ojstd::vector<UINT> _keys;
+    ojstd::unordered_set<UINT> _keys;
     bool _close = false;
 };
 
@@ -64,10 +64,10 @@ void Window::getMessages()
     }
 }
 
-ojstd::vector<unsigned int> Window::getPressedKeys()
+ojstd::unordered_set<unsigned int> Window::getPressedKeys()
 {
     auto keys = this->_priv->_keys;
-    this->_priv->_keys.clear();
+    //this->_priv->_keys.clear();
     return keys;
 }
 
@@ -184,7 +184,12 @@ LONG WINAPI Window::Details::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPA
         return 0;
     case WM_KEYUP:
         if (pThis) {
-            pThis->_priv->_keys.push_back(wParam);
+            pThis->_priv->_keys.erase(wParam);
+        }
+        return 0;
+    case WM_KEYDOWN:
+        if (pThis) {
+            pThis->_priv->_keys.insert(wParam);
         }
         return 0;
     case WM_CLOSE:

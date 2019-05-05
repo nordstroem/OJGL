@@ -73,7 +73,7 @@ void main()
 {
 
 	vec2 resolution = vec2(iResolution.x, iResolution.y);
-	vec2 inverseVP = 1.0 / resolution;
+	vec2 inverseVP = 1 / resolution;
 	vec2 v_rgbNW = (fragCoord + vec2(-1.0, -1.0)) * inverseVP;
 	vec2 v_rgbNE = (fragCoord + vec2(1.0, -1.0)) * inverseVP;
 	vec2 v_rgbSW = (fragCoord + vec2(-1.0, 1.0)) * inverseVP;

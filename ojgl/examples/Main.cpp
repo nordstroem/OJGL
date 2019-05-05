@@ -16,13 +16,13 @@ void buildSceneGraph(GLState& glState, int x, int y)
     glState.clearScenes();
 
     {
-        //auto edison = Buffer::construct(BufferFormat::Quad, x, y, "intro", "shaders/edison.vs", "shaders/lavaIntro.fs");
-        //auto fxaa = Buffer::construct(BufferFormat::Quad, x, y, "fxaa", "shaders/fxaa.vs", "shaders/fxaa.fs", edison);
-        //auto post = Buffer::construct(BufferFormat::Quad, x, y, "post", "shaders/post.vs", "shaders/post.fs", fxaa);
+        auto edison = Buffer::construct(BufferFormat::Quad, x, y, "intro", "shaders/edison.vs", "shaders/lavaIntro.fs");
+        auto fxaa = Buffer::construct(BufferFormat::Quad, x, y, "fxaa", "shaders/fxaa.vs", "shaders/fxaa.fs", edison);
+        auto post = Buffer::construct(BufferFormat::Quad, x, y, "post", "shaders/post.vs", "shaders/post.fs", fxaa);
 
-        auto mesh = Buffer::construct(BufferFormat::Meshes, x, y, "mesh", "shaders/mesh.vs", "shaders/mesh.fs");
+        //  auto mesh = Buffer::construct(BufferFormat::Meshes, x, y, "mesh", "shaders/mesh.vs", "shaders/mesh.fs");
 
-        glState.addScene("meshScene", mesh, Duration::seconds(22));
+        glState.addScene("meshScene", post, Duration::seconds(1202));
     }
     {
         auto noise = Buffer::construct(BufferFormat::Quad, x, y, "intro", "shaders/demo.vs", "shaders/mountainNoise.fs");
@@ -46,15 +46,31 @@ void buildSceneGraph(GLState& glState, int x, int y)
     }
 }
 
+struct Camera {
+    float w;
+
+    void tick(int key)
+    {
+        switch (key) {
+        case Window::KEY_W:
+            this->w += 1;
+            break;
+        case Window::KEY_S:
+            this->w -= 1;
+            break;
+        }
+    }
+};
+
 int main(int argc, char* argv[])
 {
-    auto popupData = popup::show();
+    //  auto popupData = popup::show();
 
     OJ_UNUSED(argc);
     OJ_UNUSED(argv);
-    int width = popupData.width;
-    int height = popupData.height;
-    bool fullScreen = popupData.full;
+    int width = 1600 * 0.8;
+    int height = 900 * 0.8;
+    bool fullScreen = false;
     bool showCursor = !fullScreen;
 
     /*#ifndef _DEBUG
@@ -90,12 +106,13 @@ int main(int argc, char* argv[])
     // and perhaps have a unified update() which does getMessages(), music sync update and
     // so on.
     Window window(width, height, "Eldur - OJ", fullScreen, showCursor);
-    GLState glState(resources::songs::song);
+    GLState glState;
     buildSceneGraph(glState, width, height);
     glState.initialize();
 
     auto mesh = Mesh::constructCube();
 
+    Camera camera;
     while (!glState.end() && !window.isClosePressed()) {
         Timer timer;
         timer.start();
@@ -131,9 +148,10 @@ int main(int argc, char* argv[])
                 break;
 #endif
             }
+            camera.tick(key);
         }
 
-        glState["meshScene"]["mesh"].insertMesh(mesh, Matrix::scaling(0.2f) * Matrix::rotation(1, 1, 1, glState.relativeSceneTime().toSeconds()));
+        // glState["meshScene"]["mesh"].insertMesh(mesh, Matrix::scaling(0.2f) * Matrix::rotation(1, 1, 1, glState.relativeSceneTime().toSeconds()));
         //glState["meshScene"]["mesh"].insertMesh(mesh, Matrix::scaling(0.4f) * Matrix::translation(0.3, ojstd::sin(glState.relativeSceneTime().toSeconds()), 0.0));
 
         // TODO: Aspect ratio
@@ -142,10 +160,11 @@ int main(int argc, char* argv[])
         glState << Uniform1f("iTime", glState.relativeSceneTime().toSeconds());
         glState << Uniform1f("iGlobalTime", glState.relativeSceneTime().toSeconds() - 2.f);
         glState << Uniform2f("iResolution", static_cast<float>(width), static_cast<float>(height));
+        glState << Uniform1f("DEBUG_W", camera.w);
         glState.update();
 
         timer.end();
-        ojstd::sleep(10); // Are OpenGL calls async?
+        ojstd::sleep(16); // Are OpenGL calls async?
     }
 }
 

@@ -11,7 +11,7 @@ public:
     Window& operator=(const Window& other) = delete;
     ~Window();
     void getMessages();
-    ojstd::vector<unsigned int> getPressedKeys();
+    ojstd::unordered_set<unsigned int> getPressedKeys();
     bool isClosePressed() const;
 
 public:
@@ -23,6 +23,10 @@ public:
     static constexpr int KEY_SPACE = 32;
     static constexpr int KEY_R = 82;
     static constexpr int KEY_F1 = 112;
+    static constexpr int KEY_W = 0x57;
+    static constexpr int KEY_A = 0x41;
+    static constexpr int KEY_S = 0x53;
+    static constexpr int KEY_D = 0x44;
 
 private:
     class Details;
