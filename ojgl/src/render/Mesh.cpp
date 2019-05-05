@@ -12,7 +12,7 @@ struct BufferIndices {
 
 static BufferIndices generateVAO(const ojstd::vector<float>& vertices, const ojstd::vector<float>& normals = {})
 {
-    unsigned int vaoID, vboID, nboID;
+    unsigned int vaoID = 0, vboID = 0, nboID = 0;
 
     glGenVertexArrays(1, &vaoID);
     glBindVertexArray(vaoID);
@@ -41,7 +41,7 @@ static BufferIndices generateVAO(const ojstd::vector<float>& vertices, const ojs
 
 Mesh::Mesh(const ojstd::vector<float>& vertices, const ojstd::vector<float>& normals)
 {
-    auto[vaoID, vboID, nboID] = generateVAO(vertices, normals);
+    auto [vaoID, vboID, nboID] = generateVAO(vertices, normals);
     _vaoID = vaoID;
     _vboID = vboID;
     _nboID = nboID;
@@ -74,12 +74,24 @@ ojstd::shared_ptr<Mesh> Mesh::constructQuad()
         -1, 1, 0
     };
     ojstd::vector<float> normals = {
-        0, 0, 1,
-        0, 0, 1,
-        0, 0, 1,
-        0, 0, 1,
-        0, 0, 1,
-        0, 0, 1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
     };
     return new Mesh(vertices, normals);
 }
