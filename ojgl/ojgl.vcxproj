@@ -290,6 +290,8 @@
   <ItemGroup>
     <None Include="examples\shaders\demo.vs" />
     <None Include="examples\shaders\edison.vs" />
+    <None Include="examples\shaders\edison_1.fs" />
+    <None Include="examples\shaders\edison_1_post.fs" />
     <None Include="examples\shaders\fxaa.fs" />
     <None Include="examples\shaders\fxaa.vs" />
     <None Include="examples\shaders\lavaIntro.fs" />

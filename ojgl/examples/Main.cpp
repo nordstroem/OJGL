@@ -16,9 +16,9 @@ void buildSceneGraph(GLState& glState, int x, int y)
     glState.clearScenes();
 
     {
-        auto edison = Buffer::construct(BufferFormat::Quad, x, y, "intro", "shaders/edison.vs", "shaders/lavaIntro.fs");
+        auto edison = Buffer::construct(BufferFormat::Quad, x, y, "intro", "shaders/edison.vs", "shaders/edison_1.fs");
         auto fxaa = Buffer::construct(BufferFormat::Quad, x, y, "fxaa", "shaders/fxaa.vs", "shaders/fxaa.fs", edison);
-        auto post = Buffer::construct(BufferFormat::Quad, x, y, "post", "shaders/post.vs", "shaders/post.fs", fxaa);
+        auto post = Buffer::construct(BufferFormat::Quad, x, y, "post", "shaders/post.vs", "shaders/edison_1_post.fs", fxaa);
 
         //  auto mesh = Buffer::construct(BufferFormat::Meshes, x, y, "mesh", "shaders/mesh.vs", "shaders/mesh.fs");
 
@@ -47,18 +47,19 @@ void buildSceneGraph(GLState& glState, int x, int y)
 }
 
 struct Camera {
-    float w;
+    float d1 = 0;
+    float d2 = 0;
+    float d3 = 0;
 
     void tick(int key)
     {
-        switch (key) {
-        case Window::KEY_W:
-            this->w += 1;
-            break;
-        case Window::KEY_S:
-            this->w -= 1;
-            break;
-        }
+        auto isDown = [key](int keyCode) { return key == keyCode ? 1 : 0; };
+        this->d1 += isDown(Window::KEY_Q);
+        this->d1 -= isDown(Window::KEY_A);
+        this->d2 += isDown(Window::KEY_W);
+        this->d2 -= isDown(Window::KEY_S);
+        this->d3 += isDown(Window::KEY_E);
+        this->d3 -= isDown(Window::KEY_D);
     }
 };
 
@@ -160,7 +161,9 @@ int main(int argc, char* argv[])
         glState << Uniform1f("iTime", glState.relativeSceneTime().toSeconds());
         glState << Uniform1f("iGlobalTime", glState.relativeSceneTime().toSeconds() - 2.f);
         glState << Uniform2f("iResolution", static_cast<float>(width), static_cast<float>(height));
-        glState << Uniform1f("DEBUG_W", camera.w);
+        glState << Uniform1f("DEBUG_D1", camera.d1);
+        glState << Uniform1f("DEBUG_D2", camera.d2);
+        glState << Uniform1f("DEBUG_D3", camera.d3);
         glState.update();
 
         timer.end();
