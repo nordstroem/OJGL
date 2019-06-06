@@ -20,9 +20,9 @@ vec3 lightPosition = vec3(4.0, 0, 4);
 
 
 #define NUM_SCENES 3
-float[] sceneLengths = float[NUM_SCENES](5., 5., 5.);
+float[] sceneLengths = float[NUM_SCENES](10., 10., 10.);
 
-#define fTime mod(iTime, 15.f)
+#define fTime 20.f + mod(iTime, 10.f)
 
 int currentScene() 
 {
@@ -55,6 +55,7 @@ float localTimeLeft() {
 #define lTime localTime()
 #define cScene currentScene()
 #define lTimeLeft localTimeLeft()
+
 
 vec3 palette( in float t, in vec3 a, in vec3 b, in vec3 c, in vec3 d )
 {
@@ -165,7 +166,6 @@ float fbm3_high(vec3 p, float a, float f) {
     return ret;
 }
 
-
 mat3 rotateAngle(vec3 v, float a )
 {
     float si = sin( a );
@@ -176,6 +176,13 @@ mat3 rotateAngle(vec3 v, float a )
                    v.x*v.y*ic + si*v.z,   v.y*v.y*ic + co,        v.z*v.y*ic - si*v.x,
                    v.x*v.z*ic - si*v.y,   v.y*v.z*ic + si*v.x,    v.z*v.z*ic + co );
 }
+
+
+
+float rfb(float f, float bps, float l, float h) {
+	return l + (h - l) * hash11(floor(f * bps));
+}
+
 
 
 uint[] text = uint[18](
@@ -222,9 +229,11 @@ float psin(float v)
 
 vec3 color(float type, vec3 p) 
 {
+	#define br(o) rfb(iTime + 60 / 140 * o, 140 / 60., 0., 0.2)
+
     if (type == T_WALL)
         //return vec3(0.03);
-        return 0.1*palette(fract(p.x*0.05), vec3(0.5), vec3(0.5), vec3(1.0, 1.0, 1.0), vec3(0.00, 0.10, 0.20	) );
+        return 0.1*palette(fract(p.x*0.05), vec3(0.5), vec3(0.5), vec3(1.0, 1.0, 1.0), vec3(0.0, 0.1, 0.2) );
     else if (type == T_SPHERE)
         return vec3(0.2, 0.1, 0.6);
     else if (type == T_BOX) {
@@ -406,9 +415,10 @@ vec2 map(in vec3 p, in vec3 dir)
     //vec2 box = vec2(sdBox( p - ballPos(), vec3(0.5, 0.5, 0.5) + ns), T_BOX);
     
     
-	float rem = mix(sdBox(p, vec3(2., 10.0, 2.0)), sdCappedCylinder(p, vec2(2.5, 10.5)), 1 + 2.*sin(iTime));    
+	float mixer = cScene == 1 ? 1 + 2.*sin(iTime) : 0.3;
+	float rem = mix(sdBox(p, vec3(2., 10.0, 2.0)), sdCappedCylinder(p, vec2(2.5, 10.5)), mixer);    
     
-    float c = 0.37 / 2. / (1. + 1.);
+    float c = 0.37 / 2. ;
     vec3 q = p;
     q.xz = mod(p.xz, c) - 0.5 * c;
     vec3 qq = floor(p/c);
@@ -417,13 +427,7 @@ vec2 map(in vec3 p, in vec3 dir)
    // vec2 sb = vec2(p.y - 0.6*noise_3(0.5*qq), T_BOX);
     
     // I varje qq
-    float sc = 0.073; // 0.078
-    
-   //  float t = floor(p.x / c);
-
-    //if (mod(t, 2.0) == 0. && sb.x < EPS)
-      //  	sb.x = 999.0;
-    
+    float sc = 0.07 ; // 0.078
     
     // TODO: Boundschecking med pDis för optimering.
     //float pDis = sdBox(q, vec3(0.1));
@@ -440,7 +444,7 @@ vec2 map(in vec3 p, in vec3 dir)
    
     float t = mod(iTime, 10.);
     vec2 sb;
-    float h = 0.1; +  0.2*psin(0.6*iTime + qq.z*qq.x*0.1);// + 0.0*noise_3(0.5*qq + mod(0.4*iTime, 40.0));
+    float h = 0.1 + (cScene == 0 ? 2.2*noise_3(0.5*qq + mod(0.4*iTime, 40.0)) : 0.);
     
     //float h = 1.;
     bool cond = qz >=0. && qz <= (imDim.y - 1.) && qx >= 0. && qx <= (imDim.x - 1.);
@@ -548,10 +552,6 @@ float ao(vec3 p, vec3 n, vec3 dir) {
      ao = 1.0 - clamp( totao, 0.0, 1.0 );
 
      return ao;
-}
-
-float rfb(float f, float bps, float l, float h) {
-	return l + (h - l) * hash11(floor(f * bps));
 }
 
 vec3 colorize(vec2 res, vec3 p, vec3 dir, float steps) 
