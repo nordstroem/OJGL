@@ -17,11 +17,10 @@ vec3 lightPosition = vec3(4.0, 0, 4);
 
 #define PI 3.14159265
 
-
 #define NUM_SCENES 3
 float[] sceneLengths = float[NUM_SCENES](10., 10., 10.);
 
-#define fTime 20 + mod(iTime, 10.f)
+#define fTime 0 + mod(iTime, 30.f)
 
 int currentScene() 
 {
@@ -294,34 +293,6 @@ float sdBox(vec3 p, vec3 b)
   return length(max(d,0.0)) + min(max(d.x,max(d.y,d.z)),0.0);
 }
 
-
-// O
-float sdTorus(vec3 p, vec2 t)
-{
-  p.y *= 0.7;
-  p.zy = p.yz;
-  vec2 q = vec2(length(p.xy)-t.x,p.z);
-  return length(q)-t.y;
-}
-
-float sdTorusJ(vec3 p, vec2 t)
-{
-    p.y -= 2.0;
-  //p.zy = p.yz;
-  vec2 q = vec2(length(p.xy)-t.x,p.z);
-  float d = length(q)-t.y;
-
-	if (p.y > 0.0) {
-		d = max(d, p.y);
-	}
-    
-   	 d = min(d, sdCappedCylinder(p, vec2(0, 1)));
-
-	return d;
-}
-
-
-
 float smink( float a, float b, float k )
 {
     float h = clamp( 0.5+0.5*(b-a)/k, 0.0, 1.0 );
@@ -407,6 +378,9 @@ vec2 grid(in vec3 p, in vec3 dir) {
 	int cs = cScene;
 
     p.xz *= rot(-0.4+0.07*sin(iTime));
+
+	//moda(p.xz, 5.0);
+
     vec2 prev = p.xz;
     
 	float mixer = cScene == 1 ? 1 + 2.*sin(iTime) : 0.3;
@@ -427,8 +401,8 @@ vec2 grid(in vec3 p, in vec3 dir) {
 		rem = mix(sdBox(p, vec3(2., 10.0, 2.0)), sdSphere(p, 2.5), 0.3);    
 	} else if (cs == 2) {
 		c = 0.37 / 3.;
-		sc = 0.05;
-		rem = mix(sdBox(p, vec3(3., 10.0, 3.0)), sdSphere(p, 3.), 1.0);    
+		sc = 0.1;
+		rem = mix(sdBox(p, vec3(4., 10.0, 3.0)), sdSphere(p, 4.), psin(3*iTime));    
 	}
 
     vec3 q = p;
@@ -441,7 +415,7 @@ vec2 grid(in vec3 p, in vec3 dir) {
 	} else if (cs == 1) {
 		h = 0.1+2.*psin(1.2*iTime + qq.z*qq.x*0.1);
 	}else if (cs == 2) {
-		h = 0.1;
+		h = 1.1;
 	}
     
     // TODO: Boundschecking med pDis för optimering.
@@ -463,10 +437,12 @@ vec2 grid(in vec3 p, in vec3 dir) {
 		bit = uint(qz) * uint(imDim.x) + uint(qx);
 		val = OJ_Roman[bit / 32u] & (1u << (31u - bit % (32u)));
 	} else if (cs == 1) {
+	    qx = -qq.x +4. + mod(2.*iTime * 2.0, imDim.x);
 		imDim = vec2(49, 32);
 		bit = uint(qz) * uint(imDim.x) + uint(qx);
-		val = OJ_Roman[bit / 32u] & (1u << (31u - bit % (32u)));
+		val = text[bit / 32u] & (1u << (31u - bit % (32u)));
 	} else if (cs == 2) {
+	    qx = -qq.x + 27;
 		imDim = vec2(57, 35);
 		bit = uint(qz) * uint(imDim.x) + uint(qx);
 		val = edison_logo_2[bit / 32u] & (1u << (31u - bit % (32u)));
@@ -563,25 +539,6 @@ float ambientOcclusion(vec3 p, vec3 n, vec3 dir)
     return mix(1.0, smoothstep(0.0, float(ns *(ns - 1) / 2) * sl, as), 0.6);
 }
        
-
-float ao(vec3 p, vec3 n, vec3 dir) {
- 
-	float ao;
-	float totao = 0.0;
-	float sca = 1.0;
-    for( int aoi=0; aoi<5; aoi++ ) {
-    	float hr = 0.01 + 0.02*float(aoi*aoi);
-    	vec3 aopos = n * hr + p;
-        float dd = map( aopos, dir ).x;
-        ao = -(dd-hr);
-        totao += ao*sca;
-        sca *= 0.75;
-        }
-     ao = 1.0 - clamp( totao, 0.0, 1.0 );
-
-     return ao;
-}
-
 vec3 colorize(vec2 res, vec3 p, vec3 dir, float steps) 
 {
 	#define fg(o) rfb(iTime + 60 / 140 * o, 140 / 60., -1., 1)
@@ -617,10 +574,13 @@ void main()
 
     vec3 ro = vec3(4.0, 10.0, 5.0);
     
-	if (cScene == 0) {
+	int cs = cScene;
+	if (cs == 0) {
 		ro = vec3(7., 10.0, 7.);
-	} else if (cScene == 1) { //Actual 1.
+	} else if (cs == 1) {
 		ro = vec3(5., 10.0, 5.);
+	} else if (cs == 2) {
+		ro = vec3(2.0, 30.0, 5.);
 	}
 	
 	vec3 tar = vec3(0.0, 0.1, 0.0);

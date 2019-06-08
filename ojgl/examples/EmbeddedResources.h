@@ -15,51 +15,32 @@ namespace resources {
 #include "shaders/fxaa.fs"
         };
 
-        ojstd::string lavaIntro {
-#include "shaders/lavaIntro.fs"
+        ojstd::string edison_1 {
+#include "shaders/edison_1.fs"
         };
 
-        ojstd::string mountain {
-#include "shaders/mountain.fs"
+        ojstd::string edison_2 {
+#include "shaders/edison_2.fs"
         };
 
-        ojstd::string mountainNoise {
-#include "shaders/mountainNoise.fs"
-        };
-
-        ojstd::string mountainPost {
-#include "shaders/mountainPost.fs"
-        };
-        ojstd::string lavaScene2 {
-#include "shaders/lavaScene2.fs"
-        };
-        ojstd::string outro {
-#include "shaders/outro.fs"
-        };
-        ojstd::string mesh {
-#include "shaders/mesh.fs"
+        ojstd::string edison_1_post {
+#include "shaders/edison_1_post.fs"
         };
 
     } //namespace fragment
 
     namespace vertex {
 
-        ojstd::string demo {
-#include "shaders/demo.vs"
-        };
-
-        ojstd::string post {
-#include "shaders/post.vs"
-        };
         ojstd::string edison {
 #include "shaders/edison.vs"
         };
         ojstd::string fxaa {
 #include "shaders/fxaa.vs"
         };
-        ojstd::string mesh {
-#include "shaders/mesh.vs"
+        ojstd::string post {
+#include "shaders/post.vs"
         };
+
     } //namespace vertex
 
     namespace songs {

@@ -33,4 +33,4 @@ void main()
     fragColor.rgb *=  0.9 + 0.1*clamp(sin(uv.y*1000.0) + 0.8, 0.0, 1.0);
 	fragColor.rgb *=  0.9 + 0.1*clamp(sin(uv.y*1000) + 0.8, 0.0, 1.0);
 }
-)""s
+)""

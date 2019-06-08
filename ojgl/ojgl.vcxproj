@@ -294,7 +294,7 @@
     <None Include="examples\shaders\edison_1_post.fs" />
     <None Include="examples\shaders\fxaa.fs" />
     <None Include="examples\shaders\fxaa.vs" />
-    <None Include="examples\shaders\lavaIntro.fs" />
+    <None Include="examples\shaders\edison_2.fs" />
     <None Include="examples\shaders\lavaScene2.fs" />
     <None Include="examples\shaders\mesh.fs" />
     <None Include="examples\shaders\mesh.vs" />
