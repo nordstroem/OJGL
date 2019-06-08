@@ -18,11 +18,10 @@ vec3 lightPosition = vec3(4.0, 0, 4);
 #define PI 3.14159265
 
 
-
 #define NUM_SCENES 3
 float[] sceneLengths = float[NUM_SCENES](10., 10., 10.);
 
-#define fTime 20.f + mod(iTime, 10.f)
+#define fTime 20 + mod(iTime, 10.f)
 
 int currentScene() 
 {
@@ -193,6 +192,9 @@ uint[] edison_logo = uint[25](
 
 uint[] edison_logo_2 = uint[63](0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffc003ffu, 0xfffffff0u, 0x00003fffu, 0xffffe000u, 0x0003ffffu, 0xff800000u, 0x00ffffffu, 0xc0000000u, 0x3fffffe0u, 0x00ffc00fu, 0xffffc003u, 0xffe007ffu, 0xffc277ffu, 0xfc03ffffu, 0xde77fffcu, 0x01fffffeu, 0xffffffc0u, 0xfffffeffu, 0xffffe07fu, 0xfffeffffu, 0xfff03fffu, 0xffffffffu, 0xf83fffffu, 0xfffffffcu, 0x3fffffffu, 0xf81ffc3fu, 0xfffffff8u, 0xfff83fffu, 0xfffff8ffu, 0xf87fffffu, 0xfff83fe0u, 0x7fffffffu, 0xfa0001ffu, 0xfffffffeu, 0x800fffffu, 0xffffffe0u, 0x7fffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xfe635f18u, 0xe31718feu, 0xd6afb5aeu, 0xbbdbbf0bu, 0x6edad74du, 0xeddfb46bu, 0xe31baef6u, 0xefdad5f7u, 0xb631118fu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffe00000u);
 
+// 49, 32
+uint[] OJ_Roman = uint[49](0xffffffffu, 0xffffffffu, 0xffffffffu, 0xfffe01ffu, 0xf0007ff8u, 0x003fff83u, 0xfff07e07u, 0xffe3fff1u, 0xffe1fff1u, 0xfff1fff8u, 0x3ff8fff1u, 0xfffe1ffcu, 0x7ff1ffffu, 0x87fe3ff0u, 0xffffe1ffu, 0x1ff8ffffu, 0xf8ff8ffcu, 0x7ffffc7fu, 0xc7fc7fffu, 0xfe1fe3feu, 0x3fffff8fu, 0xf1ff1fffu, 0xffc7f8ffu, 0x8fffffe3u, 0xfc7fc7ffu, 0xfff1fe3fu, 0xe3fffff8u, 0xff1ff0ffu, 0xfffc7f8fu, 0xfc7ffffcu, 0x7fc7fe3fu, 0xfffe3fe3u, 0xff0fffffu, 0x1ff1ffc3u, 0xffff1ff8u, 0xfff1ffffu, 0x1ffc7ffcu, 0x3fff1ffeu, 0x3fff0fffu, 0x1ffe1fffu, 0xc1fc1fffu, 0x1ffff000u, 0x3fff1fffu, 0xff00ffffu, 0x1fffffffu, 0xfffc3fffu, 0xffffffffu, 0xffffffffu, 0xffffffffu);
+
 const float EPS = 1e-2;
 const int MAX_STEPS = 200;
 
@@ -229,11 +231,12 @@ float psin(float v)
 
 vec3 color(float type, vec3 p) 
 {
+    int cs = cScene;
 	#define br(o) rfb(iTime + 60 / 140 * o, 140 / 60., 0., 0.2)
 
     if (type == T_WALL)
-        //return vec3(0.03);
-        return 0.1*palette(fract(p.x*0.05), vec3(0.5), vec3(0.5), vec3(1.0, 1.0, 1.0), vec3(0.0, 0.1, 0.2) );
+        return vec3(0.03);
+        //return 0.1*palette(fract(p.x*0.05), vec3(0.5), vec3(0.5), vec3(1.0, 1.0, 1.0), vec3(0.0, 0.1, 0.2) );
     else if (type == T_SPHERE)
         return vec3(0.2, 0.1, 0.6);
     else if (type == T_BOX) {
@@ -243,12 +246,23 @@ vec3 color(float type, vec3 p)
         return vec3(0.02);//1.*mix(red, yellow, 0.3*noise_3(2.0*sin(iTime*0.5)*p + iTime*0.5));
     }
     else if (type == T_BOX2) {
-        vec3 red = vec3(0.2, 0.0, psin(iTime + p.x * 10.));
-        vec3 yellow = vec3(1.0, 1.0, 1.0);
+        vec3 red = vec3(1., 0.0, 0.0); //+psin(iTime + p.x * 10.)
+        vec3 yellow = vec3(1.0, 1.0, 0.0);
+
+		if (cs == 0) {
+			red = vec3(1., 0.0, 0.0);
+			yellow = vec3(1.0, 1.0, 0.0);
+		} else if(cs == 1) {
+			red = vec3(1., 0.0, 1.0);
+			yellow = vec3(1.0, 1.0, 0.0);
+		} else if(cs == 2) {
+			red = vec3(0., 1.0, 1.0);
+			yellow = vec3(1.0, 1.0, 0.0);
+		}
         
         // return palette(noise_3(0.2*sin(iTime*0.5)*p + iTime*0.5), vec3(0.5), vec3(0.5), vec3(1.0, 0.7, 0.4), vec3(0.00, 0.15, 0.20) );
-       // return mix(red, yellow, 0.3*noise_3(2.0*sin(iTime*0.5)*p + iTime*0.5));
-    return palette(0.1, vec3(0.5), vec3(0.5), vec3(1.0, 1.0, 1.0), vec3(0.00, 0.10, 0.20	) );
+        return mix(red, yellow, 0.3*noise_3(2.0*sin(iTime*0.5)*p + iTime*0.5));
+   // return palette(0.1, vec3(0.5), vec3(0.5), vec3(1.0, 1.0, 1.0), vec3(0.00, 0.10, 0.20	) );
     }
     else if (type == T_ARROW)
         return vec3(0.1, 0.1, 0.8);
@@ -388,64 +402,84 @@ vec3 ballPos() {
  	return vec3(0.0, 0.2+sin(0.5*iTime), 0.0);    
 }
 
-vec2 map(in vec3 p, in vec3 dir)
-{
-    vec2 w = vec2(p.y - 0.03*noise_2(3.*p.xz + iTime*0.3) +0.3, T_WALL);
-    float bd = sdBox(p, vec3(1., 2., 1.));
-    vec2 s = vec2(sdSphere(p - ballPos(), 1.0), T_BOX);
-    //vec2 w = vec2(sdPlane(p, vec4(0.0, 1.0, 0.0, 1.0)) + 0.1*noise_3(p + vec3(20, 0.0, 20)), T_WALL);
-    // + 0.01*noise_2(10.0*p.xz + vec2(iTime, iTime*1.5)) Ripple effect.
-   // vec2 fs = fractalBox(   (p - ballPos()));
-    p.xz *= rot(-0.3+0.1*sin(iTime));
-    vec2 prev = p.xz;
-    //float m = mod(floor((iTime+1.9) * 1. / 2.), 2.);
+vec2 grid(in vec3 p, in vec3 dir) {
 
-    //moda(p.xz, m == 0.0 ? 1.0 : 10.0);
-    //p.xz = mod(p.xz, vec2(2.0)) - vec2(1.0);
-    //p.x -= 0.0;
-    //p.x -= 3.0;
-    //mo(p.xy, vec2(sin(iTime), 2.*cos(iTime)));
-    //float oj = sdTorus(p - vec3(sin(iTime), 0.18, 0.0), vec2(1.0, 0.02));
-   // oj = min(99999999999.9, sdTorusJ(p, vec2(1.0, 0.02)));
-   // vec2 fs = vec2(oj, T_BOX);
-    
-    //fs.x = mix(sdBox(p - ballPos(), vec3(1.0)), fs.x, 0.2+0.8*psin(0.5*iTime));
-    
-    
-    //vec2 box = vec2(sdBox( p - ballPos(), vec3(0.5, 0.5, 0.5) + ns), T_BOX);
-    
+	int cs = cScene;
+
+    p.xz *= rot(-0.4+0.07*sin(iTime));
+    vec2 prev = p.xz;
     
 	float mixer = cScene == 1 ? 1 + 2.*sin(iTime) : 0.3;
-	float rem = mix(sdBox(p, vec3(2., 10.0, 2.0)), sdCappedCylinder(p, vec2(2.5, 10.5)), mixer);    
+	float rem = sdBox(p, vec3(3., 2.0, 2.2));
     
-    float c = 0.37 / 2. ;
+    float c = 0.37 / 3.;
+	// I varje qq
+    float sc = 0.045; // 0.078
+	float h = 0.1 + 1.*psin(p.x+ 1*iTime);
+
+	if (cs == 0) {
+		c = 0.37 / 3;
+		sc = 0.045;
+		rem = sdBox(p, vec3(3., 2.0, 2.2));
+	} else if (cs == 1) {
+		c = 0.37 / 2.;
+		sc = 0.073;
+		rem = mix(sdBox(p, vec3(2., 10.0, 2.0)), sdSphere(p, 2.5), 0.3);    
+	} else if (cs == 2) {
+		c = 0.37 / 3.;
+		sc = 0.05;
+		rem = mix(sdBox(p, vec3(3., 10.0, 3.0)), sdSphere(p, 3.), 1.0);    
+	}
+
     vec3 q = p;
     q.xz = mod(p.xz, c) - 0.5 * c;
     vec3 qq = floor(p/c);
     qq.y = 0.0;
     
-   // vec2 sb = vec2(p.y - 0.6*noise_3(0.5*qq), T_BOX);
-    
-    // I varje qq
-    float sc = 0.07 ; // 0.078
+	if (cs == 0) {
+		h = 0.1 + 1.*psin(p.x+ 1*iTime);
+	} else if (cs == 1) {
+		h = 0.1+2.*psin(1.2*iTime + qq.z*qq.x*0.1);
+	}else if (cs == 2) {
+		h = 0.1;
+	}
     
     // TODO: Boundschecking med pDis för optimering.
     //float pDis = sdBox(q, vec3(0.1));
     
-    vec2 imDim = vec2(57, 35);
     vec3 d = (c * 0.5 -  sign(dir)* q) / abs(dir);
 	float b = min(d.x, min(d.y, d.z));
 	float a = b + EPS;// max(pDis - 1.73, b + EPS); // TODO 1.73 kan vara for mycket
     
   	float qz = qq.z +15.;
-    float qx = -qq.x +4. + mod(2.*iTime * 2.0, imDim.x);
-    uint bit = uint(qz) * uint(imDim.x) + uint(qx);
-    uint val = edison_logo_2[bit / 32u] & (1u << (31u - bit % (32u)));
+  //  float qx = -qq.x +4. + mod(2.*iTime * 2.0, imDim.x);
+    float qx = -qq.x + 23.;
+
+    vec2 imDim;// = vec2(49, 32);
+	uint bit;// = uint(qz) * uint(imDim.x) + uint(qx);
+    uint val;// = OJ_Roman[bit / 32u] & (1u << (31u - bit % (32u)));
+	if (cs == 0) {
+		imDim = vec2(49, 32);
+		bit = uint(qz) * uint(imDim.x) + uint(qx);
+		val = OJ_Roman[bit / 32u] & (1u << (31u - bit % (32u)));
+	} else if (cs == 1) {
+		imDim = vec2(49, 32);
+		bit = uint(qz) * uint(imDim.x) + uint(qx);
+		val = OJ_Roman[bit / 32u] & (1u << (31u - bit % (32u)));
+	} else if (cs == 2) {
+		imDim = vec2(57, 35);
+		bit = uint(qz) * uint(imDim.x) + uint(qx);
+		val = edison_logo_2[bit / 32u] & (1u << (31u - bit % (32u)));
+	}
+
+
+
    
+
     float t = mod(iTime, 10.);
     vec2 sb;
-    float h = 0.1 + (cScene == 0 ? 2.2*noise_3(0.5*qq + mod(0.4*iTime, 40.0)) : 0.);
-    
+    //0.1*noise_3(0.5*qq + mod(0.4*iTime, 40.0));//1.1 + (cScene == 2 ? 1.2*noise_3(0.5*qq + mod(0.4*iTime, 40.0)) : 0.);
+
     //float h = 1.;
     bool cond = qz >=0. && qz <= (imDim.y - 1.) && qx >= 0. && qx <= (imDim.x - 1.);
     if (val != 0u || !cond) {
@@ -456,25 +490,19 @@ vec2 map(in vec3 p, in vec3 dir)
         h += 0.2*smoothspike(0., 0.3, mod(iTime, 2.));
     }
     
-    
-
     sb.x = sdBox(q, vec3(sc, h, sc));
-    
-    //sb.x = mod(qq.x, 2.0) == 0. ? sb.x : max(EPS, a);
-	sb.x = min(sb.x, max(EPS, a));
-
-        
+	sb.x = min(sb.x, max(EPS, a)); 
     sb.x = max(rem, sb.x);
-    
-    
-    /*
-	vec3 s = (d * 0.5 -  sign(dir)* q) / abs(dir);
-    
-    float b = min(s.x, min(s.y, s.z));
-	if(val > 0u || part.x >= offsets[row+1] || originalPart.x < 0.0 || originalPart.y < 0.0){
-		dis = max(b + EPSILON * 2.0, dis);
-	}*/
-    
+
+	return sb;
+
+}
+
+vec2 map(in vec3 p, in vec3 dir)
+{
+
+	vec2 w = vec2(p.y - 0.03*noise_2(3.*p.xz + iTime*0.3) +0.3, T_WALL);
+	vec2 sb = grid(p, dir);
     return un(w, sb);
 }
 
@@ -559,7 +587,7 @@ vec3 colorize(vec2 res, vec3 p, vec3 dir, float steps)
 	#define fg(o) rfb(iTime + 60 / 140 * o, 140 / 60., -1., 1)
 
     vec3 light = normalize(vec3(1., -1.,  1.));
-    vec3 lightPos = vec3(-1, 1.5, 0.);
+    vec3 lightPos = vec3(-1, 1.5, 0);
     //light = normalize(p - lightPos);
     
     vec3 n = normal(p, dir);
@@ -589,11 +617,13 @@ void main()
 
     vec3 ro = vec3(4.0, 10.0, 5.0);
     
-	if (cScene == 1) {
-		ro.x = 10.;
+	if (cScene == 0) {
+		ro = vec3(7., 10.0, 7.);
+	} else if (cScene == 1) { //Actual 1.
+		ro = vec3(5., 10.0, 5.);
 	}
 	
-	vec3 tar = vec3(0.0, 0.7, 0.0);
+	vec3 tar = vec3(0.0, 0.1, 0.0);
     ro = mix(tar, ro, 1.0);
     vec3 dir = normalize(tar - ro);
 	vec3 right = normalize(cross(vec3(0.0, 1.0, 0.0), dir));
