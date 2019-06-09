@@ -42,13 +42,18 @@ struct Camera {
 
     void tick(int key)
     {
-        auto isDown = [key](int keyCode) { return key == keyCode ? 1 : 0; };
+        bool anyKey = false;
+        auto isDown = [key, &anyKey](int keyCode) { if(key == keyCode) anyKey = true; return key == keyCode ? 1 : 0; };
         this->d1 += isDown(Window::KEY_Q);
         this->d1 -= isDown(Window::KEY_A);
         this->d2 += isDown(Window::KEY_W);
         this->d2 -= isDown(Window::KEY_S);
         this->d3 += isDown(Window::KEY_E);
         this->d3 -= isDown(Window::KEY_D);
+
+        if (anyKey) {
+            LOG_INFO(d1 << ", " << d2 << ", " << d3);
+        }
     }
 };
 

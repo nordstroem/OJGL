@@ -18,9 +18,9 @@ vec3 lightPosition = vec3(4.0, 0, 4);
 #define PI 3.14159265
 
 #define NUM_SCENES 3
-float[] sceneLengths = float[NUM_SCENES](12., 30., 20.);
+float[] sceneLengths = float[NUM_SCENES](15., 30., 20.);
 
-#define fTime 0 + mod(iTime, 60.f)
+#define fTime 0 + mod(iTime, 45.f)
 
 int currentScene() 
 {
@@ -505,9 +505,14 @@ void main()
 
     vec3 ro = vec3(4.0, 10.0, 5.0);
     
+	float tl = lTimeLeft;
+	float lt = lTime;
+	float ft = tl + lt;
 	int cs = cScene;
 	if (cs == 0) {
-		ro = vec3(7., 10.0, 7.);
+		float ttt = smoothstep(0, 0.9*ft, lt);
+		float cx = mix(20.f, 7.f, ttt);
+		ro = vec3(cx, 10.0, 8.);
 	} else if (cs == 1) {
 		ro = vec3(5., 10.0, 5.);
 	} else if (cs == 2) {
@@ -538,8 +543,7 @@ void main()
 	float f = 1.0;
 
 
-	float tl = lTimeLeft;
-	float lt = lTime;
+
 
 	if (cs == 0) {
 		f = smoothstep(0., 5., lt);
