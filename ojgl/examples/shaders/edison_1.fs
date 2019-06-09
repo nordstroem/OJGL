@@ -18,9 +18,9 @@ vec3 lightPosition = vec3(4.0, 0, 4);
 #define PI 3.14159265
 
 #define NUM_SCENES 3
-float[] sceneLengths = float[NUM_SCENES](10., 10., 10.);
+float[] sceneLengths = float[NUM_SCENES](12., 30., 20.);
 
-#define fTime 0 + mod(iTime, 30.f)
+#define fTime 0 + mod(iTime, 60.f)
 
 int currentScene() 
 {
@@ -164,35 +164,18 @@ float fbm3_high(vec3 p, float a, float f) {
     return ret;
 }
 
-mat3 rotateAngle(vec3 v, float a )
-{
-    float si = sin( a );
-    float co = cos( a );
-    float ic = 1.0f - co;
-
-    return mat3( v.x*v.x*ic + co,       v.y*v.x*ic - si*v.z,    v.z*v.x*ic + si*v.y,
-                   v.x*v.y*ic + si*v.z,   v.y*v.y*ic + co,        v.z*v.y*ic - si*v.x,
-                   v.x*v.z*ic - si*v.y,   v.y*v.z*ic + si*v.x,    v.z*v.z*ic + co );
-}
-
-
-
 float rfb(float f, float bps, float l, float h) {
 	return l + (h - l) * hash11(floor(f * bps));
 }
 
-
-
 uint[] text = uint[18](
 0xffffffffu, 0x5fffffffu, 0xffffffffu, 0xff7fffffu, 0xffff8e3fu, 0xff9c58c6u, 0x3e39d977u, 0xbfff6b57u, 0xbadfd696u, 0x77bf8f1bu, 0x59badf36u, 0xd875bfffu, 0x7b5ebadeu, 0xf6de8e7fu, 0xff9c51c6u, 0xde19d9ffu, 0xffffffffu, 0xffffffffu);
 
-uint[] edison_logo = uint[25](
-0xffff000fu, 0xfffc0000u, 0x0fff8000u, 0x000fe000u, 0x00003f00u, 0x000000f8u, 0x003ff003u, 0x000fff80u, 0x109dffffu, 0x0079dfffu, 0xf007bfffu, 0xfff03bffu, 0xffff81bfu, 0xfffffc0fu, 0xffffffe0u, 0xffffffffu, 0x0fffe07fu, 0xf0fffe3fu, 0xfe0fffe3u, 0xffe1fffeu, 0x0ff81fffu, 0xe80007ffu, 0xffa003ffu, 0xffff81ffu, 0xff800000u);
-
-uint[] edison_logo_2 = uint[63](0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffc003ffu, 0xfffffff0u, 0x00003fffu, 0xffffe000u, 0x0003ffffu, 0xff800000u, 0x00ffffffu, 0xc0000000u, 0x3fffffe0u, 0x00ffc00fu, 0xffffc003u, 0xffe007ffu, 0xffc277ffu, 0xfc03ffffu, 0xde77fffcu, 0x01fffffeu, 0xffffffc0u, 0xfffffeffu, 0xffffe07fu, 0xfffeffffu, 0xfff03fffu, 0xffffffffu, 0xf83fffffu, 0xfffffffcu, 0x3fffffffu, 0xf81ffc3fu, 0xfffffff8u, 0xfff83fffu, 0xfffff8ffu, 0xf87fffffu, 0xfff83fe0u, 0x7fffffffu, 0xfa0001ffu, 0xfffffffeu, 0x800fffffu, 0xffffffe0u, 0x7fffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xfe635f18u, 0xe31718feu, 0xd6afb5aeu, 0xbbdbbf0bu, 0x6edad74du, 0xeddfb46bu, 0xe31baef6u, 0xefdad5f7u, 0xb631118fu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffe00000u);
-
 // 49, 32
 uint[] OJ_Roman = uint[49](0xffffffffu, 0xffffffffu, 0xffffffffu, 0xfffe01ffu, 0xf0007ff8u, 0x003fff83u, 0xfff07e07u, 0xffe3fff1u, 0xffe1fff1u, 0xfff1fff8u, 0x3ff8fff1u, 0xfffe1ffcu, 0x7ff1ffffu, 0x87fe3ff0u, 0xffffe1ffu, 0x1ff8ffffu, 0xf8ff8ffcu, 0x7ffffc7fu, 0xc7fc7fffu, 0xfe1fe3feu, 0x3fffff8fu, 0xf1ff1fffu, 0xffc7f8ffu, 0x8fffffe3u, 0xfc7fc7ffu, 0xfff1fe3fu, 0xe3fffff8u, 0xff1ff0ffu, 0xfffc7f8fu, 0xfc7ffffcu, 0x7fc7fe3fu, 0xfffe3fe3u, 0xff0fffffu, 0x1ff1ffc3u, 0xffff1ff8u, 0xfff1ffffu, 0x1ffc7ffcu, 0x3fff1ffeu, 0x3fff0fffu, 0x1ffe1fffu, 0xc1fc1fffu, 0x1ffff000u, 0x3fff1fffu, 0xff00ffffu, 0x1fffffffu, 0xfffc3fffu, 0xffffffffu, 0xffffffffu, 0xffffffffu);
+
+// 168, 13
+uint[] shoutouts2 = uint[69](0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffd7u, 0xfffff7bfu, 0xafffbfefu, 0xfffffeffu, 0xffffffffu, 0xf7ff7fffu, 0xdffffff7u, 0xffbfff7fu, 0xeffffffeu, 0xffffffffu, 0xfff7ff7fu, 0xe716318fu, 0xf1a62cffu, 0x7323336cu, 0x66bfc0e6u, 0x07195673u, 0x6fdad5eeu, 0xb7f6adabu, 0x7f3d6d7du, 0x6bda5fdbu, 0x5adaeb55u, 0xad5fc6d6u, 0x6eb7f6adu, 0xa8ff716du, 0x716cdedfu, 0xdb46daebu, 0x54631fdeu, 0xd7aeb7f6u, 0xadabff6du, 0x6d6d6f5au, 0xdfdb5edau, 0xeb55ef5fu, 0xe71471b6u, 0xf1ae2cefu, 0x71637188u, 0xe6dbdb66u, 0xdb1bb673u, 0x6fffffffu, 0xfdffffffu, 0xdfffffffu, 0xfffff7ffu, 0xffffffbfu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0x7fffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xff000000u);
 
 const float EPS = 1e-2;
 const int MAX_STEPS = 200;
@@ -316,52 +299,6 @@ float rv(float low, float high, float p)
     return low + (high - low) * hash11(p);
 }
 
-float note() {
-	return mod(iTime, 5.0);     
-}
-
-
-/*vec2 map(vec3 p)
-{
-    vec2 sphere = vec2(length(p - vec3(7.5 - 3.5*psin(iTime) + noise_3(p), 0.0, 0.0)) - 0.5, T_SPHERE);
-    
-    float ns = 0.2*noise_3(4.0 *( p - vec3(0.5*iTime, 0.1 * iTime, 0.2 * iTime)));
-    vec2 box = vec2(sdBox(    p - vec3(3.0, 0.0, 0.0), vec3(1.5, 0.5, 0.5) + ns), T_BOX);
-    vec2 walls = vec2(-sdBox( p - vec3(0.0, 0.0, 0.0), vec3(8.0)), T_WALL);
-	vec2 arr = vec2(arrows(p), T_ARROW);
-    return un(arr, un(box, un(sphere, walls)));
-}*/
-
-
-vec2 fractalBox(in vec3 p)
-{
-   float d = sdBox(p,vec3(1.0)) - 0.0;
-   //d = mix(sdSphere(p, 1.0),d, 0.5 + 0.6*psin(iTime));
-    
-   vec2 res = vec2( d, T_BOX);
-
-   float s = 0.34 + 0.66*psin(iTime*0.5);
-   for( int m=0; m<3; m++ )
-   {
-      vec3 newp = p;
-      vec3 a = mod( newp * s, 2.0 ) - 1.0;
-      s *= 3.0;
-      vec3 r = abs(1.0 - 3.0*abs(a));
-
-      float da = max(r.x,r.y);
-      float db = max(r.y,r.z);
-      float dc = max(r.z,r.x);
-      float c = (min(da,min(db,dc))-1.0)/s;
-
-      if( c>d )
-      {
-          d = c;
-          res = vec2( d, T_BOX);
-       }
-   }
-
-   return res;
-}
 
 vec2 walls(vec3 p) {
     
@@ -376,6 +313,8 @@ vec3 ballPos() {
 vec2 grid(in vec3 p, in vec3 dir) {
 
 	int cs = cScene;
+	float lt = lTime;
+	float tl = lTimeLeft;
 
     p.xz *= rot(-0.4+0.07*sin(iTime));
 
@@ -400,9 +339,9 @@ vec2 grid(in vec3 p, in vec3 dir) {
 		sc = 0.073;
 		rem = mix(sdBox(p, vec3(2., 10.0, 2.0)), sdSphere(p, 2.5), 0.3);    
 	} else if (cs == 2) {
-		c = 0.37 / 3.;
-		sc = 0.1;
-		rem = mix(sdBox(p, vec3(4., 10.0, 3.0)), sdSphere(p, 4.), psin(3*iTime));    
+		c = 0.37 / 2.;
+		sc = 0.073;
+		rem = mix(sdBox(p, vec3(2., 2.0, 2.0)), sdSphere(p, 2.5), 0.0);   
 	}
 
     vec3 q = p;
@@ -413,7 +352,9 @@ vec2 grid(in vec3 p, in vec3 dir) {
 	if (cs == 0) {
 		h = 0.1 + 1.*psin(p.x+ 1*iTime);
 	} else if (cs == 1) {
-		h = 0.1+2.*psin(1.2*iTime + qq.z*qq.x*0.1);
+	    float f2 = smoothstep(15, 21, lt);
+		float f = smoothstep(0., 6., lt) * (1. - f2);
+		h = 0.1+f*1.5*psin(1.2*iTime + qq.z*qq.x*0.1) + f2;
 	}else if (cs == 2) {
 		h = 1.1;
 	}
@@ -437,20 +378,19 @@ vec2 grid(in vec3 p, in vec3 dir) {
 		bit = uint(qz) * uint(imDim.x) + uint(qx);
 		val = OJ_Roman[bit / 32u] & (1u << (31u - bit % (32u)));
 	} else if (cs == 1) {
-	    qx = -qq.x +4. + mod(2.*iTime * 2.0, imDim.x);
+	    qx = -qq.x +4. + mod(2.*lTime * 2.0, imDim.x);
 		imDim = vec2(49, 32);
 		bit = uint(qz) * uint(imDim.x) + uint(qx);
 		val = text[bit / 32u] & (1u << (31u - bit % (32u)));
 	} else if (cs == 2) {
-	    qx = -qq.x + 27;
-		imDim = vec2(57, 35);
+		imDim = vec2(168, 13);
+	    qx = -qq.x +14.+ mod(4.*lTime* 2.0, imDim.x);
+		qz = qq.z + 6.;
 		bit = uint(qz) * uint(imDim.x) + uint(qx);
-		val = edison_logo_2[bit / 32u] & (1u << (31u - bit % (32u)));
+		val = shoutouts2[bit / 32u] & (1u << (31u - bit % (32u)));
 	}
 
 
-
-   
 
     float t = mod(iTime, 10.);
     vec2 sb;
@@ -463,7 +403,7 @@ vec2 grid(in vec3 p, in vec3 dir) {
     	sb.y = T_BOX;
     } else {
      	sb.y = T_BOX2;
-        h += 0.2*smoothspike(0., 0.3, mod(iTime, 2.));
+		//h += 0.2*smoothspike(0., 0.3, mod(iTime, 2.));
     }
     
     sb.x = sdBox(q, vec3(sc, h, sc));
@@ -508,21 +448,6 @@ vec2 march(vec3 ro, vec3 rd, out vec3 p, out int steps)
     return res;
 }
 
-float shadow(vec3 ro, vec3 dir) 
-{
-    float t = 0.01;
- 	float sf = 1.0;
-    for(int i = 0; i < MAX_STEPS; ++i) {
-		vec3 p = ro + t * dir;    	
-        vec2 res = map(p, dir);
-        t += clamp(res.x, 0.02, 0.1);
-        if (res.x < 0.001)
-            return 0.5;
-       sf = min(sf, 8.0 * abs(res.x) / t);
-    }
- 	return min(1.0, 0.5 + 0.5*sf);
-}
-
 float ambientOcclusion(vec3 p, vec3 n, vec3 dir) 
 {
 	float as = 0.0;
@@ -541,9 +466,15 @@ float ambientOcclusion(vec3 p, vec3 n, vec3 dir)
        
 vec3 colorize(vec2 res, vec3 p, vec3 dir, float steps) 
 {
+	int cs = cScene;
 	#define fg(o) rfb(iTime + 60 / 140 * o, 140 / 60., -1., 1)
 
-    vec3 light = normalize(vec3(1., -1.,  1.));
+    vec3 light = normalize(vec3(1., -1,  1.));
+
+	if (cs == 2) {
+	//	light = normalize(vec3(1., -0.7,  1.));
+	}
+
     vec3 lightPos = vec3(-1, 1.5, 0);
     //light = normalize(p - lightPos);
     
@@ -580,7 +511,7 @@ void main()
 	} else if (cs == 1) {
 		ro = vec3(5., 10.0, 5.);
 	} else if (cs == 2) {
-		ro = vec3(2.0, 30.0, 5.);
+		ro = vec3(7., 15.0, 5.);
 	}
 	
 	vec3 tar = vec3(0.0, 0.1, 0.0);
@@ -604,7 +535,23 @@ void main()
     	col = mix(col, newCol, ri);
     }
 
-    fragColor = vec4(col, 1.0);
+	float f = 1.0;
+
+
+	float tl = lTimeLeft;
+	float lt = lTime;
+
+	if (cs == 0) {
+		f = smoothstep(0., 5., lt);
+		f *= 1. - smoothstep(1.5, 0., tl);
+	} else if (cs == 1) {
+		f = smoothstep(0., 1.5, lt);
+	}
+
+    fragColor = vec4(f * col, 1.0);
+
+
+
 }
 
 )""  

@@ -22,7 +22,7 @@ void buildSceneGraph(GLState& glState, int x, int y)
 
         //  auto mesh = Buffer::construct(BufferFormat::Meshes, x, y, "mesh", "shaders/mesh.vs", "shaders/mesh.fs");
 
-        glState.addScene("meshScene", post, Duration::seconds(30));
+        glState.addScene("meshScene", post, Duration::seconds(11130));
     }
     {
         auto edison = Buffer::construct(BufferFormat::Quad, x, y, "intro", "shaders/edison.vs", "shaders/edison_2.fs");
@@ -83,9 +83,9 @@ int main(int argc, char* argv[])
     ShaderReader::preLoad("shaders/post.fs", resources::fragment::post);
     ShaderReader::preLoad("shaders/post.vs", resources::vertex::post);
 
-    ShaderReader::preLoad("shaders/edison_1.fs", resources::fragment::edison_1);
-    ShaderReader::preLoad("shaders/edison_2.fs", resources::fragment::edison_2);
-    ShaderReader::preLoad("shaders/edison_1_post.fs", resources::fragment::edison_1_post);
+    //ShaderReader::preLoad("shaders/edison_1.fs", resources::fragment::edison_1);
+    //ShaderReader::preLoad("shaders/edison_2.fs", resources::fragment::edison_2);
+    //ShaderReader::preLoad("shaders/edison_1_post.fs", resources::fragment::edison_1_post);
 
     /*{
         auto edison = Buffer::construct(BufferFormat::Quad, x, y, "intro", "shaders/edison.vs", "shaders/edison_1.fs");
