@@ -14,6 +14,42 @@ uniform float DEBUG_D3;
 vec3 lightPosition = vec3(4.0, 0, 4);
 
 /// start of boiler-plate
+#define NUM_SCENES 3
+float[] sceneLengths = float[NUM_SCENES](15., 15., 20.);
+
+#define fTime mod(iTime, 50.)
+
+int currentScene() 
+{
+    float s = fTime;
+	for(int i = 0; i < NUM_SCENES; i++) {
+		s-= sceneLengths[i];
+		if (s < 0) return i;
+	}
+	return NUM_SCENES;
+}
+
+float localTime() {
+	float s = fTime;
+	for(int i = 0; i < NUM_SCENES; i++) {
+		if (s - sceneLengths[i] < 0) return s;
+		s-= sceneLengths[i];
+	}
+	return s;
+}
+
+float localTimeLeft() {
+	float s = fTime;
+	for(int i = 0; i < NUM_SCENES; i++) {
+		if (s - sceneLengths[i] < 0) return sceneLengths[i] - s;
+		s-= sceneLengths[i];
+	}
+	return 99999999999.;
+}
+
+#define lTime localTime()
+#define cScene currentScene()
+#define lTimeLeft localTimeLeft()
 
 #define PI 3.14159265
 
@@ -148,30 +184,6 @@ const float T_SPHERE = 0.0;
 const float T_WALL = 1.0;
 const float T_BOX = 2.0;
 const float T_ARROW = 3.0;
-
-const vec3[] arrs = vec3[20](
-vec3(0.46236206, 0.70231345 , 0.53169691), 
-vec3(0.2132808  , 0.22293179 , 0.94648516),
-vec3(-0.05071868 ,  0.6621354   , 0.74163369),
-vec3(-0.0552707  ,  0.52395075  , 0.84528939),
-vec3(0.39465571 , 0.58627051 , 0.70596794),
-vec3(0.29108856,  0.7714463  , 0.55812972),
-vec3(0.37339145 , 0.67291647 , 0.63510697),
-vec3(0.01751453 , 0.58879056 , 0.80503947),
-vec3(0.02804069 , 0.73287578 , 0.67357057),
-vec3(0.46907611 , 0.62152748 , 0.62259924),
-vec3(0.34878045 , 0.27573    , 0.89228966),
-vec3(-0.01338117  , 0.70767689  , 0.70012086),
-vec3(0.23661175 , 0.64417871 , 0.72637579),
-vec3(0.06150907 , 0.46257157 , 0.88213247),
-vec3(0.21010989 , 0.29683322 , 0.92846117),
-vec3(-0.05105933  , 0.59853327  , 0.79453398),
-vec3(0.38651043 , 0.74848105 , 0.52959447),
-vec3(-0.08002648  , 0.62211056  , 0.77266498),
-vec3(0.15974723 , 0.27943837 , 0.94296055),
-vec3(0.15827769 , 0.45903349 , 0.87321441)
-
-);
     
 float psin(float v) 
 {
@@ -197,12 +209,11 @@ float specularFactor(float type)
 }
 
 
-
 vec3 color(float type, vec3 p) 
 {
     if (type == T_WALL)
-		 //return vec3(0.2);
-       return palette(fract(-p.x*p.y*0.015), vec3(0.5), vec3(0.5), vec3(1.0, 1.0, 1.0), vec3(0.00, 0.10, 0.20	) );
+		 return vec3(0.1);
+       //return palette(fract(-p.x*p.y*0.015), vec3(0.5), vec3(0.5), vec3(1.0, 1.0, 1.0), vec3(0.00, 0.10, 0.20	) );
     else if (type == T_SPHERE)
         return vec3(0.2, 0.1, 0.6);
     else if (type == T_BOX) {
@@ -299,65 +310,33 @@ float rv(float low, float high, float p)
     return low + (high - low) * hash11(p);
 }
 
-float note() {
-	return mod(iTime, 5.0);     
-}
-
-float arrows(vec3 p)
-{
-	float d = 13337.0;
-    float t = mod(iTime, 5.0);
-    
-   /* float hbox = length(p - vec3(0.0, 1.0, -0.2)) - 1.0;
-    vec3 a = normalize(vec3(0.0, 1.0, -0.2));
-    float th0 = 3.14 / 8.0;
-	vec3 u = cross(a, vec3(1, 0, 0));
-    vec3 v = cross(a, u); // These vectors can be hardcoded.
-	float d = 13337.0;
-    float t = mod(iTime, 5.0);*/
-    vec2 c = vec2(3.0);
-	vec3 q = p;
-    q.xz = mod(p.xz, c) - 0.5 * c;
-    q.x = abs(q.x);
-    for(int i = 0; i < 20; ++i)
-    {
-    	/*float z = rv(cos(th0), 1.0, float(i));
-        float th = acos(z);
-        float phi = rv(0.0, 2.0 * 3.1415, float(i) * 200.0);
-		vec3 x = 1.0 * sin(th) * (cos(phi) * u + sin(phi) * v) + cos(th) * a;
-        x = x * t + vec3(0.0, -0.3, 0.0) * t * t;
-		*/
-        vec3 x = arrs[i];
-        x = x * t + vec3(0.0, -0.3, 0.0) * t * t;
-        d = min(d, length(q - x) - 0.05);
-    }
-    return d;
-}
-
-/*vec2 map(vec3 p)
-{
-    vec2 sphere = vec2(length(p - vec3(7.5 - 3.5*psin(iTime) + noise_3(p), 0.0, 0.0)) - 0.5, T_SPHERE);
-    
-    float ns = 0.2*noise_3(4.0 *( p - vec3(0.5*iTime, 0.1 * iTime, 0.2 * iTime)));
-    vec2 box = vec2(sdBox(    p - vec3(3.0, 0.0, 0.0), vec3(1.5, 0.5, 0.5) + ns), T_BOX);
-    vec2 walls = vec2(-sdBox( p - vec3(0.0, 0.0, 0.0), vec3(8.0)), T_WALL);
-	vec2 arr = vec2(arrows(p), T_ARROW);
-    return un(arr, un(box, un(sphere, walls)));
-}*/
 
 
 vec2 fractalBox(in vec3 p)
 {
-   p.xz *= rot(iTime*0.5);
+	int cs = cScene;
+	float lt= lTime;
+
+   p.y+=3.*(1. - smoothstep(0., 10., fTime));
+
+   float r = lTime*0.3;
+
+   if (cs == 2) {
+		r = lTime*0.1 + 1.;
+   }
+   p.xz *= rot(r);
    //p.yz *= rot(iTime*0.5);
-   moda(p.xy, 15.);
+
+   if (cs == 2) {
+		moda(p.xy, 15.);
+		pMod1(p.x, 1.);
+   }
+
    //p.x-=psin(iTime)*2.3;
-   //moda(p.zy,  1.+ 5.0*psin(iTime));
    //p.z -= 2.0 * psin(iTime); 
 
     //   moda(p.zy,  1+DEBUG_D1 / 5);
    //p.z -= DEBUG_D2 / 5; 
-   pMod1(p.x, 1.0);
    
   // mo(p.xz, vec2(DEBUG_D1/10, DEBUG_D2/10));
    //p.xy *= rot(sin(iTime)*p.y);
@@ -366,8 +345,11 @@ vec2 fractalBox(in vec3 p)
     
    vec2 res = vec2( d, T_BOX);
 
-   float tim = mod(iTime + 1.7 - 2.0, 4.0);
-   float s = 0.7 + 0.3*smoothstep(1.7, 2.0, tim) - 0.3*smoothstep(3.7, 4.0, tim);
+   float s = 1.;
+   float tim = mod(fTime + 1.7 - 2.0, 4.0);
+   if (cs > 0) {
+		s = 0.7 + 0.3*smoothstep(1.7, 2.0, tim) - 0.3*smoothstep(3.7, 4.0, tim);
+   }
    //float s = 0.7 + 0.2*smoothspike(0.1, 0.5, mod(iTime, 1.0));
 
    for( int m=0; m<3; m++ )
@@ -526,9 +508,23 @@ vec3 colorize(vec2 res, vec3 p, vec3 dir, int steps)
 
 void main()
 {
+
+	int cs = cScene;
+	float tl = lTimeLeft;
+	float lt = lTime;
+	float ft = tl + lt;
+
     vec2 uv = fragCoord - 0.5;
 	uv.y *= iResolution.y / iResolution.x;
-    vec3 ro = vec3(11.0, 10.+1.0*psin(iTime*0.)  , 11.0);
+    
+	vec3 ro = vec3(11.0, 5., 11.0);
+
+	if (cs == 1) {
+		ro = vec3(14.0, 14., 14.0);
+	}if (cs == 2) {
+		ro = vec3(11.0, 11., 11.0);
+	}
+
     vec3 tar = vec3(0.0, 1.0, 0.0);
     ro = mix(tar, ro, 1.0);
     vec3 dir = normalize(tar - ro);
@@ -541,18 +537,6 @@ void main()
     vec2 res = march(ro, rd, p, steps);
     vec3 col = colorize(res, p, rd, steps);
 
-    /*vec3 lightPos = vec3(0.);
-    float lDis = length(p - lightPos);
-    float acc = 0.;
-    for(float s = 0.; s < lDis; s+=0.1) {
-		vec3 p2;
-        vec3 ro2 = ro + rd * s;
-        res = march(ro2, normalize(lightPos - ro2), p2, steps);
-        float dis = length(ro2 - lightPos);
-        if (length(p2 - ro2) > length(lightPos - ro2) || res.y == T_INF) {
-           col += 0.3*1. / (dis*dis);
-        }
-    }*/
     float ri = reflectiveIndex(res.y);
     if (ri > 0.0) { 
         vec3 p2;
@@ -562,7 +546,19 @@ void main()
     	col = mix(col, newCol, ri);
     }
 
-    fragColor = vec4(col, 1.0);
+	float f = 1.0;
+	if (cs == 0) {
+		f = smoothstep(0., 5., lt);
+		f *= 1. - smoothstep(1., 0., tl);
+	} else if (cs == 1) {
+		f = smoothstep(0., 1., lt);
+		f *= 1. - smoothstep(1., 0., tl);
+	} else if (cs == 2) {
+		f = smoothstep(0., 1., lt);
+		f *= 1. - smoothstep(1., 0., tl);
+	}
+
+    fragColor = vec4(f * col, 1.0);
 }
 
 )""  

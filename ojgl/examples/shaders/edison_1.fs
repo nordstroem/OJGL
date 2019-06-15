@@ -18,7 +18,7 @@ vec3 lightPosition = vec3(4.0, 0, 4);
 #define PI 3.14159265
 
 #define NUM_SCENES 3
-float[] sceneLengths = float[NUM_SCENES](15., 30., 20.);
+float[] sceneLengths = float[NUM_SCENES](15., 15., 20.);
 
 #define fTime 0 + mod(iTime, 45.f)
 
@@ -341,7 +341,7 @@ vec2 grid(in vec3 p, in vec3 dir) {
 	} else if (cs == 2) {
 		c = 0.37 / 2.;
 		sc = 0.073;
-		rem = mix(sdBox(p, vec3(2., 2.0, 2.0)), sdSphere(p, 2.5), 0.0);   
+		rem = mix(sdBox(p, vec3(2.0, 2.0, 2.0)), sdSphere(p, 2.5), 0.0);   
 	}
 
     vec3 q = p;
@@ -384,7 +384,7 @@ vec2 grid(in vec3 p, in vec3 dir) {
 		val = text[bit / 32u] & (1u << (31u - bit % (32u)));
 	} else if (cs == 2) {
 		imDim = vec2(168, 13);
-	    qx = -qq.x +14.+ mod(4.*lTime* 2.0, imDim.x);
+	    qx = -qq.x +14.+ mod(4.*lTime* 2.5, imDim.x);
 		qz = qq.z + 6.;
 		bit = uint(qz) * uint(imDim.x) + uint(qx);
 		val = shoutouts2[bit / 32u] & (1u << (31u - bit % (32u)));
@@ -550,6 +550,10 @@ void main()
 		f *= 1. - smoothstep(1.5, 0., tl);
 	} else if (cs == 1) {
 		f = smoothstep(0., 1.5, lt);
+		f *= 1. - smoothstep(1.5, 0., tl);
+	} else if (cs == 2) {
+		f = smoothstep(0., 1.5, lt);
+		f *= 1. - smoothstep(1.5, 0., tl);
 	}
 
     fragColor = vec4(f * col, 1.0);
