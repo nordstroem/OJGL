@@ -18,9 +18,9 @@ vec3 lightPosition = vec3(4.0, 0, 4);
 #define PI 3.14159265
 
 #define NUM_SCENES 3
-float[] sceneLengths = float[NUM_SCENES](15., 15., 20.);
+float[] sceneLengths = float[NUM_SCENES](15., 15., 16.);
 
-#define fTime 0 + mod(iTime, 45.f)
+#define fTime iTime
 
 int currentScene() 
 {
@@ -331,8 +331,8 @@ vec2 grid(in vec3 p, in vec3 dir) {
 	float h = 0.1 + 1.*psin(p.x+ 1*iTime);
 
 	if (cs == 0) {
-		c = 0.37 / 3;
-		sc = 0.045;
+		c = 0.37 / 3 * 0.5;
+		sc = 0.045 * 0.5;
 		rem = sdBox(p, vec3(3., 2.0, 2.2));
 	} else if (cs == 1) {
 		c = 0.37 / 2.;
@@ -341,7 +341,7 @@ vec2 grid(in vec3 p, in vec3 dir) {
 	} else if (cs == 2) {
 		c = 0.37 / 2.;
 		sc = 0.073;
-		rem = mix(sdBox(p, vec3(2.0, 2.0, 2.0)), sdSphere(p, 2.5), 0.0);   
+		rem = mix(sdBox(p, vec3(3.0, 2.0, 3.0)), sdSphere(p, 2.5), 0.0);   
 	}
 
     vec3 q = p;
@@ -378,13 +378,14 @@ vec2 grid(in vec3 p, in vec3 dir) {
 		bit = uint(qz) * uint(imDim.x) + uint(qx);
 		val = OJ_Roman[bit / 32u] & (1u << (31u - bit % (32u)));
 	} else if (cs == 1) {
-	    qx = -qq.x +4. + mod(2.*lTime * 2.0, imDim.x);
+	    //qx = -qq.x +4. + mod(2.*lTime * 2.0, imDim.x);
 		imDim = vec2(49, 32);
-		bit = uint(qz) * uint(imDim.x) + uint(qx);
-		val = text[bit / 32u] & (1u << (31u - bit % (32u)));
+		//bit = uint(qz) * uint(imDim.x) + uint(qx);
+		//val = text[bit / 32u] & (1u << (31u - bit % (32u)));
+	    val = noise_2(qq.xz * 0.5 + iTime*sign(p.x)) < 0.8  ? 1u : 0u;
 	} else if (cs == 2) {
 		imDim = vec2(168, 13);
-	    qx = -qq.x +14.+ mod(4.*lTime* 2.5, imDim.x);
+	    qx = -qq.x +0.+ mod(4.*lTime* 2.5, imDim.x);
 		qz = qq.z + 6.;
 		bit = uint(qz) * uint(imDim.x) + uint(qx);
 		val = shoutouts2[bit / 32u] & (1u << (31u - bit % (32u)));
@@ -401,8 +402,14 @@ vec2 grid(in vec3 p, in vec3 dir) {
     if (val != 0u || !cond) {
     	sb.x = max(EPS, a);
     	sb.y = T_BOX;
+		if (cs == 0) {
+			h-=0.25*noise_2(qq.xz * 0.5 + iTime*sign(p.x));
+		}
     } else {
      	sb.y = T_BOX2;
+		if (cs == 0) {
+			//h-=0.1;
+		}
 		//h += 0.2*smoothspike(0., 0.3, mod(iTime, 2.));
     }
     
@@ -541,9 +548,6 @@ void main()
     }
 
 	float f = 1.0;
-
-
-
 
 	if (cs == 0) {
 		f = smoothstep(0., 5., lt);

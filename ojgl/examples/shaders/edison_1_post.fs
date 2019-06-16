@@ -29,11 +29,11 @@ void main()
     float b = texture(inTexture0, uv - f*vec2(0.01, 0.01)).b;
 	vec3 org = texture(inTexture0, uv).rgb;
 	vec3 per = vec3(r, g, b);
-    //fragColor.rgb  = mix(org, per, 0.6); 
-    //fragColor.rgb *=  0.9 + 0.1*clamp(sin(uv.y*1000.0) + 0.8, 0.0, 1.0);
+    fragColor.rgb  = mix(org, per, 0.6); 
+   // fragColor.rgb *=  0.9 + 0.1*clamp(sin(uv.y*1000.0) + 0.8, 0.0, 1.0);
 	//fragColor.rgb *=  0.9 + 0.1*clamp(sin(uv.y*1000) + 0.8, 0.0, 1.0);
 
 
-	fragColor.rgb = org;
+	//fragColor.rgb = org;
 }
 )""

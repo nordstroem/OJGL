@@ -317,7 +317,6 @@ vec2 fractalBox(in vec3 p)
 	int cs = cScene;
 	float lt= lTime;
 
-   p.y+=3.*(1. - smoothstep(0., 10., fTime));
 
    float r = lTime*0.3;
 
@@ -381,7 +380,13 @@ vec2 walls(vec3 p) {
 }
 
 vec3 ballPos() {
- 	return vec3(0.0, 1., 0.0);    
+    int cs = cScene;
+	float py = 1. - 3.*(1. - smoothstep(0., 10., fTime));
+
+	float px = 0.;
+	float pz = 0.;
+
+ 	return vec3(px, py, pz);    
 }
 
 vec2 flooring(vec3 p) {
@@ -462,23 +467,6 @@ float ambientOcclusion(vec3 p, vec3 n)
     }
     return mix(1.0, smoothstep(0.0, float(ns *(ns - 1) / 2) * sl, as), 0.6);
 }
-
-//iq
-float calcAO( in vec3 pos, vec3 nor)
-{
-	float occ = 0.0;
-    float sca = 1.0;
-    for( int i=0; i<5; i++ )
-    {
-        float hr = 0.01 + 0.12*float(i)/4.0;
-        vec3 aopos =  nor * hr + pos;
-        float dd = map( pos).x;
-        occ += -(dd-hr)*sca;
-        sca *= 0.95;
-    }
-    return clamp( 1.0 - 3.0*occ, 0.0, 1.0 );    
-}
-
                           
 vec3 colorize(vec2 res, vec3 p, vec3 dir, int steps) 
 {
