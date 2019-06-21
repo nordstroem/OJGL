@@ -195,6 +195,8 @@ float reflectiveIndex(float type)
         return 0.2;
 	if (type == T_BOX)
         return 0.5;
+	if (type == T_BOX2)
+        return 0.0;
 	return 0.0;
 }
 
@@ -394,7 +396,7 @@ vec2 grid(in vec3 p, in vec3 dir) {
 		imDim = vec2(49, 32);
 		//bit = uint(qz) * uint(imDim.x) + uint(qx);
 		//val = text[bit / 32u] & (1u << (31u - bit % (32u)));
-	    val = noise_2(qq.xz * 0.5 + iTime*sign(p.x)) < 0.8 ? 1u : 0u;
+	    val = noise_2(qq.xz * 0.3 + iTime*sign(p.x)) < 0.8 ? 1u : 0u;
 	} else if (cs == 2) {
 		imDim = vec2(184, 13);
 	    qx = -qq.x +0.+ mod(4.*lTime* 2.5, imDim.x);
@@ -533,7 +535,7 @@ void main()
 		float cx = mix(20.f, 7.f, ttt);
 		ro = vec3(cx, 10.0, 8.);
 	} else if (cs == 1) {
-		ro = vec3(5., 10.0, 5.);
+		ro = vec3(5., 10.0 + 3.*smoothstep(8., 9., lt), 5.);
 	} else if (cs == 2) {
 		ro = vec3(3., 15.0, 5.);
 	}
