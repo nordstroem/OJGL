@@ -239,7 +239,9 @@ vec3 color(float type, vec3 p)
 			red = red2;
 			yellow = vec3(1.0, 1.0, 0.0);
 		} else if(cs == 1) {
-			red = vec3(1., 0.0, 1.0);
+		    vec3 col1 = vec3(1., 0., 1.0);
+			vec3 col2 = vec3(0., 1., 1.);
+			red = mix(col1, col2, smoothstep(8., 9., lt));
 			yellow = vec3(1.0, 1.0, 0.0);
 		} else if(cs == 2) {
 			red = vec3(0., 1.0, 1.0);
@@ -335,9 +337,11 @@ vec2 grid(in vec3 p, in vec3 dir) {
 	float h = 0.1 + 1.*psin(p.x+ 1*iTime);
 
 	if (cs == 0) {
-		c = 0.37 / 3;
-		sc = 0.045 ;
-		rem = sdBox(p, vec3(3., 2.0, 2.2));
+		c = 0.37 / 3 * 0.3;
+		sc = 0.045*0.36;
+		//rem = sdBox(p, vec3(1.5,  2.0, 1.5));
+		rem = mix(sdBox(p, vec3(2., 10.0, 2.0)), sdSphere(p, 1.5), 1.0);    
+
 	} else if (cs == 1) {
 		c = 0.37 / 2.;
 		sc = 0.073;
@@ -354,7 +358,7 @@ vec2 grid(in vec3 p, in vec3 dir) {
     qq.y = 0.0;
     
 	if (cs == 0) {
-		h = 0.2 + 0.5*psin(p.x+ 1*iTime);
+		h = 0.2 + 0.8*psin(p.x+ 0.5*iTime);
 	} else if (cs == 1) {
 	    float f2 = smoothstep(20, 25, lt);
 		float f = smoothstep(8., 9., lt) * (1. - f2);
@@ -368,7 +372,7 @@ vec2 grid(in vec3 p, in vec3 dir) {
     
     vec3 d = (c * 0.5 -  sign(dir)* q) / abs(dir);
 	float b = min(d.x, min(d.y, d.z));
-	float a = b + EPS;// max(pDis - 1.73, b + EPS); // TODO 1.73 kan vara for mycket
+	float a = b + EPS*2.;// max(pDis - 1.73, b + EPS); // TODO 1.73 kan vara for mycket
     
   	float qz = qq.z +15.;
   //  float qx = -qq.x +4. + mod(2.*iTime * 2.0, imDim.x);
@@ -382,6 +386,11 @@ vec2 grid(in vec3 p, in vec3 dir) {
 		bit = uint(qz) * uint(imDim.x) + uint(qx);
 		val = OJ_Roman[bit / 32u] & (1u << (31u - bit % (32u)));
 	} else if (cs == 1) {
+
+		bit = uint(qz) * uint(imDim.x) + uint(qx);
+		float ojval = OJ_Roman[bit / 32u] & (1u << (31u - bit % (32u)));
+
+
 	    //qx = -qq.x +4. + mod(2.*lTime * 2.0, imDim.x);
 		imDim = vec2(49, 32);
 		//bit = uint(qz) * uint(imDim.x) + uint(qx);
@@ -412,7 +421,7 @@ vec2 grid(in vec3 p, in vec3 dir) {
     } else {
      	sb.y = T_BOX2;
 		if (cs == 0) {
-			h-=0.1;
+			h-=0.05;
 		}
 		//h += 0.2*smoothspike(0., 0.3, mod(iTime, 2.));
     }
@@ -480,7 +489,7 @@ vec3 colorize(vec2 res, vec3 p, vec3 dir, float steps)
 	int cs = cScene;
 	#define fg(o) rfb(iTime + 60 / 140 * o, 140 / 60., -1., 1)
 
-    vec3 light = normalize(vec3(1., -1,  1.));
+    vec3 light = normalize(vec3(1.4, -0.8,  1.));
 
 	if (cs == 2) {
 	//	light = normalize(vec3(1., -0.7,  1.));
