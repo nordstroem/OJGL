@@ -472,6 +472,7 @@ vec3 colorize(vec2 res, vec3 p, vec3 dir, int steps)
 {
     vec3 light = normalize(vec3(1.0, -1,  -1.));
     vec3 lightPos = ballPos();
+	lightPos.y = max(1., lightPos.y);
     //light = normalize(p - lightPos);
     
     vec3 n = normal(p);

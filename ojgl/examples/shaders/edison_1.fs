@@ -18,7 +18,7 @@ vec3 lightPosition = vec3(4.0, 0, 4);
 #define PI 3.14159265
 
 #define NUM_SCENES 3
-float[] sceneLengths = float[NUM_SCENES](15., 27., 16.);
+float[] sceneLengths = float[NUM_SCENES](15., 27., 18.);
 
 #define fTime iTime
 
@@ -174,9 +174,8 @@ uint[] text = uint[18](
 // 49, 32
 uint[] OJ_Roman = uint[49](0xffffffffu, 0xffffffffu, 0xffffffffu, 0xfffe01ffu, 0xf0007ff8u, 0x003fff83u, 0xfff07e07u, 0xffe3fff1u, 0xffe1fff1u, 0xfff1fff8u, 0x3ff8fff1u, 0xfffe1ffcu, 0x7ff1ffffu, 0x87fe3ff0u, 0xffffe1ffu, 0x1ff8ffffu, 0xf8ff8ffcu, 0x7ffffc7fu, 0xc7fc7fffu, 0xfe1fe3feu, 0x3fffff8fu, 0xf1ff1fffu, 0xffc7f8ffu, 0x8fffffe3u, 0xfc7fc7ffu, 0xfff1fe3fu, 0xe3fffff8u, 0xff1ff0ffu, 0xfffc7f8fu, 0xfc7ffffcu, 0x7fc7fe3fu, 0xfffe3fe3u, 0xff0fffffu, 0x1ff1ffc3u, 0xffff1ff8u, 0xfff1ffffu, 0x1ffc7ffcu, 0x3fff1ffeu, 0x3fff0fffu, 0x1ffe1fffu, 0xc1fc1fffu, 0x1ffff000u, 0x3fff1fffu, 0xff00ffffu, 0x1fffffffu, 0xfffc3fffu, 0xffffffffu, 0xffffffffu, 0xffffffffu);
 
-// 168, 13
-uint[] shoutouts2 = uint[69](0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffd7u, 0xfffff7bfu, 0xafffbfefu, 0xfffffeffu, 0xffffffffu, 0xf7ff7fffu, 0xdffffff7u, 0xffbfff7fu, 0xeffffffeu, 0xffffffffu, 0xfff7ff7fu, 0xe716318fu, 0xf1a62cffu, 0x7323336cu, 0x66bfc0e6u, 0x07195673u, 0x6fdad5eeu, 0xb7f6adabu, 0x7f3d6d7du, 0x6bda5fdbu, 0x5adaeb55u, 0xad5fc6d6u, 0x6eb7f6adu, 0xa8ff716du, 0x716cdedfu, 0xdb46daebu, 0x54631fdeu, 0xd7aeb7f6u, 0xadabff6du, 0x6d6d6f5au, 0xdfdb5edau, 0xeb55ef5fu, 0xe71471b6u, 0xf1ae2cefu, 0x71637188u, 0xe6dbdb66u, 0xdb1bb673u, 0x6fffffffu, 0xfdffffffu, 0xdfffffffu, 0xfffff7ffu, 0xffffffbfu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0x7fffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xff000000u);
-
+// 184, 13
+uint[] shoutouts3 = uint[75](0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xfffffff5u, 0xfffffdefu, 0xebffeffbu, 0xffffffbfu, 0xf7ffffffu, 0xffffeffeu, 0xfffff7ffu, 0xfffdffefu, 0xffdffbffu, 0xffffbfffu, 0xffffffffu, 0xffeffeffu, 0xf9c58c63u, 0xfc698b3fu, 0xdcc8ccdbu, 0x19aff63fu, 0x81cc0e32u, 0xace6dff6u, 0xb57badfdu, 0xab6adfcfu, 0x5b5f5af6u, 0x97f5bfb6u, 0xb5b5d6abu, 0x5abff1b5u, 0x9badfdabu, 0x6a3fdc5bu, 0x5c5b37b7u, 0xf5bfb68du, 0xb5d6a8c6u, 0x3ff7b5ebu, 0xadfdab6au, 0xffdb5b5bu, 0x5bd6b7f5u, 0xbfb6bdb5u, 0xd6abdebfu, 0xf9c51c6du, 0xbc6b8b3bu, 0xdc58dc62u, 0x39b6f637u, 0xb6cdb637u, 0x6ce6dfffu, 0xffffff7fu, 0xfffff7ffu, 0xffffffffu, 0xfdffafffu, 0xffffff7fu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffbfffffu, 0xfffeffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffff00u);
 const float EPS = 1e-2;
 const int MAX_STEPS = 200;
 
@@ -249,7 +248,7 @@ vec3 color(float type, vec3 p)
 		}
         
         // return palette(noise_3(0.2*sin(iTime*0.5)*p + iTime*0.5), vec3(0.5), vec3(0.5), vec3(1.0, 0.7, 0.4), vec3(0.00, 0.15, 0.20) );
-        return mix(red, yellow, 0.3*noise_3(2.0*sin(iTime*0.5)*p + iTime*0.5));
+        return 2.*mix(red, yellow, 0.3*noise_3(2.0*sin(iTime*0.5)*p + iTime*0.5));
    // return palette(0.1, vec3(0.5), vec3(0.5), vec3(1.0, 1.0, 1.0), vec3(0.00, 0.10, 0.20	) );
     }
     else if (type == T_ARROW)
@@ -340,15 +339,15 @@ vec2 grid(in vec3 p, in vec3 dir) {
 		c = 0.37 / 3 * 0.3;
 		sc = 0.045*0.36;
 		//rem = sdBox(p, vec3(1.5,  2.0, 1.5));
-		rem = mix(sdBox(p, vec3(2., 10.0, 2.0)), sdSphere(p, 1.5), 1.0);    
+		rem = sdSphere(p, 1.5);    
 
 	} else if (cs == 1) {
 		c = 0.37 / 2.;
-		sc = 0.073;
-		rem = mix(sdBox(p, vec3(2., 10.0, 2.0)), sdSphere(p, 2.5), 0.3);    
+		sc = 0.073*1.1;
+		rem = mix(sdBox(p, vec3(2., 10.0, 2.0)), sdSphere(p, 2.5), 0.0);    
 	} else if (cs == 2) {
 		c = 0.37 / 2.;
-		sc = 0.073;
+		sc = 0.073*1.1;
 		rem = mix(sdBox(p, vec3(3.0, 2.0, 3.0)), sdSphere(p, 2.5), 0.0);   
 	}
 
@@ -362,7 +361,7 @@ vec2 grid(in vec3 p, in vec3 dir) {
 	} else if (cs == 1) {
 	    float f2 = smoothstep(20, 25, lt);
 		float f = smoothstep(8., 9., lt) * (1. - f2);
-		h = 0.1+f*1.5*psin(1.2*iTime + qq.z*qq.x*0.1) + f2;
+		h = 0.1+f*1.5*psin(1.5*iTime + qq.z*qq.x*0.1) + f2;
 	}else if (cs == 2) {
 		h = 1.1;
 	}
@@ -395,13 +394,13 @@ vec2 grid(in vec3 p, in vec3 dir) {
 		imDim = vec2(49, 32);
 		//bit = uint(qz) * uint(imDim.x) + uint(qx);
 		//val = text[bit / 32u] & (1u << (31u - bit % (32u)));
-	    val = noise_2(qq.xz * 0.5 + iTime*sign(p.x)) < 0.8  ? 1u : 0u;
+	    val = noise_2(qq.xz * 0.5 + iTime*sign(p.x)) < 0.8 ? 1u : 0u;
 	} else if (cs == 2) {
-		imDim = vec2(168, 13);
+		imDim = vec2(184, 13);
 	    qx = -qq.x +0.+ mod(4.*lTime* 2.5, imDim.x);
 		qz = qq.z + 6.;
 		bit = uint(qz) * uint(imDim.x) + uint(qx);
-		val = shoutouts2[bit / 32u] & (1u << (31u - bit % (32u)));
+		val = shoutouts3[bit / 32u] & (1u << (31u - bit % (32u)));
 	}
 
 
@@ -536,7 +535,7 @@ void main()
 	} else if (cs == 1) {
 		ro = vec3(5., 10.0, 5.);
 	} else if (cs == 2) {
-		ro = vec3(7., 15.0, 5.);
+		ro = vec3(3., 15.0, 5.);
 	}
 	
 	vec3 tar = vec3(0.0, 0.1, 0.0);
@@ -567,9 +566,9 @@ void main()
 		f *= 1. - smoothstep(1.5, 0., tl);
 	} else if (cs == 1) {
 		f = smoothstep(0., 1.5, lt);
-		f *= 1. - smoothstep(1.5, 0., tl);
+		f *= 1. - smoothstep(0.5, 0., tl);
 	} else if (cs == 2) {
-		f = smoothstep(0., 1.5, lt);
+		f = smoothstep(0., 0.5, lt);
 		f *= 1. - smoothstep(1.5, 0., tl);
 	}
 
