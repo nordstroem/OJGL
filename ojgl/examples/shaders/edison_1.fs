@@ -18,7 +18,7 @@ vec3 lightPosition = vec3(4.0, 0, 4);
 #define PI 3.14159265
 
 #define NUM_SCENES 3
-float[] sceneLengths = float[NUM_SCENES](15., 15., 16.);
+float[] sceneLengths = float[NUM_SCENES](15., 27., 16.);
 
 #define fTime iTime
 
@@ -214,6 +214,8 @@ float psin(float v)
 vec3 color(float type, vec3 p) 
 {
     int cs = cScene;
+	float lt = lTime;
+
 	#define br(o) rfb(iTime + 60 / 140 * o, 140 / 60., 0., 0.2)
 
     if (type == T_WALL)
@@ -232,7 +234,9 @@ vec3 color(float type, vec3 p)
         vec3 yellow = vec3(1.0, 1.0, 0.0);
 
 		if (cs == 0) {
-			red = vec3(1., 0.0, 0.0);
+			vec3 red1 = vec3(1., 1.0, 1.0);
+			vec3 red2 = vec3(1., 0.0, 0.0);
+			red = red2;
 			yellow = vec3(1.0, 1.0, 0.0);
 		} else if(cs == 1) {
 			red = vec3(1., 0.0, 1.0);
@@ -331,8 +335,8 @@ vec2 grid(in vec3 p, in vec3 dir) {
 	float h = 0.1 + 1.*psin(p.x+ 1*iTime);
 
 	if (cs == 0) {
-		c = 0.37 / 3 * 0.5;
-		sc = 0.045 * 0.5;
+		c = 0.37 / 3;
+		sc = 0.045 ;
 		rem = sdBox(p, vec3(3., 2.0, 2.2));
 	} else if (cs == 1) {
 		c = 0.37 / 2.;
@@ -350,10 +354,10 @@ vec2 grid(in vec3 p, in vec3 dir) {
     qq.y = 0.0;
     
 	if (cs == 0) {
-		h = 0.1 + 1.*psin(p.x+ 1*iTime);
+		h = 0.2 + 0.5*psin(p.x+ 1*iTime);
 	} else if (cs == 1) {
-	    float f2 = smoothstep(15, 21, lt);
-		float f = smoothstep(0., 6., lt) * (1. - f2);
+	    float f2 = smoothstep(20, 25, lt);
+		float f = smoothstep(8., 9., lt) * (1. - f2);
 		h = 0.1+f*1.5*psin(1.2*iTime + qq.z*qq.x*0.1) + f2;
 	}else if (cs == 2) {
 		h = 1.1;
@@ -403,12 +407,12 @@ vec2 grid(in vec3 p, in vec3 dir) {
     	sb.x = max(EPS, a);
     	sb.y = T_BOX;
 		if (cs == 0) {
-			h-=0.25*noise_2(qq.xz * 0.5 + iTime*sign(p.x));
+			//h-=0.25*noise_2(qq.xz * 0.5 + iTime*sign(p.x));
 		}
     } else {
      	sb.y = T_BOX2;
 		if (cs == 0) {
-			//h-=0.1;
+			h-=0.1;
 		}
 		//h += 0.2*smoothspike(0., 0.3, mod(iTime, 2.));
     }

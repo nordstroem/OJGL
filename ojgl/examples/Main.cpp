@@ -22,7 +22,7 @@ void buildSceneGraph(GLState& glState, int x, int y)
 
         //  auto mesh = Buffer::construct(BufferFormat::Meshes, x, y, "mesh", "shaders/mesh.vs", "shaders/mesh.fs");
 
-        glState.addScene("meshScene", post, Duration::seconds(46));
+        glState.addScene("meshScene", post, Duration::seconds(58));
     }
     {
         auto edison = Buffer::construct(BufferFormat::Quad, x, y, "intro", "shaders/edison.vs", "shaders/edison_2.fs");
@@ -31,7 +31,7 @@ void buildSceneGraph(GLState& glState, int x, int y)
 
         //  auto mesh = Buffer::construct(BufferFormat::Meshes, x, y, "mesh", "shaders/mesh.vs", "shaders/mesh.fs");
 
-        glState.addScene("meshScene", post, Duration::seconds(5000));
+        glState.addScene("meshScene", post, Duration::seconds(50));
     }
 }
 
@@ -172,7 +172,7 @@ int main(int argc, char* argv[])
         glState.update();
 
         timer.end();
-        ojstd::sleep(16); // Are OpenGL calls async?
+        ojstd::sleep(33); // Are OpenGL calls async?
     }
 }
 

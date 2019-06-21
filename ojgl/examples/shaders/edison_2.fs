@@ -381,7 +381,7 @@ vec2 walls(vec3 p) {
 
 vec3 ballPos() {
     int cs = cScene;
-	float py = 1. - 3.*(1. - smoothstep(0., 10., fTime));
+	float py = 1.5 - 6.*(1. - smoothstep(0., 10., fTime));
 
 	float px = 0.;
 	float pz = 0.;
@@ -491,7 +491,7 @@ vec3 colorize(vec2 res, vec3 p, vec3 dir, int steps)
         col =  (lf) * (ao * col *(0.02+diffuse) + spec);
     
     float ns = float(steps) / 100.;
-    return pow(col, vec3(0.4545));
+    return pow(col * ns * 20., vec3(0.4545));
 }
 
 void main()
