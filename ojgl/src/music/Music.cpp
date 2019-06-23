@@ -71,7 +71,8 @@ void Music::updateSync()
 Duration Music::elapsedTime() const
 {
     // @todo verify this formula.
-    return Duration::milliseconds(dsGetCurSmp() * 1000 / (44100 * 4)) + _syncOffset;
+    long ms = ojstd::ftoi(dsGetCurSmp() * 1000.f / (44100.f * 4.f));
+    return Duration::milliseconds(ms) + _syncOffset;
 }
 
 void Music::stop()
@@ -99,5 +100,6 @@ void Music::setTime(Duration time)
     dsInit(this->_player->RenderProxy, this->_player.get(), GetForegroundWindow());
     this->_player->Play(ms);
     _syncOffset = time;
+    dsSetVolume(0.4f);
 }
 } //namespace ojgl

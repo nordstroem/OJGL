@@ -6,6 +6,7 @@ out vec4 fragColor;
 
 uniform sampler2D inTexture0;
 uniform float iTime;
+uniform float iTotalTime;
 
 uniform float CHANNEL_11_SINCE;
 uniform float CHANNEL_4_TO;
@@ -21,8 +22,8 @@ float smoothspike(float left, float right, float value)
 void main()
 {
 	vec2 uv = fragCoord.xy;
-	    
-    float beat = mod(iTime, 2.);
+	float bpm = 133.;
+    float beat = mod(iTotalTime, 60.f / bpm * 4.f);
     float f = 1.*smoothspike(0.0, 0.45, beat);
     float r = texture(inTexture0, uv + f*vec2(0.02, 0.01)).r;
     float g = texture(inTexture0, uv + f*vec2(0.01, 0.01)).g;

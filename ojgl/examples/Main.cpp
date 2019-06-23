@@ -22,7 +22,7 @@ void buildSceneGraph(GLState& glState, int x, int y)
 
         //  auto mesh = Buffer::construct(BufferFormat::Meshes, x, y, "mesh", "shaders/mesh.vs", "shaders/mesh.fs");
 
-        glState.addScene("meshScene", post, Duration::seconds(60));
+        glState.addScene("meshScene", post, Duration::seconds(58));
     }
     {
         auto edison = Buffer::construct(BufferFormat::Quad, x, y, "intro", "shaders/edison.vs", "shaders/edison_2.fs");
@@ -88,9 +88,9 @@ int main(int argc, char* argv[])
     ShaderReader::preLoad("shaders/post.fs", resources::fragment::post);
     ShaderReader::preLoad("shaders/post.vs", resources::vertex::post);
 
-    //ShaderReader::preLoad("shaders/edison_1.fs", resources::fragment::edison_1);
-    //ShaderReader::preLoad("shaders/edison_2.fs", resources::fragment::edison_2);
-    //ShaderReader::preLoad("shaders/edison_1_post.fs", resources::fragment::edison_1_post);
+    ShaderReader::preLoad("shaders/edison_1.fs", resources::fragment::edison_1);
+    ShaderReader::preLoad("shaders/edison_2.fs", resources::fragment::edison_2);
+    ShaderReader::preLoad("shaders/edison_1_post.fs", resources::fragment::edison_1_post);
 
     /*{
         auto edison = Buffer::construct(BufferFormat::Quad, x, y, "intro", "shaders/edison.vs", "shaders/edison_1.fs");
@@ -112,7 +112,7 @@ int main(int argc, char* argv[])
     // and perhaps have a unified update() which does getMessages(), music sync update and
     // so on.
     Window window(width, height, "Eldur - OJ", fullScreen, showCursor);
-    GLState glState;
+    GLState glState(resources::songs::song);
     buildSceneGraph(glState, width, height);
     glState.initialize();
 
@@ -165,6 +165,7 @@ int main(int argc, char* argv[])
 
         glState << Uniform1f("iTime", glState.relativeSceneTime().toSeconds());
         glState << Uniform1f("iGlobalTime", glState.relativeSceneTime().toSeconds() - 2.f);
+        glState << Uniform1f("iTotalTime", glState.elapsedTime().toSeconds());
         glState << Uniform2f("iResolution", static_cast<float>(width), static_cast<float>(height));
         glState << Uniform1f("DEBUG_D1", camera.d1);
         glState << Uniform1f("DEBUG_D2", camera.d2);

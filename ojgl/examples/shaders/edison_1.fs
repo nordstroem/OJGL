@@ -18,7 +18,7 @@ vec3 lightPosition = vec3(4.0, 0, 4);
 #define PI 3.14159265
 
 #define NUM_SCENES 3
-float[] sceneLengths = float[NUM_SCENES](15., 27., 18.);
+float[] sceneLengths = float[NUM_SCENES](14.5, 29., 14.5);
 
 #define fTime iTime
 
@@ -323,6 +323,7 @@ vec2 grid(in vec3 p, in vec3 dir) {
 	float lt = lTime;
 	float tl = lTimeLeft;
 
+    //p.xz *= rot(-0.4+0.07*sin(iTime));
     p.xz *= rot(-0.4+0.07*sin(iTime));
 
 	//moda(p.xz, 5.0);
@@ -346,7 +347,7 @@ vec2 grid(in vec3 p, in vec3 dir) {
 	} else if (cs == 1) {
 		c = 0.37 / 2.;
 		sc = 0.073*1.1;
-		rem = mix(sdBox(p, vec3(2., 10.0, 2.0)), sdSphere(p, 2.5), 0.0);    
+		rem = mix(sdBox(p, vec3(2., 10.0, 2.0)), sdSphere(p, 2.5), 0.3);    
 	} else if (cs == 2) {
 		c = 0.37 / 2.;
 		sc = 0.073*1.1;
@@ -362,8 +363,8 @@ vec2 grid(in vec3 p, in vec3 dir) {
 		h = 0.2 + 0.8*psin(p.x+ 0.5*iTime);
 	} else if (cs == 1) {
 	    float f2 = smoothstep(20, 25, lt);
-		float f = smoothstep(8., 9., lt) * (1. - f2);
-		h = 0.1+f*1.5*psin(1.5*iTime + qq.z*qq.x*0.1) + f2;
+		float f = smoothstep(9., 10., lt) * (1. - f2);
+		h = 0.1+f*2.*psin(0.6*iTime + qq.z*qq.x*0.1) + f2;
 	}else if (cs == 2) {
 		h = 1.1;
 	}
@@ -396,10 +397,10 @@ vec2 grid(in vec3 p, in vec3 dir) {
 		imDim = vec2(49, 32);
 		//bit = uint(qz) * uint(imDim.x) + uint(qx);
 		//val = text[bit / 32u] & (1u << (31u - bit % (32u)));
-	    val = noise_2(qq.xz * 0.3 + iTime*sign(p.x)) < 0.8 ? 1u : 0u;
+	    val = noise_2(vec2(qq.x, qq.z) * 0.3 + vec2(iTime, lt < 8. ? iTime * sign(p.x) : 0.)) < 0.8 ? 1u : 0u;
 	} else if (cs == 2) {
 		imDim = vec2(184, 13);
-	    qx = -qq.x +0.+ mod(4.*lTime* 2.5, imDim.x);
+	    qx = -qq.x +0.+ mod(4.8*lTime* 2.5, imDim.x);
 		qz = qq.z + 6.;
 		bit = uint(qz) * uint(imDim.x) + uint(qx);
 		val = shoutouts3[bit / 32u] & (1u << (31u - bit % (32u)));
@@ -535,7 +536,7 @@ void main()
 		float cx = mix(20.f, 7.f, ttt);
 		ro = vec3(cx, 10.0, 8.);
 	} else if (cs == 1) {
-		ro = vec3(5., 10.0 + 3.*smoothstep(8., 9., lt), 5.);
+		ro = vec3(6., 12. - 3.*smoothstep(8., 9., lt), 6.);
 	} else if (cs == 2) {
 		ro = vec3(3., 15.0, 5.);
 	}

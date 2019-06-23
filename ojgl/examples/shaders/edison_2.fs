@@ -5,6 +5,7 @@ in vec2 fragCoord;
 out vec4 fragColor;
 
 uniform float iTime;
+uniform float iTotalTime;
 uniform vec2 iResolution;
 uniform float DEBUG_D1;
 uniform float DEBUG_D2;
@@ -344,6 +345,10 @@ vec2 fractalBox(in vec3 p)
     
    vec2 res = vec2( d, T_BOX);
 
+   float bpm = 133.;
+   float beat = mod(iTotalTime, 60.f / bpm * 4.f);
+   float f = 1.*smoothspike(0.0, 0.45, beat);
+
    float s = 1.;
    float tim = mod(fTime + 1.7 - 2.0, 4.0);
    if (cs > 0) {
@@ -511,7 +516,7 @@ void main()
 	if (cs == 1) {
 		ro = vec3(14.0, 14., 14.0);
 	}if (cs == 2) {
-		ro = vec3(11.0, 11., 11.0);
+		ro = vec3(13.0, 11., 13.0);
 	}
 
     vec3 tar = vec3(0.0, 1.0, 0.0);
