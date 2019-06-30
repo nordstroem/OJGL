@@ -31,7 +31,7 @@ void buildSceneGraph(GLState& glState, int x, int y)
 
         //  auto mesh = Buffer::construct(BufferFormat::Meshes, x, y, "mesh", "shaders/mesh.vs", "shaders/mesh.fs");
 
-        glState.addScene("meshScene", post, Duration::seconds(50));
+        glState.addScene("meshScene", post, Duration::seconds(5000));
     }
 }
 
@@ -112,7 +112,7 @@ int main(int argc, char* argv[])
     // and perhaps have a unified update() which does getMessages(), music sync update and
     // so on.
     Window window(width, height, "Eldur - OJ", fullScreen, showCursor);
-    GLState glState(resources::songs::song);
+    GLState glState {};
     buildSceneGraph(glState, width, height);
     glState.initialize();
 

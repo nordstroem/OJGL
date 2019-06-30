@@ -15,10 +15,10 @@ uniform float DEBUG_D3;
 vec3 lightPosition = vec3(4.0, 0, 4);
 
 /// start of boiler-plate
-#define NUM_SCENES 3
-float[] sceneLengths = float[NUM_SCENES](15., 15., 20.);
+#define NUM_SCENES 6
+float[] sceneLengths = float[NUM_SCENES](10., 10., 4., 4., 4., 15.);
 
-#define fTime mod(iTime, 50.)
+#define fTime iTime//30. + mod(iTime, 2 * 4 + 15.)
 
 int currentScene() 
 {
@@ -194,7 +194,7 @@ float psin(float v)
 float reflectiveIndex(float type) 
 {
     if (type == T_WALL)
-        return 0.4 + 0.*smoothspike(3., 5., mod(iTime, 5.0));
+        return 0.4 + 0.0*smoothspike(3., 5., mod(iTime, 5.0));
 	if (type == T_SPHERE)
         return 0.2;
 	if (type == T_BOX)
@@ -296,7 +296,8 @@ float smink( float a, float b, float k )
 
 vec2 sun(vec2 a, vec2 b)
 {
-    float sm = smink(a.x,b.x, 0.1);
+	
+    float sm = smink(a.x,b.x, cScene == 0 ? 0.5 : 0.1);
 	float m = min(a.x, b.x);
 	float ca = abs(sm -a.x);
 	float cb = abs(sm -b.x);
@@ -316,19 +317,28 @@ float rv(float low, float high, float p)
 vec2 fractalBox(in vec3 p)
 {
 	int cs = cScene;
-	float lt= lTime;
+	float lt = lTime;
 
 
-   float r = lTime*0.3;
+   float r = lTime*0.1;
 
-   if (cs == 2) {
+   //p.xz *= rot(r);
+     if (cs > 1 && cs < 5) {
+	   p.xy *= rot(r);
+	 } else if (cs == 5 || cs == 1 || cs == 0) {
 		r = lTime*0.1 + 1.;
-   }
-   p.xz *= rot(r);
+
+	p.xz *= rot(r);
+	 
+	 }
    //p.yz *= rot(iTime*0.5);
 
-   if (cs == 2) {
-		moda(p.xy, 15.);
+   float ms[] = float[3](3, 5., 15.); 
+   if (cs > 1 && cs < 5) {
+		moda(p.xy, ms[cs-2]);
+		pMod1(p.x, 1.);
+   } else if (cs == 5){
+   		moda(p.xy, 15.);
 		pMod1(p.x, 1.);
    }
 
@@ -351,7 +361,7 @@ vec2 fractalBox(in vec3 p)
 
    float s = 1.;
    float tim = mod(fTime + 1.7 - 2.0, 4.0);
-   if (cs > 0) {
+   if (cs == 1 || cs == 5) {
 		s = 0.7 + 0.3*smoothstep(1.7, 2.0, tim) - 0.3*smoothstep(3.7, 4.0, tim);
    }
    //float s = 0.7 + 0.2*smoothspike(0.1, 0.5, mod(iTime, 1.0));
@@ -476,8 +486,8 @@ float ambientOcclusion(vec3 p, vec3 n)
 vec3 colorize(vec2 res, vec3 p, vec3 dir, int steps) 
 {
     vec3 light = normalize(vec3(1.0, -1,  -1.));
-    vec3 lightPos = ballPos();
-	lightPos.y = max(1., lightPos.y);
+    vec3 lightPos = ballPos() + vec3(DEBUG_D1, 0., 0.);
+	lightPos.y = 1.;
     //light = normalize(p - lightPos);
     
     vec3 n = normal(p);
@@ -514,8 +524,10 @@ void main()
 	vec3 ro = vec3(11.0, 5., 11.0);
 
 	if (cs == 1) {
-		ro = vec3(14.0, 14., 14.0);
-	}if (cs == 2) {
+		ro = vec3(14.0, 14., 14.0 );
+	} else if (cs > 1 && cs < 5) {
+		ro = vec3(10.0, 21. + (cs-2)*10, 15. + (cs-2)*10);
+	} else if (cs == 5) {
 		ro = vec3(13.0, 11., 13.0);
 	}
 
@@ -544,10 +556,7 @@ void main()
 	if (cs == 0) {
 		f = smoothstep(0., 5., lt);
 		f *= 1. - smoothstep(1., 0., tl);
-	} else if (cs == 1) {
-		f = smoothstep(0., 1., lt);
-		f *= 1. - smoothstep(1., 0., tl);
-	} else if (cs == 2) {
+	} else if (cs > 0) {
 		f = smoothstep(0., 1., lt);
 		f *= 1. - smoothstep(1., 0., tl);
 	}
