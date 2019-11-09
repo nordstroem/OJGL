@@ -5,6 +5,20 @@
 
 using namespace ojgl;
 
+Buffer::Buffer(unsigned width, unsigned height, const ojstd::string& name, const ojstd::string& vertexPath, const ojstd::string& fragmentPath, const ojstd::vector<BufferPtr>& inputs, BufferFormat format)
+    : _format(format)
+    , _inputs(inputs)
+    , _name(name)
+    , _width(width)
+    , _height(height)
+    , _vertexPath(vertexPath)
+    , _fragmentPath(fragmentPath)
+{
+    loadShader();
+    if (_format == BufferFormat::Quad)
+        _meshes.push_back({ Mesh::constructQuad(), Matrix::identity() });
+}
+
 Buffer::~Buffer()
 {
     if (_fboID != 0) {
@@ -172,4 +186,9 @@ void Buffer::clearMeshes()
 {
     if (_format == BufferFormat::Meshes)
         _meshes.clear();
+}
+
+ojstd::shared_ptr<Buffer> Buffer::construct(unsigned width, unsigned height, const ojstd::string& name, const ojstd::string& vertexPath, const ojstd::string& fragmentPath, const ojstd::vector<BufferPtr>& inputs, BufferFormat format)
+{
+    return ojstd::shared_ptr<Buffer>(new Buffer(width, height, name, vertexPath, fragmentPath, inputs, format));
 }
