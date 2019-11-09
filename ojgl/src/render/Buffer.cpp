@@ -3,7 +3,7 @@
 #include "utility/ShaderReader.h"
 #include "winapi/gl_loader.h"
 
-namespace ojgl {
+using namespace ojgl;
 
 Buffer::~Buffer()
 {
@@ -20,11 +20,6 @@ Buffer::~Buffer()
 ojstd::string Buffer::name() const
 {
     return _name;
-}
-
-unsigned Buffer::fboTextureID()
-{
-    return _fboTextureID;
 }
 
 void Buffer::render()
@@ -51,7 +46,7 @@ void Buffer::render()
 
     for (int i = 0; i < _inputs.size(); i++) {
         glActiveTexture(GL_TEXTURE0 + i);
-        glBindTexture(GL_TEXTURE_2D, _inputs[i]->fboTextureID());
+        glBindTexture(GL_TEXTURE_2D, _inputs[i]->_fboID);
     }
 
     index = 0;
@@ -161,9 +156,20 @@ void Buffer::loadShader()
     glDeleteShader(fragID);
 }
 
-GLuint Buffer::getProgramID() const
+Buffer& Buffer::operator<<(const Uniform1t& b)
 {
-    return this->_programID;
+    _textures[b.location()] = ojstd::make_shared<Uniform1t>(b);
+    return *this;
 }
 
-} //namespace ojgl
+void Buffer::insertMesh(const ojstd::shared_ptr<Mesh>& mesh, const Matrix& modelMatrix)
+{
+    _ASSERTE(_format == BufferFormat::Meshes);
+    _meshes.push_back({ mesh, modelMatrix });
+}
+
+void Buffer::clearMeshes()
+{
+    if (_format == BufferFormat::Meshes)
+        _meshes.clear();
+}

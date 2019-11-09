@@ -17,13 +17,35 @@ class Buffer {
 public:
     Buffer(const Buffer& other) = delete;
     ~Buffer();
-    unsigned getProgramID() const;
-    unsigned fboTextureID();
-    void render();
+
     ojstd::string name() const;
     void generateFBO();
+    void render();
+    void insertMesh(const ojstd::shared_ptr<Mesh>& mesh, const Matrix& modelMatrix);
+    void clearMeshes();
+    auto begin() { return _inputs.begin(); }
+    auto begin() const { return _inputs.cbegin(); }
+    auto end() { return _inputs.end(); }
+    auto end() const { return _inputs.cend(); }
+
+    Buffer& operator<<(const Uniform1t& b);
+
+    template <typename T>
+    typename std::enable_if_t<std::is_base_of_v<UniformBase, typename std::remove_reference<T>::type>, Buffer&> operator<<(T&& b)
+    {
+        _uniforms[b.location()] = ojstd::make_shared<typename std::remove_reference<T>::type>(std::forward<T>(b));
+        return *this;
+    }
+
+    template <typename... Args>
+    static BufferPtr construct(Args&&... args)
+    {
+        return ojstd::shared_ptr<Buffer>(new Buffer(std::forward<Args>(args)...));
+    }
 
 private:
+    void loadShader();
+
     template <typename... Args>
     Buffer(BufferFormat format, unsigned width, unsigned height, const ojstd::string& name, const ojstd::string& vertexPath, const ojstd::string& fragmentPath, Args&&... buffers)
         : _format(format)
@@ -39,8 +61,6 @@ private:
             _meshes.push_back({ Mesh::constructQuad(), Matrix::identity() });
     }
 
-    void loadShader();
-
 private:
     ojstd::vector<BufferPtr> _inputs;
     const ojstd::string _name;
@@ -55,43 +75,6 @@ private:
     ojstd::string _fragmentPath;
     BufferFormat _format;
     ojstd::vector<ojstd::Pair<ojstd::shared_ptr<Mesh>, Matrix>> _meshes;
-
-public:
-    template <typename... Args>
-    static BufferPtr construct(Args&&... args)
-    {
-        return ojstd::shared_ptr<Buffer>(new Buffer(std::forward<Args>(args)...));
-    }
-
-    template <typename T>
-    typename std::enable_if_t<std::is_base_of_v<UniformBase, typename std::remove_reference<T>::type>, Buffer&> operator<<(T&& b)
-    {
-        _uniforms[b.location()] = ojstd::make_shared<typename std::remove_reference<T>::type>(std::forward<T>(b));
-        return *this;
-    }
-
-    inline Buffer& operator<<(const Uniform1t& b)
-    {
-        _textures[b.location()] = ojstd::make_shared<Uniform1t>(b);
-        return *this;
-    }
-
-    inline void insertMesh(const ojstd::shared_ptr<Mesh>& mesh, const Matrix& modelMatrix)
-    {
-        _ASSERTE(_format == BufferFormat::Meshes);
-        _meshes.push_back({ mesh, modelMatrix });
-    }
-
-    inline void clearMeshes()
-    {
-        if (_format == BufferFormat::Meshes)
-            _meshes.clear();
-    }
-
-    auto begin() { return _inputs.begin(); }
-    auto begin() const { return _inputs.cbegin(); }
-    auto end() { return _inputs.end(); }
-    auto end() const { return _inputs.cend(); }
 };
 
 } //namespace ojgl

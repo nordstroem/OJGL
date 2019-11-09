@@ -22,7 +22,7 @@ void buildSceneGraph(GLState& glState, int x, int y)
 
         auto mesh = Buffer::construct(BufferFormat::Meshes, x, y, "mesh", "shaders/mesh.vs", "shaders/mesh.fs");
 
-        glState.addScene("meshScene", mesh, Duration::seconds(22));
+        glState.addScene("meshScene", mesh, Duration::seconds(2));
     }
     {
         auto noise = Buffer::construct(BufferFormat::Quad, x, y, "intro", "shaders/demo.vs", "shaders/mountainNoise.fs");
