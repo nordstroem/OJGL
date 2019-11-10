@@ -26,8 +26,10 @@ public:
 
     auto begin() { return _inputs.begin(); }
     auto begin() const { return _inputs.cbegin(); }
+    auto cbegin() const { return _inputs.cbegin(); }
     auto end() { return _inputs.end(); }
     auto end() const { return _inputs.cend(); }
+    auto cend() const { return _inputs.cend(); }
 
     Buffer& operator<<(const Uniform1t& b);
 
