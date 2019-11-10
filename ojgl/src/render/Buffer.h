@@ -17,51 +17,21 @@ class Buffer {
 public:
     Buffer(const Buffer& other) = delete;
     ~Buffer();
-    unsigned getProgramID() const;
-    unsigned fboTextureID();
-    void render();
+
     ojstd::string name() const;
     void generateFBO();
+    void render();
+    void insertMesh(const ojstd::shared_ptr<Mesh>& mesh, const Matrix& modelMatrix);
+    void clearMeshes();
 
-private:
-    template <typename... Args>
-    Buffer(BufferFormat format, unsigned width, unsigned height, const ojstd::string& name, const ojstd::string& vertexPath, const ojstd::string& fragmentPath, Args&&... buffers)
-        : _format(format)
-        , _inputs({ std::forward<Args>(buffers)... })
-        , _name(name)
-        , _width(width)
-        , _height(height)
-        , _vertexPath(vertexPath)
-        , _fragmentPath(fragmentPath)
-    {
-        loadShader();
-        if (_format == BufferFormat::Quad)
-            _meshes.push_back({ Mesh::constructQuad(), Matrix::identity() });
-    }
+    auto begin() { return _inputs.begin(); }
+    auto begin() const { return _inputs.cbegin(); }
+    auto cbegin() const { return _inputs.cbegin(); }
+    auto end() { return _inputs.end(); }
+    auto end() const { return _inputs.cend(); }
+    auto cend() const { return _inputs.cend(); }
 
-    void loadShader();
-
-private:
-    ojstd::vector<BufferPtr> _inputs;
-    const ojstd::string _name;
-    unsigned _programID = 0;
-    unsigned _fboID = 0;
-    unsigned _fboTextureID = 0;
-    const unsigned _width;
-    const unsigned _height;
-    ojstd::unordered_map<ojstd::string, ojstd::shared_ptr<UniformBase>> _uniforms;
-    ojstd::unordered_map<ojstd::string, ojstd::shared_ptr<Uniform1t>> _textures;
-    ojstd::string _vertexPath;
-    ojstd::string _fragmentPath;
-    BufferFormat _format;
-    ojstd::vector<ojstd::Pair<ojstd::shared_ptr<Mesh>, Matrix>> _meshes;
-
-public:
-    template <typename... Args>
-    static BufferPtr construct(Args&&... args)
-    {
-        return ojstd::shared_ptr<Buffer>(new Buffer(std::forward<Args>(args)...));
-    }
+    Buffer& operator<<(const Uniform1t& b);
 
     template <typename T>
     typename std::enable_if_t<std::is_base_of_v<UniformBase, typename std::remove_reference<T>::type>, Buffer&> operator<<(T&& b)
@@ -70,28 +40,27 @@ public:
         return *this;
     }
 
-    inline Buffer& operator<<(const Uniform1t& b)
-    {
-        _textures[b.location()] = ojstd::make_shared<Uniform1t>(b);
-        return *this;
-    }
+    static BufferPtr construct(unsigned width, unsigned height, const ojstd::string& name, const ojstd::string& vertexPath, const ojstd::string& fragmentPath, const ojstd::vector<BufferPtr>& inputs = {}, BufferFormat format = BufferFormat::Quad);
 
-    inline void insertMesh(const ojstd::shared_ptr<Mesh>& mesh, const Matrix& modelMatrix)
-    {
-        _ASSERTE(_format == BufferFormat::Meshes);
-        _meshes.push_back({ mesh, modelMatrix });
-    }
+private:
+    Buffer(unsigned width, unsigned height, const ojstd::string& name, const ojstd::string& vertexPath, const ojstd::string& fragmentPath, const ojstd::vector<BufferPtr>& inputs, BufferFormat format);
+    void loadShader();
 
-    inline void clearMeshes()
-    {
-        if (_format == BufferFormat::Meshes)
-            _meshes.clear();
-    }
+private:
+    const ojstd::vector<BufferPtr> _inputs;
+    const ojstd::string _name;
+    const ojstd::string _vertexPath;
+    const ojstd::string _fragmentPath;
+    const BufferFormat _format;
+    const unsigned _width;
+    const unsigned _height;
 
-    auto begin() { return _inputs.begin(); }
-    auto begin() const { return _inputs.cbegin(); }
-    auto end() { return _inputs.end(); }
-    auto end() const { return _inputs.cend(); }
+    unsigned _programID = 0;
+    unsigned _fboID = 0;
+    unsigned _fboTextureID = 0;
+    ojstd::unordered_map<ojstd::string, ojstd::shared_ptr<UniformBase>> _uniforms;
+    ojstd::unordered_map<ojstd::string, ojstd::shared_ptr<Uniform1t>> _textures;
+    ojstd::vector<ojstd::Pair<ojstd::shared_ptr<Mesh>, Matrix>> _meshes;
 };
 
 } //namespace ojgl
