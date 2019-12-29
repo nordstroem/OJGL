@@ -7,57 +7,63 @@ namespace resources {
 
     namespace fragment {
 
-        ojstd::string post {
+        ojstd::string post{
 #include "shaders/post.fs"
         };
 
-        ojstd::string fxaa {
+        ojstd::string fxaa{
 #include "shaders/fxaa.fs"
         };
 
-        ojstd::string lavaIntro {
+        ojstd::string lavaIntro{
 #include "shaders/lavaIntro.fs"
         };
 
-        ojstd::string mountain {
+        ojstd::string mountain{
 #include "shaders/mountain.fs"
         };
 
-        ojstd::string mountainNoise {
+        ojstd::string mountainNoise{
 #include "shaders/mountainNoise.fs"
         };
 
-        ojstd::string mountainPost {
+        ojstd::string mountainPost{
 #include "shaders/mountainPost.fs"
         };
-        ojstd::string lavaScene2 {
+        ojstd::string lavaScene2{
 #include "shaders/lavaScene2.fs"
         };
-        ojstd::string outro {
+        ojstd::string outro{
 #include "shaders/outro.fs"
         };
-        ojstd::string mesh {
+        ojstd::string mesh{
 #include "shaders/mesh.fs"
+        };
+        ojstd::string cachedGeometry{
+#include "shaders/cachedGeometry.fs"
+        };
+        ojstd::string lightning{
+#include "shaders/lightning.fs"
         };
 
     } //namespace fragment
 
     namespace vertex {
 
-        ojstd::string demo {
+        ojstd::string demo{
 #include "shaders/demo.vs"
         };
 
-        ojstd::string post {
+        ojstd::string post{
 #include "shaders/post.vs"
         };
-        ojstd::string edison {
+        ojstd::string edison{
 #include "shaders/edison.vs"
         };
-        ojstd::string fxaa {
+        ojstd::string fxaa{
 #include "shaders/fxaa.vs"
         };
-        ojstd::string mesh {
+        ojstd::string mesh{
 #include "shaders/mesh.vs"
         };
     } //namespace vertex

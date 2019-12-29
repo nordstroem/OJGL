@@ -16,6 +16,11 @@ void buildSceneGraph(GLState& glState, int x, int y)
     glState.clearScenes();
 
     {
+        auto geometry = Buffer::construct(x, y, "geometry", "shaders/edison.vs", "shaders/cachedGeometry.fs", {}, ojgl::BufferFormat::Quad, true);
+        auto lightning = Buffer::construct(x, y, "lightning", "shaders/edison.vs", "shaders/lightning.fs", { geometry });
+        glState.addScene("cachedGeometryScene", lightning, Duration::seconds(100));
+    }
+    {
         //auto edison = Buffer::construct(BufferFormat::Quad, x, y, "intro", "shaders/edison.vs", "shaders/lavaIntro.fs");
         //auto fxaa = Buffer::construct(BufferFormat::Quad, x, y, "fxaa", "shaders/fxaa.vs", "shaders/fxaa.fs", edison);
         //auto post = Buffer::construct(BufferFormat::Quad, x, y, "post", "shaders/post.vs", "shaders/post.fs", fxaa);
@@ -85,6 +90,8 @@ int main(int argc, char* argv[])
     ShaderReader::preLoad("shaders/outro.fs", resources::fragment::outro);
     ShaderReader::preLoad("shaders/mesh.vs", resources::vertex::mesh);
     ShaderReader::preLoad("shaders/mesh.fs", resources::fragment::mesh);
+    ShaderReader::preLoad("shaders/cachedGeometry.fs", resources::fragment::cachedGeometry);
+    ShaderReader::preLoad("shaders/lightning.fs", resources::fragment::lightning);
 
     // @todo move this into GLState? We can return a const reference to window.
     // and perhaps have a unified update() which does getMessages(), music sync update and

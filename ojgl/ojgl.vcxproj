@@ -97,7 +97,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>false</MinimalRebuild>
-      <ExceptionHandling />
+      <ExceptionHandling>Sync</ExceptionHandling>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <StructMemberAlignment>Default</StructMemberAlignment>
@@ -288,12 +288,14 @@
     <ClInclude Include="src\winapi\wglext.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="examples\shaders\cachedGeometry.fs" />
     <None Include="examples\shaders\demo.vs" />
     <None Include="examples\shaders\edison.vs" />
     <None Include="examples\shaders\fxaa.fs" />
     <None Include="examples\shaders\fxaa.vs" />
     <None Include="examples\shaders\lavaIntro.fs" />
     <None Include="examples\shaders\lavaScene2.fs" />
+    <None Include="examples\shaders\lightning.fs" />
     <None Include="examples\shaders\mesh.fs" />
     <None Include="examples\shaders\mesh.vs" />
     <None Include="examples\shaders\mountain.fs" />
