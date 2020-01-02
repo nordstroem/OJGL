@@ -16,6 +16,11 @@ void buildSceneGraph(GLState& glState, int x, int y)
     glState.clearScenes();
 
     {
+        auto geometry = Buffer::construct(x, y, "geometry", "shaders/edison.vs", "shaders/cachedGeometry.fs", {}, ojgl::BufferFormat::Quad, true);
+        auto lightning = Buffer::construct(x, y, "lightning", "shaders/edison.vs", "shaders/lightning.fs", { geometry });
+        glState.addScene("cachedGeometryScene", lightning, Duration::seconds(100));
+    }
+    {
         //auto edison = Buffer::construct(BufferFormat::Quad, x, y, "intro", "shaders/edison.vs", "shaders/lavaIntro.fs");
         //auto fxaa = Buffer::construct(BufferFormat::Quad, x, y, "fxaa", "shaders/fxaa.vs", "shaders/fxaa.fs", edison);
         //auto post = Buffer::construct(BufferFormat::Quad, x, y, "post", "shaders/post.vs", "shaders/post.fs", fxaa);
@@ -85,6 +90,8 @@ int main(int argc, char* argv[])
     ShaderReader::preLoad("shaders/outro.fs", resources::fragment::outro);
     ShaderReader::preLoad("shaders/mesh.vs", resources::vertex::mesh);
     ShaderReader::preLoad("shaders/mesh.fs", resources::fragment::mesh);
+    ShaderReader::preLoad("shaders/cachedGeometry.fs", resources::fragment::cachedGeometry);
+    ShaderReader::preLoad("shaders/lightning.fs", resources::fragment::lightning);
 
     // @todo move this into GLState? We can return a const reference to window.
     // and perhaps have a unified update() which does getMessages(), music sync update and
@@ -137,7 +144,7 @@ int main(int argc, char* argv[])
         //glState["meshScene"]["mesh"].insertMesh(mesh, Matrix::scaling(0.4f) * Matrix::translation(0.3, ojstd::sin(glState.relativeSceneTime().toSeconds()), 0.0));
 
         // TODO: Aspect ratio
-        glState << UniformMatrix4fv("P", Matrix::perspective(45 * 3.14159265 / 180.0, 16 / 9.0, 0.001, 1000.0) * Matrix::translation(0.0, 0.0, -5.0));
+        glState << UniformMatrix4fv("P", Matrix::perspective(45.0f * 3.14159265f / 180.0f, 16.0f / 9.0f, 0.001f, 1000.0f) * Matrix::translation(0.0, 0.0, -5.0));
 
         glState << Uniform1f("iTime", glState.relativeSceneTime().toSeconds());
         glState << Uniform1f("iGlobalTime", glState.relativeSceneTime().toSeconds() - 2.f);

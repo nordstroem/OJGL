@@ -1,5 +1,5 @@
-#include "ShaderReader.h"
 #include "Log.h"
+#include "ShaderReader.h"
 #include "utility/Macros.h"
 #include "utility/OJstd.h"
 #ifdef _DEBUG
@@ -19,6 +19,12 @@ long long modifyTime(const ojstd::string& path)
 {
     struct stat fileStat;
     return stat(path.c_str(), &fileStat) == 0 ? fileStat.st_mtime : 0;
+}
+
+bool fileExists(const ojstd::string& path)
+{
+    struct stat fileStat;
+    return stat(path.c_str(), &fileStat) == 0;
 }
 #endif
 }
@@ -46,11 +52,22 @@ bool ShaderReader::modified(const ojstd::string& path)
 const ojstd::string& ShaderReader::get(const ojstd::string& path)
 {
 #ifdef _DEBUG
+    auto fullPath = _basePath + path;
+    _ASSERTE(fileExists(fullPath));
     if (modified(path)) {
-        auto fullPath = _basePath + path;
         LOG_INFO("[" << path.c_str() << "]"
                      << " modified");
-        std::ifstream shaderFile(fullPath.c_str());
+
+        std::ifstream shaderFile;
+        // Enable exceptions to try and get more info about why the shader reader sometimes fails when reloading
+        std::ios_base::iostate exceptionMask = shaderFile.exceptions() | std::ios::failbit;
+        shaderFile.exceptions(exceptionMask);
+
+        try {
+            shaderFile.open(fullPath.c_str());
+        } catch (std::ios_base::failure& e) {
+            std::cerr << "ShaderReader failed: " << e.what() << '\n';
+        }
         _ASSERTE(!shaderFile.fail());
 
         std::stringstream buffer;
