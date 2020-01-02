@@ -45,9 +45,11 @@ public:
 private:
     Buffer(unsigned width, unsigned height, const ojstd::string& name, const ojstd::string& vertexPath, const ojstd::string& fragmentPath, const ojstd::vector<BufferPtr>& inputs, BufferFormat format, bool renderOnce);
     void loadShader();
+    int _numOutTextures();
 
 private:
     const ojstd::vector<BufferPtr> _inputs;
+    unsigned _numInputs = 0;
     const ojstd::string _name;
     const ojstd::string _vertexPath;
     const ojstd::string _fragmentPath;
@@ -59,8 +61,7 @@ private:
 
     unsigned _programID = 0;
     unsigned _fboID = 0;
-    unsigned _fboTextureID = 0;
-    unsigned _fboTextureID2 = 0;
+    ojstd::vector<unsigned> _fboTextureIDs;
     ojstd::unordered_map<ojstd::string, ojstd::shared_ptr<UniformBase>> _uniforms;
     ojstd::unordered_map<ojstd::string, ojstd::shared_ptr<Uniform1t>> _textures;
     ojstd::vector<ojstd::Pair<ojstd::shared_ptr<Mesh>, Matrix>> _meshes;
