@@ -59,7 +59,7 @@ const ojstd::string& ShaderReader::get(const ojstd::string& path)
                      << " modified");
 
         std::ifstream shaderFile;
-        //prepare f to throw if failbit gets set
+        // Enable exceptions to try and get more info about why the shader reader sometimes fails when reloading
         std::ios_base::iostate exceptionMask = shaderFile.exceptions() | std::ios::failbit;
         shaderFile.exceptions(exceptionMask);
 
@@ -68,9 +68,7 @@ const ojstd::string& ShaderReader::get(const ojstd::string& path)
         } catch (std::ios_base::failure& e) {
             std::cerr << "ShaderReader failed: " << e.what() << '\n';
         }
-
-        std::ifstream shaderFile2(fullPath.c_str());
-        _ASSERTE(!shaderFile2.fail());
+        _ASSERTE(!shaderFile.fail());
 
         std::stringstream buffer;
         buffer << shaderFile.rdbuf();

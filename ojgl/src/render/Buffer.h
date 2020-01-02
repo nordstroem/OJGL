@@ -45,7 +45,7 @@ public:
 private:
     Buffer(unsigned width, unsigned height, const ojstd::string& name, const ojstd::string& vertexPath, const ojstd::string& fragmentPath, const ojstd::vector<BufferPtr>& inputs, BufferFormat format, bool renderOnce);
     void loadShader();
-    int _numOutTextures();
+    int numOutTextures();
 
 private:
     const ojstd::vector<BufferPtr> _inputs;

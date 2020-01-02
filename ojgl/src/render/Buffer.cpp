@@ -21,9 +21,7 @@ Buffer::Buffer(unsigned width, unsigned height, const ojstd::string& name, const
         _meshes.push_back({ Mesh::constructQuad(), Matrix::identity() });
 
     for (int i = 0; i < _inputs.size(); i++) {
-        for (int j = 0; j < _inputs[i]->_numOutTextures(); j++) {
-            _numInputs++;
-        }
+        _numInputs += _inputs[i]->numOutTextures();
     }
 }
 
@@ -112,7 +110,7 @@ void Buffer::generateFBO()
     glGenFramebuffers(1, &_fboID);
     glBindFramebuffer(GL_FRAMEBUFFER, _fboID);
 
-    for (int i = 0; i < _numOutTextures(); i++) {
+    for (int i = 0; i < numOutTextures(); i++) {
         _fboTextureIDs.emplace_back(0);
         glGenTextures(1, &_fboTextureIDs[i]);
         glBindTexture(GL_TEXTURE_2D, _fboTextureIDs[i]);
@@ -131,10 +129,10 @@ void Buffer::generateFBO()
     }
 
     ojstd::vector<GLenum> drawBuffers;
-    for (int i = 0; i < _numOutTextures(); i++) {
+    for (int i = 0; i < numOutTextures(); i++) {
         drawBuffers.emplace_back(GL_COLOR_ATTACHMENT0 + i);
     }
-    glDrawBuffers(_numOutTextures(), &drawBuffers[0]);
+    glDrawBuffers(numOutTextures(), &drawBuffers[0]);
 
     glBindTexture(GL_TEXTURE_2D, 0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -200,7 +198,7 @@ void Buffer::loadShader()
     glDeleteShader(fragID);
 }
 
-int inline Buffer::_numOutTextures()
+int inline Buffer::numOutTextures()
 {
     // Still quite hard-coded, improve when neccessary
     return _renderOnce ? 2 : 1;
