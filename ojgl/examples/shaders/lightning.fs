@@ -25,20 +25,18 @@ void main()
 	vec3 pos =  texture(inTexture0, uv).rgb;
 	vec3 normal =  texture(inTexture1, uv).rgb;
 
-
-
-
+	// Additional geometry
     vec3 ro = vec3(iTime, 0.0, 2.5);
     vec3 rd = normalize(vec3(1.0, uv.y - 0.5, uv.x - 0.5));
     float t = 0.0;
 
-    
     for (int i = 0; i < 100; i++) {
-    	vec3 p = ro + rd * t;
-        vec3 q = mod(p, 5.0) - 2.5;
-        vec3 r = p / 8.0;
-        float d = udRoundBox(q);
+    	const vec3 p = ro + rd * t;
+        const vec3 q = mod(p, 5.0) - 2.5;
+        const vec3 r = p / 8.0;
+        const  float d = udRoundBox(q);
         
+		// The "length(pos) > t" check determines that we hit this geometry instead of the precalculated
         if (d < 0.01 && length(pos) > t) {
 
             
@@ -47,7 +45,7 @@ void main()
             vec3 invLight = normalize(lpos - p);
             
             vec3 n;
-            vec3 ep = vec3(0.01, 0, 0);
+            const  vec3 ep = vec3(0.01, 0, 0);
             n.x = udRoundBox(q + ep.xyz) - udRoundBox(q - ep.xyz);
             n.y = udRoundBox(q + ep.yxz) - udRoundBox(q - ep.yxz);
             n.z = udRoundBox(q + ep.yzx) - udRoundBox(q - ep.yzx);
@@ -61,37 +59,27 @@ void main()
     }
 
 
+	// Lightning
+	vec3 lpos = vec3(50.0, 0.0, 0.0);
+	{
+		const float r = 30;
+		const float speed = 1.0;
+		lpos += vec3(cos(iTime * speed) * r, 0.1, sin(iTime * speed) * r);
+	}
 
+    const float dis = length(lpos - pos);
+    const vec3 invLight = normalize(lpos - pos);
 
-
-
-
-	vec3 lpos = vec3(3.0 + cos(iTime * 0.3) * 50.0, 0.1, 0.1);
-    float dis = length(lpos - pos);
-    vec3 invLight = normalize(lpos - pos);
-
-	float diffuse = max(0.0, dot(invLight, normal));
-    float s = 10.0;
-    float k = max(0.0, dot(rd, reflect(invLight, normal)));
-    float spec =  pow(k, s);
-    float str = 60.0/(0.1 + 0.1*dis + 0.1*dis*dis);
+	const float diffuse = max(0.0, dot(invLight, normal));
+    const float s = 10.0;
+    const float k = max(0.0, dot(rd, reflect(invLight, normal)));
+    const float spec =  pow(k, s);
+    const float str = 60.0/(0.1 + 0.1*dis + 0.1*dis*dis);
 	vec3 color = vec3(0.5, psin(iTime),psin(iTime + 1.6));
-    color = color * (0.0 + 1.0*diffuse*str);// + vec3(spec*str);
+    color = color * (0.0 + 1.0*diffuse*str) + vec3(spec*str);
 
-
-
-
-
-
-
-	    
-
-
-
-
-
+	// Final color
 	fragColor.rgb = color;
 	fragColor.a = 1.0;
-
 }
 )""

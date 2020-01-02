@@ -37,7 +37,7 @@ mat2 rot(float a)
 
 float fractalBox(vec3 p) {
   float d = sdBox(p, vec3(1.0));
-  //p.xz *= 2.0;
+
   moda(p.xz, 10.0);
   moda(p.xy, 10.0);
   p.yz = rot(iTime)*p.yz;
@@ -57,13 +57,12 @@ float fractalBox(vec3 p) {
       d = max(d,c);
    }
    return d;
-
 }
 
 void main(){
-	vec2 uv = fragCoord.xy;// / iResolution.xy;
-    vec3 ro = vec3(0.0, 0.0, 2.5);
-    vec3 rd = normalize(vec3(1.0, uv.y - 0.5, uv.x - 0.5));
+	const vec2 uv = fragCoord.xy;
+    const vec3 ro = vec3(0.0, 0.0, 2.5);
+    const vec3 rd = normalize(vec3(1.0, uv.y - 0.5, uv.x - 0.5));
     float t = 0.0;
     vec3 color = vec3(0.0);
     
@@ -76,12 +75,12 @@ void main(){
         if (d < 0.01) {
             color = vec3(0.5 + 0.5 * sin(r * 1.3));
             
-            vec3 lpos = ro + vec3(-1.0, 0, 0);
-            float dis = length(lpos - p);
-            vec3 invLight = normalize(lpos - p);
+            const vec3 lpos = ro + vec3(-1.0, 0, 0);
+            const float dis = length(lpos - p);
+            const vec3 invLight = normalize(lpos - p);
             
             vec3 normal;
-            vec3 ep = vec3(0.01, 0, 0);
+            const vec3 ep = vec3(0.01, 0, 0);
             normal.x = fractalBox(q + ep.xyz) - fractalBox(q - ep.xyz);
             normal.y = fractalBox(q + ep.yxz) - fractalBox(q - ep.yxz);
             normal.z = fractalBox(q + ep.yzx) - fractalBox(q - ep.yzx);
@@ -93,9 +92,7 @@ void main(){
         }
         t += d;
     }    
-	//fragPos = vec4(color, 1.0);
-    //fragPos.rgb = fragPos.rgb / (fragPos.rgb + vec3(1.0));
-	//fragNormal.rgba = vec4(1.0, 0.0, 1.0, 1.0);
+
 	fragPos.a = 1.0;
 	fragNormal.a = 1.0;
 }
