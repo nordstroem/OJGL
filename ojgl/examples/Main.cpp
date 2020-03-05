@@ -1,5 +1,6 @@
 
 #include "EmbeddedResources.h"
+#include "Test.h"
 #include "render/GLState.h"
 #include "render/Popup.h"
 #include "render/Texture.h"
@@ -53,6 +54,11 @@ void buildSceneGraph(GLState& glState, int x, int y)
 
 int main(int argc, char* argv[])
 {
+
+    bool runTests = true;
+    if (runTests)
+        return test::main();
+
     auto popupData = popup::show();
 
     OJ_UNUSED(argc);

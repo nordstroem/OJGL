@@ -1,5 +1,5 @@
-#include "OJstd.h"
 #include "Macros.h"
+#include "OJstd.h"
 #include "windows.h"
 #include <stdlib.h>
 #include <string.h>
@@ -90,6 +90,13 @@ string string::operator+(const string& other)
     return flString;
 }
 
+char string::operator[](size_t index) const
+{
+    _ASSERTE(index >= 0);
+    _ASSERTE(index < this->len);
+    return this->content[index];
+}
+
 const char* string::c_str() const
 {
     return this->content;
@@ -108,6 +115,45 @@ void string::append(const string& other)
     strcpy(content + len, other.content);
     this->len = this->len + other.len;
     free(tmp);
+}
+
+string string::replaceFirst(const string& oldStr, const string& newStr)
+{
+    _ASSERTE(oldStr.length() > 0);
+
+    for (int startPos = 0; startPos < (this->len - oldStr.length() + 1); startPos++) {
+        bool foundOldStr = true;
+        for (int i = 0; i < oldStr.length(); i++) {
+            if (this->content[startPos + i] != oldStr[i]) {
+                foundOldStr = false;
+                break;
+            }
+        }
+        if (foundOldStr) {
+            int newLength = this->len + newStr.length() - oldStr.length();
+            char* newContent = (char*)malloc(sizeof(char) * (newLength + 1));
+
+            for (int i = 0; i < newLength; i++) {
+                if (i >= startPos) {
+                    if (i < (startPos + newStr.length()))
+                        newContent[i] = newStr[i - startPos];
+                    else
+                        newContent[i] = this->content[i - newStr.length() + oldStr.length()];
+                } else {
+                    newContent[i] = this->content[i];
+                }
+            }
+            newContent[newLength] = '\0';
+
+            // Modify an existing string to avoid copying more than necessary.
+            string newString("");
+            free(newString.content);
+            newString.content = newContent;
+            newString.len = newLength;
+            return newString;
+        }
+    }
+    return *this;
 }
 
 string to_string(size_t i)

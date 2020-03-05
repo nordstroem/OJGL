@@ -27,6 +27,12 @@ bool fileExists(const ojstd::string& path)
     return stat(path.c_str(), &fileStat) == 0;
 }
 #endif
+
+ojstd::string replaceIncludes(const ojstd::string& rawShader)
+{
+    return ojstd::string("");
+}
+
 }
 
 void ShaderReader::preLoad(const ojstd::string& path, const ojstd::string& content)
@@ -82,6 +88,7 @@ const ojstd::string& ShaderReader::get(const ojstd::string& path)
         ShaderReader::_shaders[path].modifyTime = modifyTime(fullPath);
     }
 #endif
+    // Handle includes here.
     return ShaderReader::_shaders[path].content;
 }
 

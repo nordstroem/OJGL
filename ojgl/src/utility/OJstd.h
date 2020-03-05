@@ -322,9 +322,11 @@ public:
     bool operator==(const string& other) const;
     string& operator=(const string& other);
     string operator+(const string& other);
+    char operator[](size_t index) const;
     const char* c_str() const;
     int length() const;
     void append(const string& other);
+    string replaceFirst(const string& oldStr, const string& newStr);
 
 private:
     char* content = nullptr;
