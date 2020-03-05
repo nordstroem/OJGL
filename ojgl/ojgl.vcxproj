@@ -286,7 +286,6 @@
     <ClInclude Include="src\winapi\glext.h" />
     <ClInclude Include="src\winapi\gl_loader.h" />
     <ClInclude Include="src\winapi\wglext.h" />
-    <ClInclude Include="src\Test.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="examples\shaders\cachedGeometry.fs" />
@@ -305,8 +304,6 @@
     <None Include="examples\shaders\outro.fs" />
     <None Include="examples\shaders\post.fs" />
     <None Include="examples\shaders\post.vs" />
-    <None Include="examples\shaders\primitives.fs" />
-    <None Include="examples\shaders\test.fs" />
     <None Include="examples\songs\song.inc" />
   </ItemGroup>
   <ItemGroup>

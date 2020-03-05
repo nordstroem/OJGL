@@ -34,19 +34,21 @@ ojstd::string replaceIncludes(const ojstd::string& rawShader)
     ojstd::string modifiedShader = rawShader;
 
     int startPos = 0;
-    while (int includeStart = rawShader.find(includeKeyword, startPos) != -1) {
+    int includeStart = rawShader.find(includeKeyword, startPos);
+    while (includeStart != -1) {
         int nameStart = includeStart + includeKeyword.length();
         int nameEnd = nameStart + 1;
         while (rawShader[nameEnd] != '"')
             nameEnd++;
 
-        int includeStringLength = includeKeyword.length() + nameEnd - nameStart + 1;
+        int includeStringLength = includeKeyword.length() + nameEnd - nameStart + 2;
         ojstd::string name = rawShader.substring(nameStart, nameEnd);
-        ojstd::string includeString = rawShader.substring(includeStart, includeStringLength + 1);
+        ojstd::string includeString = rawShader.substring(includeStart, includeStart + includeStringLength);
 
-        ojstd::string shaderToInclude = ShaderReader::get(name);
+        const auto& shaderToInclude = ShaderReader::get(name);
         modifiedShader = modifiedShader.replaceFirst(includeString, shaderToInclude);
         startPos += includeStringLength;
+        includeStart = rawShader.find(includeKeyword, startPos);
     }
 
     return modifiedShader;
@@ -56,7 +58,7 @@ ojstd::string replaceIncludes(const ojstd::string& rawShader)
 
 void ShaderReader::preLoad(const ojstd::string& path, const ojstd::string& content)
 {
-    ShaderReader::_shaders[path].content = content;
+    ShaderReader::_shaders[path].content = replaceIncludes(content);
 }
 
 void ShaderReader::setBasePath(const ojstd::string& basePath)
@@ -103,7 +105,6 @@ const ojstd::string& ShaderReader::get(const ojstd::string& path)
         size_t start = fileContents.find(pre);
         size_t end = fileContents.rfind(post);
         std::string shader = fileContents.substr(start + pre.length(), end - start - pre.length());
-
         ShaderReader::_shaders[path].content = replaceIncludes(shader.c_str());
         ShaderReader::_shaders[path].modifyTime = modifyTime(fullPath);
     }

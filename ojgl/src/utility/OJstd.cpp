@@ -1,5 +1,5 @@
 #include "Macros.h"
-#include "utility/Log.h"
+#include "OJstd.h"
 #include "windows.h"
 #include <stdlib.h>
 #include <string.h>
@@ -141,14 +141,14 @@ void string::append(const string& other)
 int string::find(const string& str, int startPos) const
 {
     for (; startPos < (this->len - str.length() + 1); startPos++) {
-        bool foundOldStr = true;
+        bool foundStr = true;
         for (int i = 0; i < str.length(); i++) {
             if (this->content[startPos + i] != str[i]) {
-                foundOldStr = false;
+                foundStr = false;
                 break;
             }
         }
-        if (foundOldStr)
+        if (foundStr)
             return startPos;
     }
     return -1;
@@ -274,4 +274,5 @@ sign:
 putsign:
     return -i;
 }
+
 }
