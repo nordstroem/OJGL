@@ -317,6 +317,9 @@ class string {
 public:
     string(const char* str);
     string(const string& str);
+    explicit string(char*&& str);
+    explicit string(string&& str);
+
     string();
     ~string();
     bool operator==(const string& other) const;
@@ -326,8 +329,11 @@ public:
     const char* c_str() const;
     int length() const;
     void append(const string& other);
-    int find(const string& str);
-    string replaceFirst(const string& oldStr, const string& newStr);
+    // Returns the position of the first occurence of str in this string after startPos. -1 if not found.
+    int find(const string& str, int startPos = 0) const;
+    // Returns a new string with the first occurence of the substring oldStr replaced with newStr.
+    string replaceFirst(const string& oldStr, const string& newStr) const;
+    string substring(int start, int end) const;
 
 private:
     char* content = nullptr;

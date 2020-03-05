@@ -30,11 +30,26 @@ bool fileExists(const ojstd::string& path)
 
 ojstd::string replaceIncludes(const ojstd::string& rawShader)
 {
-    for (int i = 0; i < rawShader.length(); i++) {
+    ojstd::string includeKeyword = R""(#include ")"";
+    ojstd::string modifiedShader = rawShader;
+
+    int startPos = 0;
+    while (int includeStart = rawShader.find(includeKeyword, startPos) != -1) {
+        int nameStart = includeStart + includeKeyword.length();
+        int nameEnd = nameStart + 1;
+        while (rawShader[nameEnd] != '"')
+            nameEnd++;
+
+        int includeStringLength = includeKeyword.length() + nameEnd - nameStart + 1;
+        ojstd::string name = rawShader.substring(nameStart, nameEnd);
+        ojstd::string includeString = rawShader.substring(includeStart, includeStringLength + 1);
+
+        ojstd::string shaderToInclude = ShaderReader::get(name);
+        modifiedShader = modifiedShader.replaceFirst(includeString, shaderToInclude);
+        startPos += includeStringLength;
     }
 
-    // Only look until #version" is found.
-    return ojstd::string("");
+    return modifiedShader;
 }
 
 }
@@ -88,11 +103,11 @@ const ojstd::string& ShaderReader::get(const ojstd::string& path)
         size_t start = fileContents.find(pre);
         size_t end = fileContents.rfind(post);
         std::string shader = fileContents.substr(start + pre.length(), end - start - pre.length());
-        ShaderReader::_shaders[path].content = ojstd::string(shader.c_str());
+
+        ShaderReader::_shaders[path].content = replaceIncludes(shader.c_str());
         ShaderReader::_shaders[path].modifyTime = modifyTime(fullPath);
     }
 #endif
-    // Handle includes here.
     return ShaderReader::_shaders[path].content;
 }
 

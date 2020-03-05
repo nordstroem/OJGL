@@ -1,5 +1,5 @@
 #include "Macros.h"
-#include "OJstd.h"
+#include "utility/Log.h"
 #include "windows.h"
 #include <stdlib.h>
 #include <string.h>
@@ -53,6 +53,20 @@ string::string(const string& str)
     strcpy(content, str.c_str());
 }
 
+string::string(string&& str)
+{
+    this->content = str.content;
+    this->len = str.len;
+    str.content = nullptr;
+    str.len = 0;
+}
+
+string::string(char*&& str)
+    : content(str)
+    , len(strlen(str))
+{
+}
+
 string::string()
     : string("")
 {
@@ -85,9 +99,7 @@ string string::operator+(const string& other)
     char* str = (char*)malloc(sizeof(char) * (len + other.len + 1));
     strcpy(str, this->content);
     strcpy(str + len, other.content);
-    string flString = string(str);
-    free(str);
-    return flString;
+    return string(std::move(str));
 }
 
 char string::operator[](size_t index) const
@@ -107,6 +119,15 @@ int string::length() const
     return this->len;
 }
 
+string string::substring(int start, int end) const
+{
+    int length = end - start;
+    char* content = (char*)malloc(sizeof(char) * (length + 1));
+    memcpy(content, this->content + start, sizeof(char) * length);
+    content[length] = '\0';
+    return string(std::move(content));
+}
+
 void string::append(const string& other)
 {
     char* tmp = content;
@@ -117,9 +138,9 @@ void string::append(const string& other)
     free(tmp);
 }
 
-int string::find(const string& str)
+int string::find(const string& str, int startPos) const
 {
-    for (int startPos = 0; startPos < (this->len - str.length() + 1); startPos++) {
+    for (; startPos < (this->len - str.length() + 1); startPos++) {
         bool foundOldStr = true;
         for (int i = 0; i < str.length(); i++) {
             if (this->content[startPos + i] != str[i]) {
@@ -130,11 +151,10 @@ int string::find(const string& str)
         if (foundOldStr)
             return startPos;
     }
-
     return -1;
 }
 
-string string::replaceFirst(const string& oldStr, const string& newStr)
+string string::replaceFirst(const string& oldStr, const string& newStr) const
 {
     _ASSERTE(oldStr.length() > 0);
 
@@ -155,13 +175,7 @@ string string::replaceFirst(const string& oldStr, const string& newStr)
             }
         }
         newContent[newLength] = '\0';
-
-        // Modify an existing string to avoid copying more than necessary.
-        string newString("");
-        free(newString.content);
-        newString.content = newContent;
-        newString.len = newLength;
-        return newString;
+        return string(std::move(newContent));
     } else {
         return *this;
     }
