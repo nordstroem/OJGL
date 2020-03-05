@@ -117,43 +117,54 @@ void string::append(const string& other)
     free(tmp);
 }
 
-string string::replaceFirst(const string& oldStr, const string& newStr)
+int string::find(const string& str)
 {
-    _ASSERTE(oldStr.length() > 0);
-
-    for (int startPos = 0; startPos < (this->len - oldStr.length() + 1); startPos++) {
+    for (int startPos = 0; startPos < (this->len - str.length() + 1); startPos++) {
         bool foundOldStr = true;
-        for (int i = 0; i < oldStr.length(); i++) {
-            if (this->content[startPos + i] != oldStr[i]) {
+        for (int i = 0; i < str.length(); i++) {
+            if (this->content[startPos + i] != str[i]) {
                 foundOldStr = false;
                 break;
             }
         }
-        if (foundOldStr) {
-            int newLength = this->len + newStr.length() - oldStr.length();
-            char* newContent = (char*)malloc(sizeof(char) * (newLength + 1));
-
-            for (int i = 0; i < newLength; i++) {
-                if (i >= startPos) {
-                    if (i < (startPos + newStr.length()))
-                        newContent[i] = newStr[i - startPos];
-                    else
-                        newContent[i] = this->content[i - newStr.length() + oldStr.length()];
-                } else {
-                    newContent[i] = this->content[i];
-                }
-            }
-            newContent[newLength] = '\0';
-
-            // Modify an existing string to avoid copying more than necessary.
-            string newString("");
-            free(newString.content);
-            newString.content = newContent;
-            newString.len = newLength;
-            return newString;
-        }
+        if (foundOldStr)
+            return startPos;
     }
-    return *this;
+
+    return -1;
+}
+
+string string::replaceFirst(const string& oldStr, const string& newStr)
+{
+    _ASSERTE(oldStr.length() > 0);
+
+    int startPos = this->find(oldStr);
+
+    if (startPos != -1) {
+        int newLength = this->len + newStr.length() - oldStr.length();
+        char* newContent = (char*)malloc(sizeof(char) * (newLength + 1));
+
+        for (int i = 0; i < newLength; i++) {
+            if (i >= startPos) {
+                if (i < (startPos + newStr.length()))
+                    newContent[i] = newStr[i - startPos];
+                else
+                    newContent[i] = this->content[i - newStr.length() + oldStr.length()];
+            } else {
+                newContent[i] = this->content[i];
+            }
+        }
+        newContent[newLength] = '\0';
+
+        // Modify an existing string to avoid copying more than necessary.
+        string newString("");
+        free(newString.content);
+        newString.content = newContent;
+        newString.len = newLength;
+        return newString;
+    } else {
+        return *this;
+    }
 }
 
 string to_string(size_t i)
@@ -249,5 +260,4 @@ sign:
 putsign:
     return -i;
 }
-
 }

@@ -326,6 +326,7 @@ public:
     const char* c_str() const;
     int length() const;
     void append(const string& other);
+    int find(const string& str);
     string replaceFirst(const string& oldStr, const string& newStr);
 
 private:

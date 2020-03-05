@@ -30,6 +30,10 @@ bool fileExists(const ojstd::string& path)
 
 ojstd::string replaceIncludes(const ojstd::string& rawShader)
 {
+    for (int i = 0; i < rawShader.length(); i++) {
+    }
+
+    // Only look until #version" is found.
     return ojstd::string("");
 }
 
