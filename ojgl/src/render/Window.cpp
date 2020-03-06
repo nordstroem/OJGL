@@ -20,7 +20,8 @@ public:
     MSG _msg; // message
     unsigned _width;
     unsigned _height;
-    ojstd::vector<UINT> _keys;
+    ojstd::vector<UINT> _keysPressed;
+    ojstd::vector<UINT> _keysDown;
     bool _close = false;
 };
 
@@ -66,9 +67,14 @@ void Window::getMessages()
 
 ojstd::vector<unsigned int> Window::getPressedKeys()
 {
-    auto keys = this->_priv->_keys;
-    this->_priv->_keys.clear();
+    auto keys = this->_priv->_keysPressed;
+    this->_priv->_keysPressed.clear();
     return keys;
+}
+
+ojstd::vector<unsigned int> Window::getDownKeys()
+{
+    return this->_priv->_keysDown;
 }
 
 bool Window::isClosePressed() const
@@ -184,7 +190,15 @@ LONG WINAPI Window::Details::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPA
         return 0;
     case WM_KEYUP:
         if (pThis) {
-            pThis->_priv->_keys.push_back(wParam);
+            UINT key = static_cast<UINT>(wParam);
+            pThis->_priv->_keysPressed.push_back(key);
+            pThis->_priv->_keysDown.erase(key);
+        }
+        return 0;
+    case WM_KEYDOWN:
+        if (pThis) {
+            UINT key = static_cast<UINT>(wParam);
+            pThis->_priv->_keysDown.push_back(key);
         }
         return 0;
     case WM_CLOSE:

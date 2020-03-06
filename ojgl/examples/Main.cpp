@@ -32,12 +32,18 @@ int main(int argc, char* argv[])
     buildSceneGraph(glState, width, height);
     glState.initialize();
 
-    auto mesh = Mesh::constructCube();
-
     while (!glState.end() && !window.isClosePressed()) {
         Timer timer;
         timer.start();
         window.getMessages();
+
+        for (auto key : window.getDownKeys()) {
+            switch (key) {
+            case Window::KEY_W:
+                LOG_INFO("W is Down.");
+                break;
+            }
+        }
 
         for (auto key : window.getPressedKeys()) {
             switch (key) {

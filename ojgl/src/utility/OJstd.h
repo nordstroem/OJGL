@@ -40,6 +40,17 @@ ForwardIt find_if(ForwardIt first, ForwardIt last, UnaryPredicate p)
     return last;
 }
 
+template <class ForwardIt, class Value>
+ForwardIt find(ForwardIt first, ForwardIt last, const Value& val)
+{
+    for (auto it = first; it != last; it++) {
+        if (*it == val) {
+            return it;
+        }
+    }
+    return last;
+}
+
 template <typename T>
 class shared_ptr {
 public:
@@ -215,6 +226,12 @@ public:
                 return it;
         } else
             return this->end();
+    }
+    void erase(const T& val)
+    {
+        auto* it = find(this->begin(), this->end(), val);
+        if (it != this->end())
+            this->erase(it);
     }
     void clear()
     {
