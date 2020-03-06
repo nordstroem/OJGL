@@ -45,6 +45,11 @@ int main(int argc, char* argv[])
             }
         }
 
+        if (window.isLeftMouseButtonDown()) {
+            auto p = window.getCursorPosition();
+            LOG_INFO("x: " << p.first << ", y: " << p.second);
+        }
+
         for (auto key : window.getPressedKeys()) {
             switch (key) {
             case Window::KEY_ESCAPE:

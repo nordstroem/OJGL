@@ -22,6 +22,8 @@ public:
     unsigned _height;
     ojstd::vector<UINT> _keysPressed;
     ojstd::vector<UINT> _keysDown;
+    ojstd::Pair<int, int> _cursorPosition = ojstd::Pair<int, int>(0, 0);
+    bool _leftMouseButtonDown = false;
     bool _close = false;
 };
 
@@ -72,14 +74,24 @@ ojstd::vector<unsigned int> Window::getPressedKeys()
     return keys;
 }
 
-ojstd::vector<unsigned int> Window::getDownKeys()
+ojstd::vector<unsigned int> Window::getDownKeys() const
 {
     return this->_priv->_keysDown;
+}
+
+bool Window::isLeftMouseButtonDown() const
+{
+    return this->_priv->_leftMouseButtonDown;
 }
 
 bool Window::isClosePressed() const
 {
     return _priv->_close;
+}
+
+ojstd::Pair<int, int> Window::getCursorPosition() const
+{
+    return _priv->_cursorPosition;
 }
 
 HWND Window::Details::CreateOpenGLWindow(const char* title, int x, int y, BYTE type, DWORD flags, bool fullScreen)
@@ -168,8 +180,15 @@ LONG WINAPI Window::Details::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 {
     Window* pThis = reinterpret_cast<Window*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
 
-    static PAINTSTRUCT ps;
+    if (pThis) {
+        // Get the mouse position
+        POINT p;
+        GetCursorPos(&p);
+        ScreenToClient(hWnd, &p);
+        pThis->_priv->_cursorPosition = { p.x, p.y };
+    }
 
+    static PAINTSTRUCT ps;
     switch (uMsg) {
     case WM_PAINT:
         BeginPaint(hWnd, &ps);
@@ -180,7 +199,14 @@ LONG WINAPI Window::Details::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPA
         // glViewport(0, 0, LOWORD(lParam), HIWORD(lParam));
         PostMessage(hWnd, WM_PAINT, 0, 0);
         return 0;
-
+    case WM_LBUTTONDOWN:
+        if (pThis)
+            pThis->_priv->_leftMouseButtonDown = true;
+        return 0;
+    case WM_LBUTTONUP:
+        if (pThis)
+            pThis->_priv->_leftMouseButtonDown = false;
+        return 0;
     case WM_CHAR:
         switch (wParam) {
         case 27: /* ESC key */

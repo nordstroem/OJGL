@@ -12,8 +12,10 @@ public:
     ~Window();
     void getMessages();
     ojstd::vector<unsigned int> getPressedKeys();
-    ojstd::vector<unsigned int> getDownKeys();
+    ojstd::vector<unsigned int> getDownKeys() const;
     bool isClosePressed() const;
+    bool isLeftMouseButtonDown() const;
+    ojstd::Pair<int, int> getCursorPosition() const;
 
 public:
     static constexpr int KEY_LEFT = 37;
