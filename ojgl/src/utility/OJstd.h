@@ -8,6 +8,17 @@ float cos(float angle);
 float tan(float angle);
 int ftoi(float value);
 
+template <typename T, typename K = int>
+K sign(const T& a)
+{
+    if (a == T(0))
+        return K(0);
+    else if (a <= T(0))
+        return K(-1);
+    else
+        return K(1);
+}
+
 template <typename T>
 T max(const T& a, const T& b)
 {
@@ -248,6 +259,10 @@ public:
             free(this->values);
         this->values = newBuffer;
         this->capacity = size;
+    }
+    bool contains(const T& value)
+    {
+        return find(this->begin(), this->end(), value) != this->end();
     }
 
 private:

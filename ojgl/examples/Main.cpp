@@ -20,6 +20,61 @@ void buildSceneGraph(GLState& glState, int x, int y)
     }
 }
 
+struct Vec3f {
+    float x = 0.f;
+    float y = 0.f;
+    float z = 0.f;
+};
+
+struct Vec2i {
+    int x = 0;
+    int y = 0;
+};
+
+class CameraController {
+public:
+    void next(const Window& window)
+    {
+        Vec2i cursorPosition = { window.getCursorPosition().first, window.getCursorPosition().second };
+
+        auto downKeys = window.getDownKeys();
+
+        if (window.isLeftMouseButtonDown()) {
+            float dx = ojstd::sign(cursorPosition.x - this->_previousCursorPosition.x);
+            float dy = ojstd::sign(cursorPosition.y - this->_previousCursorPosition.y);
+            this->_heading += 0.1f * dx;
+            this->_elevation += 0.1f * dy;
+        }
+
+        if (downKeys.contains(Window::KEY_W))
+            this->_position.z += 0.1f;
+        if (downKeys.contains(Window::KEY_W))
+            this->_position.z -= 0.1f;
+        if (downKeys.contains(Window::KEY_D))
+            this->_position.x += 0.1f;
+        if (downKeys.contains(Window::KEY_A))
+            this->_position.x -= 0.1f;
+
+        this->_previousCursorPosition = cursorPosition;
+    }
+
+    Vec3f getPosition() const { return this->_position; }
+    Vec3f getDirectionVector() const
+    {
+        float sh = ojstd::sin(this->_heading);
+        float se = ojstd::sin(this->_elevation);
+        float ch = ojstd::cos(this->_heading);
+        float ce = ojstd::cos(this->_elevation);
+        return Vec3f { sh * ce, ch * ce, se };
+    }
+
+private:
+    Vec3f _position;
+    float _heading = 0.f;
+    float _elevation = 0.f;
+    Vec2i _previousCursorPosition;
+};
+
 int main(int argc, char* argv[])
 {
     int width = 1280;
@@ -32,23 +87,13 @@ int main(int argc, char* argv[])
     buildSceneGraph(glState, width, height);
     glState.initialize();
 
+    CameraController cameraController;
+
     while (!glState.end() && !window.isClosePressed()) {
         Timer timer;
         timer.start();
         window.getMessages();
-
-        for (auto key : window.getDownKeys()) {
-            switch (key) {
-            case Window::KEY_W:
-                LOG_INFO("W is Down.");
-                break;
-            }
-        }
-
-        if (window.isLeftMouseButtonDown()) {
-            auto p = window.getCursorPosition();
-            LOG_INFO("x: " << p.first << ", y: " << p.second);
-        }
+        cameraController.next(window);
 
         for (auto key : window.getPressedKeys()) {
             switch (key) {
