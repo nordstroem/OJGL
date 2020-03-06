@@ -227,6 +227,13 @@ void mutex::unlock()
     _ASSERTE(release_result);
 }
 
+wstringWrapper::wstringWrapper(const string& str)
+{
+    _ASSERTE(str.length() < wstringWrapper::maxStringLength);
+    int num = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, NULL, 0);
+    MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, ptr, num);
+}
+
 void sleep(int milliseconds)
 {
     Sleep(milliseconds);
@@ -276,5 +283,4 @@ sign:
 putsign:
     return -i;
 }
-
 }

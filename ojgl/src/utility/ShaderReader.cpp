@@ -80,7 +80,7 @@ const ojstd::string& ShaderReader::get(const ojstd::string& path)
 {
 #ifdef _DEBUG
     auto fullPath = _basePath + path;
-    _ASSERTE(fileExists(fullPath));
+    _ASSERT_EXPR(fileExists(fullPath), ojstd::wstringWrapper(fullPath + " not found.").ptr);
     if (modified(path)) {
         LOG_INFO("[" << path.c_str() << "]"
                      << " modified");
