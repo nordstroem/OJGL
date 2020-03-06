@@ -104,7 +104,6 @@ string string::operator+(const string& other)
 
 char string::operator[](size_t index) const
 {
-    _ASSERTE(index >= 0);
     _ASSERTE(index < this->len);
     return this->content[index];
 }
@@ -121,6 +120,9 @@ int string::length() const
 
 string string::substring(int start, int end) const
 {
+    _ASSERTE(end >= start);
+    _ASSERTE(start > 0);
+    _ASSERTE(end <= this->len);
     int length = end - start;
     char* content = (char*)malloc(sizeof(char) * (length + 1));
     memcpy(content, this->content + start, sizeof(char) * length);
