@@ -373,6 +373,18 @@ private:
     T& _v;
 };
 
+class wstringWrapper {
+    static constexpr size_t maxStringLength = 100;
+
+public:
+    wstringWrapper(const string& str);
+    wstringWrapper(const wstringWrapper& other) = delete;
+    wstringWrapper& operator=(const wstringWrapper other) = delete;
+
+public:
+    wchar_t ptr[maxStringLength];
+};
+
 void sleep(int milliseconds);
 
 } //end namespace ojstd

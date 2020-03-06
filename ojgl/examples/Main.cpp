@@ -15,7 +15,7 @@ void buildSceneGraph(GLState& glState, int x, int y)
 {
     glState.clearScenes();
     {
-        auto buffer = Buffer::construct(x, y, "template", "demo.vs", "raymarchBase.fs", {}, ojgl::BufferFormat::Quad);
+        auto buffer = Buffer::construct(x, y, "template", "common/quad.vs", "common/raymarch_base.fs", {}, ojgl::BufferFormat::Quad);
         glState.addScene("raymarch scene", buffer, Duration::seconds(100));
     }
 }

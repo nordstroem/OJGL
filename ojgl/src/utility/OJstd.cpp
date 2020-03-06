@@ -227,6 +227,11 @@ void mutex::unlock()
     _ASSERTE(release_result);
 }
 
+wstringWrapper::wstringWrapper(const string& str)
+{
+    mbstowcs(ptr, str.c_str(), wstringWrapper::maxStringLength);
+}
+
 void sleep(int milliseconds)
 {
     Sleep(milliseconds);
