@@ -1,5 +1,5 @@
-#include "OJstd.h"
 #include "Macros.h"
+#include "OJstd.h"
 #include "windows.h"
 #include <stdlib.h>
 #include <string.h>
@@ -53,6 +53,20 @@ string::string(const string& str)
     strcpy(content, str.c_str());
 }
 
+string::string(string&& str)
+{
+    this->content = str.content;
+    this->len = str.len;
+    str.content = nullptr;
+    str.len = 0;
+}
+
+string::string(char*&& str)
+    : content(str)
+    , len(strlen(str))
+{
+}
+
 string::string()
     : string("")
 {
@@ -85,9 +99,13 @@ string string::operator+(const string& other)
     char* str = (char*)malloc(sizeof(char) * (len + other.len + 1));
     strcpy(str, this->content);
     strcpy(str + len, other.content);
-    string flString = string(str);
-    free(str);
-    return flString;
+    return string(std::move(str));
+}
+
+char string::operator[](size_t index) const
+{
+    _ASSERTE(index < this->len);
+    return this->content[index];
 }
 
 const char* string::c_str() const
@@ -100,6 +118,18 @@ int string::length() const
     return this->len;
 }
 
+string string::substring(int start, int end) const
+{
+    _ASSERTE(end >= start);
+    _ASSERTE(start > 0);
+    _ASSERTE(end <= this->len);
+    int length = end - start;
+    char* content = (char*)malloc(sizeof(char) * (length + 1));
+    memcpy(content, this->content + start, sizeof(char) * length);
+    content[length] = '\0';
+    return string(std::move(content));
+}
+
 void string::append(const string& other)
 {
     char* tmp = content;
@@ -108,6 +138,49 @@ void string::append(const string& other)
     strcpy(content + len, other.content);
     this->len = this->len + other.len;
     free(tmp);
+}
+
+int string::find(const string& str, int startPos) const
+{
+    for (; startPos < (this->len - str.length() + 1); startPos++) {
+        bool foundStr = true;
+        for (int i = 0; i < str.length(); i++) {
+            if (this->content[startPos + i] != str[i]) {
+                foundStr = false;
+                break;
+            }
+        }
+        if (foundStr)
+            return startPos;
+    }
+    return -1;
+}
+
+string string::replaceFirst(const string& oldStr, const string& newStr) const
+{
+    _ASSERTE(oldStr.length() > 0);
+
+    int startPos = this->find(oldStr);
+
+    if (startPos != -1) {
+        int newLength = this->len + newStr.length() - oldStr.length();
+        char* newContent = (char*)malloc(sizeof(char) * (newLength + 1));
+
+        for (int i = 0; i < newLength; i++) {
+            if (i >= startPos) {
+                if (i < (startPos + newStr.length()))
+                    newContent[i] = newStr[i - startPos];
+                else
+                    newContent[i] = this->content[i - newStr.length() + oldStr.length()];
+            } else {
+                newContent[i] = this->content[i];
+            }
+        }
+        newContent[newLength] = '\0';
+        return string(std::move(newContent));
+    } else {
+        return *this;
+    }
 }
 
 string to_string(size_t i)
