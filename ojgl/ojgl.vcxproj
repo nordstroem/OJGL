@@ -246,7 +246,7 @@
     <ClCompile Include="src\music\V2MPlayer.cpp" />
     <ClCompile Include="src\render\Buffer.cpp" />
     <ClCompile Include="src\render\GLState.cpp" />
-    <ClCompile Include="src\render\Matrix.cpp" />
+    <ClCompile Include="src\utility\Matrix.cpp" />
     <ClCompile Include="src\render\Mesh.cpp" />
     <ClCompile Include="src\render\Popup.cpp" />
     <ClCompile Include="src\render\Scene.cpp" />
@@ -261,6 +261,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="examples\EmbeddedResources.h" />
+    <ClInclude Include="examples\FreeCameraController.h" />
     <ClInclude Include="src\music\Music.h" />
     <ClInclude Include="src\music\SyncChannel.h" />
     <ClInclude Include="src\music\SyncEvent.hpp" />
@@ -268,7 +269,7 @@
     <ClInclude Include="src\OJGL.h" />
     <ClInclude Include="src\render\Buffer.h" />
     <ClInclude Include="src\render\GLState.h" />
-    <ClInclude Include="src\render\Matrix.h" />
+    <ClInclude Include="src\utility\Matrix.h" />
     <ClInclude Include="src\render\Mesh.h" />
     <ClInclude Include="src\render\Popup.h" />
     <ClInclude Include="src\render\Scene.h" />
@@ -283,6 +284,7 @@
     <ClInclude Include="src\utility\ShaderReader.h" />
     <ClInclude Include="src\utility\Timepoint.h" />
     <ClInclude Include="src\utility\Timer.hpp" />
+    <ClInclude Include="src\utility\Vector.h" />
     <ClInclude Include="src\winapi\glext.h" />
     <ClInclude Include="src\winapi\gl_loader.h" />
     <ClInclude Include="src\winapi\wglext.h" />

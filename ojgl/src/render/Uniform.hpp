@@ -1,6 +1,6 @@
 #pragma once
-#include "Matrix.h"
 #include "Texture.h"
+#include "utility/Matrix.h"
 #include "utility/OJstd.h"
 
 namespace ojgl {
