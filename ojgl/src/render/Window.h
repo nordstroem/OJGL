@@ -12,7 +12,10 @@ public:
     ~Window();
     void getMessages();
     ojstd::vector<unsigned int> getPressedKeys();
+    ojstd::vector<unsigned int> getDownKeys() const;
     bool isClosePressed() const;
+    bool isLeftMouseButtonDown() const;
+    ojstd::Pair<int, int> getCursorPosition() const;
 
 public:
     static constexpr int KEY_LEFT = 37;
@@ -23,6 +26,7 @@ public:
     static constexpr int KEY_SPACE = 32;
     static constexpr int KEY_R = 82;
     static constexpr int KEY_F1 = 112;
+    static constexpr int KEY_W = 0x57;
 
 private:
     class Details;
