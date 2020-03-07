@@ -7,8 +7,6 @@
 
 namespace ojstd {
 
-static constexpr float pi = 3.14159265f;
-
 static constexpr float pow(float x, int h)
 {
     float result = 1.0;

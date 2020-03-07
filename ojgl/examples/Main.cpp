@@ -1,5 +1,6 @@
 
 #include "EmbeddedResources.h"
+#include "FreeCameraController.h"
 #include "render/GLState.h"
 #include "render/Popup.h"
 #include "render/Texture.h"

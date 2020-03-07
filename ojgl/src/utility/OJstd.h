@@ -3,6 +3,8 @@
 
 namespace ojstd {
 
+constexpr float pi = 3.14159265f;
+
 float sin(float angle);
 float cos(float angle);
 float tan(float angle);
@@ -27,6 +29,14 @@ T accumulate(InputIt first, InputIt last, T init)
         init = std::move(init) + *first;
     }
     return init;
+}
+
+template <typename T, typename K = int>
+K sign(const T& a)
+{
+    if (a == T(0))
+        return K(0);
+    return a < T(0) ? K(-1) : K(1);
 }
 
 template <class ForwardIt, class UnaryPredicate>
@@ -325,6 +335,10 @@ public:
     const T* cend() const { return values.cend(); }
     bool empty() { return this->values.size() == 0; }
     T* erase(T* it) { return this->values.erase(it); }
+    bool contains(const T& value)
+    {
+        return this->find(value) != this->end();
+    }
 
 private:
     vector<T> values;

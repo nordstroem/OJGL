@@ -21,8 +21,8 @@ public:
     unsigned _width;
     unsigned _height;
     ojstd::vector<UINT> _keysPressed;
-    ojstd::vector<UINT> _keysDown;
-    ojstd::Pair<int, int> _cursorPosition = ojstd::Pair<int, int>(0, 0);
+    ojstd::unordered_set<UINT> _keysDown;
+    Vector2i _cursorPosition = { 0, 0 };
     bool _leftMouseButtonDown = false;
     bool _close = false;
 };
@@ -74,7 +74,7 @@ ojstd::vector<unsigned int> Window::getPressedKeys()
     return keys;
 }
 
-ojstd::vector<unsigned int> Window::getDownKeys() const
+ojstd::unordered_set<unsigned int> Window::getDownKeys() const
 {
     return this->_priv->_keysDown;
 }
@@ -89,7 +89,7 @@ bool Window::isClosePressed() const
     return _priv->_close;
 }
 
-ojstd::Pair<int, int> Window::getCursorPosition() const
+Vector2i Window::getCursorPosition() const
 {
     return _priv->_cursorPosition;
 }
@@ -224,7 +224,7 @@ LONG WINAPI Window::Details::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPA
     case WM_KEYDOWN:
         if (pThis) {
             UINT key = static_cast<UINT>(wParam);
-            pThis->_priv->_keysDown.push_back(key);
+            pThis->_priv->_keysDown.insert(key);
         }
         return 0;
     case WM_CLOSE:

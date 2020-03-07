@@ -1,6 +1,7 @@
 #pragma once
 
 #include "utility/OJstd.h"
+#include "utility/Vector.h"
 
 namespace ojgl {
 
@@ -12,10 +13,10 @@ public:
     ~Window();
     void getMessages();
     ojstd::vector<unsigned int> getPressedKeys();
-    ojstd::vector<unsigned int> getDownKeys() const;
+    ojstd::unordered_set<unsigned int> getDownKeys() const;
     bool isClosePressed() const;
     bool isLeftMouseButtonDown() const;
-    ojstd::Pair<int, int> getCursorPosition() const;
+    Vector2i getCursorPosition() const;
 
 public:
     static constexpr int KEY_LEFT = 37;
@@ -27,6 +28,11 @@ public:
     static constexpr int KEY_R = 82;
     static constexpr int KEY_F1 = 112;
     static constexpr int KEY_W = 0x57;
+    static constexpr int KEY_S = 0x53;
+    static constexpr int KEY_D = 0x44;
+    static constexpr int KEY_A = 0x41;
+    static constexpr int KEY_Z = 0x5A;
+    static constexpr int KEY_X = 0x58;
 
 private:
     class Details;
