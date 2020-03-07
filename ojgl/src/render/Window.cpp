@@ -21,10 +21,11 @@ public:
     unsigned _width;
     unsigned _height;
     ojstd::vector<UINT> _keysPressed;
-    ojstd::vector<UINT> _keysDown;
+    ojstd::unordered_set<UINT> _keysDown;
     ojstd::Pair<int, int> _cursorPosition = ojstd::Pair<int, int>(0, 0);
     bool _leftMouseButtonDown = false;
     bool _close = false;
+    ojstd::mutex _keyMutex;
 };
 
 Window::Window(unsigned width, unsigned height, ojstd::string title, bool fullScreen, bool showCursor)
@@ -74,8 +75,9 @@ ojstd::vector<unsigned int> Window::getPressedKeys()
     return keys;
 }
 
-ojstd::vector<unsigned int> Window::getDownKeys() const
+ojstd::unordered_set<unsigned int> Window::getDownKeys() const
 {
+    auto lock = ojstd::lock_guard(this->_priv->_keyMutex);
     return this->_priv->_keysDown;
 }
 
@@ -216,6 +218,7 @@ LONG WINAPI Window::Details::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPA
         return 0;
     case WM_KEYUP:
         if (pThis) {
+            auto lock = ojstd::lock_guard(pThis->_priv->_keyMutex);
             UINT key = static_cast<UINT>(wParam);
             pThis->_priv->_keysPressed.push_back(key);
             pThis->_priv->_keysDown.erase(key);
@@ -223,8 +226,9 @@ LONG WINAPI Window::Details::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPA
         return 0;
     case WM_KEYDOWN:
         if (pThis) {
+            auto lock = ojstd::lock_guard(pThis->_priv->_keyMutex);
             UINT key = static_cast<UINT>(wParam);
-            pThis->_priv->_keysDown.push_back(key);
+            pThis->_priv->_keysDown.insert(key);
         }
         return 0;
     case WM_CLOSE:
