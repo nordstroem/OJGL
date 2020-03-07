@@ -61,6 +61,20 @@ private:
     const Matrix _matrix;
 };
 
+class UniformMatrix3fv : public UniformBase {
+public:
+    UniformMatrix3fv(const ojstd::string& location, const float* matrix)
+        : UniformBase(location)
+        , _matrix(matrix)
+    {
+    }
+
+    void setUniform(int programID) override;
+
+private:
+    const float* _matrix;
+};
+
 class Uniform1fv : public UniformBase {
 public:
     Uniform1fv(const ojstd::string& location, const ojstd::vector<float>& values)

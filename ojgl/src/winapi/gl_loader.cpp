@@ -1,5 +1,5 @@
-#include "gl_loader.h"
 #include "Windows.h"
+#include "gl_loader.h"
 
 void* GetAnyGLFuncAddress(const char* name)
 {
@@ -75,7 +75,8 @@ const char* gl_function_names[] = {
     "glDetachShader",
     "glValidateProgram",
     "glUniform1fv",
-    "glUniform2f"
+    "glUniform2f",
+    "glUniformMatrix3fv"
 };
 
 void* gl_function_pointers[sizeof(gl_function_names) / sizeof(const char*)];

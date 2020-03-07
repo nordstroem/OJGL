@@ -33,21 +33,21 @@ struct Vec2i {
 
 class CameraController {
 public:
-    void next(const Window& window)
+    void update(const Window& window)
     {
         Vec2i cursorPosition = { window.getCursorPosition().first, window.getCursorPosition().second };
-
         auto downKeys = window.getDownKeys();
 
         if (window.isLeftMouseButtonDown()) {
-            float dx = ojstd::sign(cursorPosition.x - this->_previousCursorPosition.x);
-            float dy = ojstd::sign(cursorPosition.y - this->_previousCursorPosition.y);
-            this->_heading += 0.1f * dx;
-            this->_elevation += 0.1f * dy;
+            float dr = 0.01f;
+            int dx = ojstd::sign(cursorPosition.x - this->_previousCursorPosition.x);
+            int dy = ojstd::sign(cursorPosition.y - this->_previousCursorPosition.y);
+            this->_heading += dr * dx;
+            this->_elevation += dr * dy;
         }
 
         if (downKeys.contains(Window::KEY_W))
-            this->_position.z += 0.1f;
+            this->_position.z += 0.01f;
         if (downKeys.contains(Window::KEY_W))
             this->_position.z -= 0.1f;
         if (downKeys.contains(Window::KEY_D))
@@ -58,14 +58,21 @@ public:
         this->_previousCursorPosition = cursorPosition;
     }
 
-    Vec3f getPosition() const { return this->_position; }
-    Vec3f getDirectionVector() const
+    Vec3f getPosition() const
+    {
+        return this->_position;
+    }
+
+    const float* getDirectionMatrix() const
     {
         float sh = ojstd::sin(this->_heading);
         float se = ojstd::sin(this->_elevation);
         float ch = ojstd::cos(this->_heading);
         float ce = ojstd::cos(this->_elevation);
-        return Vec3f { sh * ce, ch * ce, se };
+        float rotationMatrix[9] = { ch, se * sh, sh * ce, 0, ce, -se, -sh, ch * se, ch * ce };
+        for (int i = 0; i < 9; i++)
+            this->_directionMatrix[i] = rotationMatrix[i];
+        return this->_directionMatrix;
     }
 
 private:
@@ -73,6 +80,7 @@ private:
     float _heading = 0.f;
     float _elevation = 0.f;
     Vec2i _previousCursorPosition;
+    mutable float _directionMatrix[9];
 };
 
 int main(int argc, char* argv[])
@@ -86,14 +94,13 @@ int main(int argc, char* argv[])
     GLState glState;
     buildSceneGraph(glState, width, height);
     glState.initialize();
-
     CameraController cameraController;
 
     while (!glState.end() && !window.isClosePressed()) {
         Timer timer;
         timer.start();
         window.getMessages();
-        cameraController.next(window);
+        cameraController.update(window);
 
         for (auto key : window.getPressedKeys()) {
             switch (key) {
@@ -125,6 +132,8 @@ int main(int argc, char* argv[])
         glState << Uniform1f("iTime", glState.relativeSceneTime().toSeconds());
         glState << Uniform1f("iGlobalTime", glState.relativeSceneTime().toSeconds());
         glState << Uniform2f("iResolution", static_cast<float>(width), static_cast<float>(height));
+        glState << UniformMatrix3fv("iCameraMatrix", cameraController.getDirectionMatrix());
+
         glState.update();
 
         timer.end();
