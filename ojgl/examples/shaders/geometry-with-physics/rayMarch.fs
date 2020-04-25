@@ -33,7 +33,7 @@ float getReflectiveIndex(int type)
     return type == wallType ? 0.6 : 0.0;
 }
 
-vec3 getColor(in MarchResult result)
+vec3 getMarchColor(in MarchResult result)
 {
     if (result.type != invalidType) {
         vec3 ambient = vec3(0.1, 0.1, 0.1 + 0.5 * sin(result.type + 1));
@@ -46,6 +46,14 @@ vec3 getColor(in MarchResult result)
     }
 }
 
+vec3 getMeshColor(in vec3 pos, in vec3 normal)
+{
+    vec3 ambient = vec3(0.1, 0.1, 0.1);
+    vec3 invLight = -normalize(vec3(-0.7, -0.2, -0.5));
+    float diffuse = max(0., dot(invLight, normal));
+    return vec3(ambient * (1.0 + diffuse));
+}
+
 void main()
 {
     float u = (fragCoord.x - 0.5) * iResolution.x / iResolution.y;
@@ -55,15 +63,15 @@ void main()
     vec3 rayDirection = normalize(rayOrigin - eye);
 
     MarchResult result = march(eye, rayDirection);
-    vec3 color = getColor(result);
+    vec3 color = getMarchColor(result);
 
-    //float reflectiveIndex = getReflectiveIndex(result.type);
-    //if (reflectiveIndex > 0.0) {
-    //    rayDirection = reflect(rayDirection, normal(result.position));
-    //    result = march(result.position + 0.1 * rayDirection, rayDirection);
-    //    vec3 newColor = getColor(result);
-    //    color = mix(color, newColor, reflectiveIndex);
-    //}
+    float reflectiveIndex = getReflectiveIndex(result.type);
+    if (reflectiveIndex > 0.0) {
+        rayDirection = reflect(rayDirection, normal(result.position));
+        MarchResult reflectResult = march(result.position + 0.1 * rayDirection, rayDirection);
+        vec3 newColor = getMarchColor(reflectResult);
+        color = mix(color, newColor, reflectiveIndex);
+    }
 
 
 	if (abs(texture(inTexture0, fragCoord.xy).w - 0.5) < 0.01) {
@@ -72,7 +80,7 @@ void main()
 		if (length(eye - meshPos) < length(eye - result.position)) {
 			vec3 meshNormal = texture(inTexture1, fragCoord.xy).xyz;
 
-			color = vec3(1.0, 0.0, 0.0);
+			color = getMeshColor(meshPos, meshNormal);
 		}
 	}
 	
