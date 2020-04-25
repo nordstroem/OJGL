@@ -17,7 +17,7 @@ void buildSceneGraph(GLState& glState, int x, int y)
     glState.clearScenes();
 
     {
-        auto geometry = Buffer::construct(x, y, "geometry", "shaders/edison.vs", "shaders/cachedGeometry.fs", {}, ojgl::BufferFormat::Quad, true);
+        auto geometry = Buffer::construct(x, y, "geometry", "shaders/edison.vs", "shaders/cachedGeometry.fs", {}, ojgl::BufferFormat::Quad, true, 2);
         auto lightning = Buffer::construct(x, y, "lightning", "shaders/edison.vs", "shaders/lightning.fs", { geometry });
         glState.addScene("cachedGeometryScene", lightning, Duration::seconds(100));
     }

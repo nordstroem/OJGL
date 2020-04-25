@@ -9,6 +9,7 @@ public:
     Matrix operator*(const Matrix& other);
     float* data() { return _data; }
     const float* data() const { return _data; }
+    Matrix inverse() const;
 
     static Matrix perspective(float fovy, float aspect, float zNear, float zFar);
     static Matrix rotation(float x, float y, float z, float angle);
