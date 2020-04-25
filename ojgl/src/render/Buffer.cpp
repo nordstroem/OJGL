@@ -5,24 +5,31 @@
 
 using namespace ojgl;
 
-Buffer::Buffer(unsigned width, unsigned height, const ojstd::string& name, const ojstd::string& vertexPath, const ojstd::string& fragmentPath, const ojstd::vector<BufferPtr>& inputs, BufferFormat format, bool renderOnce)
+int Buffer::getNumberOfInputs(const ojstd::vector<BufferPtr>& inputs)
+{
+    int numInputs = 0;
+    for (int i = 0; i < inputs.size(); i++) {
+        numInputs += inputs[i]->numOutTextures();
+    }
+    return numInputs;
+}
+
+Buffer::Buffer(unsigned width, unsigned height, const ojstd::string& name, const ojstd::string& vertexPath, const ojstd::string& fragmentPath, const ojstd::vector<BufferPtr>& inputs, BufferFormat format, bool renderOnce, int numOutTextures)
     : _format(format)
     , _inputs(inputs)
+    , _numInputs(Buffer::getNumberOfInputs(inputs))
     , _name(name)
     , _width(width)
     , _height(height)
     , _vertexPath(vertexPath)
     , _fragmentPath(fragmentPath)
     , _renderOnce(renderOnce)
+    , _numOutTextures(numOutTextures)
 
 {
     loadShader();
     if (_format == BufferFormat::Quad)
         _meshes.push_back({ Mesh::constructQuad(), Matrix::identity() });
-
-    for (int i = 0; i < _inputs.size(); i++) {
-        _numInputs += _inputs[i]->numOutTextures();
-    }
 }
 
 Buffer::~Buffer()
@@ -35,6 +42,10 @@ Buffer::~Buffer()
         if (_fboTextureIDs[i] != 0) {
             glDeleteTextures(1, &_fboTextureIDs[i]);
         }
+    }
+
+    if (_depthID != 0) {
+        glDeleteTextures(1, &_depthID);
     }
 
     glDeleteProgram(_programID);
@@ -61,7 +72,7 @@ void Buffer::render()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glUseProgram(_programID);
-    for (unsigned i = 0; i < _numInputs; i++) {
+    for (unsigned i = 0; i < static_cast<unsigned>(_numInputs); i++) {
         ojstd::string uniform("inTexture");
         uniform.append(ojstd::to_string(i));
         glUniform1i(glGetUniformLocation(_programID, uniform.c_str()), i);
@@ -110,9 +121,22 @@ void Buffer::generateFBO()
     glGenFramebuffers(1, &_fboID);
     glBindFramebuffer(GL_FRAMEBUFFER, _fboID);
 
+    if (_format == BufferFormat::Meshes) {
+        glGenTextures(1, &_depthID);
+        glBindTexture(GL_TEXTURE_2D, _depthID);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, _width, _height, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, _depthID, 0);
+    }
+
     for (int i = 0; i < numOutTextures(); i++) {
-        _fboTextureIDs.emplace_back(0);
-        glGenTextures(1, &_fboTextureIDs[i]);
+        unsigned fboTextureID = 0;
+        glGenTextures(1, &fboTextureID);
+        _fboTextureIDs.push_back(fboTextureID);
         glBindTexture(GL_TEXTURE_2D, _fboTextureIDs[i]);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, _width, _height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 
@@ -200,8 +224,7 @@ void Buffer::loadShader()
 
 int inline Buffer::numOutTextures()
 {
-    // Still quite hard-coded, improve when neccessary
-    return _renderOnce ? 2 : 1;
+    return _numOutTextures;
 }
 
 Buffer& Buffer::operator<<(const Uniform1t& b)
@@ -222,7 +245,7 @@ void Buffer::clearMeshes()
         _meshes.clear();
 }
 
-ojstd::shared_ptr<Buffer> Buffer::construct(unsigned width, unsigned height, const ojstd::string& name, const ojstd::string& vertexPath, const ojstd::string& fragmentPath, const ojstd::vector<BufferPtr>& inputs, BufferFormat format, bool renderOnce)
+ojstd::shared_ptr<Buffer> Buffer::construct(unsigned width, unsigned height, const ojstd::string& name, const ojstd::string& vertexPath, const ojstd::string& fragmentPath, const ojstd::vector<BufferPtr>& inputs, BufferFormat format, bool renderOnce, int numOutTextures)
 {
-    return ojstd::shared_ptr<Buffer>(new Buffer(width, height, name, vertexPath, fragmentPath, inputs, format, renderOnce));
+    return ojstd::shared_ptr<Buffer>(new Buffer(width, height, name, vertexPath, fragmentPath, inputs, format, renderOnce, numOutTextures));
 }

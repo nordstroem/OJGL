@@ -40,16 +40,17 @@ public:
         return *this;
     }
 
-    static BufferPtr construct(unsigned width, unsigned height, const ojstd::string& name, const ojstd::string& vertexPath, const ojstd::string& fragmentPath, const ojstd::vector<BufferPtr>& inputs = {}, BufferFormat format = BufferFormat::Quad, bool renderOnce = false);
+    static BufferPtr construct(unsigned width, unsigned height, const ojstd::string& name, const ojstd::string& vertexPath, const ojstd::string& fragmentPath, const ojstd::vector<BufferPtr>& inputs = {}, BufferFormat format = BufferFormat::Quad, bool renderOnce = false, int numOutTextures = 1);
 
 private:
-    Buffer(unsigned width, unsigned height, const ojstd::string& name, const ojstd::string& vertexPath, const ojstd::string& fragmentPath, const ojstd::vector<BufferPtr>& inputs, BufferFormat format, bool renderOnce);
+    Buffer(unsigned width, unsigned height, const ojstd::string& name, const ojstd::string& vertexPath, const ojstd::string& fragmentPath, const ojstd::vector<BufferPtr>& inputs, BufferFormat format, bool renderOnce, int numOutTextures);
     void loadShader();
     int numOutTextures();
+    static int getNumberOfInputs(const ojstd::vector<BufferPtr>& inputs);
 
 private:
     const ojstd::vector<BufferPtr> _inputs;
-    unsigned _numInputs = 0;
+    const int _numInputs = 0;
     const ojstd::string _name;
     const ojstd::string _vertexPath;
     const ojstd::string _fragmentPath;
@@ -58,9 +59,11 @@ private:
     const unsigned _height;
     const bool _renderOnce;
     bool _hasRendered = false;
+    const int _numOutTextures;
 
     unsigned _programID = 0;
     unsigned _fboID = 0;
+    unsigned _depthID = 0;
     ojstd::vector<unsigned> _fboTextureIDs;
     ojstd::unordered_map<ojstd::string, ojstd::shared_ptr<UniformBase>> _uniforms;
     ojstd::unordered_map<ojstd::string, ojstd::shared_ptr<Uniform1t>> _textures;

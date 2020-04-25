@@ -1,9 +1,12 @@
 R""(
 #version 430
 
-in vec2 fragCoord;
+in vec2 fragPos;
 in vec3 fragNormal;
-out vec4 fragColor;
+
+layout(location = 0) out vec4 outPos;
+layout(location = 1) out vec4 outNormal;
+
 
 uniform sampler2D inTexture0;
 uniform float iGlobalTime;
@@ -16,6 +19,7 @@ void main()
 	fragColor.rgb = col;
 	fragColor.a = 1.0;
 	//fragColor.rgb = vec3(0.5) + fragNormal * 0.5;
+	outNormal = fragNormal;
 }
 
 )""

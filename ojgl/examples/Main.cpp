@@ -16,19 +16,20 @@ void buildSceneGraph(GLState& glState, int x, int y)
 {
     glState.clearScenes();
 
-    {
-        auto geometry = Buffer::construct(x, y, "geometry", "shaders/edison.vs", "shaders/cachedGeometry.fs", {}, ojgl::BufferFormat::Quad, true);
+    /*{
+        auto geometry = Buffer::construct(x, y, "geometry", "shaders/edison.vs", "shaders/cachedGeometry.fs", {}, ojgl::BufferFormat::Quad, true, 2);
         auto lightning = Buffer::construct(x, y, "lightning", "shaders/edison.vs", "shaders/lightning.fs", { geometry });
         glState.addScene("cachedGeometryScene", lightning, Duration::seconds(100));
-    }
+    }*/
     {
         //auto edison = Buffer::construct(BufferFormat::Quad, x, y, "intro", "shaders/edison.vs", "shaders/lavaIntro.fs");
         //auto fxaa = Buffer::construct(BufferFormat::Quad, x, y, "fxaa", "shaders/fxaa.vs", "shaders/fxaa.fs", edison);
         //auto post = Buffer::construct(BufferFormat::Quad, x, y, "post", "shaders/post.vs", "shaders/post.fs", fxaa);
 
-        auto mesh = Buffer::construct(x, y, "mesh", "shaders/mesh.vs", "shaders/mesh.fs", {}, BufferFormat::Meshes);
+        auto mesh = Buffer::construct(x, y, "mesh", "shaders/geometry-with-physics/mesh.vs", "shaders/geometry-with-physics/mesh.fs", {}, BufferFormat::Meshes, false, 2);
+        auto rayMarch = Buffer::construct(x, y, "rayMarch", "shaders/geometry-with-physics/rayMarch.vs", "shaders/geometry-with-physics/rayMarch.fs", { mesh });
 
-        glState.addScene("meshScene", mesh, Duration::seconds(2));
+        glState.addScene("meshScene", rayMarch, Duration::seconds(9999));
     }
     {
         auto noise = Buffer::construct(x, y, "intro", "shaders/demo.vs", "shaders/mountainNoise.fs");
@@ -101,12 +102,14 @@ int main(int argc, char* argv[])
     GLState glState(resources::songs::song);
     buildSceneGraph(glState, width, height);
     glState.initialize();
+    FreeCameraController cameraController;
 
     auto mesh = Mesh::constructCube();
 
     while (!glState.end() && !window.isClosePressed()) {
         Timer timer;
         timer.start();
+        cameraController.update(window);
         window.getMessages();
 
         for (auto key : window.getPressedKeys()) {
@@ -141,15 +144,20 @@ int main(int argc, char* argv[])
             }
         }
 
-        glState["meshScene"]["mesh"].insertMesh(mesh, Matrix::scaling(0.2f) * Matrix::rotation(1, 1, 1, glState.relativeSceneTime().toSeconds()));
+        glState["meshScene"]["mesh"].insertMesh(mesh, Matrix::rotation(1, 1, 1, glState.relativeSceneTime().toSeconds()) * Matrix::scaling(0.2f));
+        //glState["meshScene"]["mesh"].insertMesh(mesh, Matrix::translation(1, 0, 0) * Matrix::scaling(0.2f) * Matrix::rotation(1, 1, 1, glState.relativeSceneTime().toSeconds()));
+        glState["meshScene"]["mesh"].insertMesh(mesh, Matrix::translation(2, 0, 0) * Matrix::scaling(0.2f));
         //glState["meshScene"]["mesh"].insertMesh(mesh, Matrix::scaling(0.4f) * Matrix::translation(0.3, ojstd::sin(glState.relativeSceneTime().toSeconds()), 0.0));
 
         // TODO: Aspect ratio
-        glState << UniformMatrix4fv("P", Matrix::perspective(45.0f * 3.14159265f / 180.0f, 16.0f / 9.0f, 0.001f, 1000.0f) * Matrix::translation(0.0, 0.0, -5.0));
+		float fov = 0.927295218f;
+        glState << UniformMatrix4fv("P", Matrix::perspective(fov, 16.0f / 9.0f, 0.001f, 1000.0f) * cameraController.getCameraMatrix().inverse());
 
         glState << Uniform1f("iTime", glState.relativeSceneTime().toSeconds());
         glState << Uniform1f("iGlobalTime", glState.relativeSceneTime().toSeconds() - 2.f);
         glState << Uniform2f("iResolution", static_cast<float>(width), static_cast<float>(height));
+        glState << UniformMatrix4fv("iCameraMatrix", cameraController.getCameraMatrix());
+
         glState.update();
 
         timer.end();
