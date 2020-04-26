@@ -47,11 +47,25 @@ Matrix Matrix::rotation(float x, float y, float z, float angle)
     float m3 = z * x * (1 - c) - y * s;
     float m5 = x * y * (1 - c) - z * s;
     float m6 = y * y * (1 - c) + c;
-    float m7 = z * y * (1 - c) * x * s;
+    float m7 = z * y * (1 - c) + x * s;
     float m9 = x * z * (1 - c) + y * s;
     float m10 = y * z * (1 - c) - x * s;
     float m11 = z * z * (1 - c) + c;
     float data[16] = { m1, m2, m3, 0, m5, m6, m7, 0, m9, m10, m11, 0, 0, 0, 0, 1 };
+    return Matrix(data);
+}
+
+Matrix Matrix::yRotation(float angle)
+{
+    float c = ojstd::cos(angle);
+    float s = ojstd::sin(angle);
+
+    float data[16] = {
+        1, 0, 0, 0,
+        0, c, -s, 0,
+        0, s, c, 0,
+        0, 0, 0, 1
+    };
     return Matrix(data);
 }
 
@@ -118,7 +132,7 @@ Matrix Matrix::inverse() const
 
     det = m[0] * inv[0] + m[1] * inv[4] + m[2] * inv[8] + m[3] * inv[12];
 
-	_ASSERTE(det != 0);
+    _ASSERTE(det != 0);
 
     det = 1.f / det;
 

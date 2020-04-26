@@ -59,23 +59,8 @@ public:
         return Matrix(rotationMatrix);
     }
 
-    Matrix getCameraMatrix2() const
-    {
-        /*float sh = ojstd::sin(this->_heading);
-        float se = ojstd::sin(this->_elevation);
-        float ch = ojstd::cos(this->_heading);
-        float ce = ojstd::cos(this->_elevation);
-        float px = this->_position.x;
-        float py = this->_position.y;
-        float pz = this->_position.z;
-        float rotationMatrix[16] = { ch, 0, -sh, 0, se * sh, ce, ch * se, 0, sh * ce, -se, ch * ce, 0, 0, 0, 0, 1 };
-        float translationMatrix[16] = { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, -px, -py, -pz, 1 };
-        return Matrix(rotationMatrix) * Matrix(translationMatrix);
-		*/
-    }
-
 private:
-    Vector3f _position{ 0, 0, 2 };
+    Vector3f _position { 0, 0, 2 };
     float _heading = 0.f;
     float _elevation = 0.f;
     Vector2i _previousCursorPosition;

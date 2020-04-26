@@ -71,7 +71,7 @@ void Music::updateSync()
 Duration Music::elapsedTime() const
 {
     // @todo verify this formula.
-    return Duration::milliseconds(dsGetCurSmp() * 1000 / (44100 * 4)) + _syncOffset;
+    return Duration::milliseconds(dsGetCurSmp() * 1000ll / (44100 * 4)) + _syncOffset;
 }
 
 void Music::stop()

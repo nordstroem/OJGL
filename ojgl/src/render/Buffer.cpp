@@ -79,7 +79,7 @@ void Buffer::render()
     }
 
     int index = 0;
-    for (auto[location, texture] : _textures) {
+    for (auto [location, texture] : _textures) {
         glUniform1i(glGetUniformLocation(_programID, location.c_str()), _numInputs + index);
         index++;
     }
@@ -92,7 +92,7 @@ void Buffer::render()
     }
 
     index = 0;
-    for (auto[location, texture] : _textures) {
+    for (auto [location, texture] : _textures) {
         glActiveTexture(GL_TEXTURE0 + _numInputs + index);
         glBindTexture(GL_TEXTURE_2D, texture->textureID());
         index++;

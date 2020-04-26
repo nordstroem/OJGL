@@ -1,7 +1,7 @@
 R""(
 #version 430
-#include "shaders/common/primitives.fs"
 #include "shaders/common/noise.fs"
+#include "shaders/common/primitives.fs"
 #include "shaders/common/raymarch_utils.fs"
 #include "shaders/common/utils.fs"
 
@@ -36,11 +36,12 @@ float getReflectiveIndex(int type)
 vec3 getMarchColor(in MarchResult result)
 {
     if (result.type != invalidType) {
-        vec3 ambient = vec3(0.1, 0.1, 0.1 + 0.5 * sin(result.type + 1));
-        vec3 invLight = -normalize(vec3(-0.7, -0.2, -0.5));
+        vec3 ambient = vec3(0.1, 0.1, 0.1);
+        //vec3 invLight = -normalize(vec3(-0.7, -0.2, -0.5));
+		vec3 invLight = -normalize(vec3(0,-3,0) - result.position);
         vec3 normal = normal(result.position);
         float diffuse = max(0., dot(invLight, normal));
-        return vec3(ambient * (1.0 + diffuse));
+        return vec3(ambient * (diffuse));
     } else {
         return vec3(0.0);
     }
@@ -48,10 +49,10 @@ vec3 getMarchColor(in MarchResult result)
 
 vec3 getMeshColor(in vec3 pos, in vec3 normal)
 {
-    vec3 ambient = vec3(0.1, 0.1, 0.1);
-    vec3 invLight = -normalize(vec3(-0.7, -0.2, -0.5));
+    vec3 ambient = 1.3*vec3(0.8, 0.3, 0.1);
+	vec3 invLight = -normalize(vec3(0,1,-3) - pos);
     float diffuse = max(0., dot(invLight, normal));
-    return vec3(ambient * (1.0 + diffuse));
+    return vec3(ambient * (0.0 + diffuse));
 }
 
 void main()
@@ -64,9 +65,9 @@ void main()
 
     MarchResult result = march(eye, rayDirection);
     vec3 color = getMarchColor(result);
-
+	
     float reflectiveIndex = getReflectiveIndex(result.type);
-    if (reflectiveIndex > 0.0) {
+    if (reflectiveIndex > 100.0) {
         rayDirection = reflect(rayDirection, normal(result.position));
         MarchResult reflectResult = march(result.position + 0.1 * rayDirection, rayDirection);
         vec3 newColor = getMarchColor(reflectResult);

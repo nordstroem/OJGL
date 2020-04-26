@@ -16,15 +16,25 @@ static constexpr float pow(float x, int h)
     return result;
 }
 
+double inline __declspec(naked) __fastcall sin_asm(double n)
+{
+    _asm {
+		fld qword ptr[esp + 4]
+		fsin
+		ret 8
+    }
+}
+
 float sin(float angle)
 {
-    int k = ftoi(angle / pi);
+    return sin_asm(angle);
+    /*int k = ftoi(angle / pi);
 
     if ((k > 0 ? k : -k) % 2 == 1)
         k = k + (k > 0 ? 1 : -1);
 
     float sAngle = angle - k * pi;
-    return sAngle - pow(sAngle, 3) / 6.f + pow(sAngle, 5) / 120.f - pow(sAngle, 7) / 5040.f + pow(sAngle, 9) / 362880.f;
+    return sAngle - pow(sAngle, 3) / 6.f + pow(sAngle, 5) / 120.f - pow(sAngle, 7) / 5040.f + pow(sAngle, 9) / 362880.f;*/
 }
 
 float cos(float angle)

@@ -105,7 +105,6 @@ int main(int argc, char* argv[])
     FreeCameraController cameraController;
 
     auto mesh = Mesh::constructCube();
-
     while (!glState.end() && !window.isClosePressed()) {
         Timer timer;
         timer.start();
@@ -144,19 +143,28 @@ int main(int argc, char* argv[])
             }
         }
 
-        glState["meshScene"]["mesh"].insertMesh(mesh, Matrix::rotation(1, 1, 1, glState.relativeSceneTime().toSeconds()) * Matrix::scaling(0.2f));
+        float time = glState.relativeSceneTime().toSeconds();
+
+        for (int i = 0; i < 100; i++) {
+            float xPos = (i / 100.f - 0.5f) * 4;
+            float yPos = ojstd::sin(xPos * 5.f + 0.1 * time) * ojstd::cos(xPos * 2.5f + 1.4 * time);
+            glState["meshScene"]["mesh"].insertMesh(mesh, Matrix::translation(xPos, yPos, 0) * Matrix::rotation(1, 1, 1, time + i) * Matrix::scaling(0.08f * ojstd::sin(xPos + time)));
+        }
+
         //glState["meshScene"]["mesh"].insertMesh(mesh, Matrix::translation(1, 0, 0) * Matrix::scaling(0.2f) * Matrix::rotation(1, 1, 1, glState.relativeSceneTime().toSeconds()));
-        glState["meshScene"]["mesh"].insertMesh(mesh, Matrix::translation(2, 0, 0) * Matrix::scaling(0.2f));
+
         //glState["meshScene"]["mesh"].insertMesh(mesh, Matrix::scaling(0.4f) * Matrix::translation(0.3, ojstd::sin(glState.relativeSceneTime().toSeconds()), 0.0));
 
         // TODO: Aspect ratio
-		float fov = 0.927295218f;
-        glState << UniformMatrix4fv("P", Matrix::perspective(fov, 16.0f / 9.0f, 0.001f, 1000.0f) * cameraController.getCameraMatrix().inverse());
+        Matrix cameraMatrix = cameraController.getCameraMatrix();
+        float fov = 0.927295218f;
+        float aspectRatio = static_cast<float>(width) / static_cast<float>(height);
+        glState << UniformMatrix4fv("P", Matrix::perspective(fov, aspectRatio, 0.001f, 100.0f) * cameraMatrix.inverse());
 
         glState << Uniform1f("iTime", glState.relativeSceneTime().toSeconds());
         glState << Uniform1f("iGlobalTime", glState.relativeSceneTime().toSeconds() - 2.f);
         glState << Uniform2f("iResolution", static_cast<float>(width), static_cast<float>(height));
-        glState << UniformMatrix4fv("iCameraMatrix", cameraController.getCameraMatrix());
+        glState << UniformMatrix4fv("iCameraMatrix", cameraMatrix);
 
         glState.update();
 
