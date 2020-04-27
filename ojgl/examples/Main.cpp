@@ -55,13 +55,13 @@ void buildSceneGraph(GLState& glState, int x, int y)
 
 int main(int argc, char* argv[])
 {
-    auto popupData = popup::show();
+    //auto popupData = popup::show();
 
     OJ_UNUSED(argc);
     OJ_UNUSED(argv);
-    int width = popupData.width;
-    int height = popupData.height;
-    bool fullScreen = popupData.full;
+    int width = 1280;
+    int height = 720;
+    bool fullScreen = false;
     bool showCursor = !fullScreen;
 
     /*#ifndef _DEBUG
@@ -145,10 +145,19 @@ int main(int argc, char* argv[])
 
         float time = glState.relativeSceneTime().toSeconds();
 
-        for (int i = 0; i < 100; i++) {
-            float xPos = (i / 100.f - 0.5f) * 4;
-            float yPos = ojstd::sin(xPos * 5.f + 0.1 * time) * ojstd::cos(xPos * 2.5f + 1.4 * time);
-            glState["meshScene"]["mesh"].insertMesh(mesh, Matrix::translation(xPos, yPos, 0) * Matrix::rotation(1, 1, 1, time + i) * Matrix::scaling(0.08f * ojstd::sin(xPos + time)));
+        for (int i = 0; i < 200; i++) {
+            float xPos = (i / 200.f - 0.5f) * 4;
+            float yPos = ojstd::sin(xPos * 5.f + 0.1 * time) * ojstd::cos(xPos * 2.5f + 1.0 * time);
+            float zPos = ojstd::sin(xPos * 4.f + 0.1 * time) * ojstd::cos(yPos * 3.5f + 1.0 * time);
+            glState["meshScene"]["mesh"].insertMesh(mesh, Matrix::translation(xPos, yPos, zPos) * Matrix::rotation(1, 1, 1, time + i) * Matrix::scaling(0.06f * ojstd::sin(xPos + time)));
+        }
+
+        for (int i = 0; i < 200; i++) {
+            time += 5.;
+            float xPos = (i / 200.f - 0.5f) * 4;
+            float yPos = 2 * ojstd::sin(xPos * 5.f + 0.1 * time) * ojstd::cos(xPos * 2.5f + 1.0 * time);
+            float zPos = 0.1 * ojstd::sin(xPos * 4.f + 0.1 * time) * ojstd::cos(yPos * 3.5f + 1.0 * time);
+            glState["meshScene"]["mesh"].insertMesh(mesh, Matrix::translation(xPos, yPos, zPos) * Matrix::rotation(1, 1, 1, time + i) * Matrix::scaling(0.01f));
         }
 
         //glState["meshScene"]["mesh"].insertMesh(mesh, Matrix::translation(1, 0, 0) * Matrix::scaling(0.2f) * Matrix::rotation(1, 1, 1, glState.relativeSceneTime().toSeconds()));

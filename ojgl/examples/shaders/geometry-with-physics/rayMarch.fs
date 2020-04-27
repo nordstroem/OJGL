@@ -52,7 +52,7 @@ vec3 getMeshColor(in vec3 pos, in vec3 normal)
     vec3 ambient = 1.3*vec3(0.8, 0.3, 0.1);
 	vec3 invLight = -normalize(vec3(0,1,-3) - pos);
     float diffuse = max(0., dot(invLight, normal));
-    return vec3(ambient * (0.0 + diffuse));
+    return vec3(ambient * (0.1 + diffuse));
 }
 
 void main()
@@ -81,7 +81,8 @@ void main()
 		if (length(eye - meshPos) < length(eye - result.position)) {
 			vec3 meshNormal = texture(inTexture1, fragCoord.xy).xyz;
 
-			color = getMeshColor(meshPos, meshNormal);
+			float mixFactor = result.type == sphereType ? 0.1 : 1.0;
+			color = mix(color, getMeshColor(meshPos, meshNormal), mixFactor);
 		}
 	}
 	
