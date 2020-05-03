@@ -31,6 +31,11 @@ float pModPolar(inout vec2 p, float repetitions)
         c = abs(c);
     return c;
 }
+void mo(inout vec2 p, vec2 d)
+{
+    p = abs(p) - d;
+    if (p.y > p.x) p = p.yx;
+}
 mat2 rot(float a)
 {
     return mat2(cos(a), sin(a), -sin(a), cos(a));

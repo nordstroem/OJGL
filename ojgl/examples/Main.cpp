@@ -104,7 +104,7 @@ int main(int argc, char* argv[])
     glState.initialize();
     FreeCameraController cameraController;
 
-    auto mesh = Mesh::constructCube();
+    auto mesh = Mesh::constructQuad();
     while (!glState.end() && !window.isClosePressed()) {
         Timer timer;
         timer.start();
