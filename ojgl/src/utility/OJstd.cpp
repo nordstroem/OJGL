@@ -7,7 +7,7 @@
 
 namespace ojstd {
 
-static constexpr float pow(float x, int h)
+float pow(float x, int h)
 {
     float result = 1.0;
     for (int i = 0; i < h; i++) {
@@ -23,6 +23,13 @@ double inline __declspec(naked) __fastcall sin_asm(double n)
 		fsin
 		ret 8
     }
+}
+
+Pair<float, float> modf(float value)
+{
+    float base = static_cast<float>(ftoi(value));
+    float fraction = value - base;
+    return { fraction, base };
 }
 
 float sin(float angle)

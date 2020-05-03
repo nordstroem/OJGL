@@ -143,9 +143,11 @@ int main(int argc, char* argv[])
             }
         }
 
-        float time = glState.relativeSceneTime().toSeconds();
+        float baseTime = glState.relativeSceneTime().toSeconds();
+        auto [fraction, base] = ojstd::modf(baseTime);
+        float time = base + ojstd::pow(fraction, 2);
 
-        for (int i = 0; i < 200; i++) {
+        /*for (int i = 0; i < 200; i++) {
             float xPos = (i / 200.f - 0.5f) * 4;
             float yPos = ojstd::sin(xPos * 5.f + 0.1 * time) * ojstd::cos(xPos * 2.5f + 1.0 * time);
             float zPos = ojstd::sin(xPos * 4.f + 0.1 * time) * ojstd::cos(yPos * 3.5f + 1.0 * time);
@@ -153,13 +155,13 @@ int main(int argc, char* argv[])
         }
 
         for (int i = 0; i < 200; i++) {
-            time += 5.;
+            baseTime += 5.;
             float xPos = (i / 200.f - 0.5f) * 4;
-            float yPos = 2 * ojstd::sin(xPos * 5.f + 0.1 * time) * ojstd::cos(xPos * 2.5f + 1.0 * time);
-            float zPos = 0.1 * ojstd::sin(xPos * 4.f + 0.1 * time) * ojstd::cos(yPos * 3.5f + 1.0 * time);
-            glState["meshScene"]["mesh"].insertMesh(mesh, Matrix::translation(xPos, yPos, zPos) * Matrix::rotation(1, 1, 1, time + i) * Matrix::scaling(0.01f));
+            float yPos = 2 * ojstd::sin(xPos * 5.f + 0.1 * baseTime) * ojstd::cos(xPos * 2.5f + 1.0 * baseTime);
+            float zPos = 0.1 * ojstd::sin(xPos * 4.f + 0.1 * baseTime) * ojstd::cos(yPos * 3.5f + 1.0 * baseTime);
+            glState["meshScene"]["mesh"].insertMesh(mesh, Matrix::translation(xPos, yPos, zPos) * Matrix::rotation(1, 1, 1, baseTime + i) * Matrix::scaling(0.01f));
         }
-
+		*/
         //glState["meshScene"]["mesh"].insertMesh(mesh, Matrix::translation(1, 0, 0) * Matrix::scaling(0.2f) * Matrix::rotation(1, 1, 1, glState.relativeSceneTime().toSeconds()));
 
         //glState["meshScene"]["mesh"].insertMesh(mesh, Matrix::scaling(0.4f) * Matrix::translation(0.3, ojstd::sin(glState.relativeSceneTime().toSeconds()), 0.0));

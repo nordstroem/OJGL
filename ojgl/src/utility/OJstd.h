@@ -418,4 +418,7 @@ public:
 
 void sleep(int milliseconds);
 
+Pair<float, float> modf(float value);
+float pow(float x, int h);
+
 } //end namespace ojstd
