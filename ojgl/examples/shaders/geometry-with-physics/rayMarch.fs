@@ -20,47 +20,55 @@ const int wallType = 2;
 
 DistanceInfo map(in vec3 p)
 {
+	float bt;
+	float ft = modf(iTime, bt);
+
 	vec3 bp = p;
 	vec3 wp = p;
 	vec3 lp = p;
 	vec3 lp2 = p;
 
-	p.xy *= rot(0.20 + 0.1*sin(3.*iTime));
-	float scale = 0.7;
-	float increase = scale*pow(clamp(p.x, 0.0, 0.66)*0.8, 5);
-	float cone = sdCappedCylinder(p.zxy, vec2((0.2 + increase)*scale, 0.7));
-	float cone3 = sdCappedCylinder(p.zxy - vec3(0.0,0.4,0), vec2(0.22*scale, 0.02));
-	cone3 = min(cone3, sdCappedCylinder(p.zxy - vec3(0.0,-0.3,0), vec2(0.21*scale, 0.02)));
+	p.xy *= rot(0.20);
+	float scale = 0.6;
+	float increase = scale*pow(clamp(p.x, 0.0, 0.66)*0.98, 6);
+	float cone = sdCappedCylinder(p.zxy, vec2((0.2 + increase)*scale  , 0.7));
+	float cone3 = sdCappedCylinder(p.zxy - vec3(0.0,0.4,0), vec2(0.215*scale, 0.01));
+	cone3 = min(cone3, sdCappedCylinder(p.zxy - vec3(0.0,-0.3,0), vec2(0.205*scale, 0.01)));
 	cone = min(cone, cone3);
-
+	cone += + 0.001*noise_3(p*150.);
 
 	wp.z = abs(wp.z);
-	float wheel  = sdCappedCylinder(wp.xzy + vec3(0.5, -0.4, 0.3), vec2(0.5, 0.04));
-	float wheel2 = sdCappedCylinder(wp.xzy + vec3(0.5, -0.4, 0.3), vec2(0.45, 0.2));
+	float wheel  = sdCappedCylinder(wp.xzy + vec3(0.35, -0.25, 0.2), vec2(0.5, 0.04));
+	float wheel2 = sdCappedCylinder(wp.xzy + vec3(0.35, -0.25, 0.2), vec2(0.47, 0.2));
 	wheel = max(wheel, -wheel2);
 	
 	bp.z = abs(bp.z);
-	bp.x += 0.5;
-	bp.z += -0.4;
-	bp.y += 0.3;
+	bp.x += 0.35;
+	bp.z += -0.25;
+	bp.y += 0.2;
+	bp.xy *= rot(-0.2*iTime);
+
 	pModPolar(bp.xy, 9);
 
-	float bar = sdBox(bp.xzy, vec3(0.45, 0.015, 0.015));
+	float bar = sdBox(bp.xzy, vec3(0.47, 0.015, 0.015));
 	wheel = min(wheel, bar);
 
-	float cone2 = sdCappedCylinder(p.zxy, vec2(0.15 * scale, 0.8));
+	float cone2 = sdCappedCylinder(p.zxy + vec3(0.0,-0.1,0), vec2(0.15 * scale, 0.7));
 	cone = max(cone, -cone2);
 
-	lp.x += 0.3;
+	lp.z = abs(lp.z);
+	lp.x += 0.14;
 	lp.y += 0.1;
-	float lower = sdBox(lp, vec3(0.2, 0.15, 0.2));
+	lp.z += -0.15;
+	float lower = sdBox(lp, vec3(0.2, 0.1, 0.05));
 
 	lp2.z = abs(lp2.z);
 	lp2.z -= 0.15;
 	lp2.x += 1.2;
 	lp2.y += 0.4;
 	lp2.xy *= rot(0.3);
-	float lower2 = sdBox(lp2, vec3(1.0, 0.1, 0.05));
+	float decrease = lp.x * 0.04;
+	float lower2 = sdBox(lp2, vec3(1.0, 0.1 + decrease, 0.05));
 
 	float d = min(min(lower, lower2), min(cone, wheel));
 	DistanceInfo sphere1 = {d, sphereType };
@@ -79,10 +87,10 @@ vec3 getMarchColor(in MarchResult result)
 			return 0.3*vec3(1.0);
         vec3 ambient = vec3(0.1, 0.1, 0.1);
         //vec3 invLight = -normalize(vec3(-0.7, -0.2, -0.5));
-		vec3 invLight = -normalize(vec3(1,-1,-1));
+		vec3 invLight = -normalize(vec3(0.5, -0.7, -0.3) - result.position);
         vec3 normal = normal(result.position);
         float diffuse = max(0., dot(invLight, normal));
-        return vec3(ambient + (diffuse));
+        return vec3(ambient + 0.6*diffuse - result.steps / 100.f);
     } else {
         return vec3(0.3);
     }
