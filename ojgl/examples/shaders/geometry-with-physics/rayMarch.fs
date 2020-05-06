@@ -21,7 +21,11 @@ const int wallType = 2;
 DistanceInfo map(in vec3 p)
 {
 	float bt;
-	float ft = modf(iTime, bt);
+	float ft = mod(iTime, 2.0);
+
+	float recoilLength = 0.2; 
+	float recoil = recoilLength * smoothstep(0.0, 0.1, ft) + recoilLength * (1.f - smoothstep(0.1, 2.0, ft));
+	p.x += recoil;
 
 	vec3 bp = p;
 	vec3 wp = p;
@@ -35,22 +39,23 @@ DistanceInfo map(in vec3 p)
 	float cone3 = sdCappedCylinder(p.zxy - vec3(0.0,0.4,0), vec2(0.215*scale, 0.01));
 	cone3 = min(cone3, sdCappedCylinder(p.zxy - vec3(0.0,-0.3,0), vec2(0.205*scale, 0.01)));
 	cone = min(cone, cone3);
-	cone += + 0.001*noise_3(p*150.);
+	cone += 0.001*noise_3(p*150.);
 
 	wp.z = abs(wp.z);
-	float wheel  = sdCappedCylinder(wp.xzy + vec3(0.35, -0.25, 0.2), vec2(0.5, 0.04));
-	float wheel2 = sdCappedCylinder(wp.xzy + vec3(0.35, -0.25, 0.2), vec2(0.47, 0.2));
+	const float wheelSize = 0.5;
+	float wheel  = sdCappedCylinder(wp.xzy + vec3(0.35, -0.25, 0.2), vec2(wheelSize, 0.04));
+	float wheel2 = sdCappedCylinder(wp.xzy + vec3(0.35, -0.25, 0.2), vec2(wheelSize-0.03, 0.2));
 	wheel = max(wheel, -wheel2);
 	
 	bp.z = abs(bp.z);
 	bp.x += 0.35;
 	bp.z += -0.25;
 	bp.y += 0.2;
-	bp.xy *= rot(-0.2*iTime);
+	bp.xy *= rot(recoil / wheelSize);
 
 	pModPolar(bp.xy, 9);
 
-	float bar = sdBox(bp.xzy, vec3(0.47, 0.015, 0.015));
+	float bar = sdBox(bp.xzy, vec3(wheelSize-0.03, 0.015, 0.015));
 	wheel = min(wheel, bar);
 
 	float cone2 = sdCappedCylinder(p.zxy + vec3(0.0,-0.1,0), vec2(0.15 * scale, 0.7));
@@ -68,7 +73,7 @@ DistanceInfo map(in vec3 p)
 	lp2.y += 0.4;
 	lp2.xy *= rot(0.3);
 	float decrease = lp.x * 0.04;
-	float lower2 = sdBox(lp2, vec3(1.0, 0.1 + decrease, 0.05));
+	float lower2 = sdBox(lp2, vec3(1.0, 0.1 + decrease , 0.05));
 
 	float d = min(min(lower, lower2), min(cone, wheel));
 	DistanceInfo sphere1 = {d, sphereType };
@@ -87,12 +92,12 @@ vec3 getMarchColor(in MarchResult result)
 			return 0.3*vec3(1.0);
         vec3 ambient = vec3(0.1, 0.1, 0.1);
         //vec3 invLight = -normalize(vec3(-0.7, -0.2, -0.5));
-		vec3 invLight = -normalize(vec3(0.5, -0.7, -0.3) - result.position);
+		vec3 invLight = -normalize(vec3(0.5, -0.7, -0.3));
         vec3 normal = normal(result.position);
         float diffuse = max(0., dot(invLight, normal));
         return vec3(ambient + 0.6*diffuse - result.steps / 100.f);
     } else {
-        return vec3(0.3);
+        return vec3(0.3, 0.1, 0.1);
     }
 }
 
