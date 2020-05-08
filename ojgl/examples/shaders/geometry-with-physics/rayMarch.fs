@@ -24,7 +24,7 @@ DistanceInfo map(in vec3 p)
 	float ft = mod(iTime, 2.0);
 
 	float recoilLength = 0.2; 
-	float recoil = recoilLength * smoothstep(0.0, 0.1, ft) + recoilLength * (1.f - smoothstep(0.1, 2.0, ft));
+	float recoil = recoilLength * smoothstep(0.0, 0.1, ft) * (1.f - smoothstep(0.1, 2.0, ft));
 	p.x += recoil;
 
 	vec3 bp = p;
@@ -32,24 +32,25 @@ DistanceInfo map(in vec3 p)
 	vec3 lp = p;
 	vec3 lp2 = p;
 
-	p.xy *= rot(0.20);
+	p.xy *= rot(0.20 + 0.6*recoil);
 	float scale = 0.6;
 	float increase = scale*pow(clamp(p.x, 0.0, 0.66)*0.98, 6);
 	float cone = sdCappedCylinder(p.zxy, vec2((0.2 + increase)*scale  , 0.7));
 	float cone3 = sdCappedCylinder(p.zxy - vec3(0.0,0.4,0), vec2(0.215*scale, 0.01));
 	cone3 = min(cone3, sdCappedCylinder(p.zxy - vec3(0.0,-0.3,0), vec2(0.205*scale, 0.01)));
+	cone3 = min(cone3, sdCappedCylinder(p.zxy - vec3(0.0,-0.7,0), vec2(0.205*scale, 0.015)));
 	cone = min(cone, cone3);
 	cone += 0.001*noise_3(p*150.);
 
 	wp.z = abs(wp.z);
 	const float wheelSize = 0.5;
-	float wheel  = sdCappedCylinder(wp.xzy + vec3(0.35, -0.25, 0.2), vec2(wheelSize, 0.04));
-	float wheel2 = sdCappedCylinder(wp.xzy + vec3(0.35, -0.25, 0.2), vec2(wheelSize-0.03, 0.2));
+	float wheel  = sdCappedCylinder(wp.xzy + vec3(0.35, -0.3, 0.2), vec2(wheelSize, 0.04));
+	float wheel2 = sdCappedCylinder(wp.xzy + vec3(0.35, -0.3, 0.2), vec2(wheelSize-0.03, 0.2));
 	wheel = max(wheel, -wheel2);
 	
 	bp.z = abs(bp.z);
 	bp.x += 0.35;
-	bp.z += -0.25;
+	bp.z += -0.3;
 	bp.y += 0.2;
 	bp.xy *= rot(recoil / wheelSize);
 
@@ -65,10 +66,10 @@ DistanceInfo map(in vec3 p)
 	lp.x += 0.14;
 	lp.y += 0.1;
 	lp.z += -0.15;
-	float lower = sdBox(lp, vec3(0.2, 0.1, 0.05));
+	float lower = sdBox(lp, vec3(0.2, 0.1, 0.1));
 
 	lp2.z = abs(lp2.z);
-	lp2.z -= 0.15;
+	lp2.z -= 0.2;
 	lp2.x += 1.2;
 	lp2.y += 0.4;
 	lp2.xy *= rot(0.3);

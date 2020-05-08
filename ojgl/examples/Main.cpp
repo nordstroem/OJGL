@@ -28,8 +28,9 @@ void buildSceneGraph(GLState& glState, int x, int y)
 
         auto mesh = Buffer::construct(x, y, "mesh", "shaders/geometry-with-physics/mesh.vs", "shaders/geometry-with-physics/mesh.fs", {}, BufferFormat::Meshes, false, 2);
         auto rayMarch = Buffer::construct(x, y, "rayMarch", "shaders/geometry-with-physics/rayMarch.vs", "shaders/geometry-with-physics/rayMarch.fs", { mesh });
+        auto smoke = Buffer::construct(x, y, "smoke", "shaders/geometry-with-physics/rayMarch.vs", "shaders/geometry-with-physics/smoke.fs", {});
 
-        glState.addScene("meshScene", rayMarch, Duration::seconds(9999));
+        glState.addScene("meshScene", smoke, Duration::seconds(9999));
     }
     {
         auto noise = Buffer::construct(x, y, "intro", "shaders/demo.vs", "shaders/mountainNoise.fs");

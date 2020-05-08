@@ -305,6 +305,7 @@
     <None Include="examples\shaders\geometry-with-physics\mesh.vs" />
     <None Include="examples\shaders\geometry-with-physics\rayMarch.fs" />
     <None Include="examples\shaders\geometry-with-physics\rayMarch.vs" />
+    <None Include="examples\shaders\geometry-with-physics\smoke.fs" />
     <None Include="examples\shaders\lavaIntro.fs" />
     <None Include="examples\shaders\lavaScene2.fs" />
     <None Include="examples\shaders\lightning.fs" />
