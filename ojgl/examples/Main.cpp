@@ -150,11 +150,16 @@ int main(int argc, char* argv[])
 
         Matrix cameraMatrix = cameraController.getCameraMatrix();
         Matrix cameraMatrixInverse = cameraMatrix.inverse();
-        const float* md = cameraMatrixInverse.data();
-        float bd[16] = { md[0], md[4], md[8], 0, md[1], md[5], md[9], 0, md[2], md[6], md[10], 0, 1.0, 0.3, 0.0, 1 };
-        Matrix billboardTransform(bd);
 
-        glState["meshScene"]["mesh"].insertMesh(mesh, billboardTransform * Matrix::scaling(0.3));
+        auto billboardMatrix = [&cameraMatrixInverse](const Vector3f& position, const float scaling) {
+            const float* md = cameraMatrixInverse.data();
+            float bd[16] = { md[0] * scaling, md[4], md[8], 0, md[1], md[5] * scaling, md[9], 0, md[2], md[6], md[10] * scaling, 0, position.x, position.y, position.z, 1 };
+            return Matrix(bd);
+        };
+
+        for (int i = 0; i < 10; i++) {
+            glState["meshScene"]["mesh"].insertMesh(mesh, billboardMatrix({ 1.0f + i / 2.f, i / 5.f, 0.f }, 1.0));
+        }
 
         /*for (int i = 0; i < 200; i++) {
             float xPos = (i / 200.f - 0.5f) * 4;

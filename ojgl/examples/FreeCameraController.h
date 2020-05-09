@@ -59,6 +59,11 @@ public:
         return Matrix(rotationMatrix);
     }
 
+    Vector3f position() const
+    {
+        return this->_position;
+    }
+
 private:
     Vector3f _position { 0, 0, 2 };
     float _heading = 0.f;

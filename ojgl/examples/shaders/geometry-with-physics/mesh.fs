@@ -18,7 +18,7 @@ uniform float iTime;
 void main()
 {
 	outPos.xyz = fragPos;
-	outPos.w = 0.5;
+	outPos.w = 1.0;
 	outNormal.xyz = fragNormal;
 	outNormal.w = 0.5;
 
@@ -29,6 +29,7 @@ void main()
 	float alpha = fbm3_high(uv3 * 2.5 + vec3(iTime), 0.16, 3.7);
 	
 	alpha *= 1.f - smoothstep(0.0, 0.4 + 0.1*noise_2(9*uv + vec2(cos(sin(iTime)) + iTime, sin(sin(iTime)))), d);
+	outNormal.x = 1.0;
 	outNormal.w = alpha;
 
 }
