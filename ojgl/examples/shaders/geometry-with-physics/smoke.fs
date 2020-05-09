@@ -3,6 +3,9 @@ R""(
 #include "shaders/common/noise.fs"
 
 in vec2 fragCoord;
+in vec3 fragNormal;
+in vec2 fragTexCoord;
+
 out vec4 fragColor;
 
 uniform float iTime;

@@ -28,9 +28,9 @@ void buildSceneGraph(GLState& glState, int x, int y)
 
         auto mesh = Buffer::construct(x, y, "mesh", "shaders/geometry-with-physics/mesh.vs", "shaders/geometry-with-physics/mesh.fs", {}, BufferFormat::Meshes, false, 2);
         auto rayMarch = Buffer::construct(x, y, "rayMarch", "shaders/geometry-with-physics/rayMarch.vs", "shaders/geometry-with-physics/rayMarch.fs", { mesh });
-        auto smoke = Buffer::construct(x, y, "smoke", "shaders/geometry-with-physics/rayMarch.vs", "shaders/geometry-with-physics/smoke.fs", {});
+        auto smoke = Buffer::construct(x, y, "smoke", "shaders/geometry-with-physics/smoke.vs", "shaders/geometry-with-physics/smoke.fs", {});
 
-        glState.addScene("meshScene", smoke, Duration::seconds(9999));
+        glState.addScene("meshScene", rayMarch, Duration::seconds(9999));
     }
     {
         auto noise = Buffer::construct(x, y, "intro", "shaders/demo.vs", "shaders/mountainNoise.fs");
@@ -148,13 +148,21 @@ int main(int argc, char* argv[])
         auto [fraction, base] = ojstd::modf(baseTime);
         float time = base + ojstd::pow(fraction, 2);
 
+        Matrix cameraMatrix = cameraController.getCameraMatrix();
+        Matrix cameraMatrixInverse = cameraMatrix.inverse();
+        const float* md = cameraMatrixInverse.data();
+        float bd[16] = { md[0], md[4], md[8], 0, md[1], md[5], md[9], 0, md[2], md[6], md[10], 0, 1.0, 0.3, 0.0, 1 };
+        Matrix billboardTransform(bd);
+
+        glState["meshScene"]["mesh"].insertMesh(mesh, billboardTransform * Matrix::scaling(0.3));
+
         /*for (int i = 0; i < 200; i++) {
             float xPos = (i / 200.f - 0.5f) * 4;
             float yPos = ojstd::sin(xPos * 5.f + 0.1 * time) * ojstd::cos(xPos * 2.5f + 1.0 * time);
             float zPos = ojstd::sin(xPos * 4.f + 0.1 * time) * ojstd::cos(yPos * 3.5f + 1.0 * time);
             glState["meshScene"]["mesh"].insertMesh(mesh, Matrix::translation(xPos, yPos, zPos) * Matrix::rotation(1, 1, 1, time + i) * Matrix::scaling(0.06f * ojstd::sin(xPos + time)));
-        }
-
+        }*/
+        /*
         for (int i = 0; i < 200; i++) {
             baseTime += 5.;
             float xPos = (i / 200.f - 0.5f) * 4;
@@ -167,11 +175,9 @@ int main(int argc, char* argv[])
 
         //glState["meshScene"]["mesh"].insertMesh(mesh, Matrix::scaling(0.4f) * Matrix::translation(0.3, ojstd::sin(glState.relativeSceneTime().toSeconds()), 0.0));
 
-        // TODO: Aspect ratio
-        Matrix cameraMatrix = cameraController.getCameraMatrix();
         float fov = 0.927295218f;
         float aspectRatio = static_cast<float>(width) / static_cast<float>(height);
-        glState << UniformMatrix4fv("P", Matrix::perspective(fov, aspectRatio, 0.001f, 100.0f) * cameraMatrix.inverse());
+        glState << UniformMatrix4fv("P", Matrix::perspective(fov, aspectRatio, 0.001f, 100.0f) * cameraMatrixInverse);
 
         glState << Uniform1f("iTime", glState.relativeSceneTime().toSeconds());
         glState << Uniform1f("iGlobalTime", glState.relativeSceneTime().toSeconds() - 2.f);

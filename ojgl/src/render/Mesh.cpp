@@ -8,11 +8,15 @@ struct BufferIndices {
     unsigned int vaoID = 0;
     unsigned int vboID = 0;
     unsigned int nboID = 0;
+    unsigned int tboID = 0;
 };
 
-static BufferIndices generateVAO(const ojstd::vector<float>& vertices, const ojstd::vector<float>& normals = {})
+static BufferIndices generateVAO(const ojstd::vector<float>& vertices, const ojstd::vector<float>& normals = {}, const ojstd::vector<float>& textureCoordinates = {})
 {
-    unsigned int vaoID, vboID, nboID;
+    unsigned int vaoID = 0;
+    unsigned int vboID = 0;
+    unsigned int nboID = 0;
+    unsigned int tboID = 0;
 
     glGenVertexArrays(1, &vaoID);
     glBindVertexArray(vaoID);
@@ -33,18 +37,27 @@ static BufferIndices generateVAO(const ojstd::vector<float>& vertices, const ojs
         glVertexAttribPointer(1, 3, GL_FLOAT, false, 0, nullptr);
     }
 
+    if (!textureCoordinates.empty()) {
+        glGenBuffers(1, &tboID);
+        glBindBuffer(GL_ARRAY_BUFFER, tboID);
+        glEnableVertexAttribArray(2);
+        glBufferData(GL_ARRAY_BUFFER, textureCoordinates.size() * sizeof(float), textureCoordinates.begin(), GL_STATIC_DRAW);
+        glVertexAttribPointer(2, 2, GL_FLOAT, false, 0, nullptr);
+    }
+
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
-    return { vaoID, vboID, nboID };
+    return { vaoID, vboID, nboID, tboID };
 }
 
-Mesh::Mesh(const ojstd::vector<float>& vertices, const ojstd::vector<float>& normals)
+Mesh::Mesh(const ojstd::vector<float>& vertices, const ojstd::vector<float>& normals, const ojstd::vector<float>& textureCoordinates)
 {
-    auto [vaoID, vboID, nboID] = generateVAO(vertices, normals);
+    auto [vaoID, vboID, nboID, tboID] = generateVAO(vertices, normals, textureCoordinates);
     _vaoID = vaoID;
     _vboID = vboID;
     _nboID = nboID;
+    _tboID = tboID;
     _verticesCount = vertices.size();
 }
 
@@ -56,6 +69,8 @@ Mesh::~Mesh()
         glDeleteBuffers(1, &_vboID);
     if (_nboID)
         glDeleteBuffers(1, &_nboID);
+    if (_tboID)
+        glDeleteBuffers(1, &_tboID);
 }
 
 ojstd::shared_ptr<Mesh> Mesh::construct(const ojstd::vector<float>& vertices)
@@ -65,6 +80,7 @@ ojstd::shared_ptr<Mesh> Mesh::construct(const ojstd::vector<float>& vertices)
 
 ojstd::shared_ptr<Mesh> Mesh::constructQuad()
 {
+    // clang-format off
     ojstd::vector<float> vertices = {
         -1, 1, 0,
         -1, -1, 0,
@@ -74,26 +90,23 @@ ojstd::shared_ptr<Mesh> Mesh::constructQuad()
         -1, 1, 0
     };
     ojstd::vector<float> normals = {
-        0,
-        0,
-        1,
-        0,
-        0,
-        1,
-        0,
-        0,
-        1,
-        0,
-        0,
-        1,
-        0,
-        0,
-        1,
-        0,
-        0,
-        1,
+        0, 0, 1,
+        0, 0, 1,
+        0, 0, 1,
+        0, 0, 1,
+        0, 0, 1,
+        0, 0, 1,
     };
-    return new Mesh(vertices, normals);
+	ojstd::vector<float> textureCoordinates = {
+        0, 1,
+        0, 0,
+        1, 0,
+        1, 0,
+        1, 1,
+        0, 1, 
+    };
+    // clang-format on
+    return new Mesh(vertices, normals, textureCoordinates);
 }
 
 ojstd::shared_ptr<Mesh> Mesh::constructCube()

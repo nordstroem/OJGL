@@ -133,11 +133,11 @@ void main()
 	if (abs(texture(inTexture0, fragCoord.xy).w - 0.5) < 0.01) {
 		vec3 meshPos = texture(inTexture0, fragCoord.xy).xyz;
 		
-		if (length(eye - meshPos) < length(eye - result.position)) {
+		if (result.type == invalidType || length(eye - meshPos) < length(eye - result.position)) {
 			vec3 meshNormal = texture(inTexture1, fragCoord.xy).xyz;
-
-			float mixFactor = result.type == sphereType ? 0.1 : 1.0;
-			color = mix(color, getMeshColor(meshPos, meshNormal), mixFactor);
+			float alpha = texture(inTexture1, fragCoord.xy).w;
+			float mixFactor = result.type == sphereType ? 1.0 : 1.0;
+			color = mix(color, vec3(1.0), alpha);
 		}
 	}
 	

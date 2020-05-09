@@ -16,11 +16,12 @@ public:
     static ojstd::shared_ptr<Mesh> constructCube();
 
 private:
-    Mesh(const ojstd::vector<float>& vertices, const ojstd::vector<float>& normals = {});
+    Mesh(const ojstd::vector<float>& vertices, const ojstd::vector<float>& normals = {}, const ojstd::vector<float>& textureCoordinates = {});
 
     unsigned int _vaoID = 0;
     unsigned int _vboID = 0;
     unsigned int _nboID = 0;
+    unsigned int _tboID = 0;
     int _verticesCount = 0;
 };
 }
