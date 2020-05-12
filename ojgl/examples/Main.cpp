@@ -153,7 +153,7 @@ int main(int argc, char* argv[])
         glState.update();
 
         timer.end();
-        ojstd::sleep(10); // Are OpenGL calls async?
+        LOG_INFO("Frame time: " << timer.elapsed().toMilliseconds());
     }
 }
 

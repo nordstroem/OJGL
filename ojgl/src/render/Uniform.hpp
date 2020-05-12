@@ -65,7 +65,21 @@ class Uniform1fv : public UniformBase {
 public:
     Uniform1fv(const ojstd::string& location, const ojstd::vector<float>& values)
         : UniformBase(location)
-        , _values(values) {};
+        , _values(values){};
+    void setUniform(int programID) override;
+
+private:
+    const ojstd::vector<float> _values;
+};
+
+class Uniform3fv : public UniformBase {
+public:
+    Uniform3fv(const ojstd::string& location, const ojstd::vector<float>& values)
+        : UniformBase(location)
+        , _values(values)
+    {
+        _ASSERTE(values.size() % 3 == 0);
+    };
     void setUniform(int programID) override;
 
 private:
