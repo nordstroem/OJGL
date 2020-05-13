@@ -71,7 +71,8 @@ void Music::updateSync()
 Duration Music::elapsedTime() const
 {
     // @todo verify this formula.
-    return Duration::milliseconds(dsGetCurSmp() * 1000 / (44100 * 4)) + _syncOffset;
+    long ms = ojstd::ftoi(dsGetCurSmp() * 1000.f / (44100.f * 4.f));
+    return Duration::milliseconds(ms) + _syncOffset;
 }
 
 void Music::stop()

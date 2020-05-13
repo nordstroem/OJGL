@@ -281,4 +281,14 @@ sign:
 putsign:
     return -i;
 }
+
+// https://www.gamedev.net/forums/topic/671079-fast-sqrt-for-64bit/
+double inline __declspec(naked) __fastcall sqrt_asm(double n)
+{
+    _asm {
+    fld qword ptr[esp + 4]
+    fsqrt
+    ret 8
+    }
+}
 }

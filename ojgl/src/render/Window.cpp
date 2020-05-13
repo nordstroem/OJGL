@@ -94,6 +94,11 @@ Vector2i Window::getCursorPosition() const
     return _priv->_cursorPosition;
 }
 
+void Window::setTitle(const ojstd::string& newTitle)
+{
+    SetWindowTextA(_priv->_hWnd, newTitle.c_str());
+}
+
 HWND Window::Details::CreateOpenGLWindow(const char* title, int x, int y, BYTE type, DWORD flags, bool fullScreen)
 {
     int pf;
@@ -124,7 +129,7 @@ HWND Window::Details::CreateOpenGLWindow(const char* title, int x, int y, BYTE t
         }
     }
 
-    hWnd = CreateWindow(lpszClassName.c_str(), title, WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN,
+    hWnd = CreateWindow(lpszClassName.c_str(), title, WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_OVERLAPPED | WS_MINIMIZEBOX | WS_SYSMENU,
         x, y, this->_width, this->_height, NULL, NULL, hInstance, NULL);
 
     if (fullScreen) {

@@ -27,10 +27,20 @@ unsigned Texture::textureID()
 
 void Texture::load(unsigned char* img)
 {
+    GLenum glType = [this]() {
+      switch (_channels) {
+      case 1: return GL_LUMINANCE;
+      case 3: return GL_RGB;
+      case 4: return GL_RGBA;
+      default:
+        _ASSERTE(false);
+        return GL_RGBA;
+      } }();
+
     glGenTextures(1, &_textureID);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, _textureID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, _width, _height, 0, _channels == 3 ? GL_RGB : GL_RGBA, GL_UNSIGNED_BYTE, img);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, _width, _height, 0, glType, GL_UNSIGNED_BYTE, img);
     glGenerateMipmap(GL_TEXTURE_2D);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
