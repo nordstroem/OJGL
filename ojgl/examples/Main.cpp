@@ -153,7 +153,13 @@ int main(int argc, char* argv[])
         glState.update();
 
         timer.end();
-        LOG_INFO("Frame time: " << timer.elapsed().toMilliseconds());
+
+#ifdef _DEBUG
+        ojstd::string debugTitle("Frame time: ");
+        debugTitle.append(ojstd::to_string(timer.elapsed().toMilliseconds<long>()));
+        debugTitle.append(" ms");
+        window.setTitle(debugTitle);
+#endif
     }
 }
 

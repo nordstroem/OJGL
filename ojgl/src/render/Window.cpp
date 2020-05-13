@@ -94,6 +94,11 @@ Vector2i Window::getCursorPosition() const
     return _priv->_cursorPosition;
 }
 
+void Window::setTitle(const ojstd::string& newTitle)
+{
+    SetWindowTextA(_priv->_hWnd, newTitle.c_str());
+}
+
 HWND Window::Details::CreateOpenGLWindow(const char* title, int x, int y, BYTE type, DWORD flags, bool fullScreen)
 {
     int pf;

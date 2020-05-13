@@ -17,6 +17,7 @@ public:
     bool isClosePressed() const;
     bool isLeftMouseButtonDown() const;
     Vector2i getCursorPosition() const;
+    void setTitle(const ojstd::string& title);
 
 public:
     static constexpr int KEY_LEFT = 37;
