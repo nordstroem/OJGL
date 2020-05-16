@@ -19,6 +19,7 @@ public:
     ~Buffer();
 
     Buffer& setFormat(BufferFormat format);
+    Buffer& setDepthTest(bool depthTestEnabled);
     Buffer& setRenderOnce(bool renderOnce);
     Buffer& setNumOutTextures(int numOutTextures);
     Buffer& setName(const ojstd::string& name);
@@ -72,6 +73,7 @@ private:
     bool _renderOnce = false;
     bool _hasRendered = false;
     int _numOutTextures = 1;
+    bool _depthTestEnabled = false;
 
     unsigned _programID = 0;
     unsigned _fboID = 0;
