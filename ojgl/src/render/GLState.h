@@ -4,6 +4,7 @@
 #include "music/Music.h"
 #include "utility/OJstd.h"
 #include "utility/Timer.hpp"
+#include "utility/Vector.h"
 
 namespace ojgl {
 
@@ -20,7 +21,7 @@ public:
     GLState& operator=(const GLState& other) = delete;
 
     void initialize();
-    void update();
+    void update(const Vector2i& viewportOffset);
     void changeTime(Duration time);
     void setTime(Duration time);
     void restart();
@@ -58,7 +59,7 @@ public:
     }
 
 private:
-    void render();
+    void render(const Vector2i& viewportOffset);
 
     ojstd::vector<Scene> _scenes;
     Timepoint _systemClockStartTime;

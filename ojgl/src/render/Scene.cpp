@@ -1,5 +1,6 @@
 #include "Scene.h"
 #include "utility/OJstd.h"
+#include "utility/Vector.h"
 
 namespace ojgl {
 
@@ -63,7 +64,7 @@ Duration Scene::duration() const
     return this->_duration;
 }
 
-void Scene::render()
+void Scene::render(const Vector2i& viewportOffset)
 {
 
     auto available = buffers();
@@ -89,7 +90,7 @@ void Scene::render()
             }
         }
         if (allRendered) {
-            cur->render();
+            cur->render(cur == _mainBuffer ? viewportOffset : Vector2i(0, 0));
             rendered.insert(cur);
             curIter = available.erase(curIter);
         } else {

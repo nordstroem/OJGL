@@ -36,13 +36,14 @@ bool GLState::end()
 
 void GLState::initialize()
 {
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glDepthFunc(GL_LESS);
     _systemClockStartTime = Timepoint::now();
     if (_music != nullptr)
         _music->play();
 }
 
-void GLState::render()
+void GLState::render(const Vector2i& viewportOffset)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -50,7 +51,7 @@ void GLState::render()
     auto elapsed = elapsedTime();
     for (auto& v : _scenes) {
         if (elapsed < v.duration() + t) {
-            v.render();
+            v.render(viewportOffset);
             break;
         }
         t = t + v.duration();
@@ -78,9 +79,9 @@ Scene& GLState::operator[](const ojstd::string& name)
     return *res;
 }
 
-void GLState::update()
+void GLState::update(const Vector2i& viewportOffset)
 {
-    this->render();
+    this->render(viewportOffset);
     if (!this->isPaused())
         if (_music != nullptr)
             _music->updateSync();
