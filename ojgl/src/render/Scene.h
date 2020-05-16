@@ -11,7 +11,7 @@ public:
     Scene(const ojstd::shared_ptr<Buffer>& buffer, Duration duration);
     Scene(const ojstd::string& name, const ojstd::shared_ptr<Buffer>& buffer, Duration duration);
 
-    void render();
+    void render(const Vector2i& viewportOffset);
     ojstd::string name() const;
     Buffer& operator[](const ojstd::string& name);
     Duration duration() const;

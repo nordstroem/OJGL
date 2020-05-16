@@ -2,6 +2,7 @@
 #include "Mesh.h"
 #include "Uniform.hpp"
 #include "utility/OJstd.h"
+#include "utility/Vector.h"
 
 namespace ojgl {
 
@@ -33,7 +34,7 @@ public:
 
     ojstd::string name() const;
     void generateFBO();
-    void render();
+    void render(const Vector2i& viewportOffset);
     void insertMesh(const ojstd::shared_ptr<Mesh>& mesh, const Matrix& modelMatrix);
     void clearMeshes();
 
