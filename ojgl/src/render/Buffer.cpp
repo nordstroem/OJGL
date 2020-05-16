@@ -52,6 +52,12 @@ Buffer& Buffer::setFormat(BufferFormat format)
     return *this;
 }
 
+Buffer& Buffer::setDepthTest(bool depthTestEnabled)
+{
+    _depthTestEnabled = depthTestEnabled;
+    return *this;
+}
+
 Buffer& Buffer::setRenderOnce(bool renderOnce)
 {
     _renderOnce = renderOnce;
@@ -89,6 +95,11 @@ void Buffer::render()
     glBindFramebuffer(GL_FRAMEBUFFER, _fboID);
     glViewport(0, 0, _width, _height);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    if (_depthTestEnabled) {
+        glEnable(GL_DEPTH_TEST);
+    } else {
+        glDisable(GL_DEPTH_TEST);
+    }
 
     glUseProgram(_programID);
     for (unsigned i = 0; i < static_cast<unsigned>(_numInputs); i++) {

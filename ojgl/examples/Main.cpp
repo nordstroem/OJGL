@@ -23,7 +23,7 @@ void buildSceneGraph(GLState& glState, int width, int height)
         auto lightning = Buffer::construct(width, height, "shaders/edison.vs", "shaders/lightning.fs");
         lightning->setInputs(geometry);
 
-        glState.addScene("cachedGeometryScene", lightning, Duration::seconds(100));
+        glState.addScene("cachedGeometryScene", lightning, Duration::seconds(20));
     }
     {
         //auto edison = Buffer::construct(BufferFormat::Quad, x, y, "intro", "shaders/edison.vs", "shaders/lavaIntro.fs");
@@ -33,8 +33,9 @@ void buildSceneGraph(GLState& glState, int width, int height)
         auto mesh = Buffer::construct(width, height, "shaders/mesh.vs", "shaders/mesh.fs");
         mesh->setFormat(BufferFormat::Meshes);
         mesh->setName("mesh");
+        mesh->setDepthTest(true);
 
-        glState.addScene("meshScene", mesh, Duration::seconds(2));
+        glState.addScene("meshScene", mesh, Duration::seconds(20));
     }
     {
         auto noise = Buffer::construct(width, height, "shaders/demo.vs", "shaders/mountainNoise.fs");
