@@ -18,6 +18,18 @@ public:
     Buffer(const Buffer& other) = delete;
     ~Buffer();
 
+    Buffer& setFormat(BufferFormat format);
+    Buffer& setRenderOnce(bool renderOnce);
+    Buffer& setNumOutTextures(int numOutTextures);
+    Buffer& setName(const ojstd::string& name);
+    template <typename... T>
+    Buffer& setInputs(T... inputs)
+    {
+        _inputs = ojstd::vector<BufferPtr>({ inputs... });
+        _numInputs = Buffer::getNumberOfInputs(_inputs);
+        return *this;
+    }
+
     ojstd::string name() const;
     void generateFBO();
     void render();
@@ -40,26 +52,26 @@ public:
         return *this;
     }
 
-    static BufferPtr construct(unsigned width, unsigned height, const ojstd::string& name, const ojstd::string& vertexPath, const ojstd::string& fragmentPath, const ojstd::vector<BufferPtr>& inputs = {}, BufferFormat format = BufferFormat::Quad, bool renderOnce = false, int numOutTextures = 1);
+    static BufferPtr construct(unsigned width, unsigned height, const ojstd::string& vertexPath, const ojstd::string& fragmentPath);
 
 private:
-    Buffer(unsigned width, unsigned height, const ojstd::string& name, const ojstd::string& vertexPath, const ojstd::string& fragmentPath, const ojstd::vector<BufferPtr>& inputs, BufferFormat format, bool renderOnce, int numOutTextures);
+    Buffer(unsigned width, unsigned height, const ojstd::string& vertexPath, const ojstd::string& fragmentPath);
     void loadShader();
     int numOutTextures();
     static int getNumberOfInputs(const ojstd::vector<BufferPtr>& inputs);
 
 private:
-    const ojstd::vector<BufferPtr> _inputs;
-    const int _numInputs = 0;
-    const ojstd::string _name;
+    ojstd::vector<BufferPtr> _inputs;
+    int _numInputs = 0;
+    ojstd::string _name = "default";
     const ojstd::string _vertexPath;
     const ojstd::string _fragmentPath;
-    const BufferFormat _format;
+    BufferFormat _format = BufferFormat::Quad;
     const unsigned _width;
     const unsigned _height;
-    const bool _renderOnce;
+    bool _renderOnce = false;
     bool _hasRendered = false;
-    const int _numOutTextures;
+    int _numOutTextures = 1;
 
     unsigned _programID = 0;
     unsigned _fboID = 0;

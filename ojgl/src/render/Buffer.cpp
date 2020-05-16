@@ -14,22 +14,14 @@ int Buffer::getNumberOfInputs(const ojstd::vector<BufferPtr>& inputs)
     return numInputs;
 }
 
-Buffer::Buffer(unsigned width, unsigned height, const ojstd::string& name, const ojstd::string& vertexPath, const ojstd::string& fragmentPath, const ojstd::vector<BufferPtr>& inputs, BufferFormat format, bool renderOnce, int numOutTextures)
-    : _format(format)
-    , _inputs(inputs)
-    , _numInputs(Buffer::getNumberOfInputs(inputs))
-    , _name(name)
-    , _width(width)
+Buffer::Buffer(unsigned width, unsigned height, const ojstd::string& vertexPath, const ojstd::string& fragmentPath)
+    : _width(width)
     , _height(height)
     , _vertexPath(vertexPath)
     , _fragmentPath(fragmentPath)
-    , _renderOnce(renderOnce)
-    , _numOutTextures(numOutTextures)
-
 {
+    setFormat(BufferFormat::Quad);
     loadShader();
-    if (_format == BufferFormat::Quad)
-        _meshes.push_back({ Mesh::constructQuad(), Matrix::identity() });
 }
 
 Buffer::~Buffer()
@@ -49,6 +41,33 @@ Buffer::~Buffer()
     }
 
     glDeleteProgram(_programID);
+}
+
+Buffer& Buffer::setFormat(BufferFormat format)
+{
+    _format = format;
+    _meshes.clear();
+    if (_format == BufferFormat::Quad)
+        _meshes.push_back({ Mesh::constructQuad(), Matrix::identity() });
+    return *this;
+}
+
+Buffer& Buffer::setRenderOnce(bool renderOnce)
+{
+    _renderOnce = renderOnce;
+    return *this;
+}
+
+Buffer& Buffer::setNumOutTextures(int numOutTextures)
+{
+    _numOutTextures = numOutTextures;
+    return *this;
+}
+
+Buffer& Buffer::setName(const ojstd::string& name)
+{
+    _name = name;
+    return *this;
 }
 
 ojstd::string Buffer::name() const
@@ -79,7 +98,7 @@ void Buffer::render()
     }
 
     int index = 0;
-    for (auto [location, texture] : _textures) {
+    for (auto[location, texture] : _textures) {
         glUniform1i(glGetUniformLocation(_programID, location.c_str()), _numInputs + index);
         index++;
     }
@@ -92,7 +111,7 @@ void Buffer::render()
     }
 
     index = 0;
-    for (auto [location, texture] : _textures) {
+    for (auto[location, texture] : _textures) {
         glActiveTexture(GL_TEXTURE0 + _numInputs + index);
         glBindTexture(GL_TEXTURE_2D, texture->textureID());
         index++;
@@ -245,7 +264,7 @@ void Buffer::clearMeshes()
         _meshes.clear();
 }
 
-ojstd::shared_ptr<Buffer> Buffer::construct(unsigned width, unsigned height, const ojstd::string& name, const ojstd::string& vertexPath, const ojstd::string& fragmentPath, const ojstd::vector<BufferPtr>& inputs, BufferFormat format, bool renderOnce, int numOutTextures)
+ojstd::shared_ptr<Buffer> Buffer::construct(unsigned width, unsigned height, const ojstd::string& vertexPath, const ojstd::string& fragmentPath)
 {
-    return ojstd::shared_ptr<Buffer>(new Buffer(width, height, name, vertexPath, fragmentPath, inputs, format, renderOnce, numOutTextures));
+    return ojstd::shared_ptr<Buffer>(new Buffer(width, height, vertexPath, fragmentPath));
 }

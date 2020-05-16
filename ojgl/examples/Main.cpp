@@ -12,13 +12,17 @@
 
 using namespace ojgl;
 
-void buildSceneGraph(GLState& glState, int x, int y)
+void buildSceneGraph(GLState& glState, int width, int height)
 {
     glState.clearScenes();
 
     {
-        auto geometry = Buffer::construct(x, y, "geometry", "shaders/edison.vs", "shaders/cachedGeometry.fs", {}, ojgl::BufferFormat::Quad, true, 2);
-        auto lightning = Buffer::construct(x, y, "lightning", "shaders/edison.vs", "shaders/lightning.fs", { geometry });
+        auto geometry = Buffer::construct(width, height, "shaders/edison.vs", "shaders/cachedGeometry.fs");
+        geometry->setFormat(BufferFormat::Quad).setRenderOnce(true).setNumOutTextures(2);
+
+        auto lightning = Buffer::construct(width, height, "shaders/edison.vs", "shaders/lightning.fs");
+        lightning->setInputs(geometry);
+
         glState.addScene("cachedGeometryScene", lightning, Duration::seconds(100));
     }
     {
@@ -26,28 +30,44 @@ void buildSceneGraph(GLState& glState, int x, int y)
         //auto fxaa = Buffer::construct(BufferFormat::Quad, x, y, "fxaa", "shaders/fxaa.vs", "shaders/fxaa.fs", edison);
         //auto post = Buffer::construct(BufferFormat::Quad, x, y, "post", "shaders/post.vs", "shaders/post.fs", fxaa);
 
-        auto mesh = Buffer::construct(x, y, "mesh", "shaders/mesh.vs", "shaders/mesh.fs", {}, BufferFormat::Meshes);
+        auto mesh = Buffer::construct(width, height, "shaders/mesh.vs", "shaders/mesh.fs");
+        mesh->setFormat(BufferFormat::Meshes);
+        mesh->setName("mesh");
 
         glState.addScene("meshScene", mesh, Duration::seconds(2));
     }
     {
-        auto noise = Buffer::construct(x, y, "intro", "shaders/demo.vs", "shaders/mountainNoise.fs");
-        auto mountain = Buffer::construct(x, y, "fxaa", "shaders/demo.vs", "shaders/mountain.fs", { noise });
-        auto fxaa = Buffer::construct(x, y, "fxaa", "shaders/fxaa.vs", "shaders/fxaa.fs", { mountain });
-        auto post = Buffer::construct(x, y, "post", "shaders/demo.vs", "shaders/mountainPost.fs", { fxaa });
+        auto noise = Buffer::construct(width, height, "shaders/demo.vs", "shaders/mountainNoise.fs");
+        auto mountain = Buffer::construct(width, height, "shaders/demo.vs", "shaders/mountain.fs");
+        mountain->setInputs(noise);
+
+        auto fxaa = Buffer::construct(width, height, "shaders/fxaa.vs", "shaders/fxaa.fs");
+        fxaa->setInputs(mountain);
+
+        auto post = Buffer::construct(width, height, "shaders/demo.vs", "shaders/mountainPost.fs");
+        post->setInputs(fxaa);
+
         glState.addScene("introScene", post, Duration::seconds(77));
     }
 
     {
-        auto edison = Buffer::construct(x, y, "intro", "shaders/edison.vs", "shaders/lavaScene2.fs");
-        auto fxaa = Buffer::construct(x, y, "fxaa", "shaders/fxaa.vs", "shaders/fxaa.fs", { edison });
-        auto post = Buffer::construct(x, y, "post", "shaders/post.vs", "shaders/post.fs", { fxaa });
+        auto edison = Buffer::construct(width, height, "shaders/edison.vs", "shaders/lavaScene2.fs");
+        auto fxaa = Buffer::construct(width, height, "shaders/fxaa.vs", "shaders/fxaa.fs");
+        fxaa->setInputs(edison);
+
+        auto post = Buffer::construct(width, height, "shaders/post.vs", "shaders/post.fs");
+        post->setInputs(fxaa);
+
         glState.addScene("introScene", post, Duration::seconds(40));
     }
     {
-        auto edison = Buffer::construct(x, y, "intro", "shaders/edison.vs", "shaders/outro.fs");
-        auto fxaa = Buffer::construct(x, y, "fxaa", "shaders/fxaa.vs", "shaders/fxaa.fs", { edison });
-        auto post = Buffer::construct(x, y, "post", "shaders/post.vs", "shaders/post.fs", { fxaa });
+        auto edison = Buffer::construct(width, height, "shaders/edison.vs", "shaders/outro.fs");
+        auto fxaa = Buffer::construct(width, height, "shaders/fxaa.vs", "shaders/fxaa.fs");
+        fxaa->setInputs(edison);
+
+        auto post = Buffer::construct(width, height, "shaders/post.vs", "shaders/post.fs");
+        post->setInputs(fxaa);
+
         glState.addScene("introScene", post, Duration::seconds(40));
     }
 }
