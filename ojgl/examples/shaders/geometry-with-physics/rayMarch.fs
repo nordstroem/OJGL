@@ -98,7 +98,7 @@ vec3 getMarchColor(in MarchResult result)
         float diffuse = max(0., dot(invLight, normal));
         return vec3(ambient + 0.6*diffuse - result.steps / 100.f);
     } else {
-        return vec3(0.3, 0.1, 0.1);
+        return 0.3*vec3(cos(iTime), 0.1, 0.1);
     }
 }
 
