@@ -105,7 +105,7 @@ int main(int argc, char* argv[])
     glState.initialize();
     FreeCameraController cameraController;
 
-    auto mesh = Mesh::constructQuad();
+    auto mesh = Mesh::constructIndexedQuad();
     while (!glState.end() && !window.isClosePressed()) {
         Timer timer;
         timer.start();
@@ -158,11 +158,10 @@ int main(int argc, char* argv[])
         };
 
         //for (int i = 0; i < 10; i++) {
-            //    glState["meshScene"]["mesh"].insertMesh(mesh, billboardMatrix({ 1.0f + i / 2.f, i / 5.f, 0.f }, 1.0));
+        //    glState["meshScene"]["mesh"].insertMesh(mesh, billboardMatrix({ 1.0f + i / 2.f, i / 5.f, 0.f }, 1.0));
         //}
-        
-        glState["meshScene"]["mesh"].insertMesh(mesh, billboardMatrix({ 3.0f, 1.f, 0.f }, 1.0));
 
+        glState["meshScene"]["mesh"].insertMesh(mesh, billboardMatrix({ 3.0f, 1.f, 0.f }, 1.0));
 
         /*for (int i = 0; i < 200; i++) {
             float xPos = (i / 200.f - 0.5f) * 4;

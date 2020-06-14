@@ -105,7 +105,10 @@ void Buffer::render()
     for (const auto& mesh : _meshes) {
         glBindVertexArray(mesh.first->vaoID());
         glUniformMatrix4fv(glGetUniformLocation(_programID, "M"), 1, false, mesh.second.data());
-        glDrawArrays(GL_TRIANGLES, 0, mesh.first->verticesCount());
+        if (mesh.first->usesIndices())
+            glDrawElements(GL_TRIANGLES, mesh.first->verticesCount(), GL_UNSIGNED_INT, nullptr);
+        else
+            glDrawArrays(GL_TRIANGLES, 0, mesh.first->verticesCount());
     }
 
     glBindVertexArray(0);
