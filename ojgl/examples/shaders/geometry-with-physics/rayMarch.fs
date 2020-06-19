@@ -14,13 +14,16 @@ uniform mat4 iCameraMatrix;
 
 uniform sampler2D inTexture0;
 uniform sampler2D inTexture1;
+uniform sampler2D inTexture2;
+uniform sampler2D inTexture3;
 
 const int sphereType = 1;
 const int wallType = 2;
+const int groundType = 3;
 
-DistanceInfo map(in vec3 p)
+DistanceInfo cannon(in vec3 p)
 {
-	float bt;
+    float bt;
 	float ft = mod(iTime, 2.0);
 
 	float recoilLength = 0.2; 
@@ -81,24 +84,74 @@ DistanceInfo map(in vec3 p)
     return sphere1;
 }
 
+DistanceInfo ground(in vec3 p)
+{
+	p.y += 0.92;
+	float d = sdRoundBox(p, vec3(3.0, 0.2, 3.0), 0.02);	
+	DistanceInfo plane = {d, groundType};
+	return plane;
+}
+
+DistanceInfo map(in vec3 p)
+{
+	return un(ground(p), cannon(p));
+}
+
 float getReflectiveIndex(int type)
 {
     return type == wallType ? 0.6 : 0.0;
 }
 
-vec3 getMarchColor(in MarchResult result)
+vec4 genAmbientOcclusion(vec3 ro, vec3 rd)
 {
+    vec4 totao = vec4(0.0);
+    float sca = 1.0;
+
+    for (int aoi = 0; aoi < 5; aoi++)
+    {
+        float hr = 0.01 + 0.02 * float(aoi * aoi);
+        vec3 aopos = ro + rd * hr;
+        float dd = map(aopos).distance;
+        float ao = clamp(-(dd - hr), 0.0, 1.0);
+        totao += ao * sca * vec4(1.0, 1.0, 1.0, 1.0);
+        sca *= 0.75;
+    }
+
+    const float aoCoef = 0.5;
+    totao.w = 1.0 - clamp(aoCoef * totao.w, 0.0, 1.0);
+
+    return totao;
+}
+
+vec3 getMarchColor(in MarchResult result, in vec3 rayDirection)
+{
+	vec3 invLight = -normalize(vec3(0.5, -0.7, -0.3));
+	vec3 normal = normal(result.position);
+	float diffuse = max(0., dot(invLight, normal));
+	float ao = genAmbientOcclusion(result.position, rayDirection).x;
+
     if (result.type != invalidType) {
 		if (result.type == wallType)
 			return 0.3*vec3(1.0);
-        vec3 ambient = vec3(0.1, 0.1, 0.1);
-        //vec3 invLight = -normalize(vec3(-0.7, -0.2, -0.5));
-		vec3 invLight = -normalize(vec3(0.5, -0.7, -0.3));
-        vec3 normal = normal(result.position);
-        float diffuse = max(0., dot(invLight, normal));
-        return vec3(ambient + 0.6*diffuse - result.steps / 100.f);
+		else if (result.type == groundType) {
+			return vec3(diffuse*ao);
+		} else {
+		    vec3 ambient = vec3(0.1, 0.1, 0.1);
+			//vec3 invLight = -normalize(vec3(-0.7, -0.2, -0.5));
+			//return vec3(ambient + 0.6*diffuse - result.steps / 100.f);
+			return vec3(ambient + 0.6*diffuse - result.steps / 100.f);
+		}
     } else {
-        return 0.3*vec3(cos(iTime), 0.1, 0.1);
+		float tau = 2. * PI;
+		float phi = 0.5 + atan(rayDirection.x, rayDirection.z) / tau - 0;
+		float theta = 0.5 - asin(rayDirection.y) / PI;
+	    float u2 = cos(2*tau*sin(3*tau*phi)) + cos(0.3 + 2.*tau*phi) + sin(5.*theta);
+
+//        return 0.2*vec3(0.1, 0.2, 0.4*(0.5 + 0.5*u2));
+
+		u2 = 0.8*fbm3_high(10.*vec3(psin(tau * phi), psin(tau * theta), 0.04*iTime), 0.85, 2.2);
+        return 0.08*vec3(u2, 0.5, 0.5);
+
     }
 }
 
@@ -119,13 +172,13 @@ void main()
     vec3 rayDirection = normalize(rayOrigin - eye);
 
     MarchResult result = march(eye, rayDirection);
-    vec3 color = getMarchColor(result);
+    vec3 color = getMarchColor(result, rayDirection);
 	
     float reflectiveIndex = getReflectiveIndex(result.type);
     if (reflectiveIndex > 100.0) {
         rayDirection = reflect(rayDirection, normal(result.position));
         MarchResult reflectResult = march(result.position + 0.1 * rayDirection, rayDirection);
-        vec3 newColor = getMarchColor(reflectResult);
+        vec3 newColor = getMarchColor(reflectResult, rayDirection);
         color = mix(color, newColor, reflectiveIndex);
     }
 
@@ -136,6 +189,17 @@ void main()
 		if (result.type == invalidType || length(eye - meshPos) < length(eye - result.position)) {
 			vec3 meshNormal = texture(inTexture1, fragCoord.xy).xyz;
 			//float alpha = texture(inTexture1, fragCoord.xy).w;
+			float mixFactor = result.type == sphereType ? 1.0 : 1.0;
+			color = mix(color, vec3(1.0), meshNormal.x);
+		}
+	}
+
+
+	if (abs(texture(inTexture2, fragCoord.xy).w - 1.0) < 0.01) {
+		vec3 meshPos = texture(inTexture2, fragCoord.xy).xyz;
+		
+		if (result.type == invalidType || length(eye - meshPos) < length(eye - result.position)) {
+			vec3 meshNormal = texture(inTexture3, fragCoord.xy).xyz;
 			float mixFactor = result.type == sphereType ? 1.0 : 1.0;
 			color = mix(color, vec3(1.0), meshNormal.x);
 		}

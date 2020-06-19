@@ -1,6 +1,6 @@
 R""(
 const float epsilon = 1e-3;
-const int maxSteps = 100;
+const int maxSteps = 200;
 const float maxDistance = 400.0;
 const int invalidType = -1;
 

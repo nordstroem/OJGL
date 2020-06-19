@@ -27,7 +27,8 @@ void buildSceneGraph(GLState& glState, int x, int y)
         //auto post = Buffer::construct(BufferFormat::Quad, x, y, "post", "shaders/post.vs", "shaders/post.fs", fxaa);
 
         auto mesh = Buffer::construct(x, y, "mesh", "shaders/geometry-with-physics/mesh.vs", "shaders/geometry-with-physics/mesh.fs", {}, BufferFormat::Meshes, false, 2);
-        auto rayMarch = Buffer::construct(x, y, "rayMarch", "shaders/geometry-with-physics/rayMarch.vs", "shaders/geometry-with-physics/rayMarch.fs", { mesh });
+        auto sphere = Buffer::construct(x, y, "sphere", "shaders/geometry-with-physics/sphere.vs", "shaders/geometry-with-physics/sphere.fs", {}, BufferFormat::Meshes, false, 2);
+        auto rayMarch = Buffer::construct(x, y, "rayMarch", "shaders/geometry-with-physics/rayMarch.vs", "shaders/geometry-with-physics/rayMarch.fs", { mesh, sphere });
         auto smoke = Buffer::construct(x, y, "smoke", "shaders/geometry-with-physics/smoke.vs", "shaders/geometry-with-physics/smoke.fs", {});
 
         glState.addScene("meshScene", rayMarch, Duration::seconds(9999));
@@ -52,6 +53,16 @@ void buildSceneGraph(GLState& glState, int x, int y)
         auto post = Buffer::construct(x, y, "post", "shaders/post.vs", "shaders/post.fs", { fxaa });
         glState.addScene("introScene", post, Duration::seconds(40));
     }
+}
+
+Vector3f spherePosition;
+float previousTime = 0.f;
+void handleSpheres(GLState& state, const ojstd::shared_ptr<Mesh>& sphere)
+{
+    float time = state.relativeSceneTime().toSeconds();
+    spherePosition.x += 0.1;
+    spherePosition.y = 0.2;
+    state["meshScene"]["sphere"].insertMesh(sphere, Matrix::translation(spherePosition.x, spherePosition.y, spherePosition.z) * Matrix::scaling(0.2f));
 }
 
 int main(int argc, char* argv[])
@@ -106,6 +117,7 @@ int main(int argc, char* argv[])
     FreeCameraController cameraController;
 
     auto mesh = Mesh::constructIndexedQuad();
+    auto sphere = Mesh::constructCube();
     while (!glState.end() && !window.isClosePressed()) {
         Timer timer;
         timer.start();
@@ -162,7 +174,7 @@ int main(int argc, char* argv[])
         //}
 
         glState["meshScene"]["mesh"].insertMesh(mesh, billboardMatrix({ 3.0f, 1.f, 0.f }, 1.0));
-
+        handleSpheres(glState, sphere);
         /*for (int i = 0; i < 200; i++) {
             float xPos = (i / 200.f - 0.5f) * 4;
             float yPos = ojstd::sin(xPos * 5.f + 0.1 * time) * ojstd::cos(xPos * 2.5f + 1.0 * time);
@@ -185,7 +197,6 @@ int main(int argc, char* argv[])
         float fov = 0.927295218f;
         float aspectRatio = static_cast<float>(width) / static_cast<float>(height);
         glState << UniformMatrix4fv("P", Matrix::perspective(fov, aspectRatio, 0.001f, 100.0f) * cameraMatrixInverse);
-
         glState << Uniform1f("iTime", glState.relativeSceneTime().toSeconds());
         glState << Uniform1f("iGlobalTime", glState.relativeSceneTime().toSeconds() - 2.f);
         glState << Uniform2f("iResolution", static_cast<float>(width), static_cast<float>(height));
