@@ -1,4 +1,5 @@
 #pragma once
+#include <cstring>
 #include <utility>
 
 namespace ojstd {
@@ -20,6 +21,12 @@ template <typename T>
 T min(const T& a, const T& b)
 {
     return a <= b ? a : b;
+}
+
+template <typename T>
+T abs(const T& a)
+{
+    return a < 0 ? -a : a;
 }
 
 template <class InputIt, class T>
@@ -420,5 +427,9 @@ void sleep(int milliseconds);
 
 // https://www.gamedev.net/forums/topic/671079-fast-sqrt-for-64bit/
 double inline __fastcall sqrt_asm(double n);
+
+Pair<float, float> modf(float value);
+
+float pow(float x, int h);
 
 } //end namespace ojstd

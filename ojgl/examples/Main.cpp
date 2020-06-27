@@ -15,15 +15,32 @@ using namespace ojgl;
 Vector2i calculateDimensions(float demoAspectRatio, int windowWidth, int windowHeight);
 void buildSceneGraph(GLState& glState, int width, int height);
 
+Vector3f spherePosition;
+float previousTime = 0.f;
+void handleSpheres(GLState& state, const ojstd::shared_ptr<Mesh>& sphere)
+{
+    float baseTime = state.relativeSceneTime().toSeconds();
+    float k = 2.f;
+    auto [fraction, base] = ojstd::modf(baseTime / k);
+    float time = k * fraction;
+    float v0 = 15.f;
+    float alpha = 0.26f;
+    float gf = 4.0;
+
+    spherePosition.x = 0.9f + v0 * ojstd::cos(alpha) * time;
+    spherePosition.y = 0.3f + v0 * ojstd::sin(alpha) * time - time * time * gf;
+    state["meshScene"]["sphere"].insertMesh(sphere, Matrix::translation(spherePosition.x, spherePosition.y, spherePosition.z) * Matrix::scaling(0.2f));
+}
+
 int main(int argc, char* argv[])
 {
-    auto popupData = popup::show();
+    //auto popupData = popup::show();
 
     OJ_UNUSED(argc);
     OJ_UNUSED(argv);
-    int width = popupData.width;
-    int height = popupData.height;
-    bool fullScreen = popupData.full;
+    int width = 1280;
+    int height = 720;
+    bool fullScreen = false;
     bool showCursor = !fullScreen;
 
     ShaderReader::setBasePath("examples/");
@@ -50,17 +67,19 @@ int main(int argc, char* argv[])
     Window window(width, height, "Eldur - OJ", fullScreen, showCursor);
     GLState glState(resources::songs::song);
 
-    auto[sceneWidth, sceneHeight] = calculateDimensions(16.0f / 9.0f, width, height);
+    auto [sceneWidth, sceneHeight] = calculateDimensions(16.0f / 9.0f, width, height);
     Vector2i viewportOffset((width - sceneWidth) / 2, (height - sceneHeight) / 2);
 
     buildSceneGraph(glState, sceneWidth, sceneHeight);
     glState.initialize();
+    FreeCameraController cameraController;
 
-    auto mesh = Mesh::constructCube();
-
+    auto mesh = Mesh::constructIndexedQuad();
+    auto sphere = Mesh::constructCube();
     while (!glState.end() && !window.isClosePressed()) {
         Timer timer;
         timer.start();
+        cameraController.update(window);
         window.getMessages();
 
         for (auto key : window.getPressedKeys()) {
@@ -95,14 +114,52 @@ int main(int argc, char* argv[])
             }
         }
 
-        glState["meshScene"]["mesh"].insertMesh(mesh, Matrix::scaling(0.2f) * Matrix::rotation(1, 1, 1, glState.relativeSceneTime().toSeconds()));
+        float baseTime = glState.relativeSceneTime().toSeconds();
+        auto [fraction, base] = ojstd::modf(baseTime);
+        float time = base + ojstd::pow(fraction, 2);
+
+        Matrix cameraMatrix = cameraController.getCameraMatrix();
+        Matrix cameraMatrixInverse = cameraMatrix.inverse();
+
+        auto billboardMatrix = [&cameraMatrixInverse](const Vector3f& position, const float scaling) {
+            const float* md = cameraMatrixInverse.data();
+            float bd[16] = { md[0] * scaling, md[4], md[8], 0, md[1], md[5] * scaling, md[9], 0, md[2], md[6], md[10] * scaling, 0, position.x, position.y, position.z, 1 };
+            return Matrix(bd);
+        };
+
+        //for (int i = 0; i < 10; i++) {
+        //    glState["meshScene"]["mesh"].insertMesh(mesh, billboardMatrix({ 1.0f + i / 2.f, i / 5.f, 0.f }, 1.0));
+        //}
+
+        //glState["meshScene"]["mesh"].insertMesh(mesh, billboardMatrix({ 3.0f, 1.f, 0.f }, 1.0));
+
+        handleSpheres(glState, sphere);
+        /*for (int i = 0; i < 200; i++) {
+            float xPos = (i / 200.f - 0.5f) * 4;
+            float yPos = ojstd::sin(xPos * 5.f + 0.1 * time) * ojstd::cos(xPos * 2.5f + 1.0 * time);
+            float zPos = ojstd::sin(xPos * 4.f + 0.1 * time) * ojstd::cos(yPos * 3.5f + 1.0 * time);
+            glState["meshScene"]["mesh"].insertMesh(mesh, Matrix::translation(xPos, yPos, zPos) * Matrix::rotation(1, 1, 1, time + i) * Matrix::scaling(0.06f * ojstd::sin(xPos + time)));
+        }*/
+        /*
+        for (int i = 0; i < 200; i++) {
+            baseTime += 5.;
+            float xPos = (i / 200.f - 0.5f) * 4;
+            float yPos = 2 * ojstd::sin(xPos * 5.f + 0.1 * baseTime) * ojstd::cos(xPos * 2.5f + 1.0 * baseTime);
+            float zPos = 0.1 * ojstd::sin(xPos * 4.f + 0.1 * baseTime) * ojstd::cos(yPos * 3.5f + 1.0 * baseTime);
+            glState["meshScene"]["mesh"].insertMesh(mesh, Matrix::translation(xPos, yPos, zPos) * Matrix::rotation(1, 1, 1, baseTime + i) * Matrix::scaling(0.01f));
+        }
+		*/
+        //glState["meshScene"]["mesh"].insertMesh(mesh, Matrix::translation(1, 0, 0) * Matrix::scaling(0.2f) * Matrix::rotation(1, 1, 1, glState.relativeSceneTime().toSeconds()));
+
         //glState["meshScene"]["mesh"].insertMesh(mesh, Matrix::scaling(0.4f) * Matrix::translation(0.3, ojstd::sin(glState.relativeSceneTime().toSeconds()), 0.0));
 
-        glState << UniformMatrix4fv("P", Matrix::perspective(45.0f * 3.14159265f / 180.0f, static_cast<float>(sceneWidth) / sceneHeight, 0.001f, 1000.0f) * Matrix::translation(0.0, 0.0, -5.0));
-
+        float fov = 0.927295218f;
+        float aspectRatio = static_cast<float>(width) / static_cast<float>(height);
+        glState << UniformMatrix4fv("P", Matrix::perspective(fov, aspectRatio, 0.001f, 100.0f) * cameraMatrixInverse);
         glState << Uniform1f("iTime", glState.relativeSceneTime().toSeconds());
         glState << Uniform1f("iGlobalTime", glState.relativeSceneTime().toSeconds() - 2.f);
-        glState << Uniform2f("iResolution", static_cast<float>(sceneWidth), static_cast<float>(sceneWidth));
+        glState << Uniform2f("iResolution", static_cast<float>(sceneWidth), static_cast<float>(sceneHeight));
+        glState << UniformMatrix4fv("iCameraMatrix", cameraMatrix);
         glState.update(viewportOffset);
 
         timer.end();
@@ -131,61 +188,21 @@ void buildSceneGraph(GLState& glState, int width, int height)
 {
     glState.clearScenes();
 
-    {
-        auto geometry = Buffer::construct(width, height, "shaders/edison.vs", "shaders/cachedGeometry.fs");
-        geometry->setFormat(BufferFormat::Quad).setRenderOnce(true).setNumOutTextures(2);
+    auto mesh = Buffer::construct(width, height, "shaders/geometry-with-physics/mesh.vs", "shaders/geometry-with-physics/mesh.fs");
+    mesh->setFormat(BufferFormat::Meshes);
+    mesh->setNumOutTextures(2);
 
-        auto lightning = Buffer::construct(width, height, "shaders/edison.vs", "shaders/lightning.fs");
-        lightning->setInputs(geometry);
+    auto sphere = Buffer::construct(width, height, "shaders/geometry-with-physics/sphere.vs", "shaders/geometry-with-physics/sphere.fs");
+    sphere->setFormat(BufferFormat::Meshes);
+    sphere->setNumOutTextures(2);
+    sphere->setName("sphere");
 
-        glState.addScene("cachedGeometryScene", lightning, Duration::seconds(20));
-    }
-    {
-        //auto edison = Buffer::construct(BufferFormat::Quad, x, y, "intro", "shaders/edison.vs", "shaders/lavaIntro.fs");
-        //auto fxaa = Buffer::construct(BufferFormat::Quad, x, y, "fxaa", "shaders/fxaa.vs", "shaders/fxaa.fs", edison);
-        //auto post = Buffer::construct(BufferFormat::Quad, x, y, "post", "shaders/post.vs", "shaders/post.fs", fxaa);
+    auto rayMarch = Buffer::construct(width, height, "shaders/geometry-with-physics/rayMarch.vs", "shaders/geometry-with-physics/rayMarch.fs");
+    rayMarch->setInputs(mesh, sphere);
 
-        auto mesh = Buffer::construct(width, height, "shaders/mesh.vs", "shaders/mesh.fs");
-        mesh->setFormat(BufferFormat::Meshes);
-        mesh->setName("mesh");
-        mesh->setDepthTest(true);
+    auto smoke = Buffer::construct(width, height, "shaders/geometry-with-physics/smoke.vs", "shaders/geometry-with-physics/smoke.fs");
 
-        glState.addScene("meshScene", mesh, Duration::seconds(20));
-    }
-    {
-        auto noise = Buffer::construct(width, height, "shaders/demo.vs", "shaders/mountainNoise.fs");
-        auto mountain = Buffer::construct(width, height, "shaders/demo.vs", "shaders/mountain.fs");
-        mountain->setInputs(noise);
-
-        auto fxaa = Buffer::construct(width, height, "shaders/fxaa.vs", "shaders/fxaa.fs");
-        fxaa->setInputs(mountain);
-
-        auto post = Buffer::construct(width, height, "shaders/demo.vs", "shaders/mountainPost.fs");
-        post->setInputs(fxaa);
-
-        glState.addScene("introScene", post, Duration::seconds(77));
-    }
-
-    {
-        auto edison = Buffer::construct(width, height, "shaders/edison.vs", "shaders/lavaScene2.fs");
-        auto fxaa = Buffer::construct(width, height, "shaders/fxaa.vs", "shaders/fxaa.fs");
-        fxaa->setInputs(edison);
-
-        auto post = Buffer::construct(width, height, "shaders/post.vs", "shaders/post.fs");
-        post->setInputs(fxaa);
-
-        glState.addScene("introScene", post, Duration::seconds(40));
-    }
-    {
-        auto edison = Buffer::construct(width, height, "shaders/edison.vs", "shaders/outro.fs");
-        auto fxaa = Buffer::construct(width, height, "shaders/fxaa.vs", "shaders/fxaa.fs");
-        fxaa->setInputs(edison);
-
-        auto post = Buffer::construct(width, height, "shaders/post.vs", "shaders/post.fs");
-        post->setInputs(fxaa);
-
-        glState.addScene("introScene", post, Duration::seconds(40));
-    }
+    glState.addScene("meshScene", rayMarch, Duration::seconds(9999));
 }
 
 extern "C" int _tmain(int argc, char** argv)

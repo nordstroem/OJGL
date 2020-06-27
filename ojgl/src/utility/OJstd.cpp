@@ -1,5 +1,5 @@
-#include "Macros.h"
 #include "OJstd.h"
+#include "Macros.h"
 #include "windows.h"
 #include <stdlib.h>
 #include <string.h>
@@ -7,7 +7,7 @@
 
 namespace ojstd {
 
-static constexpr float pow(float x, int h)
+float pow(float x, int h)
 {
     float result = 1.0;
     for (int i = 0; i < h; i++) {
@@ -16,15 +16,33 @@ static constexpr float pow(float x, int h)
     return result;
 }
 
+double inline __declspec(naked) __fastcall sin_asm(double n)
+{
+    _asm {
+		fld qword ptr[esp + 4]
+		fsin
+		ret 8
+    }
+}
+
+Pair<float, float> modf(float value)
+{
+    float base = static_cast<float>(ftoi(value));
+    float fraction = value - base;
+
+    return { fraction < 0 ? 1.f - fraction : fraction, base };
+}
+
 float sin(float angle)
 {
-    int k = ftoi(angle / pi);
+    return sin_asm(angle);
+    /*int k = ftoi(angle / pi);
 
     if ((k > 0 ? k : -k) % 2 == 1)
         k = k + (k > 0 ? 1 : -1);
 
     float sAngle = angle - k * pi;
-    return sAngle - pow(sAngle, 3) / 6.f + pow(sAngle, 5) / 120.f - pow(sAngle, 7) / 5040.f + pow(sAngle, 9) / 362880.f;
+    return sAngle - pow(sAngle, 3) / 6.f + pow(sAngle, 5) / 120.f - pow(sAngle, 7) / 5040.f + pow(sAngle, 9) / 362880.f;*/
 }
 
 float cos(float angle)

@@ -1,6 +1,6 @@
 R""(
-const float epsilon = 2e-2;
-const int maxSteps = 100;
+const float epsilon = 1e-3;
+const int maxSteps = 200;
 const float maxDistance = 400.0;
 const int invalidType = -1;
 
@@ -32,7 +32,7 @@ MarchResult march(in vec3 rayOrigin, in vec3 rayDirection)
     for (int steps = 0; steps < maxSteps; ++steps) {
         vec3 p = rayOrigin + t * rayDirection;
         DistanceInfo info = map(p);
-        t += info.distance;
+        t += 0.7*info.distance;
         if (info.distance < epsilon)
             return MarchResult(info.type, p, steps);
         if (t > maxDistance)

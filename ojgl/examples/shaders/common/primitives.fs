@@ -22,4 +22,17 @@ float sdRoundBox(vec3 p, vec3 b, float r)
     vec3 q = abs(p) - b;
     return length(max(q, 0.0)) + min(max(q.x, max(q.y, q.z)), 0.0) - r;
 }
+float sdRoundCone( vec3 p, float r1, float r2, float h )
+{
+  vec2 q = vec2( length(p.xz), p.y );
+    
+  float b = (r1-r2)/h;
+  float a = sqrt(1.0-b*b);
+  float k = dot(q,vec2(-b,a));
+    
+  if( k < 0.0 ) return length(q) - r1;
+  if( k > a*h ) return length(q-vec2(0.0,h)) - r2;
+        
+  return dot(q, vec2(a,b) ) - r1;
+}
 )""

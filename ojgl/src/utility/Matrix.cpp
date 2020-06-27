@@ -55,6 +55,20 @@ Matrix Matrix::rotation(float x, float y, float z, float angle)
     return Matrix(data);
 }
 
+Matrix Matrix::yRotation(float angle)
+{
+    float c = ojstd::cos(angle);
+    float s = ojstd::sin(angle);
+
+    float data[16] = {
+        1, 0, 0, 0,
+        0, c, -s, 0,
+        0, s, c, 0,
+        0, 0, 0, 1
+    };
+    return Matrix(data);
+}
+
 Matrix Matrix::identity()
 {
     float data[16] = { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };

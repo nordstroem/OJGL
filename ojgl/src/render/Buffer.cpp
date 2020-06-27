@@ -109,7 +109,7 @@ void Buffer::render(const Vector2i& viewportOffset)
     }
 
     int index = 0;
-    for (auto[location, texture] : _textures) {
+    for (auto [location, texture] : _textures) {
         glUniform1i(glGetUniformLocation(_programID, location.c_str()), _numInputs + index);
         index++;
     }
@@ -122,7 +122,7 @@ void Buffer::render(const Vector2i& viewportOffset)
     }
 
     index = 0;
-    for (auto[location, texture] : _textures) {
+    for (auto [location, texture] : _textures) {
         glActiveTexture(GL_TEXTURE0 + _numInputs + index);
         glBindTexture(GL_TEXTURE_2D, texture->textureID());
         index++;
@@ -135,7 +135,10 @@ void Buffer::render(const Vector2i& viewportOffset)
     for (const auto& mesh : _meshes) {
         glBindVertexArray(mesh.first->vaoID());
         glUniformMatrix4fv(glGetUniformLocation(_programID, "M"), 1, false, mesh.second.data());
-        glDrawArrays(GL_TRIANGLES, 0, mesh.first->verticesCount());
+        if (mesh.first->usesIndices())
+            glDrawElements(GL_TRIANGLES, mesh.first->verticesCount(), GL_UNSIGNED_INT, nullptr);
+        else
+            glDrawArrays(GL_TRIANGLES, 0, mesh.first->verticesCount());
     }
 
     glBindVertexArray(0);
