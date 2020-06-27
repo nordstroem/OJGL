@@ -1,5 +1,5 @@
-#include "Macros.h"
 #include "OJstd.h"
+#include "Macros.h"
 #include "windows.h"
 #include <stdlib.h>
 #include <string.h>
@@ -7,7 +7,7 @@
 
 namespace ojstd {
 
-static constexpr float pow(float x, int h)
+float pow(float x, int h)
 {
     float result = 1.0;
     for (int i = 0; i < h; i++) {
@@ -16,15 +16,26 @@ static constexpr float pow(float x, int h)
     return result;
 }
 
+double inline __declspec(naked) __fastcall sin_asm(double n)
+{
+    _asm {
+		fld qword ptr[esp + 4]
+		fsin
+		ret 8
+    }
+}
+
+Pair<float, float> modf(float value)
+{
+    float base = static_cast<float>(ftoi(value));
+    float fraction = value - base;
+
+    return { fraction < 0 ? 1.f - fraction : fraction, base };
+}
+
 float sin(float angle)
 {
-    int k = ftoi(angle / pi);
-
-    if ((k > 0 ? k : -k) % 2 == 1)
-        k = k + (k > 0 ? 1 : -1);
-
-    float sAngle = angle - k * pi;
-    return sAngle - pow(sAngle, 3) / 6.f + pow(sAngle, 5) / 120.f - pow(sAngle, 7) / 5040.f + pow(sAngle, 9) / 362880.f;
+    return sin_asm(angle);
 }
 
 float cos(float angle)
@@ -181,7 +192,7 @@ string string::replaceFirst(const string& oldStr, const string& newStr) const
     }
 }
 
-string to_string(size_t i)
+string to_string(int i)
 {
     _ASSERTE(i >= 0);
     int len = 1;
@@ -291,4 +302,52 @@ double inline __declspec(naked) __fastcall sqrt_asm(double n)
     ret 8
     }
 }
+
+float abs(float value)
+{
+    return value < 0 ? -value : value;
+}
+
+float floor(float value)
+{
+    return value >= 0 ? ftoi(value) : ftoi(value) - 1;
+}
+
+float fract(float value)
+{
+    return value - floor(value);
+}
+
+float hash1(float value)
+{
+    return fract(sin(value * 727.1) * 435.545);
+}
+
+static float randState = 0.f;
+float rand()
+{
+    randState += 0.01f;
+    return hash1(randState);
+}
+
+float clamp(float x, float lower, float upper)
+{
+    if (x < lower)
+        x = lower;
+    if (x > upper)
+        x = upper;
+    return x;
+}
+
+float smoothstep(float edge0, float edge1, float x)
+{
+    x = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0);
+    return x * x * (3 - 2 * x);
+}
+
+float lerp(float left, float right, float amount)
+{
+    return (1 - amount) * left + amount * right;
+}
+
 }

@@ -34,6 +34,7 @@ public:
     static constexpr int KEY_A = 0x41;
     static constexpr int KEY_Z = 0x5A;
     static constexpr int KEY_X = 0x58;
+    static constexpr int KEY_C = 0x43;
 
 private:
     class Details;

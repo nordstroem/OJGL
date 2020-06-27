@@ -49,8 +49,9 @@ int main(int argc, char* argv[])
     // so on.
     Window window(width, height, "Eldur - OJ", fullScreen, showCursor);
     GLState glState(resources::songs::song);
+    FreeCameraController cameraController;
 
-    auto[sceneWidth, sceneHeight] = calculateDimensions(16.0f / 9.0f, width, height);
+    auto [sceneWidth, sceneHeight] = calculateDimensions(16.0f / 9.0f, width, height);
     Vector2i viewportOffset((width - sceneWidth) / 2, (height - sceneHeight) / 2);
 
     buildSceneGraph(glState, sceneWidth, sceneHeight);
@@ -61,6 +62,9 @@ int main(int argc, char* argv[])
     while (!glState.end() && !window.isClosePressed()) {
         Timer timer;
         timer.start();
+#ifdef _DEBUG
+        cameraController.update(window);
+#endif
         window.getMessages();
 
         for (auto key : window.getPressedKeys()) {
@@ -91,18 +95,24 @@ int main(int argc, char* argv[])
             case Window::KEY_DOWN:
                 glState.previousScene();
                 break;
+
+            case Window::KEY_C:
+                LOG_INFO("Camera: (" << cameraController.position.x << ", " << cameraController.position.y << ", " << cameraController.position.z << ")"
+                                     << ", [" << cameraController.heading << ", " << cameraController.elevation << "]");
+                break;
 #endif
             }
         }
 
+        Matrix cameraMatrix = cameraController.getCameraMatrix();
+
         glState["meshScene"]["mesh"].insertMesh(mesh, Matrix::scaling(0.2f) * Matrix::rotation(1, 1, 1, glState.relativeSceneTime().toSeconds()));
-        //glState["meshScene"]["mesh"].insertMesh(mesh, Matrix::scaling(0.4f) * Matrix::translation(0.3, ojstd::sin(glState.relativeSceneTime().toSeconds()), 0.0));
-
+        // Right multiply P with cameraMatrix.inverse() and set the correct fov to use the camera controller in mesh scenes.
         glState << UniformMatrix4fv("P", Matrix::perspective(45.0f * 3.14159265f / 180.0f, static_cast<float>(sceneWidth) / sceneHeight, 0.001f, 1000.0f) * Matrix::translation(0.0, 0.0, -5.0));
-
         glState << Uniform1f("iTime", glState.relativeSceneTime().toSeconds());
         glState << Uniform1f("iGlobalTime", glState.relativeSceneTime().toSeconds() - 2.f);
-        glState << Uniform2f("iResolution", static_cast<float>(sceneWidth), static_cast<float>(sceneWidth));
+        glState << Uniform2f("iResolution", static_cast<float>(sceneWidth), static_cast<float>(sceneHeight));
+        glState << UniformMatrix4fv("iCameraMatrix", cameraMatrix);
         glState.update(viewportOffset);
 
         timer.end();

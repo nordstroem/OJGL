@@ -6,6 +6,8 @@ struct Vector3 {
     T y = T(0);
     T z = T(0);
 
+    Vector3() = default;
+
     Vector3(const T& x, const T& y, const T& z)
         : x(x)
         , y(y)
@@ -49,6 +51,7 @@ struct Vector2 {
     T x = T(0);
     T y = T(0);
 
+    Vector2() = default;
     Vector2(const T& x, const T& y)
         : x(x)
         , y(y)

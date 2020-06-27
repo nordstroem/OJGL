@@ -37,7 +37,6 @@ bool GLState::end()
 void GLState::initialize()
 {
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    glDepthFunc(GL_LESS);
     _systemClockStartTime = Timepoint::now();
     if (_music != nullptr)
         _music->play();

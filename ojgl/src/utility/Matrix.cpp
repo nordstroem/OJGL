@@ -55,9 +55,50 @@ Matrix Matrix::rotation(float x, float y, float z, float angle)
     return Matrix(data);
 }
 
+Matrix Matrix::yRotation(float angle)
+{
+    float c = ojstd::cos(angle);
+    float s = ojstd::sin(angle);
+
+    float data[16] = {
+        1, 0, 0, 0,
+        0, c, -s, 0,
+        0, s, c, 0,
+        0, 0, 0, 1
+    };
+    return Matrix(data);
+}
+
 Matrix Matrix::identity()
 {
     float data[16] = { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
+    return Matrix(data);
+}
+
+Matrix Matrix::randomRotation()
+{
+    float u1 = ojstd::rand();
+    float u2 = ojstd::rand();
+    float u3 = ojstd::rand();
+    return Matrix::fromQuaternion(
+        sqrt_asm(1 - u1) * ojstd::sin(2 * ojstd::pi * u2),
+        sqrt_asm(1 - u1) * ojstd::cos(2 * ojstd::pi * u2),
+        sqrt_asm(u1) * ojstd::sin(2 * ojstd::pi * u3),
+        sqrt_asm(u1) * ojstd::cos(2 * ojstd::pi * u3));
+}
+
+Matrix Matrix::fromQuaternion(float w, float x, float y, float z)
+{
+    //@todo remove this alias when it works.
+    float qr = w, qi = x, qj = y, qk = z;
+    float sp = sqrt_asm(qr * qr + qi * qi + qj * qj + qk * qk);
+    float s = 1.f / (sp * sp);
+    float data[16] = {
+        1 - 2 * s * (qj * qj + qk * qk), 2 * s * (qi * qj + qk * qr), 2 * s * (qi * qk - qj * qr), 0,
+        2 * s * (qi * qj - qk * qr), 1 - 2 * s * (qi * qi + qk * qk), 2 * s * (qj * qk + qi * qr), 0,
+        2 * s * (qi * qk + qj * qr), 2 * s * (qj * qk - qi * qr), 1 - 2 * s * (qi * qi + qj * qj), 0,
+        0, 0, 0, 1
+    };
     return Matrix(data);
 }
 

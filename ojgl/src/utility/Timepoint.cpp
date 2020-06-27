@@ -1,5 +1,5 @@
-#include "Duration.h"
 #include "Timepoint.h"
+#include "Duration.h"
 #ifdef _DEBUG
 #include <chrono>
 #else // _DEBUG
