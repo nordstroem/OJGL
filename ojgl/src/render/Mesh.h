@@ -16,6 +16,7 @@ public:
     static ojstd::shared_ptr<Mesh> constructQuad();
     static ojstd::shared_ptr<Mesh> constructIndexedQuad();
     static ojstd::shared_ptr<Mesh> constructCube();
+    static ojstd::shared_ptr<Mesh> constructIndexedCube();
 
 private:
     Mesh(const ojstd::vector<float>& vertices, const ojstd::vector<float>& normals = {}, const ojstd::vector<float>& textureCoordinates = {}, const ojstd::vector<unsigned int>& indices = {});

@@ -167,16 +167,22 @@ vec3 getMarchColor(in MarchResult result, in vec3 rayDirection)
 	    float u2 = cos(2*tau*sin(3*tau*phi)) + cos(0.3 + 2.*tau*phi) + sin(5.*theta);
 //        return 0.2*vec3(0.1, 0.2, 0.4*(0.5 + 0.5*u2));
 		u2 = pow(0.9*fbm3_high(10.*vec3(psin(tau * phi), psin(tau * theta), 0.02*iTime), 0.85, 2.2), 3.0);
-        return 0.04*vec3(u2, u2, u2);
+        return 0.015*vec3(u2, u2, u2);
     }
 }
 
-vec3 getMeshColor(in vec3 pos, in vec3 normal)
+vec3 getMeshColor(in vec3 pos, in vec3 normal, in vec3 rayDirection)
 {
 	vec3 invLight = -normalize(vec3(0.5, -0.7, -0.3));
 	float diffuse = max(0., dot(invLight, normal));
-    vec3 ambient = vec3(0.8, 0.3, 0.1);
-    return ambient * diffuse;
+    vec3 ambient = vec3(0.8, 0.8, 0.8);
+	float k = max(0.0, dot(rayDirection, reflect(invLight, normal)));
+	float spec = pow(k, 20.0);
+
+	float n = clamp(0.4*fbm3_high(20*vec3(pos.x, pos.y, pos.z), 0.8, 2.2), 0., 1.);
+
+
+    return ambient * diffuse * n;
 }
 
 void main()
@@ -211,12 +217,13 @@ void main()
 	}
 
 
+	// Cube
 	if (abs(texture(inTexture2, fragCoord.xy).w - 1.0) < 0.01) {
 		vec3 meshPos = texture(inTexture2, fragCoord.xy).xyz;
 		
 		if (result.type == invalidType || length(eye - meshPos) < length(eye - result.position)) {
 			vec3 meshNormal = texture(inTexture3, fragCoord.xy).xyz;
-			color = getMeshColor(meshPos, meshNormal);
+			color = getMeshColor(meshPos, meshNormal, rayDirection);
 		}
 	}
 	

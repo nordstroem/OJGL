@@ -23,13 +23,19 @@ void handleSpheres(GLState& state, const ojstd::shared_ptr<Mesh>& sphere)
     float k = 2.f;
     auto [fraction, base] = ojstd::modf(baseTime / k);
     float time = k * fraction;
-    float v0 = 15.f;
-    float alpha = 0.26f;
-    float gf = 4.0;
+    float gf = 2.0;
 
-    spherePosition.x = 0.9f + v0 * ojstd::cos(alpha) * time;
-    spherePosition.y = 0.3f + v0 * ojstd::sin(alpha) * time - time * time * gf;
-    state["meshScene"]["sphere"].insertMesh(sphere, Matrix::translation(spherePosition.x, spherePosition.y, spherePosition.z) * Matrix::scaling(0.2f));
+    int num = 600;
+    for (int i = 0; i < num; i++) {
+        float v0 = 22.f + 5 * ojstd::sin(1.f * (i + 5));
+        float beta = 0 + (i - num / 2) / 480.f;
+        float alpha = 0.26f + 0.2 * ojstd::sin(1.f * i + time);
+
+        spherePosition.x = 0.5f + v0 * ojstd::cos(alpha) * ojstd::cos(beta) * time;
+        spherePosition.z =  v0 * ojstd::cos(alpha) * ojstd::sin(beta) * time;
+        spherePosition.y = 0.3f + v0 * ojstd::sin(alpha) * time - time * time * gf;
+        state["meshScene"]["sphere"].insertMesh(sphere, Matrix::translation(spherePosition.x, spherePosition.y, spherePosition.z) * Matrix::scaling(0.05f));
+    }
 }
 
 int main(int argc, char* argv[])
@@ -167,7 +173,8 @@ int main(int argc, char* argv[])
 #ifdef _DEBUG
         ojstd::string debugTitle("Frame time: ");
         debugTitle.append(ojstd::to_string(timer.elapsed().toMilliseconds<long>()));
-        debugTitle.append(" ms");
+        debugTitle.append(" ms, fps: ");
+        debugTitle.append(ojstd::to_string(static_cast<int>(1000 / timer.elapsed().toMilliseconds())));
         window.setTitle(debugTitle);
 #endif
     }
@@ -196,6 +203,7 @@ void buildSceneGraph(GLState& glState, int width, int height)
     sphere->setFormat(BufferFormat::Meshes);
     sphere->setNumOutTextures(2);
     sphere->setName("sphere");
+    sphere->setDepthTest(true);
 
     auto rayMarch = Buffer::construct(width, height, "shaders/geometry-with-physics/rayMarch.vs", "shaders/geometry-with-physics/rayMarch.fs");
     rayMarch->setInputs(mesh, sphere);

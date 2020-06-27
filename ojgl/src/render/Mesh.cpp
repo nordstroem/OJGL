@@ -149,6 +149,40 @@ ojstd::shared_ptr<Mesh> Mesh::constructIndexedQuad()
     return new Mesh(vertices, normals, textureCoordinates, indices);
 }
 
+ojstd::shared_ptr<Mesh> Mesh::constructIndexedCube()
+{
+    // clang-format off
+    ojstd::vector<float> vertices = {
+        -1, 1, -1,
+        1, -1, -1,
+        1, 1, -1,
+        -1, 1, -1,
+        -1, -1, 1,
+        1, -1, 1,
+        1, 1, 1,
+        -1, 1, 1
+    };
+
+    ojstd::vector<float> normals = {
+        0, 0, 1,
+        1, 0, 0,
+        0, 0, -1,
+        -1, 0, 0,
+        0, 1, 0,
+        0, -1, 0,
+    };
+	ojstd::vector<float> textureCoordinates = {
+        0, 0,
+        1, 0,
+        1, 1,
+        0, 1,
+    };
+
+    ojstd::vector<unsigned int> indices = {0, 1, 2, 2, 3, 0};
+    // clang-format on
+    return new Mesh(vertices, normals, textureCoordinates, indices);
+}
+
 ojstd::shared_ptr<Mesh> Mesh::constructCube()
 {
     // clang-format off
