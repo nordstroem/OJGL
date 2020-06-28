@@ -94,8 +94,8 @@ DistanceInfo ground(in vec3 p)
 	p.y += 0.92;
 	//pMod2(p.xz, vec2(20.));
 	float d = sdRoundBox(p, vec3(3.0, 0.2, 3.0), 0.02);	
-	float d2 = sdRoundBox(p, vec3(1, 1., 1 ), 0.02);
-	d = mix(d, d2, 0.);
+	float d2 = sdSphere(p, 1.);
+	d = mix(d, d2, psin(iTime));
 	DistanceInfo plane = {d, groundType};
 	return plane;
 }
@@ -147,7 +147,7 @@ vec3 getMarchColor(in MarchResult result, in vec3 rayDirection)
     float spec = getSpecularFactor(result.type) * pow(k, 20.0);
 	float ao = genAmbientOcclusion(result.position, rayDirection).x;
 	
-	float l = length(result.position - vec3(0));
+	float l = length(result.position - vec3(0.6,0,0));
 	float darkness = 1. /(0.1 + 0.2*pow(l, 2.));
     if (result.type != invalidType) {
 		if (result.type == wallType)
@@ -175,14 +175,11 @@ vec3 getMeshColor(in vec3 pos, in vec3 normal, in vec3 rayDirection)
 {
 	vec3 invLight = -normalize(vec3(0.5, -0.7, -0.3));
 	float diffuse = max(0., dot(invLight, normal));
-    vec3 ambient = vec3(0.8, 0.8, 0.8);
+    vec3 ambient = vec3(0.9, 0.9, 0.9);
 	float k = max(0.0, dot(rayDirection, reflect(invLight, normal)));
 	float spec = pow(k, 20.0);
-
-	float n = clamp(0.4*fbm3_high(20*vec3(pos.x, pos.y, pos.z), 0.8, 2.2), 0., 1.);
-
-
-    return ambient * diffuse * n;
+	float n = clamp(0.8*fbm3_high(20*vec3(pos.x, pos.y, pos.z), 0.8, 2.2), 0., 1.);
+    return 3.*ambient * (0.5 + 0.5*diffuse) * n;
 }
 
 void main()
@@ -223,7 +220,7 @@ void main()
 		
 		if (result.type == invalidType || length(eye - meshPos) < length(eye - result.position)) {
 			vec3 meshNormal = texture(inTexture3, fragCoord.xy).xyz;
-			color = getMeshColor(meshPos, meshNormal, rayDirection);
+			color = mix(color, getMeshColor(meshPos, meshNormal, rayDirection), 0.2);
 		}
 	}
 	
