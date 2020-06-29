@@ -327,6 +327,7 @@
   <ItemGroup>
     <ClInclude Include="examples\EmbeddedResources.h" />
     <ClInclude Include="examples\FreeCameraController.h" />
+    <ClInclude Include="examples\SceneController.h" />
     <ClInclude Include="src\music\Music.h" />
     <ClInclude Include="src\music\SyncChannel.h" />
     <ClInclude Include="src\music\SyncEvent.hpp" />

@@ -17,6 +17,41 @@ uniform sampler2D inTexture1;
 uniform sampler2D inTexture2;
 uniform sampler2D inTexture3;
 
+#define NUM_SCENES 3
+float[] sceneLengths = float[NUM_SCENES](5., 5., 5.);
+
+int currentScene() 
+{
+    float s = iTime;
+	for(int i = 0; i < NUM_SCENES; i++) {
+		s-= sceneLengths[i];
+		if (s < 0) return i;
+	}
+	return NUM_SCENES;
+}
+
+float localTime() {
+	float s = iTime;
+	for(int i = 0; i < NUM_SCENES; i++) {
+		if (s - sceneLengths[i] < 0) return s;
+		s-= sceneLengths[i];
+	}
+	return s;
+}
+
+float localTimeLeft() {
+	float s = iTime;
+	for(int i = 0; i < NUM_SCENES; i++) {
+		if (s - sceneLengths[i] < 0) return sceneLengths[i] - s;
+		s-= sceneLengths[i];
+	}
+	return 99999999999.;
+}
+
+float lTime = 0.;
+float lTimeLeft = 0.;
+int cScene = 0;
+
 const int sphereType = 1;
 const int wallType = 2;
 const int groundType = 3;
@@ -27,7 +62,7 @@ DistanceInfo cannon(in vec3 p)
 	float ft = mod(iTime, 2.0);
 
 	float recoilLength = 0.2; 
-	float recoil = recoilLength * smoothstep(0.0, 0.1, ft) * (1.f - smoothstep(0.1, 2.0, ft));
+	float recoil = recoilLength * smoothstep(0.0, 0.1, ft) * (1. - smoothstep(0.1, 2.0, ft));
 	p.x += recoil;
 
 	vec3 mp = p;
@@ -96,6 +131,7 @@ DistanceInfo ground(in vec3 p)
 	float d = sdRoundBox(p, vec3(3.0, 0.2, 3.0), 0.02);	
 	float d2 = sdSphere(p, 2.) + 0.005*fbm3_high(10.*p, 0.85, 2.2) + 0.08*fbm3_high(0.1*p, 1.9, 2.9);
 	float indent = sdTorus(p.xzy - vec3(0, -1.95, 0.), vec2(0.3, 0.02));
+
 	d2 = max(d2, -indent);
 	DistanceInfo plane = {d2, groundType};
 	return plane;
@@ -179,12 +215,16 @@ vec3 getMeshColor(in vec3 pos, in vec3 normal, in vec3 rayDirection)
     vec3 ambient = vec3(0.9, 0.9, 0.9);
 	float k = max(0.0, dot(rayDirection, reflect(invLight, normal)));
 	float spec = pow(k, 20.0);
-	float n = clamp(0.8*fbm3_high(20*vec3(pos.x, pos.y, pos.z), 0.8, 2.2), 0., 1.);
-    return 3.*ambient * (0.5 + 0.5*diffuse) * n;
+	//float n = clamp(0.8*fbm3_high(20*vec3(pos.x, pos.y, pos.z), 0.8, 2.2), 0., 1.);
+    return 3.*ambient * (0.5 + 0.5*diffuse);
 }
 
 void main()
 {
+	lTime  = localTime();
+	cScene = currentScene();
+	lTimeLeft = localTimeLeft();
+
     float u = (fragCoord.x - 0.5) * iResolution.x / iResolution.y;
     float v = (fragCoord.y - 0.5);
     vec3 rayOrigin = (iCameraMatrix * vec4(u, v, -1.0, 1.0)).xyz;
@@ -213,7 +253,6 @@ void main()
 			color = mix(color, vec3(1.0), meshNormal.x);
 		}
 	}
-
 
 	// Cube
 	if (abs(texture(inTexture2, fragCoord.xy).w - 1.0) < 0.01) {

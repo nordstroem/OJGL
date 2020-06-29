@@ -431,11 +431,10 @@ double inline __fastcall sqrt_asm(double n);
 Pair<float, float> modf(float value);
 
 float pow(float x, int h);
-
 float floor(float value);
-
 float fract(float value);
-
 float rand();
+float clamp(float x, float lower, float upper);
+float smoothstep(float edge0, float edge1, float x);
 
 } //end namespace ojstd

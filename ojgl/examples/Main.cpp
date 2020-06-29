@@ -15,6 +15,42 @@ using namespace ojgl;
 Vector2i calculateDimensions(float demoAspectRatio, int windowWidth, int windowHeight);
 void buildSceneGraph(GLState& glState, int width, int height);
 
+static constexpr int NUM_SCENES = 3;
+static float sceneLengths[NUM_SCENES] = { 5., 5., 5. };
+
+int currentSubScene(float iTime)
+{
+    float s = iTime;
+    for (int i = 0; i < NUM_SCENES; i++) {
+        s -= sceneLengths[i];
+        if (s < 0)
+            return i;
+    }
+    return NUM_SCENES;
+}
+
+float localSubTime(float iTime)
+{
+    float s = iTime;
+    for (int i = 0; i < NUM_SCENES; i++) {
+        if (s - sceneLengths[i] < 0)
+            return s;
+        s -= sceneLengths[i];
+    }
+    return s;
+}
+
+float localSubTimeLeft(float iTime)
+{
+    float s = iTime;
+    for (int i = 0; i < NUM_SCENES; i++) {
+        if (s - sceneLengths[i] < 0)
+            return sceneLengths[i] - s;
+        s -= sceneLengths[i];
+    }
+    return 99999999999.;
+}
+
 Vector3f spherePosition;
 float previousTime = 0.f;
 
@@ -31,6 +67,10 @@ ojstd::vector<Matrix> randomMatrices = generateRandomMatrices(500);
 void handleSpheres(GLState& state, const ojstd::shared_ptr<Mesh>& sphere)
 {
     float baseTime = state.relativeSceneTime().toSeconds();
+    int cs = currentSubScene(baseTime);
+    float lTime = localSubTime(baseTime);
+    float lTimeLeft = localSubTimeLeft(baseTime);
+
     /*float k = 2.f;
     auto [fraction, base] = ojstd::modf(baseTime / k);
     float time = k * fraction;
@@ -48,12 +88,15 @@ void handleSpheres(GLState& state, const ojstd::shared_ptr<Mesh>& sphere)
         state["meshScene"]["sphere"].insertMesh(sphere, Matrix::translation(spherePosition.x, spherePosition.y, spherePosition.z) * Matrix::scaling(0.02f));
     }*/
 
-    for (auto& m : randomMatrices) {
-        float r = 7;
-        float w = 0.1;
-        float sphereX = r * ojstd::cos(baseTime * w);
-        float sphereZ = r * ojstd::sin(baseTime * w);
-        state["meshScene"]["sphere"].insertMesh(sphere, m * Matrix::translation(sphereX, 0, sphereZ) * Matrix::scaling(0.01f));
+    if (cs == 1) {
+        for (auto& m : randomMatrices) {
+            float r = 7;
+            float w = 0.1;
+            float sphereX = r * ojstd::cos(baseTime * w);
+            float sphereZ = r * ojstd::sin(baseTime * w);
+            float sc = ojstd::smoothstep(0, 2, lTime) * 0.01;
+            state["meshScene"]["sphere"].insertMesh(sphere, m * Matrix::translation(sphereX, 0, sphereZ) * Matrix::scaling(sc));
+        }
     }
 }
 
@@ -187,7 +230,6 @@ int main(int argc, char* argv[])
         glState.update(viewportOffset);
 
         timer.end();
-
 #ifdef _DEBUG
         ojstd::string debugTitle("Frame time: ");
         debugTitle.append(ojstd::to_string(timer.elapsed().toMilliseconds<long>()));
