@@ -35,4 +35,9 @@ float sdRoundCone( vec3 p, float r1, float r2, float h )
         
   return dot(q, vec2(a,b) ) - r1;
 }
+float sdTorus( vec3 p, vec2 t )
+{
+  vec2 q = vec2(length(p.xz)-t.x,p.y);
+  return length(q)-t.y;
+}
 )""

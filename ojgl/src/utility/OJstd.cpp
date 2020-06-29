@@ -309,4 +309,22 @@ double inline __declspec(naked) __fastcall sqrt_asm(double n)
     ret 8
     }
 }
+
+float floor(float value)
+{
+    return value >= 0 ? ftoi(value) : ftoi(value) - 1;
+}
+
+float fract(float value)
+{
+    return value - floor(value);
+}
+
+static float randState = 0.f;
+float rand()
+{
+    randState += 0.01f;
+    return fract(sin(randState * 727.1) * 435.545);
+}
+
 }

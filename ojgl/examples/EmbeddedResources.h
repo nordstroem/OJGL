@@ -7,64 +7,45 @@ namespace resources {
 
     namespace fragment {
 
-        ojstd::string post{
-#include "shaders/post.fs"
+        ojstd::string mesh {
+#include "shaders/geometry-with-physics/mesh.fs"
         };
-
-        ojstd::string fxaa{
-#include "shaders/fxaa.fs"
+        ojstd::string rayMarch {
+#include "shaders/geometry-with-physics/rayMarch.fs"
         };
-
-        ojstd::string lavaIntro{
-#include "shaders/lavaIntro.fs"
+        ojstd::string smoke {
+#include "shaders/geometry-with-physics/smoke.fs"
         };
-
-        ojstd::string mountain{
-#include "shaders/mountain.fs"
+        ojstd::string sphere {
+#include "shaders/geometry-with-physics/sphere.fs"
         };
-
-        ojstd::string mountainNoise{
-#include "shaders/mountainNoise.fs"
+        ojstd::string noise {
+#include "shaders/common/noise.fs"
         };
-
-        ojstd::string mountainPost{
-#include "shaders/mountainPost.fs"
+        ojstd::string primitives {
+#include "shaders/common/primitives.fs"
         };
-        ojstd::string lavaScene2{
-#include "shaders/lavaScene2.fs"
+        ojstd::string raymarch_utils {
+#include "shaders/common/raymarch_utils.fs"
         };
-        ojstd::string outro{
-#include "shaders/outro.fs"
-        };
-        ojstd::string mesh{
-#include "shaders/mesh.fs"
-        };
-        ojstd::string cachedGeometry{
-#include "shaders/cachedGeometry.fs"
-        };
-        ojstd::string lightning{
-#include "shaders/lightning.fs"
+        ojstd::string utils {
+#include "shaders/common/utils.fs"
         };
 
     } //namespace fragment
 
     namespace vertex {
-
-        ojstd::string demo{
-#include "shaders/demo.vs"
+        ojstd::string mesh {
+#include "shaders/geometry-with-physics/mesh.vs"
         };
-
-        ojstd::string post{
-#include "shaders/post.vs"
+        ojstd::string rayMarch {
+#include "shaders/geometry-with-physics/rayMarch.vs"
         };
-        ojstd::string edison{
-#include "shaders/edison.vs"
+        ojstd::string smoke {
+#include "shaders/geometry-with-physics/smoke.vs"
         };
-        ojstd::string fxaa{
-#include "shaders/fxaa.vs"
-        };
-        ojstd::string mesh{
-#include "shaders/mesh.vs"
+        ojstd::string sphere {
+#include "shaders/geometry-with-physics/sphere.vs"
         };
     } //namespace vertex
 

@@ -432,4 +432,10 @@ Pair<float, float> modf(float value);
 
 float pow(float x, int h);
 
+float floor(float value);
+
+float fract(float value);
+
+float rand();
+
 } //end namespace ojstd

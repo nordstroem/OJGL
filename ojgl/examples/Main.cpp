@@ -17,10 +17,21 @@ void buildSceneGraph(GLState& glState, int width, int height);
 
 Vector3f spherePosition;
 float previousTime = 0.f;
+
+static auto generateRandomMatrices(int number)
+{
+    ojstd::vector<Matrix> matrices;
+    for (int i = 0; i < number; i++)
+        matrices.push_back(Matrix::randomRotation());
+    return matrices;
+}
+
+ojstd::vector<Matrix> randomMatrices = generateRandomMatrices(500);
+
 void handleSpheres(GLState& state, const ojstd::shared_ptr<Mesh>& sphere)
 {
     float baseTime = state.relativeSceneTime().toSeconds();
-    float k = 2.f;
+    /*float k = 2.f;
     auto [fraction, base] = ojstd::modf(baseTime / k);
     float time = k * fraction;
     float gf = 0.2;
@@ -35,6 +46,14 @@ void handleSpheres(GLState& state, const ojstd::shared_ptr<Mesh>& sphere)
         spherePosition.z = v0 * ojstd::cos(alpha) * ojstd::sin(beta) * time;
         spherePosition.y = 0.3f + v0 * ojstd::sin(alpha) * time - time * time * gf;
         state["meshScene"]["sphere"].insertMesh(sphere, Matrix::translation(spherePosition.x, spherePosition.y, spherePosition.z) * Matrix::scaling(0.02f));
+    }*/
+
+    for (auto& m : randomMatrices) {
+        float r = 7;
+        float w = 0.1;
+        float sphereX = r * ojstd::cos(baseTime * w);
+        float sphereZ = r * ojstd::sin(baseTime * w);
+        state["meshScene"]["sphere"].insertMesh(sphere, m * Matrix::translation(sphereX, 0, sphereZ) * Matrix::scaling(0.01f));
     }
 }
 
@@ -50,22 +69,18 @@ int main(int argc, char* argv[])
     bool showCursor = !fullScreen;
 
     ShaderReader::setBasePath("examples/");
-    ShaderReader::preLoad("shaders/edison.vs", resources::vertex::edison);
-    ShaderReader::preLoad("shaders/demo.vs", resources::vertex::demo);
-    ShaderReader::preLoad("shaders/post.vs", resources::vertex::post);
-    ShaderReader::preLoad("shaders/fxaa.vs", resources::vertex::fxaa);
-    ShaderReader::preLoad("shaders/fxaa.fs", resources::fragment::fxaa);
-    ShaderReader::preLoad("shaders/post.fs", resources::fragment::post);
-    ShaderReader::preLoad("shaders/lavaIntro.fs", resources::fragment::lavaIntro);
-    ShaderReader::preLoad("shaders/mountain.fs", resources::fragment::mountain);
-    ShaderReader::preLoad("shaders/mountainNoise.fs", resources::fragment::mountainNoise);
-    ShaderReader::preLoad("shaders/mountainPost.fs", resources::fragment::mountainPost);
-    ShaderReader::preLoad("shaders/lavaScene2.fs", resources::fragment::lavaScene2);
-    ShaderReader::preLoad("shaders/outro.fs", resources::fragment::outro);
-    ShaderReader::preLoad("shaders/mesh.vs", resources::vertex::mesh);
-    ShaderReader::preLoad("shaders/mesh.fs", resources::fragment::mesh);
-    ShaderReader::preLoad("shaders/cachedGeometry.fs", resources::fragment::cachedGeometry);
-    ShaderReader::preLoad("shaders/lightning.fs", resources::fragment::lightning);
+    ShaderReader::preLoad("shaders/common/noise.fs", resources::fragment::noise);
+    ShaderReader::preLoad("shaders/common/primitives.fs", resources::fragment::primitives);
+    ShaderReader::preLoad("shaders/common/raymarch_utils.fs", resources::fragment::raymarch_utils);
+    ShaderReader::preLoad("shaders/common/utils.fs", resources::fragment::utils);
+    ShaderReader::preLoad("shaders/geometry-with-physics/mesh.fs", resources::fragment::mesh);
+    ShaderReader::preLoad("shaders/geometry-with-physics/mesh.vs", resources::vertex::mesh);
+    ShaderReader::preLoad("shaders/geometry-with-physics/rayMarch.fs", resources::fragment::rayMarch);
+    ShaderReader::preLoad("shaders/geometry-with-physics/rayMarch.vs", resources::vertex::rayMarch);
+    ShaderReader::preLoad("shaders/geometry-with-physics/smoke.fs", resources::fragment::smoke);
+    ShaderReader::preLoad("shaders/geometry-with-physics/smoke.vs", resources::vertex::smoke);
+    ShaderReader::preLoad("shaders/geometry-with-physics/sphere.fs", resources::fragment::sphere);
+    ShaderReader::preLoad("shaders/geometry-with-physics/sphere.vs", resources::vertex::sphere);
 
     // @todo move this into GLState? We can return a const reference to window.
     // and perhaps have a unified update() which does getMessages(), music sync update and
@@ -82,6 +97,8 @@ int main(int argc, char* argv[])
 
     auto mesh = Mesh::constructIndexedQuad();
     auto sphere = Mesh::constructCube();
+    auto randomRotation = Matrix::randomRotation();
+
     while (!glState.end() && !window.isClosePressed()) {
         Timer timer;
         timer.start();
@@ -140,6 +157,7 @@ int main(int argc, char* argv[])
         //glState["meshScene"]["mesh"].insertMesh(mesh, billboardMatrix({ 3.0f, 1.f, 0.f }, 1.0));
 
         handleSpheres(glState, sphere);
+
         /*for (int i = 0; i < 200; i++) {
             float xPos = (i / 200.f - 0.5f) * 4;
             float yPos = ojstd::sin(xPos * 5.f + 0.1 * time) * ojstd::cos(xPos * 2.5f + 1.0 * time);
@@ -208,7 +226,7 @@ void buildSceneGraph(GLState& glState, int width, int height)
     auto rayMarch = Buffer::construct(width, height, "shaders/geometry-with-physics/rayMarch.vs", "shaders/geometry-with-physics/rayMarch.fs");
     rayMarch->setInputs(mesh, sphere);
 
-    auto smoke = Buffer::construct(width, height, "shaders/geometry-with-physics/smoke.vs", "shaders/geometry-with-physics/smoke.fs");
+    // auto smoke = Buffer::construct(width, height, "shaders/geometry-with-physics/smoke.vs", "shaders/geometry-with-physics/smoke.fs");
 
     glState.addScene("meshScene", rayMarch, Duration::seconds(9999));
 }

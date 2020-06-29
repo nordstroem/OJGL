@@ -17,6 +17,8 @@ public:
     static Matrix scaling(float scaling);
     static Matrix translation(float x, float y, float z);
     static Matrix identity();
+    static Matrix fromQuaternion(float w, float x, float y, float z);
+    static Matrix randomRotation();
 
 private:
     float _data[16];
