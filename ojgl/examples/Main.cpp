@@ -15,8 +15,8 @@ using namespace ojgl;
 Vector2i calculateDimensions(float demoAspectRatio, int windowWidth, int windowHeight);
 void buildSceneGraph(GLState& glState, int width, int height);
 
-static constexpr int NUM_SCENES = 4;
-static float sceneLengths[NUM_SCENES] = { 20., 10., 5., 20. };
+static constexpr int NUM_SCENES = 5;
+static float sceneLengths[NUM_SCENES] = { 20., 10., 5., 5., 20 };
 
 int currentSubScene(float iTime)
 {
@@ -123,6 +123,10 @@ void handleSphereScene(GLState& state, FreeCameraController& cameraController, c
             float sc = cs == 2 ? 0.01 : ojstd::smoothstep(0, 5, lTime) * 0.01;
             state["meshScene"]["sphere"].insertMesh(sphere, m * Matrix::translation(sphereX, 0, sphereZ) * Matrix::scaling(sc));
         }
+    }
+
+    if (cs == 3 && prevCs != cs) {
+        cameraController.set({ -2.71, 0.79, 4.99 }, -0.64, -0.22);
     }
 
     prevCs = cs;
