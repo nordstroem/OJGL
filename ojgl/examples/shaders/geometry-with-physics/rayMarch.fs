@@ -55,6 +55,7 @@ int cScene = 0;
 const int sphereType = 1;
 const int wallType = 2;
 const int groundType = 3;
+const int ojType = 4;
 
 DistanceInfo cannon(in vec3 p)
 {
@@ -143,10 +144,10 @@ DistanceInfo ground(in vec3 p)
 		float d2 = sdSphere(p, 2.) + 0.005*fbm3_high(10.*p, 0.85, 2.2) + 0.08*fbm3_high(0.1*p, 1.9, 2.9);
 		float indent = sdTorus(p.xzy - vec3(0, -1.95, 0.), vec2(0.3, 0.015));
 
-		
 		op.z += 1.96;
-		float indent2 = sdCappedCylinder(op - vec3(-0.2, 0.1, -0.01), vec2(0.02, 0.23));
-		indent2 = min(indent2, sdHalfTorus(op - vec3(0, -0.1, 0.), vec2(0.2, 0.02)));
+		float indent2 = sdCappedCylinder(op - vec3(-0.2, 0.1, -0.01), vec2(0.018, 0.23));
+		indent2 = min(indent2, sdHalfTorus(op - vec3(0, -0.1, 0.), vec2(0.2, 0.018)));
+		indent2 = min(indent2, sdCappedCylinder(op.yxz - vec3(0.235, -0.055, 0.005), vec2(0.015, 0.16)));
 
 		indent = min(indent, indent2);
 		
@@ -154,6 +155,8 @@ DistanceInfo ground(in vec3 p)
 			float d3 = sdRoundBox(op2 + vec3(0, 0.92, 0), vec3(3.0, 0.2, 3.0), 0.02);	
 			d2 = mix(d2, d3, smoothstep(2, 4, lTime));
 		}
+
+
 		
 		d = max(d2, -indent);
 
