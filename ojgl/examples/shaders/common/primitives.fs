@@ -40,4 +40,13 @@ float sdTorus( vec3 p, vec2 t )
   vec2 q = vec2(length(p.xz)-t.x,p.y);
   return length(q)-t.y;
 }
+float sdHalfTorus(vec3 p, vec2 t)
+{
+  vec2 q = vec2(length(p.xy)-t.x,p.z);
+  float d = length(q)-t.y;
+	if (p.y > 0) {
+		d = max(d, p.y);
+	}
+	return d;
+}
 )""
