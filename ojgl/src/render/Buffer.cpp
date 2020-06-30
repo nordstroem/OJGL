@@ -203,7 +203,6 @@ void Buffer::loadShader()
     _programID = glCreateProgram();
     int vertID = glCreateShader(GL_VERTEX_SHADER);
     int fragID = glCreateShader(GL_FRAGMENT_SHADER);
-
     int vertexShaderLength = ShaderReader::get(_vertexPath).length();
     auto vertexChar = ShaderReader::get(_vertexPath).c_str();
     glShaderSource(vertID, 1, &vertexChar, &vertexShaderLength);
@@ -211,7 +210,6 @@ void Buffer::loadShader()
     int fragmentShaderLength = ShaderReader::get(_fragmentPath).length();
     auto fragmentChar = ShaderReader::get(_fragmentPath).c_str();
     glShaderSource(fragID, 1, &fragmentChar, &fragmentShaderLength);
-
     glCompileShader(vertID);
     GLint param;
     glGetShaderiv(vertID, GL_COMPILE_STATUS, &param);
@@ -224,7 +222,6 @@ void Buffer::loadShader()
     }
 
     glCompileShader(fragID);
-
     glGetShaderiv(fragID, GL_COMPILE_STATUS, &param);
     if (param == GL_FALSE) {
         LOG_ERROR("Failed to compile fragment shader!");
@@ -237,9 +234,9 @@ void Buffer::loadShader()
     glAttachShader(_programID, vertID);
     glAttachShader(_programID, fragID);
     glLinkProgram(_programID);
-
     glValidateProgram(_programID);
     glGetProgramiv(_programID, GL_VALIDATE_STATUS, &param);
+
     if (param == GL_FALSE) {
         LOG_ERROR("Shader program is not valid!");
         int len;

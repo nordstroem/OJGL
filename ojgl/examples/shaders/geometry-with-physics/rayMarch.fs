@@ -60,7 +60,7 @@ const int ojType = 4;
 DistanceInfo cannon(in vec3 p)
 {
     float bt;
-	float to = cScene == 5 ? 0. : 3.;
+	float to = cScene == 5 ? 3. : 3.;
 	float ft = mod(lTime - to, 2.0);
 
 	float recoilLength = 0.2; 
@@ -138,27 +138,27 @@ DistanceInfo ground(in vec3 p)
 	} else {
 		vec3 op = p;
 		vec3 op2 = p;
-
 		p.xz *= rot(-0.15*iTime + 5.2);
-		op.xz *= rot(-0.15 * iTime + 4.9);
-		float d2 = sdSphere(p, 2.) + 0.005*fbm3_high(10.*p, 0.85, 2.2) + 0.08*fbm3_high(0.1*p, 1.9, 2.9);
-		float indent = sdTorus(p.xzy - vec3(0, -1.95, 0.), vec2(0.3, 0.015));
-
-		op.z += 1.96;
-		float indent2 = sdCappedCylinder(op - vec3(-0.2, 0.1, -0.01), vec2(0.018, 0.23));
-		indent2 = min(indent2, sdHalfTorus(op - vec3(0, -0.1, 0.), vec2(0.2, 0.018)));
-		indent2 = min(indent2, sdCappedCylinder(op.yxz - vec3(0.235, -0.055, 0.005), vec2(0.015, 0.16)));
-
-		indent = min(indent, indent2);
 		
-		if (cScene == 3) {
-			float d3 = sdRoundBox(op2 + vec3(0, 0.92, 0), vec3(3.0, 0.2, 3.0), 0.02);	
-			d2 = mix(d2, d3, smoothstep(2, 4, lTime));
+		d = sdSphere(p, 2.) + 0.005*fbm3_high(10.*p, 0.85, 2.2) + 0.08*fbm3_high(0.1*p, 1.9, 2.9);
+
+		if (cScene == 0 && lTimeLeft > 3.0) {
+			op.xz *= rot(-0.15 * iTime + 4.9);
+			float indent = sdTorus(p.xzy - vec3(0, -1.95, 0.), vec2(0.3, 0.015));
+			op.z += 1.96;
+			float indent2 = sdCappedCylinder(op - vec3(-0.2, 0.1, -0.01), vec2(0.018, 0.23));
+			indent2 = min(indent2, sdHalfTorus(op - vec3(0, -0.1, 0.), vec2(0.2, 0.018)));
+			indent2 = min(indent2, sdCappedCylinder(op.yxz - vec3(0.235, -0.055, 0.005), vec2(0.015, 0.16)));
+
+			indent = min(indent, indent2);
+			d = max(d, -indent);
 		}
 
-
+		if (cScene == 3) {
+			float d3 = sdRoundBox(op2 + vec3(0, 0.92, 0), vec3(3.0, 0.2, 3.0), 0.02);	
+			d = mix(d, d3, smoothstep(2, 4, lTime));
+		}
 		
-		d = max(d2, -indent);
 
 	}
 	
@@ -298,8 +298,11 @@ void main()
 
 	float f = 1.;
 
-	if (cScene == 0)
+	if (cScene == 0) {
 		f = smoothstep(0., 5., lTime);
+		f *= 1. - smoothstep(3.5f, 3.f, lTimeLeft);
+		f += smoothstep(3.f, 2.5, lTimeLeft);
+	}
 //	f *= 1. - smoothstep(1.5, 0., lTimeLeft);
 
 	fragColor = vec4(f * color, 1.0);

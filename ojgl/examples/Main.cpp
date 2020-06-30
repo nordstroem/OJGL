@@ -77,7 +77,7 @@ void handleSphereScene(GLState& state, FreeCameraController& cameraController, c
         auto [fraction, base] = ojstd::modf((lTime - to) / k);
         float time = k * fraction;
         float gf = 0.2;
-        float v0 = 6;
+        float v0 = 16;
         float beta = 0.f;
         float alpha = 0.26f;
         spherePosition.x = 0.8f + v0 * ojstd::cos(alpha) * ojstd::cos(beta) * time;
@@ -88,13 +88,13 @@ void handleSphereScene(GLState& state, FreeCameraController& cameraController, c
 
     if (cs >= 5) {
         float k = 2.f;
-        auto [fraction, base] = ojstd::modf(lTime / k);
+        auto [fraction, base] = ojstd::modf((lTime - to + k) / k);
         float time = k * fraction;
         float gf = 0.2;
 
         int num = 500;
         for (int i = 0; i < num; i++) {
-            float v0 = (22.f + 5 * ojstd::sin(1.f * (i + 5))) * 0.3;
+            float v0 = (32.f + 5 * ojstd::sin(1.f * (i + 5))) * 0.3;
             float beta = 0 + (i - num / 2) / 580.f;
             float alpha = 0.26f + 0.2 * ojstd::sin(1.f * i + time);
 
@@ -127,8 +127,16 @@ void handleSphereScene(GLState& state, FreeCameraController& cameraController, c
         float sc = ojstd::smoothstep(10, 12, baseTime) * 0.02;
         state["meshScene"]["sphere"].insertMesh(sphere, Matrix::translation(sphereX, 0, sphereZ) * Matrix::scaling(sc));
 
-        if (lTimeLeft < 3.)
+        if (lTimeLeft < 3. && cs == 0) {
+            /*float f = ojstd::smoothstep(3., 0., lTimeLeft);
+            float xPos = ojstd::lerp(2.57, 3.3, f);
+            float yPos = ojstd::lerp(-0.375, 5.67, f);
+            float zPos = ojstd::lerp(7.71, 8.5, f);
+            float elevation = ojstd::lerp(0.08, -0.6, f);
+            cameraController.set({ xPos, yPos, zPos }, 0.36, elevation);
+            */
             cameraController.set({ 3.3, 5.67, 8.5 }, 0.36, -0.6);
+        }
     }
 
     if (cs == 1 || cs == 2) {
@@ -145,8 +153,8 @@ void handleSphereScene(GLState& state, FreeCameraController& cameraController, c
     if (cs == 3 && prevCs != cs) {
         cameraController.set({ -2.71, 0.79, 4.99 }, -0.64, -0.22);
     }
-    if (cs == 5 && prevCs != cs) {
-        cameraController.set({ 10.85, 4.41, -11.77 }, 3.02, -0.32);
+    if (cs == 5 && prevCs != cs || (cs == 4 && lTimeLeft < 2)) {
+        cameraController.set({ 12.95, 4.21, 9.4 }, 0.8, -0.2);
     }
 
     prevCs = cs;
@@ -285,7 +293,6 @@ int main(int argc, char* argv[])
         glState << Uniform2f("iResolution", static_cast<float>(sceneWidth), static_cast<float>(sceneHeight));
         glState << UniformMatrix4fv("iCameraMatrix", cameraMatrix);
         glState.update(viewportOffset);
-
         timer.end();
 #ifdef _DEBUG
         ojstd::string debugTitle("Frame time: ");
