@@ -17,8 +17,8 @@ uniform sampler2D inTexture1;
 uniform sampler2D inTexture2;
 uniform sampler2D inTexture3;
 
-#define NUM_SCENES 5
-float[] sceneLengths = float[NUM_SCENES](20., 10., 5., 5., 20.);
+#define NUM_SCENES 6
+float[] sceneLengths = float[NUM_SCENES](20., 10., 5., 5., 10, 10.);
 
 int currentScene() 
 {
@@ -59,10 +59,12 @@ const int groundType = 3;
 DistanceInfo cannon(in vec3 p)
 {
     float bt;
-	float ft = mod(iTime, 2.0);
+	float to = cScene == 5 ? 0. : 3.;
+	float ft = mod(lTime - to, 2.0);
 
 	float recoilLength = 0.2; 
 	float recoil = recoilLength * smoothstep(0.0, 0.1, ft) * (1. - smoothstep(0.1, 2.0, ft));
+	recoil = lTime >= to || cScene == 5 ? recoil : 0;  
 	p.x += recoil;
 
 	vec3 mp = p;
@@ -117,8 +119,10 @@ DistanceInfo cannon(in vec3 p)
 
 	float d = min(min(lower, lower2), min(cone, wheel)); 
 
-	float d2 = sdRoundBox(mp, vec3(0.5 * smoothstep(0, 1, lTime)), 0.02);
-	d = mix(d2, d, smoothstep(0., 3., lTime));
+
+	float mTime = cScene == 4 ? lTime : 10;
+	float d2 = sdRoundBox(mp, vec3(0.5 * smoothstep(0, 1, mTime)), 0.02);
+	d = mix(d2, d, smoothstep(0., 3., mTime));
 
 	DistanceInfo sphere1 = {d, sphereType };
     return sphere1;
@@ -155,7 +159,7 @@ DistanceInfo ground(in vec3 p)
 
 DistanceInfo map(in vec3 p)
 {
-	if (cScene == 4) {
+	if (cScene >= 4) {
 		return un(ground(p), cannon(p));
 	}
 	return ground(p);

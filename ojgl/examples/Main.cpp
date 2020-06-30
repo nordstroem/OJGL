@@ -15,8 +15,8 @@ using namespace ojgl;
 Vector2i calculateDimensions(float demoAspectRatio, int windowWidth, int windowHeight);
 void buildSceneGraph(GLState& glState, int width, int height);
 
-static constexpr int NUM_SCENES = 5;
-static float sceneLengths[NUM_SCENES] = { 20., 10., 5., 5., 20 };
+static constexpr int NUM_SCENES = 6;
+static float sceneLengths[NUM_SCENES] = { 20., 10., 5., 5., 10, 10. };
 
 int currentSubScene(float iTime)
 {
@@ -71,22 +71,39 @@ void handleSphereScene(GLState& state, FreeCameraController& cameraController, c
     float lTime = localSubTime(baseTime);
     float lTimeLeft = localSubTimeLeft(baseTime);
 
-    /*float k = 2.f;
-    auto [fraction, base] = ojstd::modf(baseTime / k);
-    float time = k * fraction;
-    float gf = 0.2;
-
-    int num = 600;
-    for (int i = 0; i < num; i++) {
-        float v0 = (22.f + 5 * ojstd::sin(1.f * (i + 5))) * 0.3;
-        float beta = 0 + (i - num / 2) / 580.f;
-        float alpha = 0.26f + 0.2 * ojstd::sin(1.f * i + time);
-
-        spherePosition.x = 0.5f + v0 * ojstd::cos(alpha) * ojstd::cos(beta) * time;
+    float to = 3.f;
+    if (cs == 4 && lTime >= 3.) {
+        float k = 2.f;
+        auto [fraction, base] = ojstd::modf((lTime - to) / k);
+        float time = k * fraction;
+        float gf = 0.2;
+        float v0 = 6;
+        float beta = 0.f;
+        float alpha = 0.26f;
+        spherePosition.x = 0.8f + v0 * ojstd::cos(alpha) * ojstd::cos(beta) * time;
         spherePosition.z = v0 * ojstd::cos(alpha) * ojstd::sin(beta) * time;
         spherePosition.y = 0.3f + v0 * ojstd::sin(alpha) * time - time * time * gf;
         state["meshScene"]["sphere"].insertMesh(sphere, Matrix::translation(spherePosition.x, spherePosition.y, spherePosition.z) * Matrix::scaling(0.02f));
-    }*/
+    }
+
+    if (cs >= 5) {
+        float k = 2.f;
+        auto [fraction, base] = ojstd::modf(lTime / k);
+        float time = k * fraction;
+        float gf = 0.2;
+
+        int num = 500;
+        for (int i = 0; i < num; i++) {
+            float v0 = (22.f + 5 * ojstd::sin(1.f * (i + 5))) * 0.3;
+            float beta = 0 + (i - num / 2) / 580.f;
+            float alpha = 0.26f + 0.2 * ojstd::sin(1.f * i + time);
+
+            spherePosition.x = 0.5f + v0 * ojstd::cos(alpha) * ojstd::cos(beta) * time;
+            spherePosition.z = v0 * ojstd::cos(alpha) * ojstd::sin(beta) * time;
+            spherePosition.y = 0.3f + v0 * ojstd::sin(alpha) * time - time * time * gf;
+            state["meshScene"]["sphere"].insertMesh(sphere, Matrix::translation(spherePosition.x, spherePosition.y, spherePosition.z) * Matrix::scaling(0.02f));
+        }
+    }
 
     if (cs == 0 && prevCs != cs)
         // cameraController.set({ 3.3, 5.67, 8.5 }, 0.36, -0.6);
@@ -127,6 +144,9 @@ void handleSphereScene(GLState& state, FreeCameraController& cameraController, c
 
     if (cs == 3 && prevCs != cs) {
         cameraController.set({ -2.71, 0.79, 4.99 }, -0.64, -0.22);
+    }
+    if (cs == 5 && prevCs != cs) {
+        cameraController.set({ 10.85, 4.41, -11.77 }, 3.02, -0.32);
     }
 
     prevCs = cs;
