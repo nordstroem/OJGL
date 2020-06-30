@@ -378,7 +378,7 @@ private:
     int len = 0;
 };
 
-string to_string(size_t i);
+string to_string(int i);
 
 class mutex {
 public:
@@ -430,11 +430,13 @@ double inline __fastcall sqrt_asm(double n);
 
 Pair<float, float> modf(float value);
 
+float abs(float value);
 float pow(float x, int h);
 float floor(float value);
 float fract(float value);
 float rand();
 float clamp(float x, float lower, float upper);
 float smoothstep(float edge0, float edge1, float x);
+float lerp(float left, float right, float amount);
 
 } //end namespace ojstd

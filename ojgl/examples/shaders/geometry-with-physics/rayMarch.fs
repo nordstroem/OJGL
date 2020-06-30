@@ -17,8 +17,8 @@ uniform sampler2D inTexture1;
 uniform sampler2D inTexture2;
 uniform sampler2D inTexture3;
 
-#define NUM_SCENES 3
-float[] sceneLengths = float[NUM_SCENES](5., 5., 5.);
+#define NUM_SCENES 4
+float[] sceneLengths = float[NUM_SCENES](20., 10., 5., 20.);
 
 int currentScene() 
 {
@@ -126,12 +126,15 @@ DistanceInfo cannon(in vec3 p)
 
 DistanceInfo ground(in vec3 p)
 {
+	vec3 op = p;
 	//p.y += 0.92;
-	p.xz *= rot(0.1*iTime);
+	p.xz *= rot(-0.15*iTime + 5.2);
+	op.xz *= rot(-0.15 * iTime + 4.8);
 	float d = sdRoundBox(p, vec3(3.0, 0.2, 3.0), 0.02);	
 	float d2 = sdSphere(p, 2.) + 0.005*fbm3_high(10.*p, 0.85, 2.2) + 0.08*fbm3_high(0.1*p, 1.9, 2.9);
-	float indent = sdTorus(p.xzy - vec3(0, -1.95, 0.), vec2(0.3, 0.02));
-
+	float indent = sdTorus(p.xzy - vec3(0, -1.95, 0.), vec2(0.3, 0.015));
+	float indent2 = sdTorus(op.xzy - vec3(-0, -1.96, 0.), vec2(0.3, 0.015));
+	indent = min(indent, indent2);
 	d2 = max(d2, -indent);
 	DistanceInfo plane = {d2, groundType};
 	return plane;
@@ -185,7 +188,7 @@ vec3 getMarchColor(in MarchResult result, in vec3 rayDirection)
 	float ao = genAmbientOcclusion(result.position, rayDirection).x;
 	
 	float l = length(result.position - vec3(0.6,0,0));
-	float darkness = 1. /(0.1 + 0.2*pow(l, 2.));
+	float darkness = 1. / (0.1 + 0.2*pow(l, 2.));
     if (result.type != invalidType) {
 		if (result.type == wallType)
 			return 0.3*vec3(1.0);
@@ -263,8 +266,14 @@ void main()
 			color = mix(color, getMeshColor(meshPos, meshNormal, rayDirection), 1.);
 		}
 	}
-	
-	fragColor = vec4(color, 1.0);
+
+	float f = 1.;
+
+	if (cScene == 0)
+		f = smoothstep(0., 5., lTime);
+//	f *= 1. - smoothstep(1.5, 0., lTimeLeft);
+
+	fragColor = vec4(f * color, 1.0);
 }
 
 )""

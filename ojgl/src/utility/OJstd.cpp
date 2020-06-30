@@ -199,9 +199,8 @@ string string::replaceFirst(const string& oldStr, const string& newStr) const
     }
 }
 
-string to_string(size_t i)
+string to_string(int i)
 {
-    _ASSERTE(i >= 0);
     int len = 1;
     string s;
     do {
@@ -310,6 +309,11 @@ double inline __declspec(naked) __fastcall sqrt_asm(double n)
     }
 }
 
+float abs(float value)
+{
+    return value < 0 ? -value : value;
+}
+
 float floor(float value)
 {
     return value >= 0 ? ftoi(value) : ftoi(value) - 1;
@@ -340,6 +344,11 @@ float smoothstep(float edge0, float edge1, float x)
 {
     x = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0);
     return x * x * (3 - 2 * x);
+}
+
+float lerp(float left, float right, float amount)
+{
+    return (1 - amount) * left + amount * right;
 }
 
 }

@@ -15,8 +15,8 @@ using namespace ojgl;
 Vector2i calculateDimensions(float demoAspectRatio, int windowWidth, int windowHeight);
 void buildSceneGraph(GLState& glState, int width, int height);
 
-static constexpr int NUM_SCENES = 3;
-static float sceneLengths[NUM_SCENES] = { 5., 5., 5. };
+static constexpr int NUM_SCENES = 4;
+static float sceneLengths[NUM_SCENES] = { 20., 10., 5., 20. };
 
 int currentSubScene(float iTime)
 {
@@ -63,8 +63,8 @@ static auto generateRandomMatrices(int number)
 }
 
 ojstd::vector<Matrix> randomMatrices = generateRandomMatrices(500);
-
-void handleSpheres(GLState& state, const ojstd::shared_ptr<Mesh>& sphere)
+int prevCs = -1;
+void handleSphereScene(GLState& state, FreeCameraController& cameraController, const ojstd::shared_ptr<Mesh>& sphere)
 {
     float baseTime = state.relativeSceneTime().toSeconds();
     int cs = currentSubScene(baseTime);
@@ -88,16 +88,44 @@ void handleSpheres(GLState& state, const ojstd::shared_ptr<Mesh>& sphere)
         state["meshScene"]["sphere"].insertMesh(sphere, Matrix::translation(spherePosition.x, spherePosition.y, spherePosition.z) * Matrix::scaling(0.02f));
     }*/
 
-    if (cs == 1) {
+    if (cs == 0 && prevCs != cs)
+        // cameraController.set({ 3.3, 5.67, 8.5 }, 0.36, -0.6);
+        cameraController.set({ 2.57, -0.375, 7.71 }, 0.36, 0.08);
+
+    if (cs == 2) {
+        float f = ojstd::smoothstep(0, 2, lTime);
+        float xPos = ojstd::lerp(3.3, -1.27, f);
+        float heading = ojstd::lerp(0.36, -0.18, f);
+        cameraController.set({ xPos, 5.67, 8.5 }, heading, -0.6);
+        //      cameraController.set({ 3.3, 5.67, 8.5 }, 0.36, -0.6);
+        //     cameraController.set({ -1.27, 5.67, 8.66 }, -0.18, -0.6);
+    }
+    //    cameraController.set({ -1.27, 5.67, 8.66 }, -0.18, -0.6);
+
+    if (cs == 0 || cs == 1) {
+        float r = 4;
+        float w = 1.;
+        float sphereX = r * ojstd::cos(baseTime * w);
+        float sphereZ = r * ojstd::sin(baseTime * w);
+        float sc = ojstd::smoothstep(10, 12, baseTime) * 0.02;
+        state["meshScene"]["sphere"].insertMesh(sphere, Matrix::translation(sphereX, 0, sphereZ) * Matrix::scaling(sc));
+
+        if (lTimeLeft < 3.)
+            cameraController.set({ 3.3, 5.67, 8.5 }, 0.36, -0.6);
+    }
+
+    if (cs == 1 || cs == 2) {
         for (auto& m : randomMatrices) {
             float r = 7;
             float w = 0.1;
             float sphereX = r * ojstd::cos(baseTime * w);
             float sphereZ = r * ojstd::sin(baseTime * w);
-            float sc = ojstd::smoothstep(0, 2, lTime) * 0.01;
+            float sc = cs == 2 ? 0.01 : ojstd::smoothstep(0, 5, lTime) * 0.01;
             state["meshScene"]["sphere"].insertMesh(sphere, m * Matrix::translation(sphereX, 0, sphereZ) * Matrix::scaling(sc));
         }
     }
+
+    prevCs = cs;
 }
 
 int main(int argc, char* argv[])
@@ -176,6 +204,11 @@ int main(int argc, char* argv[])
             case Window::KEY_DOWN:
                 glState.previousScene();
                 break;
+
+            case Window::KEY_C:
+                LOG_INFO("Camera: (" << cameraController.position.x << ", " << cameraController.position.y << ", " << cameraController.position.z << ")"
+                                     << ", [" << cameraController.heading << ", " << cameraController.elevation << "]");
+                break;
 #endif
             }
         }
@@ -183,6 +216,8 @@ int main(int argc, char* argv[])
         float baseTime = glState.relativeSceneTime().toSeconds();
         auto [fraction, base] = ojstd::modf(baseTime);
         float time = base + ojstd::pow(fraction, 2);
+
+        handleSphereScene(glState, cameraController, sphere);
 
         Matrix cameraMatrix = cameraController.getCameraMatrix();
         Matrix cameraMatrixInverse = cameraMatrix.inverse();
@@ -198,8 +233,6 @@ int main(int argc, char* argv[])
         //}
 
         //glState["meshScene"]["mesh"].insertMesh(mesh, billboardMatrix({ 3.0f, 1.f, 0.f }, 1.0));
-
-        handleSpheres(glState, sphere);
 
         /*for (int i = 0; i < 200; i++) {
             float xPos = (i / 200.f - 0.5f) * 4;
@@ -233,8 +266,11 @@ int main(int argc, char* argv[])
 #ifdef _DEBUG
         ojstd::string debugTitle("Frame time: ");
         debugTitle.append(ojstd::to_string(timer.elapsed().toMilliseconds<long>()));
-        debugTitle.append(" ms, fps: ");
-        debugTitle.append(ojstd::to_string(static_cast<int>(1000 / timer.elapsed().toMilliseconds())));
+        // debugTitle.append(" ms, fps: ");
+        // debugTitle.append(ojstd::to_string(static_cast<int>(1000 / timer.elapsed().toMilliseconds())));
+        debugTitle.append(" scene time: ");
+        debugTitle.append(ojstd::to_string(static_cast<int>(glState.relativeSceneTime().toSeconds())));
+
         window.setTitle(debugTitle);
 #endif
     }
