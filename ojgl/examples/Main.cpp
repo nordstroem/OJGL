@@ -102,7 +102,7 @@ void handleSphereScene(GLState& state, FreeCameraController& cameraController, c
             spherePosition.x = 0.5f + v0 * ojstd::cos(alpha) * ojstd::cos(beta) * time;
             spherePosition.z = v0 * ojstd::cos(alpha) * ojstd::sin(beta) * time;
             spherePosition.y = 0.3f + v0 * ojstd::sin(alpha) * time - time * time * gf;
-            state["meshScene"]["sphere"].insertMesh(sphere, Matrix::translation(spherePosition.x, spherePosition.y, spherePosition.z) * Matrix::scaling(0.02f));
+            state["meshScene"]["sphere"].insertMesh(sphere, Matrix::translation(spherePosition.x, spherePosition.y, spherePosition.z) * Matrix::scaling(0.01f));
         }
     }
 
@@ -212,7 +212,9 @@ int main(int argc, char* argv[])
     while (!glState.end() && !window.isClosePressed()) {
         Timer timer;
         timer.start();
+#ifdef _DEBUG
         cameraController.update(window);
+#endif
         window.getMessages();
 
         for (auto key : window.getPressedKeys()) {
@@ -307,7 +309,7 @@ int main(int argc, char* argv[])
         // debugTitle.append(" ms, fps: ");
         // debugTitle.append(ojstd::to_string(static_cast<int>(1000 / timer.elapsed().toMilliseconds())));
         debugTitle.append(" scene time: ");
-        debugTitle.append(ojstd::to_string(static_cast<int>(glState.relativeSceneTime().toSeconds())));
+        debugTitle.append(ojstd::to_string(static_cast<int>(localSubTimeLeft(glState.relativeSceneTime().toSeconds()))));
 
         window.setTitle(debugTitle);
 #endif

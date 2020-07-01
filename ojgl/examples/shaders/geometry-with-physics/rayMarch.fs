@@ -60,12 +60,16 @@ const int ojType = 4;
 DistanceInfo cannon(in vec3 p)
 {
     float bt;
-	float to = cScene == 5 ? 3. : 3.;
+	float to = cScene == 5 ? 0. : 3.;
 	float ft = mod(lTime - to, 2.0);
 
 	float recoilLength = 0.2; 
-	float recoil = recoilLength * smoothstep(0.0, 0.1, ft) * (1. - smoothstep(0.1, 2.0, ft));
-	recoil = lTime >= to || cScene == 5 ? recoil : 0;  
+	float recoil = 0.f;
+	if ((cScene == 4 && lTime >= 0) || (cScene == 5 && lTimeLeft > 10))
+		recoil = recoilLength * smoothstep(0.0, 0.1, ft) * (1. - smoothstep(0.1, 2.0, ft));
+
+	//float recoil = recoilLength * smoothstep(0.0, 0.1, ft) * (1. - smoothstep(0.1, 2.0, ft));
+	//recoil = lTime >= to || cScene == 5 ? recoil : 0;  
 	p.x += recoil;
 
 	vec3 mp = p;
