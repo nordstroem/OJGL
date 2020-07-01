@@ -369,6 +369,7 @@
     <None Include="examples\shaders\fxaa.vs" />
     <None Include="examples\shaders\geometry-with-physics\mesh.fs" />
     <None Include="examples\shaders\geometry-with-physics\mesh.vs" />
+    <None Include="examples\shaders\geometry-with-physics\post.fs" />
     <None Include="examples\shaders\geometry-with-physics\rayMarch.fs" />
     <None Include="examples\shaders\geometry-with-physics\rayMarch.vs" />
     <None Include="examples\shaders\geometry-with-physics\smoke.fs" />

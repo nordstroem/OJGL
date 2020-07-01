@@ -82,7 +82,7 @@ void handleSphereScene(GLState& state, FreeCameraController& cameraController, c
         float alpha = 0.26f;
         spherePosition.x = 0.8f + v0 * ojstd::cos(alpha) * ojstd::cos(beta) * time;
         spherePosition.z = v0 * ojstd::cos(alpha) * ojstd::sin(beta) * time;
-        spherePosition.y = 0.3f + v0 * ojstd::sin(alpha) * time - time * time * gf;
+        spherePosition.y = 0.23f + v0 * ojstd::sin(alpha) * time - time * time * gf;
         state["meshScene"]["sphere"].insertMesh(sphere, Matrix::translation(spherePosition.x, spherePosition.y, spherePosition.z) * Matrix::scaling(0.02f));
     }
 
@@ -101,7 +101,7 @@ void handleSphereScene(GLState& state, FreeCameraController& cameraController, c
 
             spherePosition.x = 0.5f + v0 * ojstd::cos(alpha) * ojstd::cos(beta) * time;
             spherePosition.z = v0 * ojstd::cos(alpha) * ojstd::sin(beta) * time;
-            spherePosition.y = 0.3f + v0 * ojstd::sin(alpha) * time - time * time * gf;
+            spherePosition.y = 0.23f + v0 * ojstd::sin(alpha) * time - time * time * gf;
             state["meshScene"]["sphere"].insertMesh(sphere, Matrix::translation(spherePosition.x, spherePosition.y, spherePosition.z) * Matrix::scaling(0.01f));
         }
     }
@@ -133,14 +133,22 @@ void handleSphereScene(GLState& state, FreeCameraController& cameraController, c
         }
     }
 
-    if (cs == 1 || cs == 2) {
+    if (cs == 1 || cs == 2 || cs == 3 || cs == 4) {
         for (auto& m : randomMatrices) {
             float r = 7;
+            float xo = 0.;
+            float yo = 0.;
+            if (cs == 4) {
+                r = 7.f * (1.f - ojstd::smoothstep(1.f, 0.f, lTimeLeft));
+                xo = ojstd::lerp(0, 0.8, ojstd::smoothstep(1.f, 0.f, lTimeLeft));
+                yo = ojstd::lerp(0, 0.23, ojstd::smoothstep(1.f, 0.f, lTimeLeft));
+            }
             float w = 0.1;
-            float sphereX = r * ojstd::cos(baseTime * w);
+            float sphereX = r * (ojstd::cos(baseTime * w));
             float sphereZ = r * ojstd::sin(baseTime * w);
-            float sc = cs == 2 ? 0.01 : ojstd::smoothstep(0, 5, lTime) * 0.01;
-            state["meshScene"]["sphere"].insertMesh(sphere, m * Matrix::translation(sphereX, 0, sphereZ) * Matrix::scaling(sc));
+            float sc = cs >= 2 ? 0.01 : ojstd::smoothstep(0, 5, lTime) * 0.01;
+            sc = cs == 4 ? (0.005 + (1.0 - ojstd::smoothstep(2.0, 0., lTimeLeft)) * 0.005) : sc;
+            state["meshScene"]["sphere"].insertMesh(sphere, Matrix::translation(xo, yo, 0) * m * Matrix::translation(sphereX, 0, sphereZ) * Matrix::scaling(sc));
         }
     }
 
@@ -310,6 +318,8 @@ int main(int argc, char* argv[])
         // debugTitle.append(ojstd::to_string(static_cast<int>(1000 / timer.elapsed().toMilliseconds())));
         debugTitle.append(" scene time: ");
         debugTitle.append(ojstd::to_string(static_cast<int>(localSubTimeLeft(glState.relativeSceneTime().toSeconds()))));
+        debugTitle.append(" subscene: ");
+        debugTitle.append(ojstd::to_string(static_cast<int>(currentSubScene(glState.relativeSceneTime().toSeconds()))));
 
         window.setTitle(debugTitle);
 #endif
@@ -344,9 +354,12 @@ void buildSceneGraph(GLState& glState, int width, int height)
     auto rayMarch = Buffer::construct(width, height, "shaders/geometry-with-physics/rayMarch.vs", "shaders/geometry-with-physics/rayMarch.fs");
     rayMarch->setInputs(mesh, sphere);
 
+    auto post = Buffer::construct(width, height, "shaders/edison.vs", "shaders/geometry-with-physics/post.fs");
+    post->setInputs(rayMarch);
+
     // auto smoke = Buffer::construct(width, height, "shaders/geometry-with-physics/smoke.vs", "shaders/geometry-with-physics/smoke.fs");
 
-    glState.addScene("meshScene", rayMarch, Duration::seconds(9999));
+    glState.addScene("meshScene", post, Duration::seconds(9999));
 }
 
 extern "C" int _tmain(int argc, char** argv)
