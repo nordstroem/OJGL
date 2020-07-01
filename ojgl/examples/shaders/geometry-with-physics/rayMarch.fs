@@ -65,7 +65,7 @@ DistanceInfo cannon(in vec3 p)
 
 	float recoilLength = 0.2; 
 	float recoil = 0.f;
-	if ((cScene == 4 && lTime >= 0) || (cScene == 5 && lTimeLeft > 10))
+	if ((cScene == 4 && lTime >= 3.) || (cScene == 5 && lTimeLeft > 10))
 		recoil = recoilLength * smoothstep(0.0, 0.1, ft) * (1. - smoothstep(0.1, 2.0, ft));
 
 	//float recoil = recoilLength * smoothstep(0.0, 0.1, ft) * (1. - smoothstep(0.1, 2.0, ft));
@@ -240,7 +240,7 @@ vec3 getMarchColor(in MarchResult result, in vec3 rayDirection)
 	    float u2 = cos(2*tau*sin(3*tau*phi)) + cos(0.3 + 2.*tau*phi) + sin(5.*theta);
 //        return 0.2*vec3(0.1, 0.2, 0.4*(0.5 + 0.5*u2));
 		u2 = pow(0.9*fbm3_high(10.*vec3(psin(tau * phi), psin(tau * theta), 0.02*iTime), 0.85, 2.2), 3.0);
-        return 0.01*vec3(u2, u2, u2);
+        return 0.015*vec3(u2, u2, u2);
     }
 }
 
