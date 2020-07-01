@@ -1,6 +1,6 @@
 R""(
 #version 430
-#include "shaders/common/noise.fs"
+#include "common/noise.fs"
 
 layout (location = 0) in vec3 position;
 layout (location = 1) in vec3 normal;

@@ -1,6 +1,6 @@
 R""(
 #version 430
-#include "shaders/common/noise.fs"
+#include "common/noise.fs"
 
 in vec2 fragCoord;
 in vec3 fragNormal;

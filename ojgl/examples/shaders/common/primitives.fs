@@ -49,4 +49,15 @@ float sdHalfTorus(vec3 p, vec2 t)
 	}
 	return d;
 }
+float sdCylinder( vec3 p, float r)
+{
+  return length(p.xy)-r;
+}
+float sdVerticalCapsule( vec3 p, float h, float r )
+{
+  p.y -= clamp( p.y, 0.0, h );
+  return length( p ) - r;
+}
+
+
 )""

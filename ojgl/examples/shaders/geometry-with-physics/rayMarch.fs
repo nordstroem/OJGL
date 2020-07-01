@@ -1,9 +1,9 @@
 R""(
 #version 430
-#include "shaders/common/noise.fs"
-#include "shaders/common/primitives.fs"
-#include "shaders/common/raymarch_utils.fs"
-#include "shaders/common/utils.fs"
+#include "common/noise.fs"
+#include "common/primitives.fs"
+#include "common/raymarch_utils.fs"
+#include "common/utils.fs"
 
 in vec2 fragCoord;
 out vec4 fragColor;
@@ -18,7 +18,7 @@ uniform sampler2D inTexture2;
 uniform sampler2D inTexture3;
 
 #define NUM_SCENES 6
-float[] sceneLengths = float[NUM_SCENES](20., 10., 5., 5., 9, 12.);
+float[] sceneLengths = float[NUM_SCENES](20., 10., 5., 5., 9, 13.);
 
 int currentScene() 
 {
