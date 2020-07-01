@@ -187,26 +187,27 @@ int main(int argc, char* argv[])
     bool showCursor = !fullScreen;
 
     ShaderReader::setBasePath("examples/shaders/");
-    /*ShaderReader::preLoad("common/noise.fs", resources::fragment::noise);
+    ShaderReader::preLoad("common/noise.fs", resources::fragment::noise);
     ShaderReader::preLoad("common/primitives.fs", resources::fragment::primitives);
     ShaderReader::preLoad("common/raymarch_utils.fs", resources::fragment::raymarch_utils);
     ShaderReader::preLoad("common/utils.fs", resources::fragment::utils);
+    ShaderReader::preLoad("common/quad.vs", resources::vertex::quad);
     ShaderReader::preLoad("geometry-with-physics/mesh.fs", resources::fragment::mesh);
     ShaderReader::preLoad("geometry-with-physics/mesh.vs", resources::vertex::mesh);
     ShaderReader::preLoad("geometry-with-physics/rayMarch.fs", resources::fragment::rayMarch);
     ShaderReader::preLoad("geometry-with-physics/rayMarch.vs", resources::vertex::rayMarch);
-    ShaderReader::preLoad("geometry-with-physics/smoke.fs", resources::fragment::smoke);
-    ShaderReader::preLoad("geometry-with-physics/smoke.vs", resources::vertex::smoke);
     ShaderReader::preLoad("geometry-with-physics/sphere.fs", resources::fragment::sphere);
     ShaderReader::preLoad("geometry-with-physics/sphere.vs", resources::vertex::sphere);
-    ShaderReader::preLoad("edison.vs", resources::vertex::edison);
+    ShaderReader::preLoad("geometry-with-physics/blur1.fs", resources::fragment::blur1);
+    ShaderReader::preLoad("geometry-with-physics/blur2.fs", resources::fragment::blur2);
+    ShaderReader::preLoad("geometry-with-physics/post.fs", resources::fragment::post);
 
-    ShaderReader::preLoad("fibber-reborn/tunnel.fs", resources::fragment::fibberReborn::tunnel);
+    ShaderReader::preLoad("fibber-reborn/raymarch_utils.fs", resources::fragment::fibberReborn::raymarchUtils);
     ShaderReader::preLoad("fibber-reborn/tower.fs", resources::fragment::fibberReborn::tower);
     ShaderReader::preLoad("fibber-reborn/tower_first_blur.fs", resources::fragment::fibberReborn::towerFirstBlur);
     ShaderReader::preLoad("fibber-reborn/tower_second_blur.fs", resources::fragment::fibberReborn::towerSecondBlur);
     ShaderReader::preLoad("fibber-reborn/tower_final.fs", resources::fragment::fibberReborn::towerFinal);
-    */
+
     // @todo move this into GLState? We can return a const reference to window.
     // and perhaps have a unified update() which does getMessages(), music sync update and
     // so on.
@@ -348,15 +349,15 @@ void buildSceneGraph(GLState& glState, int width, int height)
 {
     glState.clearScenes();
     {
-        auto tower = Buffer::construct(width, height, "edison.vs", "fibber-reborn/tower.fs");
+        auto tower = Buffer::construct(width, height, "common/quad.vs", "fibber-reborn/tower.fs");
 
-        auto blur1 = Buffer::construct(width, height, "edison.vs", "fibber-reborn/tower_first_blur.fs");
+        auto blur1 = Buffer::construct(width, height, "common/quad.vs", "fibber-reborn/tower_first_blur.fs");
         blur1->setInputs(tower);
 
-        auto blur2 = Buffer::construct(width, height, "edison.vs", "fibber-reborn/tower_second_blur.fs");
+        auto blur2 = Buffer::construct(width, height, "common/quad.vs", "fibber-reborn/tower_second_blur.fs");
         blur2->setInputs(blur1);
 
-        auto towerPost = Buffer::construct(width, height, "edison.vs", "fibber-reborn/tower_final.fs");
+        auto towerPost = Buffer::construct(width, height, "common/quad.vs", "fibber-reborn/tower_final.fs");
         towerPost->setInputs(blur2);
 
         glState.addScene("towerScene", blur2, Duration::seconds(8 + 15 + 17 + 12));
@@ -376,13 +377,13 @@ void buildSceneGraph(GLState& glState, int width, int height)
         auto rayMarch = Buffer::construct(width, height, "geometry-with-physics/rayMarch.vs", "geometry-with-physics/rayMarch.fs");
         rayMarch->setInputs(mesh, sphere);
 
-        auto blur1 = Buffer::construct(width, height, "edison.vs", "geometry-with-physics/blur1.fs");
+        auto blur1 = Buffer::construct(width, height, "common/quad.vs", "geometry-with-physics/blur1.fs");
         blur1->setInputs(rayMarch);
 
-        auto blur2 = Buffer::construct(width, height, "edison.vs", "geometry-with-physics/blur2.fs");
+        auto blur2 = Buffer::construct(width, height, "common/quad.vs", "geometry-with-physics/blur2.fs");
         blur2->setInputs(blur1);
 
-        auto post = Buffer::construct(width, height, "edison.vs", "geometry-with-physics/post.fs");
+        auto post = Buffer::construct(width, height, "common/quad.vs", "geometry-with-physics/post.fs");
         post->setInputs(blur2);
 
         // auto smoke = Buffer::construct(width, height, "shaders/geometry-with-physics/smoke.vs", "shaders/geometry-with-physics/smoke.fs");
