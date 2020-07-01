@@ -304,7 +304,8 @@ void main()
 	float focus = 0.f;
 
 	if (cScene == 0) {
-		f = smoothstep(0., 5., lTime);
+		//f = smoothstep(0., 5., lTime);
+		color = mix(vec3(1.), color, smoothstep(0., 3., lTime));
 		f *= 1. - smoothstep(3.5f, 3.f, lTimeLeft);
 		f += smoothstep(3.f, 2.5, lTimeLeft);
 		focus = 1.f - smoothstep(2, 4, lTime) + abs(length(result.position - eye) - 6.) * 0.1;
