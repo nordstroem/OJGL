@@ -301,20 +301,30 @@ void main()
 	}
 
 	float f = 1.;
+	float focus = 0.f;
 
 	if (cScene == 0) {
 		f = smoothstep(0., 5., lTime);
 		f *= 1. - smoothstep(3.5f, 3.f, lTimeLeft);
 		f += smoothstep(3.f, 2.5, lTimeLeft);
+		focus = 1.f - smoothstep(2, 4, lTime) + abs(length(result.position - eye) - 6.) * 0.1;
+	} 
+	if (cScene == 1 || cScene == 2 || (cScene == 0 && lTimeLeft < 3)) {
+		focus = abs(length(result.position - eye) - 9.) * 0.13;
+	}else if (cScene == 3 || cScene == 4) {
+		focus = abs(length(result.position - eye) - 5.) * 0.13;
+	}
+	
+	if ((cScene == 4 && lTimeLeft < 3) ||cScene == 5) {
+		focus =  0.1;
 	}
 
 	if (cScene == 5) {
 		f = 1. - smoothstep(5.5f, 0.5, lTimeLeft);
 	}
 
-//	f *= 1. - smoothstep(1.5, 0., lTimeLeft);
 
-	fragColor = vec4(f * color, 1.0);
+	fragColor = vec4(f * color, focus);
 }
 
 )""

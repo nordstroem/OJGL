@@ -367,6 +367,8 @@
     <None Include="examples\shaders\edison.vs" />
     <None Include="examples\shaders\fxaa.fs" />
     <None Include="examples\shaders\fxaa.vs" />
+    <None Include="examples\shaders\geometry-with-physics\blur1.fs" />
+    <None Include="examples\shaders\geometry-with-physics\blur2.fs" />
     <None Include="examples\shaders\geometry-with-physics\mesh.fs" />
     <None Include="examples\shaders\geometry-with-physics\mesh.vs" />
     <None Include="examples\shaders\geometry-with-physics\post.fs" />

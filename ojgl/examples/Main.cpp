@@ -354,8 +354,14 @@ void buildSceneGraph(GLState& glState, int width, int height)
     auto rayMarch = Buffer::construct(width, height, "shaders/geometry-with-physics/rayMarch.vs", "shaders/geometry-with-physics/rayMarch.fs");
     rayMarch->setInputs(mesh, sphere);
 
+    auto blur1 = Buffer::construct(width, height, "shaders/edison.vs", "shaders/geometry-with-physics/blur1.fs");
+    blur1->setInputs(rayMarch);
+
+    auto blur2 = Buffer::construct(width, height, "shaders/edison.vs", "shaders/geometry-with-physics/blur2.fs");
+    blur2->setInputs(blur1);
+
     auto post = Buffer::construct(width, height, "shaders/edison.vs", "shaders/geometry-with-physics/post.fs");
-    post->setInputs(rayMarch);
+    post->setInputs(blur2);
 
     // auto smoke = Buffer::construct(width, height, "shaders/geometry-with-physics/smoke.vs", "shaders/geometry-with-physics/smoke.fs");
 
