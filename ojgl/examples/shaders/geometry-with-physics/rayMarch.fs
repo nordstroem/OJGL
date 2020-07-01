@@ -18,7 +18,7 @@ uniform sampler2D inTexture2;
 uniform sampler2D inTexture3;
 
 #define NUM_SCENES 6
-float[] sceneLengths = float[NUM_SCENES](20., 10., 5., 5., 10, 10.);
+float[] sceneLengths = float[NUM_SCENES](20., 10., 5., 5., 9, 12.);
 
 int currentScene() 
 {
@@ -245,8 +245,8 @@ vec3 getMeshColor(in vec3 pos, in vec3 normal, in vec3 rayDirection)
 	vec3 invLight = -normalize(vec3(0.5, -0.7, -0.3));
 	float diffuse = max(0., dot(invLight, normal));
     vec3 ambient = vec3(0.9, 0.9, 0.9);
-	float k = max(0.0, dot(rayDirection, reflect(invLight, normal)));
-	float spec = pow(k, 20.0);
+	//float k = max(0.0, dot(rayDirection, reflect(invLight, normal)));
+//	float spec = pow(k, 20.0);
 	//float n = clamp(0.8*fbm3_high(20*vec3(pos.x, pos.y, pos.z), 0.8, 2.2), 0., 1.);
     return 3.*ambient * (0.5 + 0.5*diffuse);
 }
@@ -303,6 +303,11 @@ void main()
 		f *= 1. - smoothstep(3.5f, 3.f, lTimeLeft);
 		f += smoothstep(3.f, 2.5, lTimeLeft);
 	}
+
+	if (cScene == 5) {
+		f = 1. - smoothstep(5.5f, 0.5, lTimeLeft);
+	}
+
 //	f *= 1. - smoothstep(1.5, 0., lTimeLeft);
 
 	fragColor = vec4(f * color, 1.0);

@@ -16,7 +16,7 @@ Vector2i calculateDimensions(float demoAspectRatio, int windowWidth, int windowH
 void buildSceneGraph(GLState& glState, int width, int height);
 
 static constexpr int NUM_SCENES = 6;
-static float sceneLengths[NUM_SCENES] = { 20., 10., 5., 5., 10, 10. };
+static float sceneLengths[NUM_SCENES] = { 20., 10., 5., 5., 9, 12. };
 
 int currentSubScene(float iTime)
 {
@@ -72,7 +72,7 @@ void handleSphereScene(GLState& state, FreeCameraController& cameraController, c
     float lTimeLeft = localSubTimeLeft(baseTime);
 
     float to = 3.f;
-    if (cs == 4 && lTime >= 3.) {
+    if (cs == 4 && lTime > 3) {
         float k = 2.f;
         auto [fraction, base] = ojstd::modf((lTime - to) / k);
         float time = k * fraction;
@@ -86,15 +86,16 @@ void handleSphereScene(GLState& state, FreeCameraController& cameraController, c
         state["meshScene"]["sphere"].insertMesh(sphere, Matrix::translation(spherePosition.x, spherePosition.y, spherePosition.z) * Matrix::scaling(0.02f));
     }
 
-    if (cs >= 5) {
+    if (cs == 5) {
         float k = 2.f;
-        auto [fraction, base] = ojstd::modf((lTime - to + k) / k);
-        float time = k * fraction;
-        float gf = 0.2;
+        auto [fraction, base] = ojstd::modf((lTime - to) / k);
+        //float time = lTimeLeft > 6 ? k * fraction : lTime - to;
+        float time = lTime;
+        float gf = 0.0;
 
         int num = 500;
         for (int i = 0; i < num; i++) {
-            float v0 = (32.f + 5 * ojstd::sin(1.f * (i + 5))) * 0.3;
+            float v0 = 5.f;
             float beta = 0 + (i - num / 2) / 580.f;
             float alpha = 0.26f + 0.2 * ojstd::sin(1.f * i + time);
 
@@ -128,13 +129,6 @@ void handleSphereScene(GLState& state, FreeCameraController& cameraController, c
         state["meshScene"]["sphere"].insertMesh(sphere, Matrix::translation(sphereX, 0, sphereZ) * Matrix::scaling(sc));
 
         if (lTimeLeft < 3. && cs == 0) {
-            /*float f = ojstd::smoothstep(3., 0., lTimeLeft);
-            float xPos = ojstd::lerp(2.57, 3.3, f);
-            float yPos = ojstd::lerp(-0.375, 5.67, f);
-            float zPos = ojstd::lerp(7.71, 8.5, f);
-            float elevation = ojstd::lerp(0.08, -0.6, f);
-            cameraController.set({ xPos, yPos, zPos }, 0.36, elevation);
-            */
             cameraController.set({ 3.3, 5.67, 8.5 }, 0.36, -0.6);
         }
     }
@@ -153,8 +147,21 @@ void handleSphereScene(GLState& state, FreeCameraController& cameraController, c
     if (cs == 3 && prevCs != cs) {
         cameraController.set({ -2.71, 0.79, 4.99 }, -0.64, -0.22);
     }
-    if (cs == 5 && prevCs != cs || (cs == 4 && lTimeLeft < 2)) {
+
+    if (cs == 4 && lTimeLeft < 2.5)
         cameraController.set({ 12.95, 4.21, 9.4 }, 0.8, -0.2);
+
+    if (cs == 5) {
+
+        float f = ojstd::smoothstep(12., 5., lTimeLeft);
+        float xPos = ojstd::lerp(12.95, 12.63, f);
+        float yPos = ojstd::lerp(4.21, 4.21, f);
+        float zPos = ojstd::lerp(9.4, -0.6123, f);
+        float heading = ojstd::lerp(0.8, -1.58, f);
+        float elevation = ojstd::lerp(-0.2, 0.25, f);
+        cameraController.set({ xPos, yPos, zPos }, heading, elevation);
+
+        //  (12.6313, 4.21, -0.61297), [ -1.58, 0.18 ]
     }
 
     prevCs = cs;
