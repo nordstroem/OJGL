@@ -93,7 +93,7 @@ void handleSphereScene(GLState& state, FreeCameraController& cameraController, c
         float time = lTime;
         float gf = 0.0;
 
-        int num = 350;
+        int num = 300;
         for (int i = 0; i < num; i++) {
             float v0 = 5.f;
             float beta = 0 + (i - num / 2) / 580.f;
@@ -103,67 +103,71 @@ void handleSphereScene(GLState& state, FreeCameraController& cameraController, c
             float y = 0.2f + v0 * ojstd::sin(alpha) * time - time * time * gf;
             float z = v0 * ojstd::cos(alpha) * ojstd::sin(beta) * time;
 
-            float numForQ = 150;
+            float numForQ = 100;
             float numForE = 100;
             float numForD = 100;
-            // Q
-            /* int numForCircle = 80;
-            int numForLine = num - numForCircle;
-            float r = 3;
-            float tau = 2.f * ojstd::pi;
             float qX = 25;
-            float qY = 8 + r * ojstd::cos(tau * i / (numForCircle - 1));
-            float qZ = r * ojstd::sin(tau * i / (numForCircle - 1));
+            float qY = 0;
+            float qZ = 0;
 
-            if (i >= numForCircle) {
-                float st = 1.f * (i - numForCircle) / (numForLine - 1);
-                qY = ojstd::lerp(7, 5, st);
-                qZ = ojstd::lerp(1, 3, st);
-            }*/
+            if (i < numForQ) {
+                int numForCircle = 85;
+                int numForLine = numForQ - numForCircle;
+                float r = 3;
+                float tau = 2.f * ojstd::pi;
+                qY = 8 + r * ojstd::cos(tau * i / (numForCircle - 1));
+                qZ = r * ojstd::sin(tau * i / (numForCircle - 1));
 
-            // E
-            /*float numLine1 = 100;
-            float numLine2 = 100;
-            float numLine3 = 100;
-            float numLine4 = 100;
-            float qX = 25;
-            float qY = 0.f;
-            float qZ = 0.f;
+                if (i >= numForCircle) {
+                    float st = 1.f * (i - numForCircle) / (numForLine - 1);
+                    qY = ojstd::lerp(7, 5, st);
+                    qZ = ojstd::lerp(1, 3, st);
+                }
+                qZ -= 6;
+            } else if (i < (numForQ + numForE)) {
+                float numLine1 = 32;
+                float numLine2 = 25;
+                float numLine3 = 18;
+                float numLine4 = 25;
+                int j = i - numForQ;
 
-            if (i < numLine1) {
-                float st = 1.f * i / (numLine1 - 1);
-                qY = ojstd::lerp(11, 5, st);
-                qZ = 0;
-            } else if (i < (numLine1 + numLine2)) {
-                float st = 1.f * (i - numLine1) / (numLine2 - 1);
-                qY = 11;
-                qZ = ojstd::lerp(0, 3, st);
-            } else if (i < (numLine1 + numLine2 + numLine3)) {
-                float st = 1.f * (i - numLine1 - numLine2) / (numLine3 - 1);
-                qY = 8;
-                qZ = ojstd::lerp(0, 2, st);
+                if (j < numLine1) {
+                    float st = 1.f * j / (numLine1 - 1);
+                    qY = ojstd::lerp(11, 5, st);
+                    qZ = 0;
+                } else if (j < (numLine1 + numLine2)) {
+                    float st = 1.f * (j - numLine1) / (numLine2 - 1);
+                    qY = 11;
+                    qZ = ojstd::lerp(0, 3, st);
+                } else if (j < (numLine1 + numLine2 + numLine3)) {
+                    float st = 1.f * (j - numLine1 - numLine2) / (numLine3 - 1);
+                    qY = 8;
+                    qZ = ojstd::lerp(0, 2, st);
+                } else {
+                    float st = 1.f * (j - numLine1 - numLine2 - numLine3) / (numLine4 - 1);
+                    qY = 5;
+                    qZ = ojstd::lerp(0, 3, st);
+                }
+                qZ -= 1;
             } else {
-                float st = 1.f * (i - numLine1 - numLine2 - numLine3) / (numLine4 - 1);
-                qY = 5;
-                qZ = ojstd::lerp(0, 3, st);
+                int j = i - numForQ - numForE;
+                int numForCircle = 80;
+                int numForLine = numForE - numForCircle;
+                float r = 3;
+                float tau = 2.f * ojstd::pi;
+                qY = 8 + r * ojstd::cos(tau / 2 * j / (numForCircle - 1));
+                qZ = r * ojstd::sin(tau / 2 * j / (numForCircle - 1));
+
+                if (j >= numForCircle) {
+                    float st = 1.f * (j - numForCircle) / (numForLine - 1);
+                    qY = ojstd::lerp(11, 5, st);
+                    qZ = 0;
+                }
+
+                qZ += 4;
             }
-            */
-
-            // D
-            int numForCircle = 80;
-            int numForLine = num - numForCircle;
-            float r = 3;
-            float tau = 2.f * ojstd::pi;
-            float qX = 25;
-            float qY = 8 + r * ojstd::cos(tau / 2 * i / (numForCircle - 1));
-            float qZ = r * ojstd::sin(tau / 2 * i / (numForCircle - 1));
-
-            if (i >= numForCircle) {
-                float st = 1.f * (i - numForCircle) / (numForLine - 1);
-                qY = ojstd::lerp(11, 5, st);
-                qZ = 0;
-            }
-
+            qY -= 2 + (ojstd::hash1(i) - 0.5f) * 0.2 + ojstd::sin(lTime * 1. + i) * 0.02;
+            qZ += (ojstd::hash1(i) - 0.5f) * 0.2 + ojstd::sin(lTime * 2. + i) * 0.05;
             float st = ojstd::smoothstep(2, 7, lTime);
             spherePosition.x = ojstd::lerp(x, qX, st);
             spherePosition.y = ojstd::lerp(y, qY, st);
@@ -231,10 +235,10 @@ void handleSphereScene(GLState& state, FreeCameraController& cameraController, c
     if (cs == 5) {
         float f = ojstd::smoothstep(13., 8.5, lTimeLeft);
         float xPos = ojstd::lerp(12.95, 12.63, f);
-        float yPos = ojstd::lerp(4.21, 4.21, f);
+        float yPos = ojstd::lerp(4.21, 6.21, f);
         float zPos = ojstd::lerp(9.4, -0.6123, f);
         float heading = ojstd::lerp(0.8, -1.58, f);
-        float elevation = ojstd::lerp(-0.2, 0.25, f);
+        float elevation = ojstd::lerp(-0.2, 0.0, f);
         cameraController.set({ xPos, yPos, zPos }, heading, elevation);
 
         //  (12.6313, 4.21, -0.61297), [ -1.58, 0.18 ]

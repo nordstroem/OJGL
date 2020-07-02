@@ -324,11 +324,16 @@ float fract(float value)
     return value - floor(value);
 }
 
+float hash1(float value)
+{
+    return fract(sin(value * 727.1) * 435.545);
+}
+
 static float randState = 0.f;
 float rand()
 {
     randState += 0.01f;
-    return fract(sin(randState * 727.1) * 435.545);
+    return hash1(randState);
 }
 
 float clamp(float x, float lower, float upper)

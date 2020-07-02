@@ -434,6 +434,7 @@ float abs(float value);
 float pow(float x, int h);
 float floor(float value);
 float fract(float value);
+float hash1(float value);
 float rand();
 float clamp(float x, float lower, float upper);
 float smoothstep(float edge0, float edge1, float x);
