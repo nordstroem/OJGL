@@ -103,10 +103,10 @@ void handleSphereScene(GLState& state, FreeCameraController& cameraController, c
             float y = 0.2f + v0 * ojstd::sin(alpha) * time - time * time * gf;
             float z = v0 * ojstd::cos(alpha) * ojstd::sin(beta) * time;
 
-            float numForQ = 100;
-            float numForE = 100;
-            float numForD = 100;
-            float numForDots = 20;
+            int numForQ = 100;
+            int numForE = 100;
+            int numForD = 100;
+            int numForDots = 20;
             float qX = 25;
             float qY = 0;
             float qZ = 0;
@@ -126,10 +126,10 @@ void handleSphereScene(GLState& state, FreeCameraController& cameraController, c
                 }
                 qZ -= 6.5;
             } else if (i < (numForQ + numForE)) {
-                float numLine1 = 32;
-                float numLine2 = 25;
-                float numLine3 = 18;
-                float numLine4 = 25;
+                int numLine1 = 32;
+                int numLine2 = 25;
+                int numLine3 = 18;
+                int numLine4 = 25;
                 int j = i - numForQ;
 
                 if (j < numLine1) {
@@ -152,19 +152,28 @@ void handleSphereScene(GLState& state, FreeCameraController& cameraController, c
                 qZ -= 0.5;
             } else if (i < (numForQ + numForE + numForD)) {
                 int j = i - numForQ - numForE;
-                int numForCircle = 80;
-                int numForLine = numForE - numForCircle;
+                int numForCircle = 50;
+                int numForLine1 = 30;
+                int numForLine2 = 10;
+                int numForLine3 = 10;
                 float r = 3;
                 float tau = 2.f * ojstd::pi;
                 qY = 8 + r * ojstd::cos(tau / 2 * j / (numForCircle - 1));
-                qZ = r * ojstd::sin(tau / 2 * j / (numForCircle - 1));
+                qZ = 1.5 + r * ojstd::sin(tau / 2 * j / (numForCircle - 1));
 
-                if (j >= numForCircle) {
-                    float st = 1.f * (j - numForCircle) / (numForLine - 1);
+                if (j >= numForCircle && j < numForCircle + numForLine1) {
+                    float st = 1.f * (j - numForCircle) / (numForLine1 - 1);
                     qY = ojstd::lerp(11, 5, st);
                     qZ = 0;
+                } else if (j >= numForCircle && j < numForCircle + numForLine1 + numForLine2) {
+                    float st = 1.f * (j - numForCircle - numForLine1) / (numForLine2 - 1);
+                    qY = 11;
+                    qZ = ojstd::lerp(0, 1.5, st);
+                } else if (j >= numForCircle && j < numForCircle + numForLine1 + numForLine2 + numForLine3) {
+                    float st = 1.f * (j - numForCircle - numForLine1 - numForLine2) / (numForLine3 - 1);
+                    qY = 5;
+                    qZ = ojstd::lerp(0, 1.5, st);
                 }
-
                 qZ += 5.3;
             } else {
                 int numForCircle = 10;
@@ -175,8 +184,8 @@ void handleSphereScene(GLState& state, FreeCameraController& cameraController, c
                 qZ = r * ojstd::sin(tau * i / (numForCircle - 1));
                 qZ -= j > numForCircle ? -3.8 : 2;
             }
-            qY -= 2 + (ojstd::hash1(i) - 0.5f) * 0.2 + ojstd::sin(lTime * 1. + i) * 0.02;
-            qZ += (ojstd::hash1(i) - 0.5f) * 0.2 + ojstd::sin(lTime * 2. + i) * 0.05;
+            qY -= 1.6 + (ojstd::hash1(i) - 0.5f) * 0.2 + ojstd::sin(lTime * 1. + i) * 0.02;
+            qZ += -0.75 + (ojstd::hash1(i) - 0.5f) * 0.2 + ojstd::sin(lTime * 2. + i) * 0.05;
             float st = ojstd::smoothstep(2, 7, lTime);
             spherePosition.x = ojstd::lerp(x, qX, st);
             spherePosition.y = ojstd::lerp(y, qY, st);
@@ -258,13 +267,13 @@ void handleSphereScene(GLState& state, FreeCameraController& cameraController, c
 
 int main(int argc, char* argv[])
 {
-    //auto popupData = popup::show();
+    auto popupData = popup::show();
 
     OJ_UNUSED(argc);
     OJ_UNUSED(argv);
-    int width = 1280;
-    int height = 720;
-    bool fullScreen = false;
+    int width = popupData.width;
+    int height = popupData.height;
+    bool fullScreen = popupData.full;
     bool showCursor = !fullScreen;
 
     ShaderReader::setBasePath("examples/shaders/");
@@ -285,7 +294,6 @@ int main(int argc, char* argv[])
 
     ShaderReader::preLoad("fibber-reborn/raymarch_utils.fs", resources::fragment::fibberReborn::raymarchUtils);
     ShaderReader::preLoad("fibber-reborn/tower.fs", resources::fragment::fibberReborn::tower);
-    ShaderReader::preLoad("fibber-reborn/tower_final.fs", resources::fragment::fibberReborn::towerFinal);
 
     // @todo move this into GLState? We can return a const reference to window.
     // and perhaps have a unified update() which does getMessages(), music sync update and
@@ -410,10 +418,10 @@ void buildSceneGraph(GLState& glState, int width, int height)
         auto blur2 = Buffer::construct(width, height, "common/quad.vs", "geometry-with-physics/blur2.fs");
         blur2->setInputs(blur1);
 
-        auto towerPost = Buffer::construct(width, height, "common/quad.vs", "fibber-reborn/tower_final.fs");
+        auto towerPost = Buffer::construct(width, height, "common/quad.vs", "geometry-with-physics/post.fs");
         towerPost->setInputs(blur2);
 
-        glState.addScene("towerScene", blur2, Duration::seconds(8 + 15 + 17 + 12));
+        glState.addScene("towerScene", towerPost, Duration::seconds(8 + 15 + 17 + 12));
     }
 
     {

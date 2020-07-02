@@ -20,14 +20,16 @@ void main()
     for (float i = 0.; i < samples; i++) {
         float f = (i - samples / 2.) / (samples / 2.);
         float weight = 1. - pow(abs(f), 4.);
-        float sampleFocus = texture(inTexture0, uv + dir * f * dist).a;
+        vec2 uv2 = clamp(uv + dir * f * dist, vec2(0.001), vec2(0.999));
+        float sampleFocus = texture(inTexture0, uv2).a;
         if (sampleFocus >= focus) {
             weight *= max(0., 1. - abs(sampleFocus - focus) * 0.2);
         }
         
         totalWeight += weight;
         
-        col += texture(inTexture0, uv + dir * f * dist).rgb * weight;
+        vec2 uv3 = clamp(uv + dir * f * dist, vec2(0.001), vec2(0.999));
+        col += texture(inTexture0, uv3).rgb * weight;
     }
     fragColor.rgb = col / totalWeight; //mix( texture(inTexture0, uv).rgb, col / 20., texture(inTexture0, uv).a);
     fragColor.a = focus;

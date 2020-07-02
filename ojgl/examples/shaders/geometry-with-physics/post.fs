@@ -2,14 +2,7 @@ R""(
 #version 430
 
 in vec2 fragCoord;
-in vec3 fragNormal;
-in vec2 fragTexCoord;
-
 out vec4 fragColor;
-
-uniform float iTime;
-uniform vec2 iResolution;
-uniform mat4 iCameraMatrix;
 
 uniform sampler2D inTexture0;
 

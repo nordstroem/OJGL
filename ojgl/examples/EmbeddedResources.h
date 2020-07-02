@@ -16,9 +16,6 @@ namespace resources {
 #include "shaders/fibber-reborn/tower.fs"
 
             };
-            ojstd::string towerFinal {
-#include "shaders/fibber-reborn/tower_final.fs"
-            };
             ojstd::string raymarchUtils {
 #include "shaders/fibber-reborn/raymarch_utils.fs"
             };
