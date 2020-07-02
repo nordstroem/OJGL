@@ -371,7 +371,7 @@ int main(int argc, char* argv[])
         };
 
         float fov = 0.927295218f;
-        float aspectRatio = static_cast<float>(width) / static_cast<float>(height);
+        float aspectRatio = static_cast<float>(sceneWidth) / static_cast<float>(sceneHeight);
         glState << UniformMatrix4fv("P", Matrix::perspective(fov, aspectRatio, 0.001f, 100.0f) * cameraMatrixInverse);
         glState << Uniform1f("iTime", glState.relativeSceneTime().toSeconds());
         glState << Uniform1f("iGlobalTime", glState.relativeSceneTime().toSeconds() - 2.f);
