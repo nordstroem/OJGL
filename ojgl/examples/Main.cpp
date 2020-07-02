@@ -93,7 +93,7 @@ void handleSphereScene(GLState& state, FreeCameraController& cameraController, c
         float time = lTime;
         float gf = 0.0;
 
-        int num = 300;
+        int num = 320;
         for (int i = 0; i < num; i++) {
             float v0 = 5.f;
             float beta = 0 + (i - num / 2) / 580.f;
@@ -106,6 +106,7 @@ void handleSphereScene(GLState& state, FreeCameraController& cameraController, c
             float numForQ = 100;
             float numForE = 100;
             float numForD = 100;
+            float numForDots = 20;
             float qX = 25;
             float qY = 0;
             float qZ = 0;
@@ -123,7 +124,7 @@ void handleSphereScene(GLState& state, FreeCameraController& cameraController, c
                     qY = ojstd::lerp(7, 5, st);
                     qZ = ojstd::lerp(1, 3, st);
                 }
-                qZ -= 6;
+                qZ -= 6.5;
             } else if (i < (numForQ + numForE)) {
                 float numLine1 = 32;
                 float numLine2 = 25;
@@ -148,8 +149,8 @@ void handleSphereScene(GLState& state, FreeCameraController& cameraController, c
                     qY = 5;
                     qZ = ojstd::lerp(0, 3, st);
                 }
-                qZ -= 1;
-            } else {
+                qZ -= 0.5;
+            } else if (i < (numForQ + numForE + numForD)) {
                 int j = i - numForQ - numForE;
                 int numForCircle = 80;
                 int numForLine = numForE - numForCircle;
@@ -164,7 +165,15 @@ void handleSphereScene(GLState& state, FreeCameraController& cameraController, c
                     qZ = 0;
                 }
 
-                qZ += 4;
+                qZ += 5.3;
+            } else {
+                int numForCircle = 10;
+                int j = i - numForQ - numForE - numForD;
+                float r = 0.1;
+                float tau = 2.f * ojstd::pi;
+                qY = 5 + r * ojstd::cos(tau * i / (numForCircle - 1));
+                qZ = r * ojstd::sin(tau * i / (numForCircle - 1));
+                qZ -= j > numForCircle ? -3.8 : 2;
             }
             qY -= 2 + (ojstd::hash1(i) - 0.5f) * 0.2 + ojstd::sin(lTime * 1. + i) * 0.02;
             qZ += (ojstd::hash1(i) - 0.5f) * 0.2 + ojstd::sin(lTime * 2. + i) * 0.05;
@@ -344,7 +353,8 @@ int main(int argc, char* argv[])
         auto [fraction, base] = ojstd::modf(baseTime);
         float time = base + ojstd::pow(fraction, 2);
 
-        handleSphereScene(glState, cameraController, sphere);
+        if (glState.currentScene() == "meshScene")
+            handleSphereScene(glState, cameraController, sphere);
 
         Matrix cameraMatrix = cameraController.getCameraMatrix();
         Matrix cameraMatrixInverse = cameraMatrix.inverse();
@@ -391,7 +401,7 @@ Vector2i calculateDimensions(float demoAspectRatio, int windowWidth, int windowH
 void buildSceneGraph(GLState& glState, int width, int height)
 {
     glState.clearScenes();
-    if (false) {
+    {
         auto tower = Buffer::construct(width, height, "common/quad.vs", "fibber-reborn/tower.fs");
 
         auto blur1 = Buffer::construct(width, height, "common/quad.vs", "geometry-with-physics/blur1.fs");
