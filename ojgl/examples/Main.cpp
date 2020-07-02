@@ -93,16 +93,85 @@ void handleSphereScene(GLState& state, FreeCameraController& cameraController, c
         float time = lTime;
         float gf = 0.0;
 
-        int num = 500;
+        int num = 350;
         for (int i = 0; i < num; i++) {
             float v0 = 5.f;
             float beta = 0 + (i - num / 2) / 580.f;
             float alpha = 0.26f + 0.2 * ojstd::sin(1.f * i + time);
 
-            spherePosition.x = 0.5f + v0 * ojstd::cos(alpha) * ojstd::cos(beta) * time;
-            spherePosition.z = v0 * ojstd::cos(alpha) * ojstd::sin(beta) * time;
-            spherePosition.y = 0.2f + v0 * ojstd::sin(alpha) * time - time * time * gf;
-            state["meshScene"]["sphere"].insertMesh(sphere, Matrix::translation(spherePosition.x, spherePosition.y, spherePosition.z) * Matrix::scaling(0.01f));
+            float x = 0.5f + v0 * ojstd::cos(alpha) * ojstd::cos(beta) * time;
+            float y = 0.2f + v0 * ojstd::sin(alpha) * time - time * time * gf;
+            float z = v0 * ojstd::cos(alpha) * ojstd::sin(beta) * time;
+
+            float numForQ = 150;
+            float numForE = 100;
+            float numForD = 100;
+            // Q
+            /* int numForCircle = 80;
+            int numForLine = num - numForCircle;
+            float r = 3;
+            float tau = 2.f * ojstd::pi;
+            float qX = 25;
+            float qY = 8 + r * ojstd::cos(tau * i / (numForCircle - 1));
+            float qZ = r * ojstd::sin(tau * i / (numForCircle - 1));
+
+            if (i >= numForCircle) {
+                float st = 1.f * (i - numForCircle) / (numForLine - 1);
+                qY = ojstd::lerp(7, 5, st);
+                qZ = ojstd::lerp(1, 3, st);
+            }*/
+
+            // E
+            /*float numLine1 = 100;
+            float numLine2 = 100;
+            float numLine3 = 100;
+            float numLine4 = 100;
+            float qX = 25;
+            float qY = 0.f;
+            float qZ = 0.f;
+
+            if (i < numLine1) {
+                float st = 1.f * i / (numLine1 - 1);
+                qY = ojstd::lerp(11, 5, st);
+                qZ = 0;
+            } else if (i < (numLine1 + numLine2)) {
+                float st = 1.f * (i - numLine1) / (numLine2 - 1);
+                qY = 11;
+                qZ = ojstd::lerp(0, 3, st);
+            } else if (i < (numLine1 + numLine2 + numLine3)) {
+                float st = 1.f * (i - numLine1 - numLine2) / (numLine3 - 1);
+                qY = 8;
+                qZ = ojstd::lerp(0, 2, st);
+            } else {
+                float st = 1.f * (i - numLine1 - numLine2 - numLine3) / (numLine4 - 1);
+                qY = 5;
+                qZ = ojstd::lerp(0, 3, st);
+            }
+            */
+
+            // D
+            int numForCircle = 80;
+            int numForLine = num - numForCircle;
+            float r = 3;
+            float tau = 2.f * ojstd::pi;
+            float qX = 25;
+            float qY = 8 + r * ojstd::cos(tau / 2 * i / (numForCircle - 1));
+            float qZ = r * ojstd::sin(tau / 2 * i / (numForCircle - 1));
+
+            if (i >= numForCircle) {
+                float st = 1.f * (i - numForCircle) / (numForLine - 1);
+                qY = ojstd::lerp(11, 5, st);
+                qZ = 0;
+            }
+
+            float st = ojstd::smoothstep(2, 7, lTime);
+            spherePosition.x = ojstd::lerp(x, qX, st);
+            spherePosition.y = ojstd::lerp(y, qY, st);
+            spherePosition.z = ojstd::lerp(z, qZ, st);
+            //32 8 (-10, 10)
+            //LOG_INFO(spherePosition.x << ", " << spherePosition.y << ", " << spherePosition.z);
+            state["meshScene"]["sphere"]
+                .insertMesh(sphere, Matrix::translation(spherePosition.x, spherePosition.y, spherePosition.z) * Matrix::scaling(0.01f));
         }
     }
 
@@ -160,7 +229,7 @@ void handleSphereScene(GLState& state, FreeCameraController& cameraController, c
         cameraController.set({ 12.95, 4.21, 9.4 }, 0.8, -0.2);
 
     if (cs == 5) {
-        float f = ojstd::smoothstep(12., 5., lTimeLeft);
+        float f = ojstd::smoothstep(13., 8.5, lTimeLeft);
         float xPos = ojstd::lerp(12.95, 12.63, f);
         float yPos = ojstd::lerp(4.21, 4.21, f);
         float zPos = ojstd::lerp(9.4, -0.6123, f);
@@ -208,7 +277,7 @@ int main(int argc, char* argv[])
     // @todo move this into GLState? We can return a const reference to window.
     // and perhaps have a unified update() which does getMessages(), music sync update and
     // so on.
-    Window window(width, height, "Eldur - OJ", fullScreen, showCursor);
+    Window window(width, height, "Q.E.D by OJ", fullScreen, showCursor);
     GLState glState(resources::songs::song);
 
     auto [sceneWidth, sceneHeight] = calculateDimensions(16.0f / 9.0f, width, height);

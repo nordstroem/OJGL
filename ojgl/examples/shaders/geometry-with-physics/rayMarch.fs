@@ -172,9 +172,9 @@ DistanceInfo ground(in vec3 p)
 
 DistanceInfo map(in vec3 p)
 {
-	if (cScene >= 4) {
-		return un(ground(p), cannon(p));
-	}
+		//if (cScene >= 4) {
+	//		return un(ground(p), cannon(p));
+	//}
 	return ground(p);
 }
 
@@ -305,7 +305,7 @@ void main()
 
 	if (cScene == 0) {
 		//f = smoothstep(0., 5., lTime);
-		color = mix(vec3(1.), color, smoothstep(0., 3., lTime));
+		//color = mix(vec3(1.), color, smoothstep(0., 3., lTime));
 		f *= 1. - smoothstep(3.5f, 3.f, lTimeLeft);
 		f += smoothstep(3.f, 2.5, lTimeLeft);
 		focus = 1.f - smoothstep(2, 4, lTime) + abs(length(result.position - eye) - 6.) * 0.1;
@@ -325,7 +325,7 @@ void main()
 	}
 
 
-	fragColor = vec4(f * color, focus);
+	fragColor = vec4(f * color, 0.);
 }
 
 )""
