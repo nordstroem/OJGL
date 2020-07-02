@@ -16,14 +16,6 @@ namespace resources {
 #include "shaders/fibber-reborn/tower.fs"
 
             };
-            ojstd::string towerFirstBlur {
-#include "shaders/fibber-reborn/tower_first_blur.fs"
-
-            };
-            ojstd::string towerSecondBlur {
-#include "shaders/fibber-reborn/tower_second_blur.fs"
-
-            };
             ojstd::string towerFinal {
 #include "shaders/fibber-reborn/tower_final.fs"
             };

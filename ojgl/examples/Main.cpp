@@ -204,8 +204,6 @@ int main(int argc, char* argv[])
 
     ShaderReader::preLoad("fibber-reborn/raymarch_utils.fs", resources::fragment::fibberReborn::raymarchUtils);
     ShaderReader::preLoad("fibber-reborn/tower.fs", resources::fragment::fibberReborn::tower);
-    ShaderReader::preLoad("fibber-reborn/tower_first_blur.fs", resources::fragment::fibberReborn::towerFirstBlur);
-    ShaderReader::preLoad("fibber-reborn/tower_second_blur.fs", resources::fragment::fibberReborn::towerSecondBlur);
     ShaderReader::preLoad("fibber-reborn/tower_final.fs", resources::fragment::fibberReborn::towerFinal);
 
     // @todo move this into GLState? We can return a const reference to window.
@@ -351,10 +349,10 @@ void buildSceneGraph(GLState& glState, int width, int height)
     {
         auto tower = Buffer::construct(width, height, "common/quad.vs", "fibber-reborn/tower.fs");
 
-        auto blur1 = Buffer::construct(width, height, "common/quad.vs", "fibber-reborn/tower_first_blur.fs");
+        auto blur1 = Buffer::construct(width, height, "common/quad.vs", "geometry-with-physics/blur1.fs");
         blur1->setInputs(tower);
 
-        auto blur2 = Buffer::construct(width, height, "common/quad.vs", "fibber-reborn/tower_second_blur.fs");
+        auto blur2 = Buffer::construct(width, height, "common/quad.vs", "geometry-with-physics/blur2.fs");
         blur2->setInputs(blur1);
 
         auto towerPost = Buffer::construct(width, height, "common/quad.vs", "fibber-reborn/tower_final.fs");
@@ -385,8 +383,6 @@ void buildSceneGraph(GLState& glState, int width, int height)
 
         auto post = Buffer::construct(width, height, "common/quad.vs", "geometry-with-physics/post.fs");
         post->setInputs(blur2);
-
-        // auto smoke = Buffer::construct(width, height, "shaders/geometry-with-physics/smoke.vs", "shaders/geometry-with-physics/smoke.fs");
 
         glState.addScene("meshScene", post, Duration::seconds(62));
     }
