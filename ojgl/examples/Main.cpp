@@ -82,7 +82,7 @@ void handleSphereScene(GLState& state, FreeCameraController& cameraController, c
         float alpha = 0.26f;
         spherePosition.x = 0.8f + v0 * ojstd::cos(alpha) * ojstd::cos(beta) * time;
         spherePosition.z = v0 * ojstd::cos(alpha) * ojstd::sin(beta) * time;
-        spherePosition.y = 0.23f + v0 * ojstd::sin(alpha) * time - time * time * gf;
+        spherePosition.y = 0.2f + v0 * ojstd::sin(alpha) * time - time * time * gf;
         state["meshScene"]["sphere"].insertMesh(sphere, Matrix::translation(spherePosition.x, spherePosition.y, spherePosition.z) * Matrix::scaling(0.02f));
     }
 
@@ -101,7 +101,7 @@ void handleSphereScene(GLState& state, FreeCameraController& cameraController, c
 
             spherePosition.x = 0.5f + v0 * ojstd::cos(alpha) * ojstd::cos(beta) * time;
             spherePosition.z = v0 * ojstd::cos(alpha) * ojstd::sin(beta) * time;
-            spherePosition.y = 0.23f + v0 * ojstd::sin(alpha) * time - time * time * gf;
+            spherePosition.y = 0.2f + v0 * ojstd::sin(alpha) * time - time * time * gf;
             state["meshScene"]["sphere"].insertMesh(sphere, Matrix::translation(spherePosition.x, spherePosition.y, spherePosition.z) * Matrix::scaling(0.01f));
         }
     }
@@ -141,7 +141,7 @@ void handleSphereScene(GLState& state, FreeCameraController& cameraController, c
             if (cs == 4) {
                 r = 7.f * (1.f - ojstd::smoothstep(1.f, 0.f, lTimeLeft));
                 xo = ojstd::lerp(0, 0.8, ojstd::smoothstep(1.f, 0.f, lTimeLeft));
-                yo = ojstd::lerp(0, 0.23, ojstd::smoothstep(1.f, 0.f, lTimeLeft));
+                yo = ojstd::lerp(0, 0.2, ojstd::smoothstep(1.f, 0.f, lTimeLeft));
             }
             float w = 0.1;
             float sphereX = r * (ojstd::cos(baseTime * w));
@@ -160,7 +160,6 @@ void handleSphereScene(GLState& state, FreeCameraController& cameraController, c
         cameraController.set({ 12.95, 4.21, 9.4 }, 0.8, -0.2);
 
     if (cs == 5) {
-
         float f = ojstd::smoothstep(12., 5., lTimeLeft);
         float xPos = ojstd::lerp(12.95, 12.63, f);
         float yPos = ojstd::lerp(4.21, 4.21, f);
@@ -283,31 +282,6 @@ int main(int argc, char* argv[])
             return Matrix(bd);
         };
 
-        //for (int i = 0; i < 10; i++) {
-        //    glState["meshScene"]["mesh"].insertMesh(mesh, billboardMatrix({ 1.0f + i / 2.f, i / 5.f, 0.f }, 1.0));
-        //}
-
-        //glState["meshScene"]["mesh"].insertMesh(mesh, billboardMatrix({ 3.0f, 1.f, 0.f }, 1.0));
-
-        /*for (int i = 0; i < 200; i++) {
-            float xPos = (i / 200.f - 0.5f) * 4;
-            float yPos = ojstd::sin(xPos * 5.f + 0.1 * time) * ojstd::cos(xPos * 2.5f + 1.0 * time);
-            float zPos = ojstd::sin(xPos * 4.f + 0.1 * time) * ojstd::cos(yPos * 3.5f + 1.0 * time);
-            glState["meshScene"]["mesh"].insertMesh(mesh, Matrix::translation(xPos, yPos, zPos) * Matrix::rotation(1, 1, 1, time + i) * Matrix::scaling(0.06f * ojstd::sin(xPos + time)));
-        }*/
-        /*
-        for (int i = 0; i < 200; i++) {
-            baseTime += 5.;
-            float xPos = (i / 200.f - 0.5f) * 4;
-            float yPos = 2 * ojstd::sin(xPos * 5.f + 0.1 * baseTime) * ojstd::cos(xPos * 2.5f + 1.0 * baseTime);
-            float zPos = 0.1 * ojstd::sin(xPos * 4.f + 0.1 * baseTime) * ojstd::cos(yPos * 3.5f + 1.0 * baseTime);
-            glState["meshScene"]["mesh"].insertMesh(mesh, Matrix::translation(xPos, yPos, zPos) * Matrix::rotation(1, 1, 1, baseTime + i) * Matrix::scaling(0.01f));
-        }
-		*/
-        //glState["meshScene"]["mesh"].insertMesh(mesh, Matrix::translation(1, 0, 0) * Matrix::scaling(0.2f) * Matrix::rotation(1, 1, 1, glState.relativeSceneTime().toSeconds()));
-
-        //glState["meshScene"]["mesh"].insertMesh(mesh, Matrix::scaling(0.4f) * Matrix::translation(0.3, ojstd::sin(glState.relativeSceneTime().toSeconds()), 0.0));
-
         float fov = 0.927295218f;
         float aspectRatio = static_cast<float>(width) / static_cast<float>(height);
         glState << UniformMatrix4fv("P", Matrix::perspective(fov, aspectRatio, 0.001f, 100.0f) * cameraMatrixInverse);
@@ -320,8 +294,6 @@ int main(int argc, char* argv[])
 #ifdef _DEBUG
         ojstd::string debugTitle("Frame time: ");
         debugTitle.append(ojstd::to_string(timer.elapsed().toMilliseconds<long>()));
-        // debugTitle.append(" ms, fps: ");
-        // debugTitle.append(ojstd::to_string(static_cast<int>(1000 / timer.elapsed().toMilliseconds())));
         debugTitle.append(" scene time: ");
         debugTitle.append(ojstd::to_string(static_cast<int>(localSubTimeLeft(glState.relativeSceneTime().toSeconds()))));
         debugTitle.append(" subscene: ");
@@ -346,7 +318,7 @@ Vector2i calculateDimensions(float demoAspectRatio, int windowWidth, int windowH
 void buildSceneGraph(GLState& glState, int width, int height)
 {
     glState.clearScenes();
-    {
+    if (false) {
         auto tower = Buffer::construct(width, height, "common/quad.vs", "fibber-reborn/tower.fs");
 
         auto blur1 = Buffer::construct(width, height, "common/quad.vs", "geometry-with-physics/blur1.fs");

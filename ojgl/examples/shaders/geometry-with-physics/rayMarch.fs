@@ -65,7 +65,7 @@ DistanceInfo cannon(in vec3 p)
 
 	float recoilLength = 0.2; 
 	float recoil = 0.f;
-	if ((cScene == 4 && lTime >= 3.) || (cScene == 5 && lTimeLeft > 10))
+	if ((cScene == 4 && lTime >= 3.) || (cScene == 5 && lTimeLeft > 11))
 		recoil = recoilLength * smoothstep(0.0, 0.1, ft) * (1. - smoothstep(0.1, 2.0, ft));
 
 	//float recoil = recoilLength * smoothstep(0.0, 0.1, ft) * (1. - smoothstep(0.1, 2.0, ft));
