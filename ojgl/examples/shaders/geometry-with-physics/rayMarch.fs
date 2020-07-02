@@ -14,11 +14,9 @@ uniform mat4 iCameraMatrix;
 
 uniform sampler2D inTexture0;
 uniform sampler2D inTexture1;
-uniform sampler2D inTexture2;
-uniform sampler2D inTexture3;
 
 #define NUM_SCENES 6
-float[] sceneLengths = float[NUM_SCENES](20., 10., 5., 5., 9, 13.);
+float[] sceneLengths = float[NUM_SCENES](20., 10., 5., 5., 9, 14.);
 
 int currentScene() 
 {
@@ -229,8 +227,6 @@ vec3 getMarchColor(in MarchResult result, in vec3 rayDirection)
 			return diffuse*ao*vec3(1.0, 0.2, 0.2) + spec;
 		} else {
 		    vec3 ambient = 1.3*vec3(0.1, 0.1, 0.1);
-			//vec3 invLight = -normalize(vec3(-0.7, -0.2, -0.5));
-			//return vec3(ambient + 0.6*diffuse - result.steps / 100.f);
 			return vec3(ambient + 0.6*diffuse - result.steps / 100.f + 0.7*spec);
 		}
     } else {
@@ -238,7 +234,6 @@ vec3 getMarchColor(in MarchResult result, in vec3 rayDirection)
 		float phi = 0.5 + atan(rayDirection.x, rayDirection.z) / tau - 0;
 		float theta = 0.5 - asin(rayDirection.y) / PI;
 	    float u2 = cos(2*tau*sin(3*tau*phi)) + cos(0.3 + 2.*tau*phi) + sin(5.*theta);
-//        return 0.2*vec3(0.1, 0.2, 0.4*(0.5 + 0.5*u2));
 		u2 = pow(0.9*fbm3_high(10.*vec3(psin(tau * phi), psin(tau * theta), 0.02*iTime), 0.85, 2.2), 3.0);
         return 0.015*vec3(u2, u2, u2);
     }
@@ -249,9 +244,6 @@ vec3 getMeshColor(in vec3 pos, in vec3 normal, in vec3 rayDirection)
 	vec3 invLight = -normalize(vec3(0.5, -0.7, -0.3));
 	float diffuse = max(0., dot(invLight, normal));
     vec3 ambient = vec3(0.9, 0.9, 0.9);
-	//float k = max(0.0, dot(rayDirection, reflect(invLight, normal)));
-//	float spec = pow(k, 20.0);
-	//float n = clamp(0.8*fbm3_high(20*vec3(pos.x, pos.y, pos.z), 0.8, 2.2), 0., 1.);
     return 3.*ambient * (0.5 + 0.5*diffuse);
 }
 
@@ -284,18 +276,6 @@ void main()
 		
 		if (result.type == invalidType || length(eye - meshPos) < length(eye - result.position)) {
 			vec3 meshNormal = texture(inTexture1, fragCoord.xy).xyz;
-			//float alpha = texture(inTexture1, fragCoord.xy).w;
-			float mixFactor = result.type == sphereType ? 1.0 : 1.0;
-			color = mix(color, vec3(1.0), meshNormal.x);
-		}
-	}
-
-	// Cube
-	if (abs(texture(inTexture2, fragCoord.xy).w - 1.0) < 0.01) {
-		vec3 meshPos = texture(inTexture2, fragCoord.xy).xyz;
-		
-		if (result.type == invalidType || length(eye - meshPos) < length(eye - result.position)) {
-			vec3 meshNormal = texture(inTexture3, fragCoord.xy).xyz;
 			color = mix(color, getMeshColor(meshPos, meshNormal, rayDirection), 1.);
 		}
 	}
@@ -304,7 +284,6 @@ void main()
 	float focus = 0.f;
 
 	if (cScene == 0) {
-		//f = smoothstep(0., 5., lTime);
 		color = mix(vec3(1.), color, smoothstep(0., 3., lTime));
 		f *= 1. - smoothstep(3.5f, 3.f, lTimeLeft);
 		f += smoothstep(3.f, 2.5, lTimeLeft);
@@ -313,9 +292,8 @@ void main()
 	if (cScene == 1 || cScene == 2 || (cScene == 0 && lTimeLeft < 3)) {
 		focus = abs(length(result.position - eye) - 9.) * 0.13;
 	}else if (cScene == 3 || cScene == 4) {
-		focus = abs(length(result.position - eye) - 5.) * 0.13;
+		focus = 0.1;
 	}
-	
 	if ((cScene == 4 && lTimeLeft < 3) ||cScene == 5) {
 		focus =  0.1;
 	}

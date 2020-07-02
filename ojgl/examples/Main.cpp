@@ -16,7 +16,7 @@ Vector2i calculateDimensions(float demoAspectRatio, int windowWidth, int windowH
 void buildSceneGraph(GLState& glState, int width, int height);
 
 static constexpr int NUM_SCENES = 6;
-static float sceneLengths[NUM_SCENES] = { 20., 10., 5., 5., 9, 13. };
+static float sceneLengths[NUM_SCENES] = { 20., 10., 5., 5., 9, 14. };
 
 int currentSubScene(float iTime)
 {
@@ -282,14 +282,11 @@ int main(int argc, char* argv[])
     ShaderReader::preLoad("common/raymarch_utils.fs", resources::fragment::raymarch_utils);
     ShaderReader::preLoad("common/utils.fs", resources::fragment::utils);
     ShaderReader::preLoad("common/quad.vs", resources::vertex::quad);
-    ShaderReader::preLoad("geometry-with-physics/mesh.fs", resources::fragment::mesh);
-    ShaderReader::preLoad("geometry-with-physics/mesh.vs", resources::vertex::mesh);
     ShaderReader::preLoad("geometry-with-physics/rayMarch.fs", resources::fragment::rayMarch);
     ShaderReader::preLoad("geometry-with-physics/rayMarch.vs", resources::vertex::rayMarch);
     ShaderReader::preLoad("geometry-with-physics/sphere.fs", resources::fragment::sphere);
     ShaderReader::preLoad("geometry-with-physics/sphere.vs", resources::vertex::sphere);
     ShaderReader::preLoad("geometry-with-physics/blur1.fs", resources::fragment::blur1);
-    ShaderReader::preLoad("geometry-with-physics/blur2.fs", resources::fragment::blur2);
     ShaderReader::preLoad("geometry-with-physics/post.fs", resources::fragment::post);
 
     ShaderReader::preLoad("fibber-reborn/raymarch_utils.fs", resources::fragment::fibberReborn::raymarchUtils);
@@ -380,6 +377,10 @@ int main(int argc, char* argv[])
         glState << Uniform1f("iGlobalTime", glState.relativeSceneTime().toSeconds() - 2.f);
         glState << Uniform2f("iResolution", static_cast<float>(sceneWidth), static_cast<float>(sceneHeight));
         glState << UniformMatrix4fv("iCameraMatrix", cameraMatrix);
+        auto currentScene = glState.currentScene();
+        glState[currentScene]["blur1"] << Uniform2f("blurDir", 1, 0);
+        glState[currentScene]["blur2"] << Uniform2f("blurDir", 0, 1);
+
         glState.update(viewportOffset);
         timer.end();
 #ifdef _DEBUG
@@ -414,9 +415,11 @@ void buildSceneGraph(GLState& glState, int width, int height)
 
         auto blur1 = Buffer::construct(width, height, "common/quad.vs", "geometry-with-physics/blur1.fs");
         blur1->setInputs(tower);
+        blur1->setName("blur1");
 
-        auto blur2 = Buffer::construct(width, height, "common/quad.vs", "geometry-with-physics/blur2.fs");
+        auto blur2 = Buffer::construct(width, height, "common/quad.vs", "geometry-with-physics/blur1.fs");
         blur2->setInputs(blur1);
+        blur2->setName("blur2");
 
         auto towerPost = Buffer::construct(width, height, "common/quad.vs", "geometry-with-physics/post.fs");
         towerPost->setInputs(blur2);
@@ -425,10 +428,6 @@ void buildSceneGraph(GLState& glState, int width, int height)
     }
 
     {
-        auto mesh = Buffer::construct(width, height, "geometry-with-physics/mesh.vs", "geometry-with-physics/mesh.fs");
-        mesh->setFormat(BufferFormat::Meshes);
-        mesh->setNumOutTextures(2);
-
         auto sphere = Buffer::construct(width, height, "geometry-with-physics/sphere.vs", "geometry-with-physics/sphere.fs");
         sphere->setFormat(BufferFormat::Meshes);
         sphere->setNumOutTextures(2);
@@ -436,18 +435,20 @@ void buildSceneGraph(GLState& glState, int width, int height)
         sphere->setDepthTest(true);
 
         auto rayMarch = Buffer::construct(width, height, "geometry-with-physics/rayMarch.vs", "geometry-with-physics/rayMarch.fs");
-        rayMarch->setInputs(mesh, sphere);
+        rayMarch->setInputs(sphere);
 
         auto blur1 = Buffer::construct(width, height, "common/quad.vs", "geometry-with-physics/blur1.fs");
         blur1->setInputs(rayMarch);
+        blur1->setName("blur1");
 
-        auto blur2 = Buffer::construct(width, height, "common/quad.vs", "geometry-with-physics/blur2.fs");
+        auto blur2 = Buffer::construct(width, height, "common/quad.vs", "geometry-with-physics/blur1.fs");
         blur2->setInputs(blur1);
+        blur2->setName("blur2");
 
         auto post = Buffer::construct(width, height, "common/quad.vs", "geometry-with-physics/post.fs");
         post->setInputs(blur2);
 
-        glState.addScene("meshScene", post, Duration::seconds(62));
+        glState.addScene("meshScene", post, Duration::seconds(63));
     }
 }
 

@@ -8,10 +8,6 @@ namespace resources {
     namespace fragment {
 
         namespace fibberReborn {
-            ojstd::string tunnel {
-#include "shaders/fibber-reborn/tunnel.fs"
-
-            };
             ojstd::string tower {
 #include "shaders/fibber-reborn/tower.fs"
 
@@ -21,10 +17,6 @@ namespace resources {
             };
 
         }
-
-        ojstd::string mesh {
-#include "shaders/geometry-with-physics/mesh.fs"
-        };
         ojstd::string rayMarch {
 #include "shaders/geometry-with-physics/rayMarch.fs"
         };
@@ -33,9 +25,6 @@ namespace resources {
         };
         ojstd::string blur1 {
 #include "shaders/geometry-with-physics/blur1.fs"
-        };
-        ojstd::string blur2 {
-#include "shaders/geometry-with-physics/blur2.fs"
         };
         ojstd::string post {
 #include "shaders/geometry-with-physics/post.fs"
@@ -56,9 +45,6 @@ namespace resources {
     } //namespace fragment
 
     namespace vertex {
-        ojstd::string mesh {
-#include "shaders/geometry-with-physics/mesh.vs"
-        };
         ojstd::string rayMarch {
 #include "shaders/geometry-with-physics/rayMarch.vs"
         };
