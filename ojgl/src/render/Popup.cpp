@@ -13,7 +13,7 @@ namespace {
 
 struct CallbackData {
     int reslistindex = 0;
-    bool full = false;
+    bool full = true;
 };
 
 constexpr int PLAY = 1;
@@ -111,7 +111,7 @@ popup::Data popup::show()
     // Create the window.
     auto style = WS_OVERLAPPED | WS_SYSMENU;
     style &= ~(WS_CAPTION | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU);
-    HWND hwnd = CreateWindowEx(0, CLASS_NAME.c_str(), "OJ",
+    HWND hwnd = CreateWindowEx(0, CLASS_NAME.c_str(), "Q.E.D by OJ",
         style, CW_USEDEFAULT, CW_USEDEFAULT, width, height,
         NULL, NULL, hInstance, NULL);
 
@@ -166,7 +166,8 @@ popup::Data popup::show()
         100, 100, 60, 25,
         hwnd, (HMENU)QUIT, NULL, NULL);
 
-    CreateWindow(TEXT("BUTTON"), "Fullscreen", BS_CHECKBOX | WS_VISIBLE | WS_CHILD, 10, 50, 150, 40, hwnd, (HMENU)FULL, NULL, NULL);
+    HWND fullscreenBox = CreateWindow(TEXT("BUTTON"), "Fullscreen", BS_CHECKBOX | WS_VISIBLE | WS_CHILD, 10, 50, 150, 40, hwnd, (HMENU)FULL, NULL, NULL);
+    SendMessage(fullscreenBox, BM_SETCHECK, BST_CHECKED, 1);
 
     HWND hWndComboBox = CreateWindow("ComboBox", TEXT(""),
         CBS_DROPDOWN | CBS_HASSTRINGS | WS_CHILD | WS_OVERLAPPED | WS_VISIBLE | WS_VSCROLL,
