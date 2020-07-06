@@ -1,5 +1,5 @@
-#include "Log.h"
 #include "ShaderReader.h"
+#include "Log.h"
 #include "utility/Macros.h"
 #include "utility/OJstd.h"
 #ifdef _DEBUG
@@ -80,7 +80,12 @@ const ojstd::string& ShaderReader::get(const ojstd::string& path)
 {
 #ifdef _DEBUG
     auto fullPath = _basePath + path;
-    _ASSERT_EXPR(fileExists(fullPath), ojstd::wstringWrapper(fullPath + " not found.").ptr);
+    if (!fileExists(fullPath)) {
+        if (!ShaderReader::_shaders.contains(path))
+            _ASSERT_EXPR(fileExists(fullPath), ojstd::wstringWrapper(fullPath + " not found.").ptr);
+        return ShaderReader::_shaders[path].content;
+    }
+
     if (modified(path)) {
         LOG_INFO("[" << path.c_str() << "]"
                      << " modified");

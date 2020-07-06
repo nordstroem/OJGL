@@ -1,4 +1,5 @@
 #pragma once
+#include <cstring>
 #include <utility>
 
 namespace ojstd {
@@ -20,6 +21,12 @@ template <typename T>
 T min(const T& a, const T& b)
 {
     return a <= b ? a : b;
+}
+
+template <typename T>
+T abs(const T& a)
+{
+    return a < 0 ? -a : a;
 }
 
 template <class InputIt, class T>
@@ -303,6 +310,10 @@ public:
     }
     Pair<K, V>* begin() { return keyValuePairs.begin(); }
     Pair<K, V>* end() { return keyValuePairs.end(); }
+    bool contains(const K& key)
+    {
+        return this->find(key) != this->end();
+    }
 
 private:
     vector<Pair<K, V>> keyValuePairs;
@@ -371,7 +382,7 @@ private:
     int len = 0;
 };
 
-string to_string(size_t i);
+string to_string(int i);
 
 class mutex {
 public:
@@ -420,5 +431,17 @@ void sleep(int milliseconds);
 
 // https://www.gamedev.net/forums/topic/671079-fast-sqrt-for-64bit/
 double inline __fastcall sqrt_asm(double n);
+
+Pair<float, float> modf(float value);
+
+float abs(float value);
+float pow(float x, int h);
+float floor(float value);
+float fract(float value);
+float hash1(float value);
+float rand();
+float clamp(float x, float lower, float upper);
+float smoothstep(float edge0, float edge1, float x);
+float lerp(float left, float right, float amount);
 
 } //end namespace ojstd
