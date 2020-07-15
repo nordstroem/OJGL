@@ -6,6 +6,22 @@
 
 namespace ojgl {
 
+class FBO {
+public:
+    FBO(const Vector2i size, int numOutBuffers, bool includeDepthBuffer, bool isOutputBuffer = false);
+    ~FBO();
+    FBO(const FBO& other) = delete;
+
+    auto fboID() const { return _fboID; }
+    auto depthID() const { return _depthID; }
+    auto fboTextureIDs() const { return _fboTextureIDs; }
+
+private:
+    unsigned int _fboID = 0;
+    unsigned int _depthID = 0;
+    ojstd::vector<unsigned int> _fboTextureIDs;
+};
+
 enum class BufferFormat {
     Quad,
     Meshes
@@ -33,7 +49,7 @@ public:
     }
 
     ojstd::string name() const;
-    void generateFBO();
+    void generateFBO(bool isOutputBuffer);
     void render(const Vector2i& viewportOffset);
     void insertMesh(const ojstd::shared_ptr<Mesh>& mesh, const Matrix& modelMatrix);
     void clearMeshes();
@@ -61,6 +77,7 @@ private:
     void loadShader();
     int numOutTextures();
     static int getNumberOfInputs(const ojstd::vector<BufferPtr>& inputs);
+    FBO currentFBO() const;
 
 private:
     ojstd::vector<BufferPtr> _inputs;
@@ -77,9 +94,9 @@ private:
     bool _depthTestEnabled = false;
 
     unsigned _programID = 0;
-    unsigned _fboID = 0;
-    unsigned _depthID = 0;
-    ojstd::vector<unsigned> _fboTextureIDs;
+    ojstd::vector<FBO> _fbos;
+    int _currentFBOIndex = 0;
+
     ojstd::unordered_map<ojstd::string, ojstd::shared_ptr<UniformBase>> _uniforms;
     ojstd::unordered_map<ojstd::string, ojstd::shared_ptr<Uniform1t>> _textures;
     ojstd::vector<ojstd::Pair<ojstd::shared_ptr<Mesh>, Matrix>> _meshes;

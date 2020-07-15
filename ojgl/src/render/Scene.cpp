@@ -11,10 +11,9 @@ Scene::Scene(const ojstd::string& name, const ojstd::shared_ptr<Buffer>& buffer,
 
 {
     for (auto& b : this->buffers()) {
-        if (b != _mainBuffer) {
-            b->generateFBO();
-        }
+        b->generateFBO(b == _mainBuffer);
     }
+    //@todo verify that no buffer contains the main buffer as feedback input.
 }
 
 Scene::Scene(const ojstd::shared_ptr<Buffer>& buffer, Duration duration)
