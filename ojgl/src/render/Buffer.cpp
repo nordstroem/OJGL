@@ -145,8 +145,7 @@ void Buffer::render(const Vector2i& viewportOffset)
         return;
 
     // Render to the next buffer.
-    _currentFBOIndex = _currentFBOIndex++ % 2;
-
+    _currentFBOIndex = (_currentFBOIndex + 1) % 2;
     glBindFramebuffer(GL_FRAMEBUFFER, currentFBO().fboID());
     glViewport(viewportOffset.x, viewportOffset.y, _width, _height);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -157,31 +156,33 @@ void Buffer::render(const Vector2i& viewportOffset)
     }
 
     glUseProgram(_programID);
-    for (unsigned i = 0; i < static_cast<unsigned>(_numInputs); i++) {
-        ojstd::string uniform("inTexture");
-        uniform.append(ojstd::to_string(i));
-        glUniform1i(glGetUniformLocation(_programID, uniform.c_str()), i);
-    }
 
-    int index = 0;
-    for (auto [location, texture] : _textures) {
-        glUniform1i(glGetUniformLocation(_programID, location.c_str()), _numInputs + index);
-        index++;
-    }
-
-    for (int i = 0, texture = 0; i < _inputs.size(); i++) {
+    int currentTextureID = 0;
+    for (int i = 0; i < _inputs.size(); i++) {
         for (auto& inputTextureID : _inputs[i]->currentFBO().fboTextureIDs()) {
-            glActiveTexture(GL_TEXTURE0 + texture);
+            auto uniform = "inTexture" + ojstd::to_string(i);
+            glUniform1i(glGetUniformLocation(_programID, uniform.c_str()), currentTextureID);
+            glActiveTexture(GL_TEXTURE0 + currentTextureID);
             glBindTexture(GL_TEXTURE_2D, inputTextureID);
-            texture++;
+            currentTextureID++;
         }
     }
 
-    index = 0;
     for (auto [location, texture] : _textures) {
-        glActiveTexture(GL_TEXTURE0 + _numInputs + index);
+        glUniform1i(glGetUniformLocation(_programID, location.c_str()), currentTextureID);
+        glActiveTexture(GL_TEXTURE0 + currentTextureID);
         glBindTexture(GL_TEXTURE_2D, texture->textureID());
-        index++;
+        currentTextureID++;
+    }
+
+    for (int i = 0; i < _feedbackInputs.size(); i++) {
+        for (auto& inputTextureID : _feedbackInputs[i]->currentFBO().fboTextureIDs()) {
+            auto uniform = "feedbackTexture" + ojstd::to_string(i);
+            glUniform1i(glGetUniformLocation(_programID, uniform.c_str()), currentTextureID);
+            glActiveTexture(GL_TEXTURE0 + currentTextureID);
+            glBindTexture(GL_TEXTURE_2D, inputTextureID);
+            currentTextureID++;
+        }
     }
 
     for (auto& um : _uniforms) {

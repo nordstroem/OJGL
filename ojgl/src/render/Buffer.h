@@ -31,7 +31,13 @@ public:
         _numInputs = Buffer::getNumberOfInputs(_inputs);
         return *this;
     }
-
+    template <typename... T>
+    Buffer& setFeedbackInputs(T... feedbackInputs)
+    {
+        _inputs = ojstd::vector<BufferPtr>({ feedbackInputs... });
+        _numFeedbackInputs = Buffer::getNumberOfInputs(_feedbackInputs);
+        return *this;
+    }
     ojstd::string name() const;
     void generateFBO(bool isOutputBuffer);
     void render(const Vector2i& viewportOffset);
@@ -82,7 +88,9 @@ private:
 
 private:
     ojstd::vector<BufferPtr> _inputs;
+    ojstd::vector<BufferPtr> _feedbackInputs;
     int _numInputs = 0;
+    int _numFeedbackInputs = 0;
     ojstd::string _name = "default";
     const ojstd::string _vertexPath;
     const ojstd::string _fragmentPath;

@@ -366,7 +366,8 @@ public:
     ~string();
     bool operator==(const string& other) const;
     string& operator=(const string& other);
-    string operator+(const string& other);
+    friend string operator+(const string& first, const string& second);
+
     char operator[](size_t index) const;
     const char* c_str() const;
     int length() const;
