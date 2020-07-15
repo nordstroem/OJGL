@@ -145,8 +145,8 @@ void Buffer::render(const Vector2i& viewportOffset)
         return;
 
     // Render to the next buffer.
-    _currentFBOIndex = (_currentFBOIndex + 1) % 2;
-    glBindFramebuffer(GL_FRAMEBUFFER, currentFBO().fboID());
+    auto& currentFBO = pushNextFBO();
+    glBindFramebuffer(GL_FRAMEBUFFER, currentFBO.fboID());
     glViewport(viewportOffset.x, viewportOffset.y, _width, _height);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     if (_depthTestEnabled) {
@@ -176,7 +176,7 @@ void Buffer::render(const Vector2i& viewportOffset)
     }
 
     for (int i = 0; i < _feedbackInputs.size(); i++) {
-        for (auto& inputTextureID : _feedbackInputs[i]->currentFBO().fboTextureIDs()) {
+        for (auto& inputTextureID : _feedbackInputs[i]->previousFBO().fboTextureIDs()) {
             auto uniform = "feedbackTexture" + ojstd::to_string(i);
             glUniform1i(glGetUniformLocation(_programID, uniform.c_str()), currentTextureID);
             glActiveTexture(GL_TEXTURE0 + currentTextureID);
@@ -206,11 +206,20 @@ void Buffer::render(const Vector2i& viewportOffset)
     _hasRendered = true;
 }
 
+const Buffer::FBO& Buffer::pushNextFBO()
+{
+    _currentFBOIndex = (_currentFBOIndex + 1) % 2;
+    return _fbos[_currentFBOIndex];
+}
+
 const Buffer::FBO& Buffer::currentFBO() const
 {
-    _ASSERTE(_currentFBOIndex >= 0);
-    _ASSERTE(_currentFBOIndex < _fbos.size());
     return _fbos[_currentFBOIndex];
+}
+
+const Buffer::FBO& Buffer::previousFBO() const
+{
+    return _fbos[(_currentFBOIndex + 1) % 2];
 }
 
 void Buffer::generateFBO(bool isOutputBuffer)

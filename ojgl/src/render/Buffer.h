@@ -28,14 +28,12 @@ public:
     Buffer& setInputs(T... inputs)
     {
         _inputs = ojstd::vector<BufferPtr>({ inputs... });
-        _numInputs = Buffer::getNumberOfInputs(_inputs);
         return *this;
     }
     template <typename... T>
     Buffer& setFeedbackInputs(T... feedbackInputs)
     {
-        _inputs = ojstd::vector<BufferPtr>({ feedbackInputs... });
-        _numFeedbackInputs = Buffer::getNumberOfInputs(_feedbackInputs);
+        _feedbackInputs = ojstd::vector<BufferPtr>({ feedbackInputs... });
         return *this;
     }
     ojstd::string name() const;
@@ -84,13 +82,13 @@ private:
     void loadShader();
     int numOutTextures();
     static int getNumberOfInputs(const ojstd::vector<BufferPtr>& inputs);
+    const FBO& pushNextFBO();
     const FBO& currentFBO() const;
+    const FBO& previousFBO() const;
 
 private:
     ojstd::vector<BufferPtr> _inputs;
     ojstd::vector<BufferPtr> _feedbackInputs;
-    int _numInputs = 0;
-    int _numFeedbackInputs = 0;
     ojstd::string _name = "default";
     const ojstd::string _vertexPath;
     const ojstd::string _fragmentPath;
