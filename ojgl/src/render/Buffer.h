@@ -6,22 +6,6 @@
 
 namespace ojgl {
 
-class FBO {
-public:
-    FBO(const Vector2i size, int numOutBuffers, bool includeDepthBuffer, bool isOutputBuffer = false);
-    ~FBO();
-    FBO(const FBO& other) = delete;
-
-    auto fboID() const { return _fboID; }
-    auto depthID() const { return _depthID; }
-    auto fboTextureIDs() const { return _fboTextureIDs; }
-
-private:
-    unsigned int _fboID = 0;
-    unsigned int _depthID = 0;
-    ojstd::vector<unsigned int> _fboTextureIDs;
-};
-
 enum class BufferFormat {
     Quad,
     Meshes
@@ -73,11 +57,28 @@ public:
     static BufferPtr construct(unsigned width, unsigned height, const ojstd::string& vertexPath, const ojstd::string& fragmentPath);
 
 private:
+    class FBO {
+    public:
+        FBO(const Vector2i& size, int numOutBuffers, bool includeDepthBuffer, bool isOutputBuffer);
+        ~FBO();
+        FBO(const FBO& other) = delete;
+
+        auto fboID() const { return _fboID; }
+        auto depthID() const { return _depthID; }
+        auto fboTextureIDs() const { return _fboTextureIDs; }
+
+    private:
+        unsigned int _fboID = 0;
+        unsigned int _depthID = 0;
+        ojstd::vector<unsigned int> _fboTextureIDs;
+    };
+
+private:
     Buffer(unsigned width, unsigned height, const ojstd::string& vertexPath, const ojstd::string& fragmentPath);
     void loadShader();
     int numOutTextures();
     static int getNumberOfInputs(const ojstd::vector<BufferPtr>& inputs);
-    FBO currentFBO() const;
+    const FBO& currentFBO() const;
 
 private:
     ojstd::vector<BufferPtr> _inputs;

@@ -5,9 +5,9 @@
 
 using namespace ojgl;
 
-FBO::FBO(const Vector2i size, int numOutBuffers, bool includeDepthBuffer, bool isOutputBuffer)
+Buffer::FBO::FBO(const Vector2i& size, int numOutBuffers, bool includeDepthBuffer, bool isOutputBuffer)
 {
-
+    // Just use fboID = 0 if this is an output buffer.
     if (isOutputBuffer)
         return;
 
@@ -55,7 +55,7 @@ FBO::FBO(const Vector2i size, int numOutBuffers, bool includeDepthBuffer, bool i
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-FBO::~FBO()
+Buffer::FBO::~FBO()
 {
     if (_fboID != 0) {
         glDeleteFramebuffers(1, &_fboID);
@@ -136,7 +136,6 @@ ojstd::string Buffer::name() const
 
 void Buffer::render(const Vector2i& viewportOffset)
 {
-
     if (ShaderReader::modified(_vertexPath) || ShaderReader::modified(_fragmentPath)) {
         loadShader();
         _hasRendered = false;
@@ -145,11 +144,10 @@ void Buffer::render(const Vector2i& viewportOffset)
     if (_hasRendered && _renderOnce)
         return;
 
-    _currentFBOIndex = 0;
-    //_currentFBOIndex++ % 2;
-    int currentFBOId = _fbos.size() > 0 ? _fbos[_currentFBOIndex].fboID() : 0;
+    // Render to the next buffer.
+    _currentFBOIndex = _currentFBOIndex++ % 2;
 
-    glBindFramebuffer(GL_FRAMEBUFFER, currentFBOId);
+    glBindFramebuffer(GL_FRAMEBUFFER, currentFBO().fboID());
     glViewport(viewportOffset.x, viewportOffset.y, _width, _height);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     if (_depthTestEnabled) {
@@ -172,9 +170,10 @@ void Buffer::render(const Vector2i& viewportOffset)
     }
 
     for (int i = 0, texture = 0; i < _inputs.size(); i++) {
-        for (int j = 0; j < _inputs[i]->_fbos[0].fboTextureIDs().size(); j++, texture++) {
+        for (auto& inputTextureID : _inputs[i]->currentFBO().fboTextureIDs()) {
             glActiveTexture(GL_TEXTURE0 + texture);
-            glBindTexture(GL_TEXTURE_2D, _inputs[i]->_fbos[0].fboTextureIDs()[j]);
+            glBindTexture(GL_TEXTURE_2D, inputTextureID);
+            texture++;
         }
     }
 
@@ -206,9 +205,18 @@ void Buffer::render(const Vector2i& viewportOffset)
     _hasRendered = true;
 }
 
+const Buffer::FBO& Buffer::currentFBO() const
+{
+    _ASSERTE(_currentFBOIndex >= 0);
+    _ASSERTE(_currentFBOIndex < _fbos.size());
+    return _fbos[_currentFBOIndex];
+}
+
 void Buffer::generateFBO(bool isOutputBuffer)
 {
-    _fbos.emplace_back(Vector2i(_width, _height), _numOutTextures, _format == BufferFormat::Meshes, isOutputBuffer);
+    // Generate two fbo's. Each fbo will be rendered to every other frame.
+    for (int i = 0; i < 2; i++)
+        _fbos.emplace_back(Vector2i(_width, _height), _numOutTextures, _format == BufferFormat::Meshes, isOutputBuffer);
 }
 
 void Buffer::loadShader()
