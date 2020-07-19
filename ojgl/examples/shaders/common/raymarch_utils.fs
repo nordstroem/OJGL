@@ -1,7 +1,4 @@
 R""(
-const float epsilon = 2e-2;
-const int maxSteps = 100;
-const float maxDistance = 400.0;
 const int invalidType = -1;
 
 struct DistanceInfo {
@@ -19,7 +16,7 @@ DistanceInfo map(in vec3 p);
 
 vec3 normal(in vec3 p)
 {
-    vec3 n = vec3(map(vec3(p.x + epsilon, p.y, p.z)).distance, map(vec3(p.x, p.y + epsilon, p.z)).distance, map(vec3(p.x, p.y, p.z + epsilon)).distance);
+    vec3 n = vec3(map(vec3(p.x + normalEpsilon, p.y, p.z)).distance, map(vec3(p.x, p.y + normalEpsilon, p.z)).distance, map(vec3(p.x, p.y, p.z + normalEpsilon)).distance);
     return normalize(n - map(p).distance);
 }
 
@@ -33,7 +30,7 @@ MarchResult march(in vec3 rayOrigin, in vec3 rayDirection)
         vec3 p = rayOrigin + t * rayDirection;
         DistanceInfo info = map(p);
         t += info.distance;
-        if (info.distance < epsilon)
+        if (info.distance < distanceEpsilon)
             return MarchResult(info.type, p, steps);
         if (t > maxDistance)
             return invalidResult;
