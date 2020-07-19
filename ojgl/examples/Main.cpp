@@ -143,7 +143,7 @@ void buildSceneGraph(GLState& glState, int width, int height)
 
     {
         auto raymarch = Buffer::construct(width, height, "edison.vs", "common/raymarch_template.fs");
-        glState.addScene("raymarchScene", raymarch, Duration::seconds(20));
+        glState.addScene("raymarchScene", raymarch, Duration::seconds(9999));
     }
 
     {
