@@ -20,8 +20,10 @@ vec3 normal(in vec3 p)
     return normalize(n - map(p).distance);
 }
 
-float shadowFunction(in vec3 hitPosition, in vec3 lightPosition)
+float shadowFunction(in vec3 hitPosition, in vec3 lightPosition, float k)
 {
+    float res = 1.0;
+
     float t = S_distanceEpsilon * 10.0;
     vec3 dir = lightPosition - hitPosition;
     float maxDistance = length(dir);
@@ -31,10 +33,12 @@ float shadowFunction(in vec3 hitPosition, in vec3 lightPosition)
 
         if(h < S_distanceEpsilon)
             return 0.0;
+        
+        res = min( res, k*h/t );
 
         t += h;
     }
-    return 1.0;
+    return res;
 }
 
 DistanceInfo un(DistanceInfo a, DistanceInfo b) { return a.distance < b.distance ? a : b; }
