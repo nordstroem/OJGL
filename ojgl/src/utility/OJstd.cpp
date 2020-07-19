@@ -103,11 +103,11 @@ string& string::operator=(const string& other)
     return *this;
 }
 
-string string::operator+(const string& other)
+string operator+(const string& first, const string& second)
 {
-    char* str = (char*)malloc(sizeof(char) * (len + other.len + 1));
-    strcpy(str, this->content);
-    strcpy(str + len, other.content);
+    char* str = (char*)malloc(sizeof(char) * (first.len + second.len + 1));
+    strcpy(str, first.content);
+    strcpy(str + first.len, second.content);
     return string(std::move(str));
 }
 

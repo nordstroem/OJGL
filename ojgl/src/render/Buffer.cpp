@@ -5,6 +5,73 @@
 
 using namespace ojgl;
 
+Buffer::FBO::FBO(const Vector2i& size, int numOutBuffers, bool includeDepthBuffer, bool isOutputBuffer)
+{
+    // Just use fboID = 0 if this is an output buffer.
+    if (isOutputBuffer)
+        return;
+
+    glGenFramebuffers(1, &_fboID);
+    glBindFramebuffer(GL_FRAMEBUFFER, _fboID);
+
+    if (includeDepthBuffer) {
+        glGenTextures(1, &_depthID);
+        glBindTexture(GL_TEXTURE_2D, _depthID);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, size.x, size.y, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, _depthID, 0);
+    }
+
+    for (int i = 0; i < numOutBuffers; i++) {
+        unsigned fboTextureID = 0;
+        glGenTextures(1, &fboTextureID);
+        _fboTextureIDs.push_back(fboTextureID);
+        glBindTexture(GL_TEXTURE_2D, _fboTextureIDs[i]);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, size.x, size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, _fboTextureIDs[i], 0);
+
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+            LOG_ERROR("Framebuffer error");
+        }
+    }
+
+    ojstd::vector<GLenum> drawBuffers;
+    for (int i = 0; i < numOutBuffers; i++) {
+        drawBuffers.emplace_back(GL_COLOR_ATTACHMENT0 + i);
+    }
+    glDrawBuffers(numOutBuffers, &drawBuffers[0]);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+Buffer::FBO::~FBO()
+{
+    if (_fboID != 0) {
+        glDeleteFramebuffers(1, &_fboID);
+    }
+
+    for (int i = 0; i < _fboTextureIDs.size(); i++) {
+        if (_fboTextureIDs[i] != 0) {
+            glDeleteTextures(1, &_fboTextureIDs[i]);
+        }
+    }
+
+    if (_depthID != 0) {
+        glDeleteTextures(1, &_depthID);
+    }
+}
+
 int Buffer::getNumberOfInputs(const ojstd::vector<BufferPtr>& inputs)
 {
     int numInputs = 0;
@@ -26,20 +93,6 @@ Buffer::Buffer(unsigned width, unsigned height, const ojstd::string& vertexPath,
 
 Buffer::~Buffer()
 {
-    if (_fboID != 0) {
-        glDeleteFramebuffers(1, &_fboID);
-    }
-
-    for (int i = 0; i < _fboTextureIDs.size(); i++) {
-        if (_fboTextureIDs[i] != 0) {
-            glDeleteTextures(1, &_fboTextureIDs[i]);
-        }
-    }
-
-    if (_depthID != 0) {
-        glDeleteTextures(1, &_depthID);
-    }
-
     glDeleteProgram(_programID);
 }
 
@@ -83,7 +136,6 @@ ojstd::string Buffer::name() const
 
 void Buffer::render(const Vector2i& viewportOffset)
 {
-
     if (ShaderReader::modified(_vertexPath) || ShaderReader::modified(_fragmentPath)) {
         loadShader();
         _hasRendered = false;
@@ -92,7 +144,9 @@ void Buffer::render(const Vector2i& viewportOffset)
     if (_hasRendered && _renderOnce)
         return;
 
-    glBindFramebuffer(GL_FRAMEBUFFER, _fboID);
+    // Render to the next buffer.
+    auto& currentFBO = pushNextFBO();
+    glBindFramebuffer(GL_FRAMEBUFFER, currentFBO.fboID());
     glViewport(viewportOffset.x, viewportOffset.y, _width, _height);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     if (_depthTestEnabled) {
@@ -102,30 +156,33 @@ void Buffer::render(const Vector2i& viewportOffset)
     }
 
     glUseProgram(_programID);
-    for (unsigned i = 0; i < static_cast<unsigned>(_numInputs); i++) {
-        ojstd::string uniform("inTexture");
-        uniform.append(ojstd::to_string(i));
-        glUniform1i(glGetUniformLocation(_programID, uniform.c_str()), i);
-    }
 
-    int index = 0;
-    for (auto [location, texture] : _textures) {
-        glUniform1i(glGetUniformLocation(_programID, location.c_str()), _numInputs + index);
-        index++;
-    }
-
-    for (int i = 0, texture = 0; i < _inputs.size(); i++) {
-        for (int j = 0; j < _inputs[i]->_fboTextureIDs.size(); j++, texture++) {
-            glActiveTexture(GL_TEXTURE0 + texture);
-            glBindTexture(GL_TEXTURE_2D, _inputs[i]->_fboTextureIDs[j]);
+    int currentTextureID = 0;
+    for (int i = 0; i < _inputs.size(); i++) {
+        for (auto& inputTextureID : _inputs[i]->currentFBO().fboTextureIDs()) {
+            auto uniform = "inTexture" + ojstd::to_string(i);
+            glUniform1i(glGetUniformLocation(_programID, uniform.c_str()), currentTextureID);
+            glActiveTexture(GL_TEXTURE0 + currentTextureID);
+            glBindTexture(GL_TEXTURE_2D, inputTextureID);
+            currentTextureID++;
         }
     }
 
-    index = 0;
     for (auto [location, texture] : _textures) {
-        glActiveTexture(GL_TEXTURE0 + _numInputs + index);
+        glUniform1i(glGetUniformLocation(_programID, location.c_str()), currentTextureID);
+        glActiveTexture(GL_TEXTURE0 + currentTextureID);
         glBindTexture(GL_TEXTURE_2D, texture->textureID());
-        index++;
+        currentTextureID++;
+    }
+
+    for (int i = 0; i < _feedbackInputs.size(); i++) {
+        for (auto& inputTextureID : _feedbackInputs[i]->previousFBO().fboTextureIDs()) {
+            auto uniform = "feedbackTexture" + ojstd::to_string(i);
+            glUniform1i(glGetUniformLocation(_programID, uniform.c_str()), currentTextureID);
+            glActiveTexture(GL_TEXTURE0 + currentTextureID);
+            glBindTexture(GL_TEXTURE_2D, inputTextureID);
+            currentTextureID++;
+        }
     }
 
     for (auto& um : _uniforms) {
@@ -149,50 +206,27 @@ void Buffer::render(const Vector2i& viewportOffset)
     _hasRendered = true;
 }
 
-void Buffer::generateFBO()
+const Buffer::FBO& Buffer::pushNextFBO()
 {
-    glGenFramebuffers(1, &_fboID);
-    glBindFramebuffer(GL_FRAMEBUFFER, _fboID);
+    _currentFBOIndex = (_currentFBOIndex + 1) % 2;
+    return _fbos[_currentFBOIndex];
+}
 
-    if (_format == BufferFormat::Meshes) {
-        glGenTextures(1, &_depthID);
-        glBindTexture(GL_TEXTURE_2D, _depthID);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+const Buffer::FBO& Buffer::currentFBO() const
+{
+    return _fbos[_currentFBOIndex];
+}
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, _width, _height, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, _depthID, 0);
-    }
+const Buffer::FBO& Buffer::previousFBO() const
+{
+    return _fbos[(_currentFBOIndex + 1) % 2];
+}
 
-    for (int i = 0; i < numOutTextures(); i++) {
-        unsigned fboTextureID = 0;
-        glGenTextures(1, &fboTextureID);
-        _fboTextureIDs.push_back(fboTextureID);
-        glBindTexture(GL_TEXTURE_2D, _fboTextureIDs[i]);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, _width, _height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, _fboTextureIDs[i], 0);
-
-        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-            LOG_ERROR("Framebuffer error");
-        }
-    }
-
-    ojstd::vector<GLenum> drawBuffers;
-    for (int i = 0; i < numOutTextures(); i++) {
-        drawBuffers.emplace_back(GL_COLOR_ATTACHMENT0 + i);
-    }
-    glDrawBuffers(numOutTextures(), &drawBuffers[0]);
-
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+void Buffer::generateFBO(bool isOutputBuffer)
+{
+    // Generate two fbo's. Each fbo will be rendered to every other frame.
+    for (int i = 0; i < 2; i++)
+        _fbos.emplace_back(Vector2i(_width, _height), _numOutTextures, _format == BufferFormat::Meshes, isOutputBuffer);
 }
 
 void Buffer::loadShader()

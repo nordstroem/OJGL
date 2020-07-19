@@ -28,12 +28,16 @@ public:
     Buffer& setInputs(T... inputs)
     {
         _inputs = ojstd::vector<BufferPtr>({ inputs... });
-        _numInputs = Buffer::getNumberOfInputs(_inputs);
         return *this;
     }
-
+    template <typename... T>
+    Buffer& setFeedbackInputs(T... feedbackInputs)
+    {
+        _feedbackInputs = ojstd::vector<BufferPtr>({ feedbackInputs... });
+        return *this;
+    }
     ojstd::string name() const;
-    void generateFBO();
+    void generateFBO(bool isOutputBuffer);
     void render(const Vector2i& viewportOffset);
     void insertMesh(const ojstd::shared_ptr<Mesh>& mesh, const Matrix& modelMatrix);
     void clearMeshes();
@@ -57,14 +61,34 @@ public:
     static BufferPtr construct(unsigned width, unsigned height, const ojstd::string& vertexPath, const ojstd::string& fragmentPath);
 
 private:
+    class FBO {
+    public:
+        FBO(const Vector2i& size, int numOutBuffers, bool includeDepthBuffer, bool isOutputBuffer);
+        ~FBO();
+        FBO(const FBO& other) = delete;
+
+        auto fboID() const { return _fboID; }
+        auto depthID() const { return _depthID; }
+        auto fboTextureIDs() const { return _fboTextureIDs; }
+
+    private:
+        unsigned int _fboID = 0;
+        unsigned int _depthID = 0;
+        ojstd::vector<unsigned int> _fboTextureIDs;
+    };
+
+private:
     Buffer(unsigned width, unsigned height, const ojstd::string& vertexPath, const ojstd::string& fragmentPath);
     void loadShader();
     int numOutTextures();
     static int getNumberOfInputs(const ojstd::vector<BufferPtr>& inputs);
+    const FBO& pushNextFBO();
+    const FBO& currentFBO() const;
+    const FBO& previousFBO() const;
 
 private:
     ojstd::vector<BufferPtr> _inputs;
-    int _numInputs = 0;
+    ojstd::vector<BufferPtr> _feedbackInputs;
     ojstd::string _name = "default";
     const ojstd::string _vertexPath;
     const ojstd::string _fragmentPath;
@@ -77,9 +101,9 @@ private:
     bool _depthTestEnabled = false;
 
     unsigned _programID = 0;
-    unsigned _fboID = 0;
-    unsigned _depthID = 0;
-    ojstd::vector<unsigned> _fboTextureIDs;
+    ojstd::vector<FBO> _fbos;
+    int _currentFBOIndex = 0;
+
     ojstd::unordered_map<ojstd::string, ojstd::shared_ptr<UniformBase>> _uniforms;
     ojstd::unordered_map<ojstd::string, ojstd::shared_ptr<Uniform1t>> _textures;
     ojstd::vector<ojstd::Pair<ojstd::shared_ptr<Mesh>, Matrix>> _meshes;
