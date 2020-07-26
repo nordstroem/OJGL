@@ -41,10 +41,27 @@ vec3 getColor(in MarchResult result)
         vec3 normal = normal(result.position);
         float shadow = shadowFunction(result.position, lightPosition, 32);
         float diffuse = max(0., dot(invLight, normal)) * (shadow);
-        return vec3(ambient * (0.04 + 0.96*diffuse));
+        return vec3(ambient * (0.04 + 0.96*diffuse)) * result.transmittance + result.scatteredLight;
     } else {
         return vec3(0.0);
     }
+}
+
+VolumetricResult evaluateLight(in vec3 p)
+{
+    float d = sdBox(p, vec3(0.1, 0.5, 0.1));
+
+	d = max(0.001, d);
+
+	float strength = 5;
+	vec3 col = vec3(1.0, 0.01, 0.01);
+	vec3 res = col * strength / (d * d);
+	return VolumetricResult(d, res);
+}
+
+float calcFogAmount(in vec3 p) 
+{
+    return 0.02;
 }
 
 void main()
@@ -61,11 +78,16 @@ void main()
     float reflectiveIndex = getReflectiveIndex(result.type);
     if (reflectiveIndex > 0.0) {
         rayDirection = reflect(rayDirection, normal(result.position));
+        float prevTransmittance = result.transmittance;
         result = march(result.position + 0.1 * rayDirection, rayDirection);
+        result.transmittance *= prevTransmittance;
+        result.scatteredLight *= prevTransmittance;
         vec3 newColor = getColor(result);
         color = mix(color, newColor, reflectiveIndex);
     }
 
+    // Tone mapping
+    color /= (color + vec3(1.0));
 
     fragColor = vec4(pow(color, vec3(0.4545)), 1.0);
 

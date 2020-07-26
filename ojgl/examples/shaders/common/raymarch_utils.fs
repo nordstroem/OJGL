@@ -10,9 +10,18 @@ struct MarchResult {
     int type;
     vec3 position;
     int steps;
+    float transmittance;
+    vec3 scatteredLight;
+};
+
+struct VolumetricResult {
+    float distance;
+    vec3 color;
 };
 
 DistanceInfo map(in vec3 p);
+VolumetricResult evaluateLight(in vec3 p);
+float calcFogAmount(in vec3 p);
 
 vec3 normal(in vec3 p)
 {
@@ -46,13 +55,26 @@ DistanceInfo un(DistanceInfo a, DistanceInfo b) { return a.distance < b.distance
 MarchResult march(in vec3 rayOrigin, in vec3 rayDirection)
 {
     float t = 0.0;
-    MarchResult invalidResult = { invalidType, vec3(0.0), 0 };
+    MarchResult invalidResult = { invalidType, vec3(0.0), 0, 0.0, vec3(0.0) };
+    vec3 scatteredLight = vec3(0.0);
+    float transmittance = 1.0;
+
     for (int steps = 0; steps < S_maxSteps; ++steps) {
         vec3 p = rayOrigin + t * rayDirection;
         DistanceInfo info = map(p);
-        t += info.distance * S_distanceMultiplier;
+
+        float fogAmount = calcFogAmount(p);
+        VolumetricResult vr = evaluateLight(p);
+
+        float volumetricJumpDistance = max(S_minVolumetricJumpDistance, vr.distance * S_volumetricDistanceMultiplier);
+        float jumpDistance = min(info.distance * S_distanceMultiplier, volumetricJumpDistance);
+        vec3 lightIntegrated = vr.color - vr.color * exp(-fogAmount * jumpDistance);
+        scatteredLight += transmittance * lightIntegrated;	
+        transmittance *= exp(-fogAmount * jumpDistance);
+
+        t += jumpDistance;
         if (info.distance < S_distanceEpsilon)
-            return MarchResult(info.type, p, steps);
+            return MarchResult(info.type, p, steps, transmittance, scatteredLight);
         if (t > S_maxDistance)
             return invalidResult;
     }
