@@ -59,7 +59,7 @@ VolumetricResult evaluateLight(in vec3 p)
 	return VolumetricResult(d, res);
 }
 
-float calcFogAmount(in vec3 p) 
+float getFogAmount(in vec3 p) 
 {
     return 0.02;
 }
@@ -72,19 +72,7 @@ void main()
     vec3 eye = (iCameraMatrix * vec4(0.0, 0.0, 0.0, 1.0)).xyz;
     vec3 rayDirection = normalize(rayOrigin - eye);
 
-    MarchResult result = march(rayOrigin, rayDirection);
-    vec3 color = getColor(result);
-
-    float reflectiveIndex = getReflectiveIndex(result.type);
-    if (reflectiveIndex > 0.0) {
-        rayDirection = reflect(rayDirection, normal(result.position));
-        float prevTransmittance = result.transmittance;
-        result = march(result.position + 0.1 * rayDirection, rayDirection);
-        result.transmittance *= prevTransmittance;
-        result.scatteredLight *= prevTransmittance;
-        vec3 newColor = getColor(result);
-        color = mix(color, newColor, reflectiveIndex);
-    }
+    vec3 color = march(rayOrigin, rayDirection);
 
     // Tone mapping
     color /= (color + vec3(1.0));
