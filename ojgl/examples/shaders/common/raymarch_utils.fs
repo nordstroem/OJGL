@@ -62,15 +62,18 @@ MarchResult march(in vec3 rayOrigin, in vec3 rayDirection)
     for (int steps = 0; steps < S_maxSteps; ++steps) {
         vec3 p = rayOrigin + t * rayDirection;
         DistanceInfo info = map(p);
+        float jumpDistance = info.distance * S_distanceMultiplier;
 
+#if S_VOLUMETRIC
         float fogAmount = calcFogAmount(p);
         VolumetricResult vr = evaluateLight(p);
 
         float volumetricJumpDistance = max(S_minVolumetricJumpDistance, vr.distance * S_volumetricDistanceMultiplier);
-        float jumpDistance = min(info.distance * S_distanceMultiplier, volumetricJumpDistance);
+        jumpDistance = min(jumpDistance, volumetricJumpDistance);
         vec3 lightIntegrated = vr.color - vr.color * exp(-fogAmount * jumpDistance);
         scatteredLight += transmittance * lightIntegrated;	
-        transmittance *= exp(-fogAmount * jumpDistance);
+        transmittance *= exp(-fogAmount * jumpDistance);      
+#endif
 
         t += jumpDistance;
         if (info.distance < S_distanceEpsilon)
