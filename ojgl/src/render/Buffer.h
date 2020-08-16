@@ -38,7 +38,7 @@ public:
     }
     ojstd::string name() const;
     void generateFBO(bool isOutputBuffer);
-    void render(const Vector2i& viewportOffset);
+    void render(const Vector2i& viewportOffset = { 0, 0 });
     void insertMesh(const ojstd::shared_ptr<Mesh>& mesh, const Matrix& modelMatrix);
     void clearMeshes();
 

@@ -16,7 +16,7 @@ enum class Clock {
 class GLState {
 public:
     GLState();
-    explicit GLState(unsigned char* song, Clock clock = Clock::Music);
+    explicit GLState(unsigned char* song, const Vector2i& nativeResolution, Clock clock = Clock::Music);
     GLState(const GLState& other) = delete;
     GLState& operator=(const GLState& other) = delete;
 
@@ -67,6 +67,7 @@ private:
     bool _paused;
     ojstd::shared_ptr<Music> _music = nullptr;
     Clock _clock = Clock::System;
+    ojstd::shared_ptr<Buffer> _mainBuffer;
 };
 
 } // namespace ojgl

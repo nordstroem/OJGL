@@ -1,6 +1,7 @@
 #include "GLState.h"
 #include "Uniform.hpp"
 #include "utility/Log.h"
+#include "utility/ShaderReader.h"
 #include "utility/Timepoint.h"
 #include "winapi/gl_loader.h"
 
@@ -13,11 +14,22 @@ GLState::GLState()
     load_gl_functions();
 }
 
-GLState::GLState(unsigned char* song, Clock clock)
+GLState::GLState(unsigned char* song, const Vector2i& nativeResolution, Clock clock)
     : GLState()
 {
     _clock = clock;
     _music = ojstd::make_shared<Music>(song);
+
+    ojstd::string fragment {
+#include "shaders/passThrough.fs"
+    };
+    ojstd::string vertex {
+#include "shaders/passThrough.vs"
+    };
+    ShaderReader::preLoad("render/shaders/passThrough.fs", fragment);
+    ShaderReader::preLoad("render/shaders/passThrough.vs", vertex);
+    _mainBuffer = Buffer::construct(2560, 1440, "render/shaders/passThrough.vs", "render/shaders/passThrough.fs");
+    _mainBuffer->generateFBO(true);
 }
 
 bool GLState::end()
@@ -50,7 +62,9 @@ void GLState::render(const Vector2i& viewportOffset)
     auto elapsed = elapsedTime();
     for (auto& v : _scenes) {
         if (elapsed < v.duration() + t) {
-            v.render(viewportOffset);
+            v.render();
+            _mainBuffer->setInputs(v.outputBuffer());
+            _mainBuffer->render(viewportOffset);
             break;
         }
         t = t + v.duration();

@@ -32,6 +32,17 @@ Window::Window(unsigned width, unsigned height, ojstd::string title, bool fullSc
 {
     ShowCursor(showCursor);
 
+    if (fullScreen) {
+        DEVMODE Mode;
+        EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &Mode);
+        Mode.dmBitsPerPel = 32;
+        Mode.dmPelsWidth = width;
+        Mode.dmPelsHeight = height;
+        Mode.dmSize = sizeof(Mode);
+        Mode.dmFields = DM_PELSWIDTH | DM_PELSHEIGHT | DM_BITSPERPEL;
+        ChangeDisplaySettings(&Mode, CDS_FULLSCREEN);
+    }
+
     _priv->_hWnd = _priv->CreateOpenGLWindow(title.c_str(), 0, 0, PFD_TYPE_RGBA, 0, fullScreen);
     if (_priv->_hWnd == nullptr) {
         exit(1);
