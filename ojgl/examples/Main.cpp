@@ -26,23 +26,23 @@ int main(int argc, char* argv[])
     bool fullScreen = popupData.full;
     bool showCursor = !fullScreen;
 
-    ShaderReader::setBasePath("examples/");
-    ShaderReader::preLoad("shaders/edison.vs", resources::vertex::edison);
-    ShaderReader::preLoad("shaders/demo.vs", resources::vertex::demo);
-    ShaderReader::preLoad("shaders/post.vs", resources::vertex::post);
-    ShaderReader::preLoad("shaders/fxaa.vs", resources::vertex::fxaa);
-    ShaderReader::preLoad("shaders/fxaa.fs", resources::fragment::fxaa);
-    ShaderReader::preLoad("shaders/post.fs", resources::fragment::post);
-    ShaderReader::preLoad("shaders/lavaIntro.fs", resources::fragment::lavaIntro);
-    ShaderReader::preLoad("shaders/mountain.fs", resources::fragment::mountain);
-    ShaderReader::preLoad("shaders/mountainNoise.fs", resources::fragment::mountainNoise);
-    ShaderReader::preLoad("shaders/mountainPost.fs", resources::fragment::mountainPost);
-    ShaderReader::preLoad("shaders/lavaScene2.fs", resources::fragment::lavaScene2);
-    ShaderReader::preLoad("shaders/outro.fs", resources::fragment::outro);
-    ShaderReader::preLoad("shaders/mesh.vs", resources::vertex::mesh);
-    ShaderReader::preLoad("shaders/mesh.fs", resources::fragment::mesh);
-    ShaderReader::preLoad("shaders/cachedGeometry.fs", resources::fragment::cachedGeometry);
-    ShaderReader::preLoad("shaders/lightning.fs", resources::fragment::lightning);
+    ShaderReader::setBasePath("examples/shaders/");
+    ShaderReader::preLoad("edison.vs", resources::vertex::edison);
+    ShaderReader::preLoad("demo.vs", resources::vertex::demo);
+    ShaderReader::preLoad("post.vs", resources::vertex::post);
+    ShaderReader::preLoad("fxaa.vs", resources::vertex::fxaa);
+    ShaderReader::preLoad("fxaa.fs", resources::fragment::fxaa);
+    ShaderReader::preLoad("post.fs", resources::fragment::post);
+    ShaderReader::preLoad("lavaIntro.fs", resources::fragment::lavaIntro);
+    ShaderReader::preLoad("mountain.fs", resources::fragment::mountain);
+    ShaderReader::preLoad("mountainNoise.fs", resources::fragment::mountainNoise);
+    ShaderReader::preLoad("mountainPost.fs", resources::fragment::mountainPost);
+    ShaderReader::preLoad("lavaScene2.fs", resources::fragment::lavaScene2);
+    ShaderReader::preLoad("outro.fs", resources::fragment::outro);
+    ShaderReader::preLoad("mesh.vs", resources::vertex::mesh);
+    ShaderReader::preLoad("mesh.fs", resources::fragment::mesh);
+    ShaderReader::preLoad("cachedGeometry.fs", resources::fragment::cachedGeometry);
+    ShaderReader::preLoad("lightning.fs", resources::fragment::lightning);
 
     // @todo move this into GLState? We can return a const reference to window.
     // and perhaps have a unified update() which does getMessages(), music sync update and
@@ -142,10 +142,15 @@ void buildSceneGraph(GLState& glState, int width, int height)
     glState.clearScenes();
 
     {
-        auto geometry = Buffer::construct(width, height, "shaders/edison.vs", "shaders/cachedGeometry.fs");
+        auto raymarch = Buffer::construct(width, height, "edison.vs", "common/raymarch_template.fs");
+        glState.addScene("raymarchScene", raymarch, Duration::seconds(9999));
+    }
+
+    {
+        auto geometry = Buffer::construct(width, height, "edison.vs", "cachedGeometry.fs");
         geometry->setFormat(BufferFormat::Quad).setRenderOnce(true).setNumOutTextures(2);
 
-        auto lightning = Buffer::construct(width, height, "shaders/edison.vs", "shaders/lightning.fs");
+        auto lightning = Buffer::construct(width, height, "edison.vs", "lightning.fs");
         lightning->setInputs(geometry);
 
         glState.addScene("cachedGeometryScene", lightning, Duration::seconds(20));
@@ -155,7 +160,7 @@ void buildSceneGraph(GLState& glState, int width, int height)
         //auto fxaa = Buffer::construct(BufferFormat::Quad, x, y, "fxaa", "shaders/fxaa.vs", "shaders/fxaa.fs", edison);
         //auto post = Buffer::construct(BufferFormat::Quad, x, y, "post", "shaders/post.vs", "shaders/post.fs", fxaa);
 
-        auto mesh = Buffer::construct(width, height, "shaders/mesh.vs", "shaders/mesh.fs");
+        auto mesh = Buffer::construct(width, height, "mesh.vs", "mesh.fs");
         mesh->setFormat(BufferFormat::Meshes);
         mesh->setName("mesh");
         mesh->setDepthTest(true);
@@ -163,35 +168,35 @@ void buildSceneGraph(GLState& glState, int width, int height)
         glState.addScene("meshScene", mesh, Duration::seconds(20));
     }
     {
-        auto noise = Buffer::construct(width, height, "shaders/demo.vs", "shaders/mountainNoise.fs");
-        auto mountain = Buffer::construct(width, height, "shaders/demo.vs", "shaders/mountain.fs");
+        auto noise = Buffer::construct(width, height, "demo.vs", "mountainNoise.fs");
+        auto mountain = Buffer::construct(width, height, "demo.vs", "mountain.fs");
         mountain->setInputs(noise);
 
-        auto fxaa = Buffer::construct(width, height, "shaders/fxaa.vs", "shaders/fxaa.fs");
+        auto fxaa = Buffer::construct(width, height, "fxaa.vs", "fxaa.fs");
         fxaa->setInputs(mountain);
 
-        auto post = Buffer::construct(width, height, "shaders/demo.vs", "shaders/mountainPost.fs");
+        auto post = Buffer::construct(width, height, "demo.vs", "mountainPost.fs");
         post->setInputs(fxaa);
 
         glState.addScene("introScene", post, Duration::seconds(77));
     }
 
     {
-        auto edison = Buffer::construct(width, height, "shaders/edison.vs", "shaders/lavaScene2.fs");
-        auto fxaa = Buffer::construct(width, height, "shaders/fxaa.vs", "shaders/fxaa.fs");
+        auto edison = Buffer::construct(width, height, "edison.vs", "lavaScene2.fs");
+        auto fxaa = Buffer::construct(width, height, "fxaa.vs", "fxaa.fs");
         fxaa->setInputs(edison);
 
-        auto post = Buffer::construct(width, height, "shaders/post.vs", "shaders/post.fs");
+        auto post = Buffer::construct(width, height, "post.vs", "post.fs");
         post->setInputs(fxaa);
 
         glState.addScene("introScene", post, Duration::seconds(40));
     }
     {
-        auto edison = Buffer::construct(width, height, "shaders/edison.vs", "shaders/outro.fs");
-        auto fxaa = Buffer::construct(width, height, "shaders/fxaa.vs", "shaders/fxaa.fs");
+        auto edison = Buffer::construct(width, height, "edison.vs", "outro.fs");
+        auto fxaa = Buffer::construct(width, height, "fxaa.vs", "fxaa.fs");
         fxaa->setInputs(edison);
 
-        auto post = Buffer::construct(width, height, "shaders/post.vs", "shaders/post.fs");
+        auto post = Buffer::construct(width, height, "post.vs", "post.fs");
         post->setInputs(fxaa);
 
         glState.addScene("introScene", post, Duration::seconds(40));

@@ -1,7 +1,4 @@
 R""(
-const float epsilon = 2e-2;
-const int maxSteps = 100;
-const float maxDistance = 400.0;
 const int invalidType = -1;
 
 struct DistanceInfo {
@@ -13,31 +10,103 @@ struct MarchResult {
     int type;
     vec3 position;
     int steps;
+    float transmittance;
+    vec3 scatteredLight;
+};
+
+struct VolumetricResult {
+    float distance;
+    vec3 color;
 };
 
 DistanceInfo map(in vec3 p);
+VolumetricResult evaluateLight(in vec3 p);
+float getFogAmount(in vec3 p);
+vec3 getColor(in MarchResult result);
+float getReflectiveIndex(int type);
 
 vec3 normal(in vec3 p)
 {
-    vec3 n = vec3(map(vec3(p.x + epsilon, p.y, p.z)).distance, map(vec3(p.x, p.y + epsilon, p.z)).distance, map(vec3(p.x, p.y, p.z + epsilon)).distance);
+    vec3 n = vec3(map(vec3(p.x + S_normalEpsilon, p.y, p.z)).distance, map(vec3(p.x, p.y + S_normalEpsilon, p.z)).distance, map(vec3(p.x, p.y, p.z + S_normalEpsilon)).distance);
     return normalize(n - map(p).distance);
+}
+
+float shadowFunction(in vec3 hitPosition, in vec3 lightPosition, float k)
+{
+    float res = 1.0;
+
+    float t = S_distanceEpsilon * 10.0;
+    vec3 dir = lightPosition - hitPosition;
+    float maxDistance = length(dir);
+    dir = normalize(dir);
+    while (t < maxDistance) {
+        float h = map(hitPosition + dir * t).distance;
+
+        if(h < S_distanceEpsilon)
+            return 0.0;
+        
+        res = min( res, k*h/t );
+
+        t += h;
+    }
+    return res;
 }
 
 DistanceInfo un(DistanceInfo a, DistanceInfo b) { return a.distance < b.distance ? a : b; }
 
-MarchResult march(in vec3 rayOrigin, in vec3 rayDirection)
+vec3 march(in vec3 rayOrigin, in vec3 rayDirection)
 {
     float t = 0.0;
-    MarchResult invalidResult = { invalidType, vec3(0.0), 0 };
-    for (int steps = 0; steps < maxSteps; ++steps) {
-        vec3 p = rayOrigin + t * rayDirection;
-        DistanceInfo info = map(p);
-        t += info.distance;
-        if (info.distance < epsilon)
-            return MarchResult(info.type, p, steps);
-        if (t > maxDistance)
-            return invalidResult;
+    vec3 scatteredLight = vec3(0.0);
+    float transmittance = 1.0;
+    float reflectionModifier = 1.0;
+    vec3 resultColor = vec3(0.0);
+
+#if S_REFLECTIONS
+    for (int jump = 0; jump < S_reflectionJumps; jump++) {
+#endif
+        for (int steps = 0; steps < S_maxSteps; ++steps) {
+            vec3 p = rayOrigin + t * rayDirection;
+            DistanceInfo info = map(p);
+            float jumpDistance = info.distance * S_distanceMultiplier;
+
+#if S_VOLUMETRIC
+            float fogAmount = getFogAmount(p);
+            VolumetricResult vr = evaluateLight(p);
+
+            float volumetricJumpDistance = max(S_minVolumetricJumpDistance, vr.distance * S_volumetricDistanceMultiplier);
+            jumpDistance = min(jumpDistance, volumetricJumpDistance);
+            vec3 lightIntegrated = vr.color - vr.color * exp(-fogAmount * jumpDistance);
+            scatteredLight += transmittance * lightIntegrated;	
+            transmittance *= exp(-fogAmount * jumpDistance);      
+#endif
+
+            t += jumpDistance;
+            if (info.distance < S_distanceEpsilon) {
+                vec3 color = getColor(MarchResult(info.type, p, steps, transmittance, scatteredLight));
+#if !S_REFLECTIONS
+                return color;
+#else
+                t = 0.0;
+                rayDirection = reflect(rayDirection, normal(p));
+                rayOrigin = p + 0.1 * rayDirection;
+
+                resultColor = mix(resultColor, color, reflectionModifier);
+                reflectionModifier *= getReflectiveIndex(info.type);
+                break;
+ #endif
+            }
+
+            if (t > S_maxDistance) {
+                vec3 color = getColor(MarchResult(invalidType, p, steps, transmittance, scatteredLight));
+                resultColor = mix(resultColor, color, reflectionModifier);
+                return resultColor;
+            }
+        }
+#if S_REFLECTIONS
     }
-    return invalidResult;
+#endif
+
+    return resultColor;
 }
 )""

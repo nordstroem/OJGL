@@ -359,6 +359,7 @@
     <None Include="examples\shaders\common\noise.fs" />
     <None Include="examples\shaders\common\primitives.fs" />
     <None Include="examples\shaders\common\quad.vs" />
+    <None Include="examples\shaders\common\raymarch_settings.fs" />
     <None Include="examples\shaders\common\raymarch_template.fs" />
     <None Include="examples\shaders\common\raymarch_utils.fs" />
     <None Include="examples\shaders\common\utils.fs" />
