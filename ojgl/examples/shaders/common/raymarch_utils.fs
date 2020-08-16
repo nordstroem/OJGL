@@ -62,7 +62,9 @@ vec3 march(in vec3 rayOrigin, in vec3 rayDirection)
     float reflectionModifier = 1.0;
     vec3 resultColor = vec3(0.0);
 
+#if S_REFLECTIONS
     for (int jump = 0; jump < S_reflectionJumps; jump++) {
+#endif
         for (int steps = 0; steps < S_maxSteps; ++steps) {
             vec3 p = rayOrigin + t * rayDirection;
             DistanceInfo info = map(p);
@@ -82,6 +84,9 @@ vec3 march(in vec3 rayOrigin, in vec3 rayDirection)
             t += jumpDistance;
             if (info.distance < S_distanceEpsilon) {
                 vec3 color = getColor(MarchResult(info.type, p, steps, transmittance, scatteredLight));
+#if !S_REFLECTIONS
+                return color;
+#else
                 t = 0.0;
                 rayDirection = reflect(rayDirection, normal(p));
                 rayOrigin = p + 0.1 * rayDirection;
@@ -89,14 +94,18 @@ vec3 march(in vec3 rayOrigin, in vec3 rayDirection)
                 resultColor = mix(resultColor, color, reflectionModifier);
                 reflectionModifier *= getReflectiveIndex(info.type);
                 break;
+ #endif
             }
+
             if (t > S_maxDistance) {
                 vec3 color = getColor(MarchResult(invalidType, p, steps, transmittance, scatteredLight));
                 resultColor = mix(resultColor, color, reflectionModifier);
                 return resultColor;
             }
         }
+#if S_REFLECTIONS
     }
+#endif
 
     return resultColor;
 }

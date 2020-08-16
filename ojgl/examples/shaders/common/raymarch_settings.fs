@@ -9,4 +9,5 @@ const float S_volumetricDistanceMultiplier = 0.75;
 const int S_reflectionJumps = 2;
 
 #define S_VOLUMETRIC 1
+#define S_REFLECTIONS 1
 )""
