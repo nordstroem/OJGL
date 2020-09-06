@@ -16,7 +16,7 @@ float pow(float x, int h)
     return result;
 }
 
-double inline __declspec(naked) __fastcall sin_asm(double n)
+double inline __declspec(naked) __fastcall sin_asm(double)
 {
     _asm {
 		fld qword ptr[esp + 4]
@@ -35,7 +35,7 @@ Pair<float, float> modf(float value)
 
 float sin(float angle)
 {
-    return sin_asm(angle);
+    return static_cast<float>(sin_asm(angle));
 }
 
 float cos(float angle)
@@ -49,30 +49,30 @@ float tan(float angle)
 }
 
 string::string(const char* str)
-    : len(strlen(str))
+    : _len(strlen(str))
 {
-    content = (char*)malloc(sizeof(char) * (len + 1));
-    strcpy(content, str);
+    _content = (char*)malloc(sizeof(char) * (_len + 1));
+    strcpy(_content, str);
 }
 
 string::string(const string& str)
-    : len(str.length())
+    : _len(str.length())
 {
-    content = (char*)malloc(sizeof(char) * (len + 1));
-    strcpy(content, str.c_str());
+    _content = (char*)malloc(sizeof(char) * (_len + 1));
+    strcpy(_content, str.c_str());
 }
 
-string::string(string&& str)
+string::string(string&& str) noexcept
 {
-    this->content = str.content;
-    this->len = str.len;
-    str.content = nullptr;
-    str.len = 0;
+    _content = str._content;
+    _len = str._len;
+    str._content = nullptr;
+    str._len = 0;
 }
 
 string::string(char*&& str)
-    : content(str)
-    , len(strlen(str))
+    : _content(str)
+    , _len(strlen(str))
 {
 }
 
@@ -83,78 +83,78 @@ string::string()
 
 string::~string()
 {
-    if (this->content != nullptr)
-        free(content);
+    if (this->_content != nullptr)
+        free(_content);
 }
 
 bool string::operator==(const string& other) const
 {
-    return strcmp(this->content, other.content) == 0;
+    return strcmp(this->_content, other._content) == 0;
 }
 
 string& string::operator=(const string& other)
 {
-    if (this->content != nullptr) {
-        free(this->content);
+    if (this->_content != nullptr) {
+        free(this->_content);
     }
-    this->content = (char*)malloc(sizeof(char) * (other.length() + 1));
-    strcpy(content, other.c_str());
-    this->len = other.length();
+    this->_content = (char*)malloc(sizeof(char) * (other.length() + 1));
+    strcpy(_content, other.c_str());
+    _len = other.length();
     return *this;
 }
 
 string operator+(const string& first, const string& second)
 {
-    char* str = (char*)malloc(sizeof(char) * (first.len + second.len + 1));
-    strcpy(str, first.content);
-    strcpy(str + first.len, second.content);
+    char* str = (char*)malloc(sizeof(char) * (first._len + second._len + 1));
+    strcpy(str, first._content);
+    strcpy(str + first._len, second._content);
     return string(std::move(str));
 }
 
 char string::operator[](size_t index) const
 {
-    _ASSERTE(index < this->len);
-    return this->content[index];
+    _ASSERTE(static_cast<int>(index) < _len);
+    return _content[index];
 }
 
 const char* string::c_str() const
 {
-    return this->content;
+    return _content;
 }
 
 int string::length() const
 {
-    return this->len;
+    return _len;
 }
 
 string string::substring(int start, int end) const
 {
     _ASSERTE(end >= start);
     _ASSERTE(start > 0);
-    _ASSERTE(end <= this->len);
+    _ASSERTE(end <= _len);
     int length = end - start;
     char* content = (char*)malloc(sizeof(char) * (length + 1));
-    memcpy(content, this->content + start, sizeof(char) * length);
+    memcpy(content, _content + start, sizeof(char) * length);
     content[length] = '\0';
     return string(std::move(content));
 }
 
 void string::append(const string& other)
 {
-    char* tmp = content;
-    content = (char*)malloc(sizeof(char) * (len + other.len + 1));
-    strcpy(content, tmp);
-    strcpy(content + len, other.content);
-    this->len = this->len + other.len;
+    char* tmp = _content;
+    _content = (char*)malloc(sizeof(char) * (_len + other._len + 1));
+    strcpy(_content, tmp);
+    strcpy(_content + _len, other._content);
+    _len = _len + other._len;
     free(tmp);
 }
 
 int string::find(const string& str, int startPos) const
 {
-    for (; startPos < (this->len - str.length() + 1); startPos++) {
+    for (; startPos < (_len - str.length() + 1); startPos++) {
         bool foundStr = true;
         for (int i = 0; i < str.length(); i++) {
-            if (this->content[startPos + i] != str[i]) {
+            if (_content[startPos + i] != str[i]) {
                 foundStr = false;
                 break;
             }
@@ -172,7 +172,7 @@ string string::replaceFirst(const string& oldStr, const string& newStr) const
     int startPos = this->find(oldStr);
 
     if (startPos != -1) {
-        int newLength = this->len + newStr.length() - oldStr.length();
+        int newLength = _len + newStr.length() - oldStr.length();
         char* newContent = (char*)malloc(sizeof(char) * (newLength + 1));
 
         for (int i = 0; i < newLength; i++) {
@@ -180,9 +180,9 @@ string string::replaceFirst(const string& oldStr, const string& newStr) const
                 if (i < (startPos + newStr.length()))
                     newContent[i] = newStr[i - startPos];
                 else
-                    newContent[i] = this->content[i - newStr.length() + oldStr.length()];
+                    newContent[i] = _content[i - newStr.length() + oldStr.length()];
             } else {
-                newContent[i] = this->content[i];
+                newContent[i] = _content[i];
             }
         }
         newContent[newLength] = '\0';
@@ -195,7 +195,6 @@ string string::replaceFirst(const string& oldStr, const string& newStr) const
 string to_string(int i)
 {
     _ASSERTE(i >= 0);
-    int len = 1;
     string s;
     do {
         char c[2] = { '0' + static_cast<char>(i % 10), '\0' };
@@ -280,7 +279,6 @@ loop2:
         mov  i, eax;
 
         //check sign +/-        
-sign:
         mov  eax,value;
         and  eax,80000000h;
         cmp  eax,80000000h;
@@ -294,13 +292,18 @@ putsign:
 }
 
 // https://www.gamedev.net/forums/topic/671079-fast-sqrt-for-64bit/
-double inline __declspec(naked) __fastcall sqrt_asm(double n)
+double __declspec(naked) __fastcall sqrt_asm(double)
 {
     _asm {
     fld qword ptr[esp + 4]
     fsqrt
     ret 8
     }
+}
+
+float sqrt(float n)
+{
+    return static_cast<float>(sqrt_asm(static_cast<double>(n)));
 }
 
 float abs(float value)
@@ -310,7 +313,8 @@ float abs(float value)
 
 float floor(float value)
 {
-    return value >= 0 ? ftoi(value) : ftoi(value) - 1;
+    const int res = value >= 0 ? ftoi(value) : ftoi(value) - 1;
+    return static_cast<float>(res);
 }
 
 float fract(float value)
@@ -320,7 +324,7 @@ float fract(float value)
 
 float hash1(float value)
 {
-    return fract(sin(value * 727.1) * 435.545);
+    return fract(sin(value * 727.1f) * 435.545f);
 }
 
 static float randState = 0.f;

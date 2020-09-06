@@ -13,10 +13,10 @@ public:
     HWND CreateOpenGLWindow(const char* title, int x, int y, BYTE type, DWORD flags, bool fullScreen);
     static LONG WINAPI WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-    HDC _hDC; // device context
-    HGLRC _hRC; // opengl context
-    HWND _hWnd; // window
-    MSG _msg; // message
+    HDC _hDC = nullptr; // device context
+    HGLRC _hRC = nullptr; // opengl context
+    HWND _hWnd = nullptr; // window
+    MSG _msg { 0 }; // message
     Vector2i _size;
     ojstd::vector<UINT> _keysPressed;
     ojstd::unordered_set<UINT> _keysDown;
@@ -242,7 +242,9 @@ LONG WINAPI Window::Details::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPA
         }
         return 0;
     case WM_CLOSE:
-        pThis->_priv->_close = true;
+        if (pThis) {
+            pThis->_priv->_close = true;
+        }
         return 0;
     }
 

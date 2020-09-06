@@ -7,7 +7,7 @@
 
 namespace ojgl {
 
-Vector2i cropToAspectRatio(const Vector2i& windowSize, float aspectRatio);
+static Vector2i cropToAspectRatio(const Vector2i& windowSize, float aspectRatio);
 
 GLState::GLState(const Window& window, float sceneAspectRatio, unsigned char* song, Clock clock)
     : _paused(false)
