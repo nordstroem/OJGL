@@ -12,8 +12,7 @@
 
 using namespace ojgl;
 
-Vector2i calculateDimensions(float demoAspectRatio, int windowWidth, int windowHeight);
-void buildSceneGraph(GLState& glState, int width, int height);
+void buildSceneGraph(GLState& glState, const Vector2i& sceneSize);
 
 int main(int argc, char* argv[])
 {
@@ -50,12 +49,10 @@ int main(int argc, char* argv[])
     Window window(width, height, "Eldur - OJ", fullScreen, showCursor);
     FreeCameraController cameraController;
 
-    auto [sceneWidth, sceneHeight] = calculateDimensions(16.0f / 9.0f, width, height);
-    GLState glState(resources::songs::song, { sceneWidth, sceneHeight });
+    GLState glState(window, 16.0f / 9.0f, resources::songs::song);
 
-    Vector2i viewportOffset((width - sceneWidth) / 2, (height - sceneHeight) / 2);
-
-    buildSceneGraph(glState, sceneWidth, sceneHeight);
+    Vector2i sceneSize = glState.sceneSize();
+    buildSceneGraph(glState, sceneSize);
     glState.initialize();
 
     auto mesh = Mesh::constructCube();
@@ -109,12 +106,12 @@ int main(int argc, char* argv[])
 
         glState["meshScene"]["mesh"].insertMesh(mesh, Matrix::scaling(0.2f) * Matrix::rotation(1, 1, 1, glState.relativeSceneTime().toSeconds()));
         // Right multiply P with cameraMatrix.inverse() and set the correct fov to use the camera controller in mesh scenes.
-        glState << UniformMatrix4fv("P", Matrix::perspective(45.0f * 3.14159265f / 180.0f, static_cast<float>(sceneWidth) / sceneHeight, 0.001f, 1000.0f) * Matrix::translation(0.0, 0.0, -5.0));
+        glState << UniformMatrix4fv("P", Matrix::perspective(45.0f * 3.14159265f / 180.0f, static_cast<float>(sceneSize.x) / sceneSize.y, 0.001f, 1000.0f) * Matrix::translation(0.0, 0.0, -5.0));
         glState << Uniform1f("iTime", glState.relativeSceneTime().toSeconds());
         glState << Uniform1f("iGlobalTime", glState.relativeSceneTime().toSeconds() - 2.f);
-        glState << Uniform2f("iResolution", static_cast<float>(sceneWidth), static_cast<float>(sceneHeight));
+        glState << Uniform2f("iResolution", static_cast<float>(sceneSize.x), static_cast<float>(sceneSize.y));
         glState << UniformMatrix4fv("iCameraMatrix", cameraMatrix);
-        glState.update(viewportOffset);
+        glState.update();
 
         timer.end();
 
@@ -127,31 +124,20 @@ int main(int argc, char* argv[])
     }
 }
 
-Vector2i calculateDimensions(float demoAspectRatio, int windowWidth, int windowHeight)
-{
-    float windowAspectRatio = static_cast<float>(windowWidth) / windowHeight;
-
-    if (demoAspectRatio > windowAspectRatio) {
-        return Vector2i(windowWidth, ojstd::ftoi(windowWidth / demoAspectRatio));
-    } else {
-        return Vector2i(ojstd::ftoi(windowHeight * demoAspectRatio), windowHeight);
-    }
-}
-
-void buildSceneGraph(GLState& glState, int width, int height)
+void buildSceneGraph(GLState& glState, const Vector2i& sceneSize)
 {
     glState.clearScenes();
 
     {
-        auto raymarch = Buffer::construct(width / 4, height / 4, "edison.vs", "common/raymarch_template.fs");
+        auto raymarch = Buffer::construct(sceneSize.x / 4, sceneSize.y / 4, "edison.vs", "common/raymarch_template.fs");
         glState.addScene("raymarchScene", raymarch, Duration::seconds(9999));
     }
 
     {
-        auto geometry = Buffer::construct(width, height, "edison.vs", "cachedGeometry.fs");
+        auto geometry = Buffer::construct(sceneSize.x, sceneSize.y, "edison.vs", "cachedGeometry.fs");
         geometry->setFormat(BufferFormat::Quad).setRenderOnce(true).setNumOutTextures(2);
 
-        auto lightning = Buffer::construct(width, height, "edison.vs", "lightning.fs");
+        auto lightning = Buffer::construct(sceneSize.x, sceneSize.y, "edison.vs", "lightning.fs");
         lightning->setInputs(geometry);
 
         glState.addScene("cachedGeometryScene", lightning, Duration::seconds(20));
@@ -161,7 +147,7 @@ void buildSceneGraph(GLState& glState, int width, int height)
         //auto fxaa = Buffer::construct(BufferFormat::Quad, x, y, "fxaa", "shaders/fxaa.vs", "shaders/fxaa.fs", edison);
         //auto post = Buffer::construct(BufferFormat::Quad, x, y, "post", "shaders/post.vs", "shaders/post.fs", fxaa);
 
-        auto mesh = Buffer::construct(width, height, "mesh.vs", "mesh.fs");
+        auto mesh = Buffer::construct(sceneSize.x, sceneSize.y, "mesh.vs", "mesh.fs");
         mesh->setFormat(BufferFormat::Meshes);
         mesh->setName("mesh");
         mesh->setDepthTest(true);
@@ -169,35 +155,35 @@ void buildSceneGraph(GLState& glState, int width, int height)
         glState.addScene("meshScene", mesh, Duration::seconds(20));
     }
     {
-        auto noise = Buffer::construct(width, height, "demo.vs", "mountainNoise.fs");
-        auto mountain = Buffer::construct(width, height, "demo.vs", "mountain.fs");
+        auto noise = Buffer::construct(sceneSize.x, sceneSize.y, "demo.vs", "mountainNoise.fs");
+        auto mountain = Buffer::construct(sceneSize.x, sceneSize.y, "demo.vs", "mountain.fs");
         mountain->setInputs(noise);
 
-        auto fxaa = Buffer::construct(width, height, "fxaa.vs", "fxaa.fs");
+        auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "fxaa.vs", "fxaa.fs");
         fxaa->setInputs(mountain);
 
-        auto post = Buffer::construct(width, height, "demo.vs", "mountainPost.fs");
+        auto post = Buffer::construct(sceneSize.x, sceneSize.y, "demo.vs", "mountainPost.fs");
         post->setInputs(fxaa);
 
         glState.addScene("introScene", post, Duration::seconds(77));
     }
 
     {
-        auto edison = Buffer::construct(width, height, "edison.vs", "lavaScene2.fs");
-        auto fxaa = Buffer::construct(width, height, "fxaa.vs", "fxaa.fs");
+        auto edison = Buffer::construct(sceneSize.x, sceneSize.y, "edison.vs", "lavaScene2.fs");
+        auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "fxaa.vs", "fxaa.fs");
         fxaa->setInputs(edison);
 
-        auto post = Buffer::construct(width, height, "post.vs", "post.fs");
+        auto post = Buffer::construct(sceneSize.x, sceneSize.y, "post.vs", "post.fs");
         post->setInputs(fxaa);
 
         glState.addScene("introScene", post, Duration::seconds(40));
     }
     {
-        auto edison = Buffer::construct(width, height, "edison.vs", "outro.fs");
-        auto fxaa = Buffer::construct(width, height, "fxaa.vs", "fxaa.fs");
+        auto edison = Buffer::construct(sceneSize.x, sceneSize.y, "edison.vs", "outro.fs");
+        auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "fxaa.vs", "fxaa.fs");
         fxaa->setInputs(edison);
 
-        auto post = Buffer::construct(width, height, "post.vs", "post.fs");
+        auto post = Buffer::construct(sceneSize.x, sceneSize.y, "post.vs", "post.fs");
         post->setInputs(fxaa);
 
         glState.addScene("introScene", post, Duration::seconds(40));

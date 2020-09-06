@@ -7,8 +7,7 @@ namespace ojgl {
 class Window::Details {
 public:
     Details(unsigned width, unsigned height)
-        : _width(width)
-        , _height(height)
+        : _size(width, height)
     {
     }
     HWND CreateOpenGLWindow(const char* title, int x, int y, BYTE type, DWORD flags, bool fullScreen);
@@ -18,8 +17,7 @@ public:
     HGLRC _hRC; // opengl context
     HWND _hWnd; // window
     MSG _msg; // message
-    unsigned _width;
-    unsigned _height;
+    Vector2i _size;
     ojstd::vector<UINT> _keysPressed;
     ojstd::unordered_set<UINT> _keysDown;
     Vector2i _cursorPosition = { 0, 0 };
@@ -141,7 +139,7 @@ HWND Window::Details::CreateOpenGLWindow(const char* title, int x, int y, BYTE t
     }
 
     hWnd = CreateWindow(lpszClassName.c_str(), title, WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_OVERLAPPED | WS_MINIMIZEBOX | WS_SYSMENU,
-        x, y, this->_width, this->_height, NULL, NULL, hInstance, NULL);
+        x, y, this->_size.x, this->_size.y, NULL, NULL, hInstance, NULL);
 
     if (fullScreen) {
         HMONITOR hmon = MonitorFromWindow(hWnd, MONITOR_DEFAULTTONEAREST);
@@ -250,4 +248,10 @@ LONG WINAPI Window::Details::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 
     return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
+
+Vector2i Window::size() const
+{
+    return _priv->_size;
+}
+
 } // namespace ojgl
