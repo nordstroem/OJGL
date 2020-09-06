@@ -48,14 +48,12 @@ int main(int argc, char* argv[])
     // and perhaps have a unified update() which does getMessages(), music sync update and
     // so on.
     Window window(width, height, "Eldur - OJ", fullScreen, showCursor);
-    GLState glState(resources::songs::song, { width, height });
     FreeCameraController cameraController;
 
     auto [sceneWidth, sceneHeight] = calculateDimensions(16.0f / 9.0f, width, height);
+    GLState glState(resources::songs::song, { sceneWidth, sceneHeight });
 
-
-
-    Vector2i viewportOffset((2560 - width) / 2, (1440 - height) / 2);
+    Vector2i viewportOffset((width - sceneWidth) / 2, (height - sceneHeight) / 2);
 
     buildSceneGraph(glState, sceneWidth, sceneHeight);
     glState.initialize();
@@ -145,7 +143,7 @@ void buildSceneGraph(GLState& glState, int width, int height)
     glState.clearScenes();
 
     {
-        auto raymarch = Buffer::construct(width, height, "edison.vs", "common/raymarch_template.fs");
+        auto raymarch = Buffer::construct(width / 4, height / 4, "edison.vs", "common/raymarch_template.fs");
         glState.addScene("raymarchScene", raymarch, Duration::seconds(9999));
     }
 

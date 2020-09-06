@@ -28,7 +28,7 @@ GLState::GLState(unsigned char* song, const Vector2i& nativeResolution, Clock cl
     };
     ShaderReader::preLoad("render/shaders/passThrough.fs", fragment);
     ShaderReader::preLoad("render/shaders/passThrough.vs", vertex);
-    _mainBuffer = Buffer::construct(2560, 1440, "render/shaders/passThrough.vs", "render/shaders/passThrough.fs");
+    _mainBuffer = Buffer::construct(nativeResolution.x, nativeResolution.y, "render/shaders/passThrough.vs", "render/shaders/passThrough.fs");
     _mainBuffer->generateFBO(true);
 }
 
