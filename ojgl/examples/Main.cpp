@@ -26,6 +26,15 @@ int main(int argc, char* argv[])
     bool showCursor = !fullScreen;
 
     ShaderReader::setBasePath("examples/shaders/");
+
+    ShaderReader::preLoad("common/utils.fs", resources::fragment::utils);
+    ShaderReader::preLoad("common/quad.vs", resources::vertex::quad);
+    ShaderReader::preLoad("common/noise.fs", resources::fragment::noise);
+    ShaderReader::preLoad("common/primitives.fs", resources::fragment::primitives);
+    ShaderReader::preLoad("common/raymarch_settings.fs", resources::fragment::raymarchSettings);
+    ShaderReader::preLoad("common/raymarch_utils.fs", resources::fragment::raymarchUtils);
+    ShaderReader::preLoad("common/raymarch_template.fs", resources::fragment::raymarchTemplate);
+
     ShaderReader::preLoad("edison.vs", resources::vertex::edison);
     ShaderReader::preLoad("demo.vs", resources::vertex::demo);
     ShaderReader::preLoad("post.vs", resources::vertex::post);
