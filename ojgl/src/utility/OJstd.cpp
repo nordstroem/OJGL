@@ -231,7 +231,7 @@ void mutex::lock()
 
 void mutex::unlock()
 {
-    auto release_result = ReleaseMutex(_priv->w_mutex);
+    [[maybe_unused]] auto release_result = ReleaseMutex(_priv->w_mutex);
     _ASSERTE(release_result);
 }
 
