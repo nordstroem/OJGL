@@ -70,7 +70,6 @@ private:
     ojstd::shared_ptr<Music> _music = nullptr;
     Clock _clock = Clock::System;
     ojstd::shared_ptr<Buffer> _mainBuffer;
-    Vector2i _viewportOffset;
     Vector2i _sceneSize;
 };
 
