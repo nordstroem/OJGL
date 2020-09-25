@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Scene.h"
+#include "Window.h"
 #include "music/Music.h"
 #include "utility/OJstd.h"
 #include "utility/Timer.hpp"
@@ -15,13 +16,12 @@ enum class Clock {
 
 class GLState {
 public:
-    GLState();
-    explicit GLState(unsigned char* song, Clock clock = Clock::Music);
+    GLState(const Window& window, float sceneAspectRatio, unsigned char* song, Clock clock = Clock::Music);
     GLState(const GLState& other) = delete;
     GLState& operator=(const GLState& other) = delete;
 
     void initialize();
-    void update(const Vector2i& viewportOffset);
+    void update();
     void changeTime(Duration time);
     void setTime(Duration time);
     void restart();
@@ -36,6 +36,8 @@ public:
     Music& music();
     Duration relativeSceneTime();
     Duration elapsedTime() const;
+
+    Vector2i sceneSize() const;
 
     Scene& operator[](size_t i);
     Scene& operator[](const ojstd::string& name);
@@ -59,7 +61,7 @@ public:
     }
 
 private:
-    void render(const Vector2i& viewportOffset);
+    void render();
 
     ojstd::vector<Scene> _scenes;
     Timepoint _systemClockStartTime;
@@ -67,6 +69,8 @@ private:
     bool _paused;
     ojstd::shared_ptr<Music> _music = nullptr;
     Clock _clock = Clock::System;
+    ojstd::shared_ptr<Buffer> _mainBuffer;
+    Vector2i _sceneSize;
 };
 
 } // namespace ojgl

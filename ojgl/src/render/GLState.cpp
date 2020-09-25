@@ -1,23 +1,44 @@
 #include "GLState.h"
 #include "Uniform.hpp"
 #include "utility/Log.h"
+#include "utility/ShaderReader.h"
 #include "utility/Timepoint.h"
 #include "winapi/gl_loader.h"
 
 namespace ojgl {
 
-GLState::GLState()
+static Vector2i cropToAspectRatio(const Vector2i& windowSize, float aspectRatio);
+
+GLState::GLState(const Window& window, float sceneAspectRatio, unsigned char* song, Clock clock)
     : _paused(false)
-    , _clock(Clock::System)
+    , _clock(clock)
+    , _music(ojstd::make_shared<Music>(song))
+    , _sceneSize(cropToAspectRatio(window.size(), sceneAspectRatio))
 {
     load_gl_functions();
+
+    ojstd::string fragment {
+#include "shaders/passThrough.fs"
+    };
+    ojstd::string vertex {
+#include "shaders/passThrough.vs"
+    };
+    ShaderReader::preLoad("render/shaders/passThrough.fs", fragment);
+    ShaderReader::preLoad("render/shaders/passThrough.vs", vertex);
+    _mainBuffer = Buffer::construct(_sceneSize.x, _sceneSize.y, "render/shaders/passThrough.vs", "render/shaders/passThrough.fs");
+    _mainBuffer->setViewportOffset((window.size() - _sceneSize) / 2);
+    _mainBuffer->generateFBO(true); //@todo: make it possible to remove this line.
 }
 
-GLState::GLState(unsigned char* song, Clock clock)
-    : GLState()
+static Vector2i cropToAspectRatio(const Vector2i& windowSize, float aspectRatio)
 {
-    _clock = clock;
-    _music = ojstd::make_shared<Music>(song);
+    const float windowAspectRatio = static_cast<float>(windowSize.x) / windowSize.y;
+
+    if (aspectRatio > windowAspectRatio) {
+        return Vector2i(windowSize.x, ojstd::ftoi(windowSize.x / aspectRatio));
+    } else {
+        return Vector2i(ojstd::ftoi(windowSize.y * aspectRatio), windowSize.y);
+    }
 }
 
 bool GLState::end()
@@ -42,7 +63,7 @@ void GLState::initialize()
         _music->play();
 }
 
-void GLState::render(const Vector2i& viewportOffset)
+void GLState::render()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -50,7 +71,9 @@ void GLState::render(const Vector2i& viewportOffset)
     auto elapsed = elapsedTime();
     for (auto& v : _scenes) {
         if (elapsed < v.duration() + t) {
-            v.render(viewportOffset);
+            v.render();
+            _mainBuffer->setInputs(v.outputBuffer());
+            _mainBuffer->render();
             break;
         }
         t = t + v.duration();
@@ -78,9 +101,9 @@ Scene& GLState::operator[](const ojstd::string& name)
     return *res;
 }
 
-void GLState::update(const Vector2i& viewportOffset)
+void GLState::update()
 {
-    this->render(viewportOffset);
+    this->render();
     if (!this->isPaused())
         if (_music != nullptr)
             _music->updateSync();
@@ -91,6 +114,11 @@ void GLState::update(const Vector2i& viewportOffset)
         for (auto& b : buffers)
             b->clearMeshes();
     }
+}
+
+Vector2i GLState::sceneSize() const
+{
+    return _sceneSize;
 }
 
 Duration GLState::elapsedTime() const

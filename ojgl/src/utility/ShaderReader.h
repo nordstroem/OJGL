@@ -6,7 +6,7 @@ namespace ojgl {
 
 struct ShaderContent {
     ojstd::string content;
-    long long modifyTime;
+    long long modifyTime = 0LL;
 };
 
 class ShaderReader {

@@ -5,13 +5,13 @@
 namespace ojgl {
 
 Scene::Scene(const ojstd::string& name, const ojstd::shared_ptr<Buffer>& buffer, Duration duration)
-    : _mainBuffer(buffer)
+    : _outputBuffer(buffer)
     , _duration(duration)
     , _name(name)
 
 {
     for (auto& b : this->buffers()) {
-        b->generateFBO(b == _mainBuffer);
+        b->generateFBO();
     }
     //@todo verify that no buffer contains the main buffer as feedback input.
 }
@@ -38,7 +38,7 @@ ojstd::unordered_set<ojstd::shared_ptr<Buffer>> Scene::buffers()
 {
     ojstd::unordered_set<ojstd::shared_ptr<Buffer>> available;
     ojstd::unordered_set<ojstd::shared_ptr<Buffer>> checked;
-    available.insert(_mainBuffer);
+    available.insert(_outputBuffer);
 
     while (!available.empty()) {
         auto cur = *available.begin();
@@ -58,12 +58,17 @@ ojstd::unordered_set<ojstd::shared_ptr<Buffer>> Scene::buffers()
     return checked;
 }
 
+ojstd::shared_ptr<Buffer> Scene::outputBuffer() const
+{
+    return this->_outputBuffer;
+}
+
 Duration Scene::duration() const
 {
     return this->_duration;
 }
 
-void Scene::render(const Vector2i& viewportOffset)
+void Scene::render()
 {
 
     auto available = buffers();
@@ -89,7 +94,7 @@ void Scene::render(const Vector2i& viewportOffset)
             }
         }
         if (allRendered) {
-            cur->render(cur == _mainBuffer ? viewportOffset : Vector2i(0, 0));
+            cur->render();
             rendered.insert(cur);
             curIter = available.erase(curIter);
         } else {

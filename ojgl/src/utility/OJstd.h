@@ -360,7 +360,7 @@ public:
     string(const char* str);
     string(const string& str);
     explicit string(char*&& str);
-    explicit string(string&& str);
+    explicit string(string&& str) noexcept;
 
     string();
     ~string();
@@ -379,8 +379,8 @@ public:
     string substring(int start, int end) const;
 
 private:
-    char* content = nullptr;
-    int len = 0;
+    char* _content = nullptr;
+    int _len = 0;
 };
 
 string to_string(int i);
@@ -430,8 +430,10 @@ public:
 
 void sleep(int milliseconds);
 
+float sqrt(float n);
+
 // https://www.gamedev.net/forums/topic/671079-fast-sqrt-for-64bit/
-double inline __fastcall sqrt_asm(double n);
+double __fastcall sqrt_asm(double);
 
 Pair<float, float> modf(float value);
 

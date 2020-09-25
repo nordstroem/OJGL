@@ -24,6 +24,7 @@ public:
     Buffer& setRenderOnce(bool renderOnce);
     Buffer& setNumOutTextures(int numOutTextures);
     Buffer& setName(const ojstd::string& name);
+    Buffer& setViewportOffset(const Vector2i& viewportOffset);
     template <typename... T>
     Buffer& setInputs(T... inputs)
     {
@@ -37,8 +38,8 @@ public:
         return *this;
     }
     ojstd::string name() const;
-    void generateFBO(bool isOutputBuffer);
-    void render(const Vector2i& viewportOffset);
+    void generateFBO(bool isOutputBuffer = false);
+    void render();
     void insertMesh(const ojstd::shared_ptr<Mesh>& mesh, const Matrix& modelMatrix);
     void clearMeshes();
 
@@ -99,6 +100,7 @@ private:
     bool _hasRendered = false;
     int _numOutTextures = 1;
     bool _depthTestEnabled = false;
+    Vector2i _viewportOffset;
 
     unsigned _programID = 0;
     ojstd::vector<FBO> _fbos;

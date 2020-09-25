@@ -59,11 +59,11 @@ public:
         return Matrix(rotationMatrix);
     }
 
-    void set(const Vector3f& position, float heading, float elevation)
+    void set(const Vector3f& newPosition, float newHeading, float newElevation)
     {
-        this->position = position;
-        this->heading = heading;
-        this->elevation = elevation;
+        this->position = newPosition;
+        this->heading = newHeading;
+        this->elevation = newElevation;
     }
 
     Vector3f position { 0, 0, 2 };

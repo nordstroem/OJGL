@@ -129,12 +129,18 @@ Buffer& Buffer::setName(const ojstd::string& name)
     return *this;
 }
 
+Buffer& Buffer::setViewportOffset(const Vector2i& viewportOffset)
+{
+    _viewportOffset = viewportOffset;
+    return *this;
+}
+
 ojstd::string Buffer::name() const
 {
     return _name;
 }
 
-void Buffer::render(const Vector2i& viewportOffset)
+void Buffer::render()
 {
     if (ShaderReader::modified(_vertexPath) || ShaderReader::modified(_fragmentPath)) {
         loadShader();
@@ -147,7 +153,7 @@ void Buffer::render(const Vector2i& viewportOffset)
     // Render to the next buffer.
     auto& currentFBO = pushNextFBO();
     glBindFramebuffer(GL_FRAMEBUFFER, currentFBO.fboID());
-    glViewport(viewportOffset.x, viewportOffset.y, _width, _height);
+    glViewport(_viewportOffset.x, _viewportOffset.y, _width, _height);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     if (_depthTestEnabled) {
         glEnable(GL_DEPTH_TEST);

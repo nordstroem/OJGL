@@ -22,19 +22,9 @@ Matrix Matrix::perspective(float fovy, float aspect, float zNear, float zFar)
     return Matrix(data);
 }
 
-// https://www.gamedev.net/forums/topic/671079-fast-sqrt-for-64bit/
-double inline __declspec(naked) __fastcall sqrt_asm(double n)
-{
-    _asm {
-		fld qword ptr[esp + 4]
-		fsqrt
-		ret 8
-    }
-}
-
 Matrix Matrix::rotation(float x, float y, float z, float angle)
 {
-    float n = sqrt_asm(x * x + y * y + z * z);
+    float n = ojstd::sqrt(x * x + y * y + z * z);
     _ASSERTE(n != 0);
     x /= n;
     y /= n;
@@ -81,17 +71,17 @@ Matrix Matrix::randomRotation()
     float u2 = ojstd::rand();
     float u3 = ojstd::rand();
     return Matrix::fromQuaternion(
-        sqrt_asm(1 - u1) * ojstd::sin(2 * ojstd::pi * u2),
-        sqrt_asm(1 - u1) * ojstd::cos(2 * ojstd::pi * u2),
-        sqrt_asm(u1) * ojstd::sin(2 * ojstd::pi * u3),
-        sqrt_asm(u1) * ojstd::cos(2 * ojstd::pi * u3));
+        ojstd::sqrt(1 - u1) * ojstd::sin(2 * ojstd::pi * u2),
+        ojstd::sqrt(1 - u1) * ojstd::cos(2 * ojstd::pi * u2),
+        ojstd::sqrt(u1) * ojstd::sin(2 * ojstd::pi * u3),
+        ojstd::sqrt(u1) * ojstd::cos(2 * ojstd::pi * u3));
 }
 
 Matrix Matrix::fromQuaternion(float w, float x, float y, float z)
 {
     //@todo remove this alias when it works.
     float qr = w, qi = x, qj = y, qk = z;
-    float sp = sqrt_asm(qr * qr + qi * qi + qj * qj + qk * qk);
+    float sp = ojstd::sqrt(qr * qr + qi * qi + qj * qj + qk * qk);
     float s = 1.f / (sp * sp);
     float data[16] = {
         1 - 2 * s * (qj * qj + qk * qk), 2 * s * (qi * qj + qk * qr), 2 * s * (qi * qk - qj * qr), 0,

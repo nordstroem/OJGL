@@ -379,6 +379,8 @@
     <None Include="examples\shaders\post.fs" />
     <None Include="examples\shaders\post.vs" />
     <None Include="examples\songs\song.inc" />
+    <None Include="src\render\shaders\passThrough.fs" />
+    <None Include="src\render\shaders\passThrough.vs" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="src\thirdparty\libv2.lib" />

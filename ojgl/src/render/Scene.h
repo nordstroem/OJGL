@@ -11,14 +11,15 @@ public:
     Scene(const ojstd::shared_ptr<Buffer>& buffer, Duration duration);
     Scene(const ojstd::string& name, const ojstd::shared_ptr<Buffer>& buffer, Duration duration);
 
-    void render(const Vector2i& viewportOffset);
+    void render();
     ojstd::string name() const;
     Buffer& operator[](const ojstd::string& name);
     Duration duration() const;
     ojstd::unordered_set<ojstd::shared_ptr<Buffer>> buffers();
+    ojstd::shared_ptr<Buffer> outputBuffer() const;
 
 private:
-    ojstd::shared_ptr<Buffer> _mainBuffer;
+    ojstd::shared_ptr<Buffer> _outputBuffer;
     Duration _duration;
     ojstd::string _name;
 };

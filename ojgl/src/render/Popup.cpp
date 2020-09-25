@@ -53,7 +53,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         DestroyWindow(hwnd);
         //PostQuitMessage(0);
         exit(0);
-        return 0;
     case WM_COMMAND:
         if (HIWORD(wParam) == BN_CLICKED && LOWORD(wParam) == PLAY) {
             LOG_INFO("Play button clicked");

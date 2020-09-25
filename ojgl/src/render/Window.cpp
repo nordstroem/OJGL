@@ -7,19 +7,17 @@ namespace ojgl {
 class Window::Details {
 public:
     Details(unsigned width, unsigned height)
-        : _width(width)
-        , _height(height)
+        : _size(width, height)
     {
     }
     HWND CreateOpenGLWindow(const char* title, int x, int y, BYTE type, DWORD flags, bool fullScreen);
     static LONG WINAPI WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-    HDC _hDC; // device context
-    HGLRC _hRC; // opengl context
-    HWND _hWnd; // window
-    MSG _msg; // message
-    unsigned _width;
-    unsigned _height;
+    HDC _hDC = nullptr; // device context
+    HGLRC _hRC = nullptr; // opengl context
+    HWND _hWnd = nullptr; // window
+    MSG _msg { 0 }; // message
+    Vector2i _size;
     ojstd::vector<UINT> _keysPressed;
     ojstd::unordered_set<UINT> _keysDown;
     Vector2i _cursorPosition = { 0, 0 };
@@ -31,6 +29,17 @@ Window::Window(unsigned width, unsigned height, ojstd::string title, bool fullSc
     : _priv(ojstd::make_shared<Details>(width, height))
 {
     ShowCursor(showCursor);
+
+    if (fullScreen) {
+        DEVMODE Mode;
+        EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &Mode);
+        Mode.dmBitsPerPel = 32;
+        Mode.dmPelsWidth = width;
+        Mode.dmPelsHeight = height;
+        Mode.dmSize = sizeof(Mode);
+        Mode.dmFields = DM_PELSWIDTH | DM_PELSHEIGHT | DM_BITSPERPEL;
+        ChangeDisplaySettings(&Mode, CDS_FULLSCREEN);
+    }
 
     _priv->_hWnd = _priv->CreateOpenGLWindow(title.c_str(), 0, 0, PFD_TYPE_RGBA, 0, fullScreen);
     if (_priv->_hWnd == nullptr) {
@@ -130,7 +139,7 @@ HWND Window::Details::CreateOpenGLWindow(const char* title, int x, int y, BYTE t
     }
 
     hWnd = CreateWindow(lpszClassName.c_str(), title, WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_OVERLAPPED | WS_MINIMIZEBOX | WS_SYSMENU,
-        x, y, this->_width, this->_height, NULL, NULL, hInstance, NULL);
+        x, y, this->_size.x, this->_size.y, NULL, NULL, hInstance, NULL);
 
     if (fullScreen) {
         HMONITOR hmon = MonitorFromWindow(hWnd, MONITOR_DEFAULTTONEAREST);
@@ -233,10 +242,18 @@ LONG WINAPI Window::Details::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPA
         }
         return 0;
     case WM_CLOSE:
-        pThis->_priv->_close = true;
+        if (pThis) {
+            pThis->_priv->_close = true;
+        }
         return 0;
     }
 
     return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
+
+Vector2i Window::size() const
+{
+    return _priv->_size;
+}
+
 } // namespace ojgl
