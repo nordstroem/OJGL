@@ -15,7 +15,7 @@ GLState::GLState(const Window& window, float sceneAspectRatio, unsigned char* so
     , _music(ojstd::make_shared<Music>(song))
     , _sceneSize(cropToAspectRatio(window.size(), sceneAspectRatio))
 {
-    load_gl_functions();
+    load_gl_functions();asd
 
     ojstd::string fragment {
 #include "shaders/passThrough.fs"
