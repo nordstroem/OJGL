@@ -58,6 +58,7 @@ ojstd::string replaceIncludes(const ojstd::string& rawShader)
 
 void ShaderReader::preLoad(const ojstd::string& path, const ojstd::string& content)
 {
+    _ASSERT_EXPR(!ShaderReader::_shaders.contains(path), ojstd::wstringWrapper(path + " is already preloaded.").ptr);
     ShaderReader::_shaders[path].content = replaceIncludes(content);
 }
 
@@ -85,7 +86,7 @@ const ojstd::string& ShaderReader::get(const ojstd::string& path)
             _ASSERT_EXPR(fileExists(fullPath), ojstd::wstringWrapper(fullPath + " not found.").ptr);
         return ShaderReader::_shaders[path].content;
     }
-
+    _ASSERT_EXPR(ShaderReader::_shaders.contains(path), ojstd::wstringWrapper(path + " is not preloaded.").ptr);
     if (modified(path)) {
         LOG_INFO("[" << path.c_str() << "]"
                      << " modified");

@@ -2,17 +2,8 @@
 
 #include "utility/OJstd.h"
 namespace ojgl::resources {
-  // clang-format off
+// clang-format off
   ojstd::vector<ojstd::Pair<ojstd::string, ojstd::string>> shaders = {
-          {
-  #include "shaders/common/raymarch_template.fs"
-          , "common/raymarch_template.fs"
-          },
-
-          {
-  #include "shaders/common/noise.fs"
-          , "common/noise.fs"
-          },
 
           {
   #include "shaders/common/noise.fs"
@@ -37,6 +28,11 @@ namespace ojgl::resources {
           {
   #include "shaders/common/utils.fs"
           , "common/utils.fs"
+          },
+
+          {
+  #include "shaders/common/raymarch_template.fs"
+          , "common/raymarch_template.fs"
           },
 
           {
@@ -124,12 +120,11 @@ namespace ojgl::resources {
           , "common/quad.vs"
           }
   };
-  // clang-format on
+// clang-format on
 
-
-  namespace songs {
+namespace songs {
     unsigned char song[] = {
-    #include "songs/song.inc"
+#include "songs/song.inc"
     };
-  }
+}
 }
