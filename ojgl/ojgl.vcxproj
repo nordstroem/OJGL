@@ -305,6 +305,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="examples\demo\Demo.cpp" />
+    <ClCompile Include="examples\demo\Eldur.cpp" />
     <ClCompile Include="examples\Main.cpp" />
     <ClCompile Include="src\music\Music.cpp" />
     <ClCompile Include="src\music\SyncChannel.cpp" />
@@ -325,6 +327,8 @@
     <ClCompile Include="src\winapi\gl_loader.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="examples\demo\Eldur.h" />
+    <ClInclude Include="examples\demo\Demo.h" />
     <ClInclude Include="examples\EmbeddedResources.h" />
     <ClInclude Include="examples\FreeCameraController.h" />
     <ClInclude Include="src\music\Music.h" />

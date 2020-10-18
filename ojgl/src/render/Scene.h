@@ -8,8 +8,7 @@ namespace ojgl {
 
 class Scene {
 public:
-    Scene(const ojstd::shared_ptr<Buffer>& buffer, Duration duration);
-    Scene(const ojstd::string& name, const ojstd::shared_ptr<Buffer>& buffer, Duration duration);
+    Scene(const ojstd::shared_ptr<Buffer>& buffer, Duration duration, const ojstd::string& name = "default");
 
     void render();
     ojstd::string name() const;

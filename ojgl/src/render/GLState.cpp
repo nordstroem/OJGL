@@ -7,15 +7,14 @@
 
 namespace ojgl {
 
-static Vector2i cropToAspectRatio(const Vector2i& windowSize, float aspectRatio);
-
-GLState::GLState(const Window& window, float sceneAspectRatio, unsigned char* song, Clock clock)
-    : _paused(false)
+GLState::GLState(const Window& window, const Vector2i& sceneSize, unsigned char* song, ojstd::vector<Scene>&& scenes, Clock clock)
+    : _scenes(std::move(scenes))
+    , _paused(false)
     , _clock(clock)
     , _music(ojstd::make_shared<Music>(song))
-    , _sceneSize(cropToAspectRatio(window.size(), sceneAspectRatio))
+    , _sceneSize(sceneSize)
 {
-    load_gl_functions();
+    //load_gl_functions();
 
     ojstd::string fragment {
 #include "shaders/passThrough.fs"
@@ -28,20 +27,15 @@ GLState::GLState(const Window& window, float sceneAspectRatio, unsigned char* so
     _mainBuffer = Buffer::construct(_sceneSize.x, _sceneSize.y, "render/shaders/passThrough.vs", "render/shaders/passThrough.fs");
     _mainBuffer->setViewportOffset((window.size() - _sceneSize) / 2);
     _mainBuffer->generateFBO(true); //@todo: make it possible to remove this line.
+
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+
+    _systemClockStartTime = Timepoint::now();
+    if (_music != nullptr)
+        _music->play();
 }
 
-static Vector2i cropToAspectRatio(const Vector2i& windowSize, float aspectRatio)
-{
-    const float windowAspectRatio = static_cast<float>(windowSize.x) / windowSize.y;
-
-    if (aspectRatio > windowAspectRatio) {
-        return Vector2i(windowSize.x, ojstd::ftoi(windowSize.x / aspectRatio));
-    } else {
-        return Vector2i(ojstd::ftoi(windowSize.y * aspectRatio), windowSize.y);
-    }
-}
-
-bool GLState::end()
+bool GLState::end() const
 {
     auto t = Duration::milliseconds(0);
     auto elapsed = elapsedTime();
@@ -53,14 +47,6 @@ bool GLState::end()
         t = t + v.duration();
     }
     return true;
-}
-
-void GLState::initialize()
-{
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    _systemClockStartTime = Timepoint::now();
-    if (_music != nullptr)
-        _music->play();
 }
 
 void GLState::render()
@@ -83,18 +69,18 @@ void GLState::render()
     glFinish();
 }
 
-Music& GLState::music()
+Music& GLState::music() const
 {
     _ASSERTE(_music != nullptr);
     return *_music;
 }
 
-Scene& GLState::operator[](size_t i)
+Scene& GLState::operator[](size_t i) const
 {
     return _scenes[i];
 }
 
-Scene& GLState::operator[](const ojstd::string& name)
+Scene& GLState::operator[](const ojstd::string& name) const
 {
     auto res = ojstd::find_if(_scenes.begin(), _scenes.end(), [&](const auto& s) { return s.name() == name; });
     _ASSERTE(res != _scenes.end());
@@ -133,14 +119,9 @@ Duration GLState::elapsedTime() const
     }
 }
 
-bool GLState::isPaused()
+bool GLState::isPaused() const
 {
     return _paused;
-}
-
-void GLState::clearScenes()
-{
-    _scenes.clear();
 }
 
 void GLState::changeTime(Duration time)
@@ -168,7 +149,7 @@ void GLState::togglePause()
     _paused = !_paused;
 }
 
-Duration GLState::relativeSceneTime()
+Duration GLState::relativeSceneTime() const
 {
     auto t = Duration::milliseconds(0);
     auto elapsed = elapsedTime();
@@ -217,7 +198,7 @@ void GLState::previousScene()
     }
 }
 
-ojstd::string GLState::currentScene()
+ojstd::string GLState::currentScene() const
 {
     auto t = Duration::milliseconds(0);
     auto elapsed = elapsedTime();
