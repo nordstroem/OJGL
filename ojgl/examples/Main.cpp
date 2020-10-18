@@ -27,30 +27,8 @@ int main(int argc, char* argv[])
 
     ShaderReader::setBasePath("examples/shaders/");
 
-    ShaderReader::preLoad("common/utils.fs", resources::fragment::utils);
-    ShaderReader::preLoad("common/quad.vs", resources::vertex::quad);
-    ShaderReader::preLoad("common/noise.fs", resources::fragment::noise);
-    ShaderReader::preLoad("common/primitives.fs", resources::fragment::primitives);
-    ShaderReader::preLoad("common/raymarch_settings.fs", resources::fragment::raymarchSettings);
-    ShaderReader::preLoad("common/raymarch_utils.fs", resources::fragment::raymarchUtils);
-    ShaderReader::preLoad("common/raymarch_template.fs", resources::fragment::raymarchTemplate);
-
-    ShaderReader::preLoad("edison.vs", resources::vertex::edison);
-    ShaderReader::preLoad("demo.vs", resources::vertex::demo);
-    ShaderReader::preLoad("post.vs", resources::vertex::post);
-    ShaderReader::preLoad("fxaa.vs", resources::vertex::fxaa);
-    ShaderReader::preLoad("fxaa.fs", resources::fragment::fxaa);
-    ShaderReader::preLoad("post.fs", resources::fragment::post);
-    ShaderReader::preLoad("lavaIntro.fs", resources::fragment::lavaIntro);
-    ShaderReader::preLoad("mountain.fs", resources::fragment::mountain);
-    ShaderReader::preLoad("mountainNoise.fs", resources::fragment::mountainNoise);
-    ShaderReader::preLoad("mountainPost.fs", resources::fragment::mountainPost);
-    ShaderReader::preLoad("lavaScene2.fs", resources::fragment::lavaScene2);
-    ShaderReader::preLoad("outro.fs", resources::fragment::outro);
-    ShaderReader::preLoad("mesh.vs", resources::vertex::mesh);
-    ShaderReader::preLoad("mesh.fs", resources::fragment::mesh);
-    ShaderReader::preLoad("cachedGeometry.fs", resources::fragment::cachedGeometry);
-    ShaderReader::preLoad("lightning.fs", resources::fragment::lightning);
+    for (const auto& [content, path] : resources::shaders)
+        ShaderReader::preLoad(path, content);
 
     // @todo move this into GLState? We can return a const reference to window.
     // and perhaps have a unified update() which does getMessages(), music sync update and

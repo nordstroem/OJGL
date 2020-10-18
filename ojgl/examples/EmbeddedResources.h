@@ -1,99 +1,130 @@
 #pragma once
 
 #include "utility/OJstd.h"
-namespace ojgl {
+namespace ojgl::resources {
+// clang-format off
+  ojstd::vector<ojstd::Pair<ojstd::string, ojstd::string>> shaders = {
 
-namespace resources {
+          {
+  #include "shaders/common/noise.fs"
+          , "common/noise.fs"
+          },
 
-    namespace fragment {
+          {
+  #include "shaders/common/primitives.fs"
+          , "common/primitives.fs"
+          },
 
-        ojstd::string noise {
-#include "shaders/common/noise.fs"
-        };
-        ojstd::string primitives {
-#include "shaders/common/primitives.fs"
-        };
-        ojstd::string raymarchSettings {
-#include "shaders/common/raymarch_settings.fs"
-        };
-        ojstd::string raymarchTemplate {
-#include "shaders/common/raymarch_template.fs"
-        };
-        ojstd::string raymarchUtils {
-#include "shaders/common/raymarch_utils.fs"
-        };
-        ojstd::string utils {
-#include "shaders/common/utils.fs"
-        };
-        ojstd::string post {
-#include "shaders/post.fs"
-        };
+          {
+  #include "shaders/common/raymarch_settings.fs"
+          , "common/raymarch_settings.fs"
+          },
 
-        ojstd::string fxaa {
-#include "shaders/fxaa.fs"
-        };
+          {
+  #include "shaders/common/raymarch_utils.fs"
+          , "common/raymarch_utils.fs"
+          },
 
-        ojstd::string lavaIntro {
-#include "shaders/lavaIntro.fs"
-        };
+          {
+  #include "shaders/common/utils.fs"
+          , "common/utils.fs"
+          },
 
-        ojstd::string mountain {
-#include "shaders/mountain.fs"
-        };
+          {
+  #include "shaders/common/raymarch_template.fs"
+          , "common/raymarch_template.fs"
+          },
 
-        ojstd::string mountainNoise {
-#include "shaders/mountainNoise.fs"
-        };
+          {
+  #include "shaders/post.fs"
+          , "post.fs"
+          },
 
-        ojstd::string mountainPost {
-#include "shaders/mountainPost.fs"
-        };
-        ojstd::string lavaScene2 {
-#include "shaders/lavaScene2.fs"
-        };
-        ojstd::string outro {
-#include "shaders/outro.fs"
-        };
-        ojstd::string mesh {
-#include "shaders/mesh.fs"
-        };
-        ojstd::string cachedGeometry {
-#include "shaders/cachedGeometry.fs"
-        };
-        ojstd::string lightning {
-#include "shaders/lightning.fs"
-        };
+          {
+  #include "shaders/fxaa.fs"
+          , "fxaa.fs"
+          },
 
-    } //namespace fragment
+          {
+  #include "shaders/lavaIntro.fs"
+          , "lavaIntro.fs"
+          },
 
-    namespace vertex {
+          {
+  #include "shaders/mountain.fs"
+          , "mountain.fs"
+          },
 
-        ojstd::string demo {
-#include "shaders/demo.vs"
-        };
+          {
+  #include "shaders/mountainNoise.fs"
+          , "mountainNoise.fs"
+          },
 
-        ojstd::string post {
-#include "shaders/post.vs"
-        };
-        ojstd::string edison {
-#include "shaders/edison.vs"
-        };
-        ojstd::string fxaa {
-#include "shaders/fxaa.vs"
-        };
-        ojstd::string mesh {
-#include "shaders/mesh.vs"
-        };
-        ojstd::string quad {
-#include "shaders/common/quad.vs"
-        };
-    } //namespace vertex
+          {
+  #include "shaders/mountainPost.fs"
+          , "mountainPost.fs"
+          },
 
-    namespace songs {
+          {
+  #include "shaders/lavaScene2.fs"
+          , "lavaScene2.fs"
+          },
 
-        unsigned char song[] = {
+          {
+  #include "shaders/outro.fs"
+          , "outro.fs"
+          },
+
+          {
+  #include "shaders/mesh.fs"
+          , "mesh.fs"
+          },
+
+          {
+  #include "shaders/cachedGeometry.fs"
+          , "cachedGeometry.fs"
+          },
+
+          {
+  #include "shaders/lightning.fs"
+          , "lightning.fs"
+          },
+
+          {
+  #include "shaders/demo.vs"
+          , "demo.vs"
+          },
+
+          {
+  #include "shaders/post.vs"
+          , "post.vs"
+          },
+
+          {
+  #include "shaders/edison.vs"
+          , "edison.vs"
+          },
+
+          {
+  #include "shaders/fxaa.vs"
+          , "fxaa.vs"
+          },
+
+          {
+  #include "shaders/mesh.vs"
+          , "mesh.vs"
+          },
+
+          {
+  #include "shaders/common/quad.vs"
+          , "common/quad.vs"
+          }
+  };
+// clang-format on
+
+namespace songs {
+    unsigned char song[] = {
 #include "songs/song.inc"
-        };
-    } //namespace songs
+    };
 }
 }
