@@ -1,6 +1,8 @@
-#include "demo/Demo.h"
 #include "EmbeddedResources.h"
 #include "FreeCameraController.h"
+#include "demo/Demo.h"
+#include "demos/Eldur.h"
+#include "demos/Template.h"
 #include "render/GLState.h"
 #include "render/Popup.h"
 #include "render/Texture.h"
@@ -13,15 +15,32 @@
 
 using namespace ojgl;
 
-void buildSceneGraph(GLState& glState, const Vector2i& sceneSize);
 static Vector2i cropToAspectRatio(const Vector2i& windowSize, float aspectRatio);
 
-int main(int argc, char* argv[])
+enum class DemoType {
+    DodensTriumf,
+    Eldur,
+    InnerSystemLab,
+    QED,
+    Template
+};
+
+ojstd::shared_ptr<Demo> getDemo(DemoType type)
+{
+    switch (type) {
+    case DemoType::Eldur:
+        return ojstd::make_shared<Eldur>();
+    case DemoType::Template:
+        return ojstd::make_shared<Template>();
+    }
+
+    _ASSERTE(false);
+    return nullptr;
+}
+
+int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
 {
     auto popupData = popup::show();
-
-    OJ_UNUSED(argc);
-    OJ_UNUSED(argv);
 
     Vector2i windowSize(popupData.width, popupData.height);
     bool fullScreen = popupData.full;
@@ -32,18 +51,12 @@ int main(int argc, char* argv[])
     for (const auto& [content, path] : resources::shaders)
         ShaderReader::preLoad(path, content);
 
-    // @todo move this into GLState? We can return a const reference to window.
-    // and perhaps have a unified update() which does getMessages(), music sync update and
-    // so on.
-    Window window(windowSize, "Eldur - OJ", fullScreen, showCursor);
-
+    ojstd::shared_ptr<Demo> demo = getDemo(DemoType::Template);
+    Window window(windowSize, demo->getTitle(), fullScreen, showCursor);
     load_gl_functions();
-    ojstd::shared_ptr<Demo> demo = getDemo(DemoType::Eldur);
 
     const Vector2i sceneSize = cropToAspectRatio(windowSize, 16.0 / 9.0f);
-    GLState glState(window, sceneSize, resources::songs::song, demo->buildSceneGraph(sceneSize));
-
-    //buildSceneGraph(glState, sceneSize);
+    GLState glState(window, sceneSize, resources::songs::song, demo);
 
     FreeCameraController cameraController;
 
@@ -103,6 +116,10 @@ int main(int argc, char* argv[])
         glState << Uniform1f("iGlobalTime", glState.relativeSceneTime().toSeconds() - 2.f);
         glState << Uniform2f("iResolution", static_cast<float>(sceneSize.x), static_cast<float>(sceneSize.y));
         glState << UniformMatrix4fv("iCameraMatrix", cameraMatrix);
+        //        glState["scene"]["buffer"] << ...;
+
+        //glState["meshScene"]["mesh"].insertMesh(mesh, Matrix::scaling(0.2f) * Matrix::rotation(1, 1, 1, glState.relativeSceneTime().toSeconds()));
+
         glState.update();
 
         timer.end();
@@ -115,72 +132,6 @@ int main(int argc, char* argv[])
 #endif
     }
 }
-
-//void buildSceneGraph(GLState& glState, const Vector2i& sceneSize)
-//{
-//    glState.clearScenes();
-//
-//    {
-//        auto raymarch = Buffer::construct(sceneSize.x / 4, sceneSize.y / 4, "edison.vs", "common/raymarch_template.fs");
-//        glState.addScene("raymarchScene", raymarch, Duration::seconds(9999));
-//    }
-//
-//    {
-//        auto geometry = Buffer::construct(sceneSize.x, sceneSize.y, "edison.vs", "cachedGeometry.fs");
-//        geometry->setFormat(BufferFormat::Quad).setRenderOnce(true).setNumOutTextures(2);
-//
-//        auto lightning = Buffer::construct(sceneSize.x, sceneSize.y, "edison.vs", "lightning.fs");
-//        lightning->setInputs(geometry);
-//
-//        glState.addScene("cachedGeometryScene", lightning, Duration::seconds(20));
-//    }
-//    {
-//        //auto edison = Buffer::construct(BufferFormat::Quad, x, y, "intro", "shaders/edison.vs", "shaders/lavaIntro.fs");
-//        //auto fxaa = Buffer::construct(BufferFormat::Quad, x, y, "fxaa", "shaders/fxaa.vs", "shaders/fxaa.fs", edison);
-//        //auto post = Buffer::construct(BufferFormat::Quad, x, y, "post", "shaders/post.vs", "shaders/post.fs", fxaa);
-//
-//        auto mesh = Buffer::construct(sceneSize.x, sceneSize.y, "mesh.vs", "mesh.fs");
-//        mesh->setFormat(BufferFormat::Meshes);
-//        mesh->setName("mesh");
-//        mesh->setDepthTest(true);
-//
-//        glState.addScene("meshScene", mesh, Duration::seconds(20));
-//    }
-//    {
-//        auto noise = Buffer::construct(sceneSize.x, sceneSize.y, "demo.vs", "mountainNoise.fs");
-//        auto mountain = Buffer::construct(sceneSize.x, sceneSize.y, "demo.vs", "mountain.fs");
-//        mountain->setInputs(noise);
-//
-//        auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "fxaa.vs", "fxaa.fs");
-//        fxaa->setInputs(mountain);
-//
-//        auto post = Buffer::construct(sceneSize.x, sceneSize.y, "demo.vs", "mountainPost.fs");
-//        post->setInputs(fxaa);
-//
-//        glState.addScene("introScene", post, Duration::seconds(77));
-//    }
-//
-//    {
-//        auto edison = Buffer::construct(sceneSize.x, sceneSize.y, "edison.vs", "lavaScene2.fs");
-//        auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "fxaa.vs", "fxaa.fs");
-//        fxaa->setInputs(edison);
-//
-//        auto post = Buffer::construct(sceneSize.x, sceneSize.y, "post.vs", "post.fs");
-//        post->setInputs(fxaa);
-//
-//        glState.addScene("introScene", post, Duration::seconds(40));
-//    }
-//    {
-//        auto edison = Buffer::construct(sceneSize.x, sceneSize.y, "edison.vs", "outro.fs");
-//        auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "fxaa.vs", "fxaa.fs");
-//        fxaa->setInputs(edison);
-//
-//        auto post = Buffer::construct(sceneSize.x, sceneSize.y, "post.vs", "post.fs");
-//        post->setInputs(fxaa);
-//
-//        glState.addScene("introScene", post, Duration::seconds(40));
-//    }
-//}
 
 static Vector2i cropToAspectRatio(const Vector2i& windowSize, float aspectRatio)
 {

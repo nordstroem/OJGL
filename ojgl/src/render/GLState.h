@@ -2,6 +2,7 @@
 
 #include "Scene.h"
 #include "Window.h"
+#include "demo/Demo.h"
 #include "music/Music.h"
 #include "utility/OJstd.h"
 #include "utility/Timer.hpp"
@@ -16,7 +17,7 @@ enum class Clock {
 
 class GLState {
 public:
-    GLState(const Window& window, const Vector2i& sceneSize, unsigned char* song, ojstd::vector<Scene>&& scenes, Clock clock = Clock::Music);
+    GLState(const Window& window, const Vector2i& sceneSize, unsigned char* song, const ojstd::shared_ptr<Demo>& demo, Clock clock = Clock::Music);
     GLState(const GLState& other) = delete;
     GLState& operator=(const GLState& other) = delete;
 
@@ -63,6 +64,7 @@ private:
     Clock _clock = Clock::System;
     ojstd::shared_ptr<Buffer> _mainBuffer;
     Vector2i _sceneSize;
+    ojstd::shared_ptr<Demo> _demo;
 };
 
 } // namespace ojgl

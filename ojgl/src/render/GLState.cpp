@@ -7,12 +7,13 @@
 
 namespace ojgl {
 
-GLState::GLState(const Window& window, const Vector2i& sceneSize, unsigned char* song, ojstd::vector<Scene>&& scenes, Clock clock)
-    : _scenes(std::move(scenes))
+GLState::GLState(const Window& window, const Vector2i& sceneSize, unsigned char* song, const ojstd::shared_ptr<Demo>& demo, Clock clock)
+    : _scenes(demo->buildSceneGraph(sceneSize))
     , _paused(false)
     , _clock(clock)
     , _music(ojstd::make_shared<Music>(song))
     , _sceneSize(sceneSize)
+    , _demo(demo)
 {
     //load_gl_functions();
 

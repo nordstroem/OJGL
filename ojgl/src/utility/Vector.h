@@ -15,24 +15,24 @@ struct Vector3 {
     {
     }
 
-    Vector3 Vector3::operator*(T a)
+    Vector3 operator*(T a)
     {
         return Vector3(x * a, y * a, z * a);
     }
 
-    void Vector3::operator+=(Vector3 v)
+    void operator+=(Vector3 v)
     {
         x += v.x;
         y += v.y;
         z += v.z;
     }
 
-    Vector3 Vector3::operator-(Vector3 v)
+    Vector3 operator-(Vector3 v)
     {
         return Vec3(x - v.x, y - v.y, z - v.z);
     }
 
-    void Vector3::normalize()
+    void normalize()
     {
         T len = static_cast<T>(sqrt_asm(static_cast<double>(x * x + y * y + z * z)));
         x /= len;
@@ -40,7 +40,7 @@ struct Vector3 {
         z /= len;
     }
 
-    [[nodiscard]] T Vector3::lenSq()
+    [[nodiscard]] T lenSq()
     {
         return x * x + y * y + z * z;
     }
@@ -58,12 +58,12 @@ struct Vector2 {
     {
     }
 
-    Vector2 Vector2::operator-(const Vector2& v)
+    Vector2 operator-(const Vector2& v)
     {
         return Vector2(x - v.x, y - v.y);
     }
 
-    Vector2 Vector2::operator/(const T& s)
+    Vector2 operator/(const T& s)
     {
         return Vector2(x / s, y / s);
     }

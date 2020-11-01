@@ -119,7 +119,7 @@ public:
     template <typename B, typename = std::enable_if_t<std::is_base_of<B, T>::value>>
     operator shared_ptr<B>()
     {
-      return *reinterpret_cast<shared_ptr<B>*>(this);
+        return *reinterpret_cast<shared_ptr<B>*>(this);
     }
 
     T* operator->() const { return _ptr; }
