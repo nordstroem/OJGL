@@ -129,6 +129,12 @@ public:
     bool operator==(std::nullptr_t other) const { return _ptr == other; }
     bool operator!=(std::nullptr_t other) const { return _ptr != other; }
 
+    template <typename B, typename = std::enable_if_t<std::is_base_of<B, T>::value>>
+    operator shared_ptr<B>()
+    {
+        return *reinterpret_cast<shared_ptr<B>*>(this);
+    }
+
     int* _count = nullptr; // @todo make private and thread-safe.
     T* _ptr = nullptr;
 
@@ -148,7 +154,7 @@ private:
 template <typename T, typename... Args>
 shared_ptr<T> make_shared(Args... args)
 {
-    return shared_ptr<T>(new T(args...));
+    return shared_ptr<T>(new T(std::move(args)...));
 }
 
 template <typename T>
@@ -446,5 +452,66 @@ float rand();
 float clamp(float x, float lower, float upper);
 float smoothstep(float edge0, float edge1, float x);
 float lerp(float left, float right, float amount);
+
+template <typename ReturnType, typename... Args>
+class callable_base {
+public:
+    virtual ~callable_base() = default;
+    virtual ReturnType invoke(Args... args) = 0;
+};
+
+template <typename F, typename ReturnType, typename... Args>
+class callable : public callable_base<ReturnType, Args...> {
+public:
+    callable(F&& f)
+        : _function(std::forward<F>(f)) {};
+    ReturnType invoke(Args... args) override
+    {
+        return _function(std::forward<Args>(args)...);
+    }
+
+private:
+    F _function;
+};
+
+template <typename T>
+class function;
+
+template <typename ReturnType, typename... Args>
+class function<ReturnType(Args...)> {
+public:
+    function() = default;
+    template <typename F>
+    function(F&& f)
+        : _callable_ptr(make_callable_ptr(std::forward<F>(f)))
+    {
+        static_assert(!std::is_same_v<std::remove_reference_t<F>, function>);
+    }
+    template <typename F>
+    function& operator=(F&& f)
+    {
+        static_assert(!std::is_same_v<std::remove_reference_t<F>, function>);
+        _callable_ptr = make_callable_ptr(std::forward<F>(f));
+        return *this;
+    }
+    auto operator()(Args... args)
+    {
+        return _callable_ptr->invoke(std::forward<Args>(args)...);
+    }
+    operator bool()
+    {
+        return _callable_ptr != nullptr;
+    }
+
+private:
+    template <class T>
+    auto static make_callable_ptr(T&& t)
+    {
+        return ojstd::make_shared<callable<T, ReturnType, Args...>>(std::forward<T>(t));
+    }
+
+private:
+    ojstd::shared_ptr<callable_base<ReturnType, Args...>> _callable_ptr;
+};
 
 } //end namespace ojstd
