@@ -153,9 +153,9 @@ private:
 };
 
 template <typename T, typename... Args>
-shared_ptr<T> make_shared(Args... args)
+shared_ptr<T> make_shared(Args&&... args)
 {
-    return shared_ptr<T>(new T(std::move(args)...));
+    return shared_ptr<T>(new T(std::forward<Args>(args)...));
 }
 
 template <typename T>

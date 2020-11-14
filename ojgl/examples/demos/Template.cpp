@@ -8,7 +8,7 @@ ojstd::vector<Scene> Template::buildSceneGraph(const Vector2i& sceneSize) const
     ojstd::vector<Scene> scenes;
     {
         auto raymarch = Buffer::construct(sceneSize.x / 4, sceneSize.y / 4, "edison.vs", "common/raymarch_template.fs");
-        raymarch->setUniformCallback([](float relativeSceneTime) {
+        raymarch->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
             Buffer::UniformVector vector;
             vector.push_back(ojstd::make_shared<UniformMatrix4fv>("iCameraMatrix", FreeCameraController::instance().getCameraMatrix()));
             return vector;

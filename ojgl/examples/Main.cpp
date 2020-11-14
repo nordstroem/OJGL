@@ -55,7 +55,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
     Window window(windowSize, demo->getTitle(), fullScreen, showCursor);
     load_gl_functions();
 
-    const Vector2i sceneSize = cropToAspectRatio(windowSize, 16.0 / 9.0f);
+    const Vector2i sceneSize = cropToAspectRatio(windowSize, 16.0f / 9.0f);
     GLState glState(window, sceneSize, resources::songs::song, demo);
 
     while (!glState.end() && !window.isClosePressed()) {
