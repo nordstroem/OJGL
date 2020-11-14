@@ -1,5 +1,6 @@
 #include "Window.h"
 #include <utility/Log.h>
+#include "winapi/gl_loader.h"
 #include <windows.h>
 
 namespace ojgl {
@@ -58,6 +59,8 @@ Window::Window(Vector2i size, ojstd::string title, bool fullScreen, bool showCur
             LOG_ERROR("SetWindowLongPtr failed in Window");
         }
     }
+
+    load_gl_functions();
 }
 
 Window::~Window()

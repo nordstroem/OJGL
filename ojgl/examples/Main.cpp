@@ -11,7 +11,6 @@
 #include "utility/Macros.h"
 #include "utility/OJstd.h"
 #include "utility/ShaderReader.h"
-#include "winapi/gl_loader.h"
 
 using namespace ojgl;
 
@@ -53,7 +52,6 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
 
     ojstd::shared_ptr<Demo> demo = getDemo(DemoType::Eldur);
     Window window(windowSize, demo->getTitle(), fullScreen, showCursor);
-    load_gl_functions();
 
     const Vector2i sceneSize = cropToAspectRatio(windowSize, 16.0f / 9.0f);
     GLState glState(window, sceneSize, resources::songs::song, demo);
