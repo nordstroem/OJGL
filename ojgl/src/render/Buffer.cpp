@@ -201,10 +201,6 @@ void Buffer::render(float relativeSceneTime)
         }
     }
 
-    for (auto& um : _uniforms) {
-        um.second->setUniform(_programID);
-    }
-
     if (_uniformCallback) {
         for (const auto& uniform : _uniformCallback(relativeSceneTime)) {
             uniform->setUniform(_programID);

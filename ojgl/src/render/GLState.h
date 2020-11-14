@@ -41,18 +41,6 @@ public:
     Scene& operator[](size_t i) const;
     Scene& operator[](const ojstd::string& name) const;
 
-public:
-    template <typename T>
-    GLState& operator<<(T&& b)
-    {
-        for (auto& scene : this->_scenes) {
-            auto buffers = scene.buffers();
-            for (auto& buffer : buffers)
-                *buffer << b;
-        }
-        return *this;
-    }
-
 private:
     void render();
 

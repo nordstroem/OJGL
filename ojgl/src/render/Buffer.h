@@ -55,13 +55,6 @@ public:
 
     Buffer& operator<<(const Uniform1t& b);
 
-    template <typename T>
-    typename std::enable_if_t<std::is_base_of_v<UniformBase, typename std::remove_reference<T>::type>, Buffer&> operator<<(T&& b)
-    {
-        _uniforms[b.location()] = ojstd::make_shared<typename std::remove_reference<T>::type>(std::forward<T>(b));
-        return *this;
-    }
-
     static BufferPtr construct(unsigned width, unsigned height, const ojstd::string& vertexPath, const ojstd::string& fragmentPath);
 
 private:
@@ -109,7 +102,6 @@ private:
     ojstd::vector<FBO> _fbos;
     int _currentFBOIndex = 0;
 
-    ojstd::unordered_map<ojstd::string, ojstd::shared_ptr<UniformBase>> _uniforms;
     ojstd::function<UniformVector(float)> _uniformCallback;
 
     ojstd::unordered_map<ojstd::string, ojstd::shared_ptr<Uniform1t>> _textures;

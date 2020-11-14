@@ -1,4 +1,5 @@
 #include "Template.h"
+#include "FreeCameraController.h"
 
 using namespace ojgl;
 
@@ -9,7 +10,7 @@ ojstd::vector<Scene> Template::buildSceneGraph(const Vector2i& sceneSize) const
         auto raymarch = Buffer::construct(sceneSize.x / 4, sceneSize.y / 4, "edison.vs", "common/raymarch_template.fs");
         raymarch->setUniformCallback([](float relativeSceneTime) {
             Buffer::UniformVector vector;
-            //vector.push_back(ojstd::make_shared<Uniform1f>("iTime", relativeSceneTime));
+            vector.push_back(ojstd::make_shared<UniformMatrix4fv>("iCameraMatrix", FreeCameraController::instance().getCameraMatrix()));
             return vector;
         });
 

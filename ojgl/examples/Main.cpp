@@ -58,15 +58,11 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
     const Vector2i sceneSize = cropToAspectRatio(windowSize, 16.0 / 9.0f);
     GLState glState(window, sceneSize, resources::songs::song, demo);
 
-    FreeCameraController cameraController;
-
-    auto mesh = Mesh::constructCube();
-
     while (!glState.end() && !window.isClosePressed()) {
         Timer timer;
         timer.start();
 #ifdef _DEBUG
-        cameraController.update(window);
+        FreeCameraController::instance().update(window);
 #endif
         window.getMessages();
 
@@ -100,24 +96,15 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
                 break;
 
             case Window::KEY_C:
-                LOG_INFO("Camera: (" << cameraController.position.x << ", " << cameraController.position.y << ", " << cameraController.position.z << ")"
-                                     << ", [" << cameraController.heading << ", " << cameraController.elevation << "]");
+                const FreeCameraController& c = FreeCameraController::instance();
+                LOG_INFO("Camera: (" << c.position.x << ", " << c.position.y << ", " << c.position.z << ")"
+                                     << ", [" << c.heading << ", " << c.elevation << "]");
                 break;
 #endif
             }
         }
 
-        Matrix cameraMatrix = cameraController.getCameraMatrix();
-
-        //glState["meshScene"]["mesh"].insertMesh(mesh, Matrix::scaling(0.2f) * Matrix::rotation(1, 1, 1, glState.relativeSceneTime().toSeconds()));
-        // Right multiply P with cameraMatrix.inverse() and set the correct fov to use the camera controller in mesh scenes.
-        glState << UniformMatrix4fv("P", Matrix::perspective(45.0f * 3.14159265f / 180.0f, static_cast<float>(sceneSize.x) / sceneSize.y, 0.001f, 1000.0f) * Matrix::translation(0.0, 0.0, -5.0));
-        //  glState << Uniform1f("iTime", glState.relativeSceneTime().toSeconds());
-        //glState << Uniform2f("iResolution", static_cast<float>(sceneSize.x), static_cast<float>(sceneSize.y));
-        glState << UniformMatrix4fv("iCameraMatrix", cameraMatrix);
-
         glState.update();
-
         timer.end();
 
 #ifdef _DEBUG
