@@ -2,6 +2,7 @@
 
 #include "Scene.h"
 #include "Window.h"
+#include "demo/Demo.h"
 #include "music/Music.h"
 #include "utility/OJstd.h"
 #include "utility/Timer.hpp"
@@ -16,11 +17,10 @@ enum class Clock {
 
 class GLState {
 public:
-    GLState(const Window& window, float sceneAspectRatio, unsigned char* song, Clock clock = Clock::Music);
+    GLState(const Window& window, const Vector2i& sceneSize, unsigned char* song, const ojstd::shared_ptr<Demo>& demo, Clock clock = Clock::Music);
     GLState(const GLState& other) = delete;
     GLState& operator=(const GLState& other) = delete;
 
-    void initialize();
     void update();
     void changeTime(Duration time);
     void setTime(Duration time);
@@ -28,37 +28,18 @@ public:
     void nextScene();
     void previousScene();
     void togglePause();
-    bool isPaused();
-    void clearScenes();
-    bool end();
-    ojstd::string currentScene();
+    bool isPaused() const;
+    [[nodiscard]] bool end() const;
+    ojstd::string currentScene() const;
 
-    Music& music();
-    Duration relativeSceneTime();
+    Music& music() const;
+    Duration relativeSceneTime() const;
     Duration elapsedTime() const;
 
     Vector2i sceneSize() const;
 
-    Scene& operator[](size_t i);
-    Scene& operator[](const ojstd::string& name);
-
-public:
-    template <typename... Args>
-    void addScene(Args&&... args)
-    {
-        this->_scenes.emplace_back(std::forward<Args>(args)...);
-    }
-
-    template <typename T>
-    GLState& operator<<(T&& b)
-    {
-        for (auto& scene : this->_scenes) {
-            auto buffers = scene.buffers();
-            for (auto& buffer : buffers)
-                *buffer << b;
-        }
-        return *this;
-    }
+    Scene& operator[](size_t i) const;
+    Scene& operator[](const ojstd::string& name) const;
 
 private:
     void render();
@@ -71,6 +52,7 @@ private:
     Clock _clock = Clock::System;
     ojstd::shared_ptr<Buffer> _mainBuffer;
     Vector2i _sceneSize;
+    ojstd::shared_ptr<Demo> _demo;
 };
 
 } // namespace ojgl

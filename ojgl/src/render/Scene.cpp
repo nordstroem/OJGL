@@ -4,7 +4,7 @@
 
 namespace ojgl {
 
-Scene::Scene(const ojstd::string& name, const ojstd::shared_ptr<Buffer>& buffer, Duration duration)
+Scene::Scene(const ojstd::shared_ptr<Buffer>& buffer, Duration duration, const ojstd::string& name)
     : _outputBuffer(buffer)
     , _duration(duration)
     , _name(name)
@@ -14,11 +14,6 @@ Scene::Scene(const ojstd::string& name, const ojstd::shared_ptr<Buffer>& buffer,
         b->generateFBO();
     }
     //@todo verify that no buffer contains the main buffer as feedback input.
-}
-
-Scene::Scene(const ojstd::shared_ptr<Buffer>& buffer, Duration duration)
-    : Scene("default", buffer, duration)
-{
 }
 
 ojstd::string Scene::name() const
@@ -68,7 +63,7 @@ Duration Scene::duration() const
     return this->_duration;
 }
 
-void Scene::render()
+void Scene::render(float relativeSceneTime)
 {
 
     auto available = buffers();
@@ -94,7 +89,7 @@ void Scene::render()
             }
         }
         if (allRendered) {
-            cur->render();
+            cur->render(relativeSceneTime);
             rendered.insert(cur);
             curIter = available.erase(curIter);
         } else {

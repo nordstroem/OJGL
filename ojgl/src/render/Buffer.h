@@ -12,8 +12,9 @@ enum class BufferFormat {
 };
 
 class Buffer {
-
+public:
     using BufferPtr = ojstd::shared_ptr<Buffer>;
+    using UniformVector = ojstd::vector<ojstd::shared_ptr<UniformBase>>;
 
 public:
     Buffer(const Buffer& other) = delete;
@@ -25,6 +26,8 @@ public:
     Buffer& setNumOutTextures(int numOutTextures);
     Buffer& setName(const ojstd::string& name);
     Buffer& setViewportOffset(const Vector2i& viewportOffset);
+    Buffer& setUniformCallback(const ojstd::function<UniformVector(float)>& uniformCallback);
+
     template <typename... T>
     Buffer& setInputs(T... inputs)
     {
@@ -39,7 +42,7 @@ public:
     }
     ojstd::string name() const;
     void generateFBO(bool isOutputBuffer = false);
-    void render();
+    void render(float relativeSceneTime);
     void insertMesh(const ojstd::shared_ptr<Mesh>& mesh, const Matrix& modelMatrix);
     void clearMeshes();
 
@@ -51,13 +54,6 @@ public:
     auto cend() const { return _inputs.cend(); }
 
     Buffer& operator<<(const Uniform1t& b);
-
-    template <typename T>
-    typename std::enable_if_t<std::is_base_of_v<UniformBase, typename std::remove_reference<T>::type>, Buffer&> operator<<(T&& b)
-    {
-        _uniforms[b.location()] = ojstd::make_shared<typename std::remove_reference<T>::type>(std::forward<T>(b));
-        return *this;
-    }
 
     static BufferPtr construct(unsigned width, unsigned height, const ojstd::string& vertexPath, const ojstd::string& fragmentPath);
 
@@ -106,7 +102,8 @@ private:
     ojstd::vector<FBO> _fbos;
     int _currentFBOIndex = 0;
 
-    ojstd::unordered_map<ojstd::string, ojstd::shared_ptr<UniformBase>> _uniforms;
+    ojstd::function<UniformVector(float)> _uniformCallback;
+
     ojstd::unordered_map<ojstd::string, ojstd::shared_ptr<Uniform1t>> _textures;
     ojstd::vector<ojstd::Pair<ojstd::shared_ptr<Mesh>, Matrix>> _meshes;
 };

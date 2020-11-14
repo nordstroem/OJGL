@@ -1,13 +1,14 @@
 #include "Window.h"
 #include <utility/Log.h>
+#include "winapi/gl_loader.h"
 #include <windows.h>
 
 namespace ojgl {
 
 class Window::Details {
 public:
-    Details(unsigned width, unsigned height)
-        : _size(width, height)
+    Details(Vector2i size)
+        : _size(size)
     {
     }
     HWND CreateOpenGLWindow(const char* title, int x, int y, BYTE type, DWORD flags, bool fullScreen);
@@ -25,8 +26,8 @@ public:
     bool _close = false;
 };
 
-Window::Window(unsigned width, unsigned height, ojstd::string title, bool fullScreen, bool showCursor)
-    : _priv(ojstd::make_shared<Details>(width, height))
+Window::Window(Vector2i size, ojstd::string title, bool fullScreen, bool showCursor)
+    : _priv(ojstd::make_shared<Details>(size))
 {
     ShowCursor(showCursor);
 
@@ -34,8 +35,8 @@ Window::Window(unsigned width, unsigned height, ojstd::string title, bool fullSc
         DEVMODE Mode;
         EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &Mode);
         Mode.dmBitsPerPel = 32;
-        Mode.dmPelsWidth = width;
-        Mode.dmPelsHeight = height;
+        Mode.dmPelsWidth = static_cast<DWORD>(size.x);
+        Mode.dmPelsHeight = static_cast<DWORD>(size.y);
         Mode.dmSize = sizeof(Mode);
         Mode.dmFields = DM_PELSWIDTH | DM_PELSHEIGHT | DM_BITSPERPEL;
         ChangeDisplaySettings(&Mode, CDS_FULLSCREEN);
@@ -58,6 +59,8 @@ Window::Window(unsigned width, unsigned height, ojstd::string title, bool fullSc
             LOG_ERROR("SetWindowLongPtr failed in Window");
         }
     }
+
+    load_gl_functions();
 }
 
 Window::~Window()

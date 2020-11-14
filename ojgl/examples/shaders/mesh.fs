@@ -6,7 +6,6 @@ in vec3 fragNormal;
 out vec4 fragColor;
 
 uniform sampler2D inTexture0;
-uniform float iGlobalTime;
 
 void main()
 {

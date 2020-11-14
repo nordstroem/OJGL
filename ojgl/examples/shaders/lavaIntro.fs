@@ -199,7 +199,7 @@ void main() {
         }
         t += d;
     }    
-	float fstr = smoothstep(21.0, 22.0, iTime);
+	float fstr = smoothstep(19.0, 20.0, iTime);
 	fragColor = vec4(color, 1.0);
     fragColor.rgb = fragColor.rgb / (fragColor.rgb + vec3(1.0)) * (1 -fstr);
 }

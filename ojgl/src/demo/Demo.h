@@ -1,0 +1,15 @@
+#pragma once
+#include "render/Scene.h"
+#include "utility/Vector.h"
+#include "utility/ojstd.h"
+
+namespace ojgl {
+
+class Demo {
+public:
+    virtual ~Demo() = default;
+    virtual ojstd::vector<Scene> buildSceneGraph(const Vector2i& sceneSize) const = 0;
+    virtual ojstd::string getTitle() const = 0;
+};
+
+}

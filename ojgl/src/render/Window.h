@@ -7,7 +7,7 @@ namespace ojgl {
 
 class Window {
 public:
-    Window(unsigned width, unsigned height, ojstd::string title, bool fullScreen, bool showCursor);
+    Window(Vector2i size, ojstd::string title, bool fullScreen, bool showCursor);
     Window(const Window& other) = delete;
     Window& operator=(const Window& other) = delete;
     ~Window();
