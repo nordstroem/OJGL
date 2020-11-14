@@ -15,8 +15,6 @@ GLState::GLState(const Window& window, const Vector2i& sceneSize, unsigned char*
     , _sceneSize(sceneSize)
     , _demo(demo)
 {
-    //load_gl_functions();
-
     ojstd::string fragment {
 #include "shaders/passThrough.fs"
     };
