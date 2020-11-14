@@ -51,7 +51,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
     for (const auto& [content, path] : resources::shaders)
         ShaderReader::preLoad(path, content);
 
-    ojstd::shared_ptr<Demo> demo = getDemo(DemoType::Template);
+    ojstd::shared_ptr<Demo> demo = getDemo(DemoType::Eldur);
     Window window(windowSize, demo->getTitle(), fullScreen, showCursor);
     load_gl_functions();
 

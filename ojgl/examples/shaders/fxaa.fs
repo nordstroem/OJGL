@@ -5,7 +5,6 @@ in vec2 fragCoord;
 out vec4 fragColor;
 
 uniform sampler2D inTexture0;
-uniform float iGlobalTime;
 
 uniform vec2 iResolution;
 

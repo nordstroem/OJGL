@@ -20,11 +20,19 @@ ojstd::vector<Scene> Eldur::buildSceneGraph(const Vector2i& sceneSize) const
         auto mountain = Buffer::construct(sceneSize.x, sceneSize.y, "demo.vs", "mountain.fs");
         mountain->setInputs(noise);
 
+        auto iGlobalTimeCallback = [](float relativeSceneTime) {
+            Buffer::UniformVector vector;
+            vector.push_back(ojstd::make_shared<Uniform1f>("iGlobalTime", relativeSceneTime - 2.f));
+            return vector;
+        };
+        mountain->setUniformCallback(iGlobalTimeCallback);
+
         auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "fxaa.vs", "fxaa.fs");
         fxaa->setInputs(mountain);
 
         auto post = Buffer::construct(sceneSize.x, sceneSize.y, "demo.vs", "mountainPost.fs");
         post->setInputs(fxaa);
+        post->setUniformCallback(iGlobalTimeCallback);
 
         scenes.emplace_back(post, Duration::seconds(77));
     }
