@@ -10,7 +10,7 @@ class Scene {
 public:
     Scene(const ojstd::shared_ptr<Buffer>& buffer, Duration duration, const ojstd::string& name = "default");
 
-    void render();
+    void render(float relativeSceneTime);
     ojstd::string name() const;
     Buffer& operator[](const ojstd::string& name);
     Duration duration() const;

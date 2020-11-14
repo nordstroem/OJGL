@@ -135,12 +135,18 @@ Buffer& Buffer::setViewportOffset(const Vector2i& viewportOffset)
     return *this;
 }
 
+Buffer& Buffer::setUniformCallback(const ojstd::function<UniformVector(float)>& uniformCallback)
+{
+    _uniformCallback = uniformCallback;
+    return *this;
+}
+
 ojstd::string Buffer::name() const
 {
     return _name;
 }
 
-void Buffer::render()
+void Buffer::render(float relativeSceneTime)
 {
     if (ShaderReader::modified(_vertexPath) || ShaderReader::modified(_fragmentPath)) {
         loadShader();
@@ -198,6 +204,14 @@ void Buffer::render()
     for (auto& um : _uniforms) {
         um.second->setUniform(_programID);
     }
+
+    if (_uniformCallback) {
+        for (const auto& uniform : _uniformCallback(relativeSceneTime)) {
+            uniform->setUniform(_programID);
+        }
+    }
+    glUniform1f(glGetUniformLocation(_programID, "iTime"), relativeSceneTime);
+    glUniform2f(glGetUniformLocation(_programID, "iResolution"), static_cast<GLfloat>(_width), static_cast<GLfloat>(_height));
 
     for (const auto& mesh : _meshes) {
         glBindVertexArray(mesh.first->vaoID());

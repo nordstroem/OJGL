@@ -136,12 +136,6 @@ public:
     bool operator==(std::nullptr_t other) const { return _ptr == other; }
     bool operator!=(std::nullptr_t other) const { return _ptr != other; }
 
-    template <typename B, typename = std::enable_if_t<std::is_base_of<B, T>::value>>
-    operator shared_ptr<B>()
-    {
-        return *reinterpret_cast<shared_ptr<B>*>(this);
-    }
-
     int* _count = nullptr; // @todo make private and thread-safe.
     T* _ptr = nullptr;
 

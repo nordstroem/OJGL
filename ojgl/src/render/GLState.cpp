@@ -55,12 +55,13 @@ void GLState::render()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     auto t = Duration::milliseconds(0);
-    auto elapsed = elapsedTime();
+    const auto elapsed = elapsedTime();
+    const float sceneTime = relativeSceneTime().toSeconds<float>();
     for (auto& v : _scenes) {
         if (elapsed < v.duration() + t) {
-            v.render();
+            v.render(sceneTime);
             _mainBuffer->setInputs(v.outputBuffer());
-            _mainBuffer->render();
+            _mainBuffer->render(sceneTime);
             break;
         }
         t = t + v.duration();
