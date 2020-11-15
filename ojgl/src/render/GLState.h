@@ -17,7 +17,7 @@ enum class Clock {
 
 class GLState {
 public:
-    GLState(const Window& window, const Vector2i& sceneSize, unsigned char* song, const ojstd::shared_ptr<Demo>& demo, Clock clock = Clock::Music);
+    GLState(const Window& window, const Vector2i& sceneSize, unsigned char* song, const ojstd::shared_ptr<Demo>& demo);
     GLState(const GLState& other) = delete;
     GLState& operator=(const GLState& other) = delete;
 
