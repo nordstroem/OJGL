@@ -60,12 +60,12 @@ struct Vector2 {
     {
     }
 
-    Vector2 operator-(const Vector2& v)
+    Vector2 operator-(const Vector2& v) const
     {
         return Vector2(x - v.x, y - v.y);
     }
 
-    Vector2 operator/(const T& s)
+    Vector2 operator/(const T& s) const
     {
         return Vector2(x / s, y / s);
     }

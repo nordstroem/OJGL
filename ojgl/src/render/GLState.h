@@ -36,8 +36,6 @@ public:
     Duration relativeSceneTime() const;
     Duration elapsedTime() const;
 
-    Vector2i sceneSize() const;
-
     Scene& operator[](size_t i) const;
     Scene& operator[](const ojstd::string& name) const;
 
@@ -51,7 +49,6 @@ private:
     ojstd::shared_ptr<Music> _music = nullptr;
     Clock _clock = Clock::System;
     ojstd::shared_ptr<Buffer> _mainBuffer;
-    Vector2i _sceneSize;
     ojstd::shared_ptr<Demo> _demo;
 };
 

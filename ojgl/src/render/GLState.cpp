@@ -7,13 +7,7 @@
 
 namespace ojgl {
 
-GLState::GLState(const Window& window, const Vector2i& sceneSize, unsigned char* song, const ojstd::shared_ptr<Demo>& demo)
-    : _scenes(demo->buildSceneGraph(sceneSize))
-    , _paused(false)
-    , _clock(song == nullptr ? Clock::System : Clock::Music)
-    , _music(song == nullptr ? nullptr : ojstd::make_shared<Music>(song))
-    , _sceneSize(sceneSize)
-    , _demo(demo)
+static ojstd::shared_ptr<Buffer> buildPassthroughBuffer(const Vector2i& windowSize, const Vector2i& sceneSize)
 {
     ojstd::string fragment {
 #include "shaders/passThrough.fs"
@@ -23,10 +17,21 @@ GLState::GLState(const Window& window, const Vector2i& sceneSize, unsigned char*
     };
     ShaderReader::preLoad("render/shaders/passThrough.fs", fragment);
     ShaderReader::preLoad("render/shaders/passThrough.vs", vertex);
-    _mainBuffer = Buffer::construct(_sceneSize.x, _sceneSize.y, "render/shaders/passThrough.vs", "render/shaders/passThrough.fs");
-    _mainBuffer->setViewportOffset((window.size() - _sceneSize) / 2);
-    _mainBuffer->generateFBO(true); //@todo: make it possible to remove this line.
 
+    auto buffer = Buffer::construct(sceneSize.x, sceneSize.y, "render/shaders/passThrough.vs", "render/shaders/passThrough.fs");
+    buffer->setViewportOffset((windowSize - sceneSize) / 2);
+    buffer->generateFBO(true); //@todo: make it possible to remove this line.
+    return buffer;
+}
+
+GLState::GLState(const Window& window, const Vector2i& sceneSize, unsigned char* song, const ojstd::shared_ptr<Demo>& demo)
+    : _scenes(demo->buildSceneGraph(sceneSize))
+    , _paused(false)
+    , _clock(song == nullptr ? Clock::System : Clock::Music)
+    , _music(song == nullptr ? nullptr : ojstd::make_shared<Music>(song))
+    , _demo(demo)
+{
+    _mainBuffer = buildPassthroughBuffer(window.size(), sceneSize);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
     _systemClockStartTime = Timepoint::now();
@@ -100,11 +105,6 @@ void GLState::update()
         for (auto& b : buffers)
             b->clearMeshes();
     }
-}
-
-Vector2i GLState::sceneSize() const
-{
-    return _sceneSize;
 }
 
 Duration GLState::elapsedTime() const
