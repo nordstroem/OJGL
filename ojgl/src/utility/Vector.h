@@ -1,5 +1,7 @@
 #pragma once
 
+#include <type_traits>
+
 template <typename T>
 struct Vector3 {
     T x = T(0);
@@ -58,14 +60,23 @@ struct Vector2 {
     {
     }
 
-    Vector2 operator-(const Vector2& v)
+    Vector2 operator-(const Vector2& v) const
     {
         return Vector2(x - v.x, y - v.y);
     }
 
-    Vector2 operator/(const T& s)
+    Vector2 operator/(const T& s) const
     {
         return Vector2(x / s, y / s);
+    }
+
+    [[nodiscard]] std::enable_if_t<std::is_integral_v<T>, Vector2> cropToAspectRatio(float aspectRatio) const
+    {
+        const float currentAspectRatio = static_cast<float>(x) / y;
+        if (aspectRatio > currentAspectRatio)
+            return Vector2(x, ojstd::ftoi(x / aspectRatio));
+        else
+            return Vector2(ojstd::ftoi(y * aspectRatio), y);
     }
 };
 

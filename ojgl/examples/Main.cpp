@@ -14,8 +14,6 @@
 
 using namespace ojgl;
 
-static Vector2i cropToAspectRatio(const Vector2i& windowSize, float aspectRatio);
-
 enum class DemoType {
     DodensTriumf,
     Eldur,
@@ -39,22 +37,19 @@ ojstd::shared_ptr<Demo> getDemo(DemoType type)
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
 {
-    auto popupData = popup::show();
+    const auto popupData = popup::show();
 
-    Vector2i windowSize(popupData.width, popupData.height);
-    bool fullScreen = popupData.full;
-    bool showCursor = !fullScreen;
+    const Vector2i windowSize(popupData.width, popupData.height);
+    const bool fullScreen = popupData.full;
+    const bool showCursor = !fullScreen;
 
     ShaderReader::setBasePath("examples/shaders/");
-
     for (const auto& [content, path] : resources::shaders)
         ShaderReader::preLoad(path, content);
 
-    ojstd::shared_ptr<Demo> demo = getDemo(DemoType::Eldur);
+    const auto demo = getDemo(DemoType::Eldur);
     Window window(windowSize, demo->getTitle(), fullScreen, showCursor);
-
-    const Vector2i sceneSize = cropToAspectRatio(windowSize, 16.0f / 9.0f);
-    GLState glState(window, sceneSize, resources::songs::song, demo);
+    GLState glState(window, *demo);
 
     while (!glState.end() && !window.isClosePressed()) {
         Timer timer;
@@ -111,17 +106,6 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
         debugTitle.append(" ms");
         window.setTitle(debugTitle);
 #endif
-    }
-}
-
-static Vector2i cropToAspectRatio(const Vector2i& windowSize, float aspectRatio)
-{
-    const float windowAspectRatio = static_cast<float>(windowSize.x) / windowSize.y;
-
-    if (aspectRatio > windowAspectRatio) {
-        return Vector2i(windowSize.x, ojstd::ftoi(windowSize.x / aspectRatio));
-    } else {
-        return Vector2i(ojstd::ftoi(windowSize.y * aspectRatio), windowSize.y);
     }
 }
 

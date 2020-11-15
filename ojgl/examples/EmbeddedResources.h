@@ -122,9 +122,4 @@ namespace ojgl::resources {
   };
 // clang-format on
 
-namespace songs {
-    unsigned char song[] = {
-#include "songs/song.inc"
-    };
-}
 }
