@@ -14,8 +14,6 @@
 
 using namespace ojgl;
 
-static Vector2i cropToAspectRatio(const Vector2i& windowSize, float aspectRatio);
-
 enum class DemoType {
     DodensTriumf,
     Eldur,
@@ -53,7 +51,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
     ojstd::shared_ptr<Demo> demo = getDemo(DemoType::Eldur);
     Window window(windowSize, demo->getTitle(), fullScreen, showCursor);
 
-    const Vector2i sceneSize = cropToAspectRatio(windowSize, 16.0f / 9.0f);
+    const Vector2i sceneSize = windowSize.cropToAspectRatio(16.0f / 9.0f);
     GLState glState(window, sceneSize, resources::songs::song, demo);
 
     while (!glState.end() && !window.isClosePressed()) {
@@ -111,17 +109,6 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
         debugTitle.append(" ms");
         window.setTitle(debugTitle);
 #endif
-    }
-}
-
-static Vector2i cropToAspectRatio(const Vector2i& windowSize, float aspectRatio)
-{
-    const float windowAspectRatio = static_cast<float>(windowSize.x) / windowSize.y;
-
-    if (aspectRatio > windowAspectRatio) {
-        return Vector2i(windowSize.x, ojstd::ftoi(windowSize.x / aspectRatio));
-    } else {
-        return Vector2i(ojstd::ftoi(windowSize.y * aspectRatio), windowSize.y);
     }
 }
 
