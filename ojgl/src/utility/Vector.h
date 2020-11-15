@@ -70,7 +70,7 @@ struct Vector2 {
         return Vector2(x / s, y / s);
     }
 
-    [[nodiscard]] std::enable_if_t<std::is_integral_v<T>, Vector2> cropToAspectRatio(float aspectRatio)
+    [[nodiscard]] std::enable_if_t<std::is_integral_v<T>, Vector2> cropToAspectRatio(float aspectRatio) const
     {
         const float currentAspectRatio = static_cast<float>(x) / y;
         if (aspectRatio > currentAspectRatio)
