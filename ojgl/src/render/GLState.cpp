@@ -24,19 +24,20 @@ static ojstd::shared_ptr<Buffer> buildPassthroughBuffer(const Vector2i& windowSi
     return buffer;
 }
 
-GLState::GLState(const Window& window, const Vector2i& sceneSize, unsigned char* song, const ojstd::shared_ptr<Demo>& demo)
-    : _scenes(demo->buildSceneGraph(sceneSize))
-    , _paused(false)
-    , _clock(song == nullptr ? Clock::System : Clock::Music)
-    , _music(song == nullptr ? nullptr : ojstd::make_shared<Music>(song))
-    , _demo(demo)
+GLState::GLState(const Window& window, const Demo& demo)
 {
+    const Vector2i sceneSize = window.size().cropToAspectRatio(demo.getAspectRatio());
     _mainBuffer = buildPassthroughBuffer(window.size(), sceneSize);
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    _scenes = demo.buildSceneGraph(sceneSize);
 
-    _systemClockStartTime = Timepoint::now();
-    if (_music != nullptr)
+    if (auto* song = demo.getSong()) {
+        _music = ojstd::make_shared<Music>(song);
         _music->play();
+        _clock = Clock::Music;
+    }
+
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    _systemClockStartTime = Timepoint::now();
 }
 
 bool GLState::end() const
