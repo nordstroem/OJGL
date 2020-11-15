@@ -65,11 +65,11 @@ ojstd::string Eldur::getTitle() const
     return "OJ - Eldur";
 }
 
-static unsigned char song[] = {
+static const unsigned char song[] = {
 #include "songs/song.inc"
 };
 
-unsigned char* Eldur::getSong() const
+const unsigned char* Eldur::getSong() const
 {
     return song;
 }

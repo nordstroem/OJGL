@@ -7,7 +7,7 @@
 
 namespace ojgl {
 
-Music::Music(unsigned char* song)
+Music::Music(const unsigned char* song)
     : _song(song)
     , _player(ojstd::make_shared<V2MPlayer>())
 {

@@ -10,7 +10,7 @@ public:
     virtual ~Demo() = default;
     virtual ojstd::vector<Scene> buildSceneGraph(const Vector2i& sceneSize) const = 0;
     virtual ojstd::string getTitle() const { return ""; };
-    virtual unsigned char* getSong() const { return nullptr; };
+    virtual const unsigned char* getSong() const { return nullptr; };
     virtual float getAspectRatio() const { return 16.f / 9.f; };
 };
 

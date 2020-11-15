@@ -32,7 +32,6 @@ public:
     [[nodiscard]] bool end() const;
     ojstd::string currentScene() const;
 
-    Music& music() const;
     Duration relativeSceneTime() const;
     Duration elapsedTime() const;
 

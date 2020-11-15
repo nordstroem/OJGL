@@ -11,7 +11,7 @@ class V2MPlayer;
 class Music {
 
 public:
-    explicit Music(unsigned char* song);
+    explicit Music(const unsigned char* song);
     Music(const Music& other) = delete;
     Music& operator=(const Music& other) = delete;
     ~Music();
@@ -26,7 +26,7 @@ public:
 private:
     ojstd::shared_ptr<V2MPlayer> _player;
     void _initSync();
-    unsigned char* _song;
+    const unsigned char* _song;
     Duration _syncOffset;
     ojstd::unordered_map<int, SyncChannel> _syncChannels;
 };

@@ -37,17 +37,17 @@ ojstd::shared_ptr<Demo> getDemo(DemoType type)
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
 {
-    auto popupData = popup::show();
+    const auto popupData = popup::show();
 
-    Vector2i windowSize(popupData.width, popupData.height);
-    bool fullScreen = popupData.full;
-    bool showCursor = !fullScreen;
+    const Vector2i windowSize(popupData.width, popupData.height);
+    const bool fullScreen = popupData.full;
+    const bool showCursor = !fullScreen;
 
     ShaderReader::setBasePath("examples/shaders/");
     for (const auto& [content, path] : resources::shaders)
         ShaderReader::preLoad(path, content);
 
-    ojstd::shared_ptr<Demo> demo = getDemo(DemoType::Eldur);
+    auto demo = getDemo(DemoType::Eldur);
     Window window(windowSize, demo->getTitle(), fullScreen, showCursor);
     GLState glState(window, *demo);
 

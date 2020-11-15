@@ -30,7 +30,7 @@ GLState::GLState(const Window& window, const Demo& demo)
     _mainBuffer = buildPassthroughBuffer(window.size(), sceneSize);
     _scenes = demo.buildSceneGraph(sceneSize);
 
-    if (auto* song = demo.getSong()) {
+    if (const auto* song = demo.getSong()) {
         _music = ojstd::make_shared<Music>(song);
         _music->play();
         _clock = Clock::Music;
@@ -73,12 +73,6 @@ void GLState::render()
 
     glFlush();
     glFinish();
-}
-
-Music& GLState::music() const
-{
-    _ASSERTE(_music != nullptr);
-    return *_music;
 }
 
 Scene& GLState::operator[](size_t i) const
