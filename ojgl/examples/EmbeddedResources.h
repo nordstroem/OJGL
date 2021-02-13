@@ -93,7 +93,53 @@ namespace ojgl::resources {
           {
   #include "shaders/common/quad.vs"
           , "common/quad.vs"
+          },
+
+          {
+#include "shaders/QED/raymarch_utils.fs"
+            , "QED/raymarch_utils.fs"
+          },
+
+          {
+#include "shaders/QED/raymarch_utils_tower.fs"
+          , "QED/raymarch_utils_tower.fs"
+          },
+
+          {
+  #include "shaders/QED/blur1.fs"
+          , "QED/blur1.fs"
+          },
+
+          {
+  #include "shaders/QED/post.fs"
+          , "QED/post.fs"
+          },
+
+          {
+#include "shaders/QED/rayMarch.fs"
+          , "QED/rayMarch.fs"
+          },
+
+          {
+#include "shaders/QED/rayMarch.vs"
+          , "QED/rayMarch.vs"
+          },
+
+          {
+#include "shaders/QED/sphere.fs"
+          , "QED/sphere.fs"
+          },
+
+          {
+#include "shaders/QED/sphere.vs"
+          , "QED/sphere.vs"
+          },
+
+          {
+#include "shaders/QED/tower.fs"
+          , "QED/tower.fs"
           }
+
   };
 // clang-format on
 

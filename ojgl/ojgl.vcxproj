@@ -381,6 +381,17 @@
     <None Include="examples\shaders\eldur\mountainPost.fs" />
     <None Include="examples\shaders\eldur\outro.fs" />
     <None Include="examples\shaders\eldur\post.fs" />
+    <None Include="examples\shaders\QED\blur1.fs" />
+    <None Include="examples\shaders\QED\post.fs" />
+    <None Include="examples\shaders\QED\rayMarch.fs" />
+    <None Include="examples\shaders\QED\rayMarch.vs" />
+    <None Include="examples\shaders\QED\raymarch_utils.fs" />
+    <None Include="examples\shaders\QED\raymarch_utils_tower.fs" />
+    <None Include="examples\shaders\experiments\smoke.fs" />
+    <None Include="examples\shaders\experiments\smoke.vs" />
+    <None Include="examples\shaders\QED\sphere.fs" />
+    <None Include="examples\shaders\QED\sphere.vs" />
+    <None Include="examples\shaders\QED\tower.fs" />
     <None Include="examples\songs\song.inc" />
     <None Include="src\render\shaders\passThrough.fs" />
     <None Include="src\render\shaders\passThrough.vs" />

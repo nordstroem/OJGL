@@ -50,7 +50,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
     for (const auto& [content, path] : resources::shaders)
         ShaderReader::preLoad(path, content);
 
-    const auto demo = getDemo(DemoType::Eldur);
+    const auto demo = getDemo(DemoType::QED);
     Window window(windowSize, demo->getTitle(), fullScreen, showCursor);
     GLState glState(window, *demo);
 
