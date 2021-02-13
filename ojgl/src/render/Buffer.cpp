@@ -141,6 +141,12 @@ Buffer& Buffer::setUniformCallback(const ojstd::function<UniformVector(float)>& 
     return *this;
 }
 
+Buffer& Buffer::setMeshCallback(const ojstd::function<ojstd::vector<ojstd::Pair<ojstd::shared_ptr<Mesh>, Matrix>>(float)>& meshCallback)
+{
+    _meshCallback = meshCallback;
+    return *this;
+}
+
 ojstd::string Buffer::name() const
 {
     return _name;
@@ -198,6 +204,12 @@ void Buffer::render(float relativeSceneTime)
             glBindTexture(GL_TEXTURE_2D, textureIDs[j]);
             currentTextureID++;
             textureUniformID++;
+        }
+    }
+
+    if (_meshCallback) {
+        for (const auto& [meshPtr, matrix] : _meshCallback(relativeSceneTime)) {
+            insertMesh(meshPtr, matrix);
         }
     }
 

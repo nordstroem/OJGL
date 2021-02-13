@@ -27,6 +27,7 @@ public:
     Buffer& setName(const ojstd::string& name);
     Buffer& setViewportOffset(const Vector2i& viewportOffset);
     Buffer& setUniformCallback(const ojstd::function<UniformVector(float)>& uniformCallback);
+    Buffer& setMeshCallback(const ojstd::function<ojstd::vector<ojstd::Pair<ojstd::shared_ptr<Mesh>, Matrix>>(float)>& meshCallback);
 
     template <typename... T>
     Buffer& setInputs(T... inputs)
@@ -103,6 +104,7 @@ private:
     int _currentFBOIndex = 0;
 
     ojstd::function<UniformVector(float)> _uniformCallback;
+    ojstd::function<ojstd::vector<ojstd::Pair<ojstd::shared_ptr<Mesh>, Matrix>>(float)> _meshCallback;
 
     ojstd::unordered_map<ojstd::string, ojstd::shared_ptr<Uniform1t>> _textures;
     ojstd::vector<ojstd::Pair<ojstd::shared_ptr<Mesh>, Matrix>> _meshes;
