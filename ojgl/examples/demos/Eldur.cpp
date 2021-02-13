@@ -6,18 +6,18 @@ ojstd::vector<Scene> Eldur::buildSceneGraph(const Vector2i& sceneSize) const
 {
     ojstd::vector<Scene> scenes;
     {
-        auto edison = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "lavaIntro.fs");
-        auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "fxaa.vs", "fxaa.fs");
+        auto edison = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "eldur/lavaIntro.fs");
+        auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "common/fxaa.vs", "common/fxaa.fs");
         fxaa->setInputs(edison);
 
-        auto post = Buffer::construct(sceneSize.x, sceneSize.y, "post.vs", "post.fs");
+        auto post = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "eldur/post.fs");
         post->setInputs(fxaa);
 
         scenes.emplace_back(post, Duration::seconds(20));
     }
     {
-        auto noise = Buffer::construct(sceneSize.x, sceneSize.y, "demo.vs", "mountainNoise.fs");
-        auto mountain = Buffer::construct(sceneSize.x, sceneSize.y, "demo.vs", "mountain.fs");
+        auto noise = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "eldur/mountainNoise.fs");
+        auto mountain = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "eldur/mountain.fs");
         mountain->setInputs(noise);
 
         auto iGlobalTimeCallback = [](float relativeSceneTime) {
@@ -27,31 +27,31 @@ ojstd::vector<Scene> Eldur::buildSceneGraph(const Vector2i& sceneSize) const
         };
         mountain->setUniformCallback(iGlobalTimeCallback);
 
-        auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "fxaa.vs", "fxaa.fs");
+        auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "common/fxaa.vs", "common/fxaa.fs");
         fxaa->setInputs(mountain);
 
-        auto post = Buffer::construct(sceneSize.x, sceneSize.y, "demo.vs", "mountainPost.fs");
+        auto post = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "eldur/mountainPost.fs");
         post->setInputs(fxaa);
         post->setUniformCallback(iGlobalTimeCallback);
 
         scenes.emplace_back(post, Duration::seconds(77));
     }
     {
-        auto edison = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "lavaScene2.fs");
-        auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "fxaa.vs", "fxaa.fs");
+        auto edison = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "eldur/lavaScene2.fs");
+        auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "common/fxaa.vs", "common/fxaa.fs");
         fxaa->setInputs(edison);
 
-        auto post = Buffer::construct(sceneSize.x, sceneSize.y, "post.vs", "post.fs");
+        auto post = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "eldur/post.fs");
         post->setInputs(fxaa);
 
         scenes.emplace_back(post, Duration::seconds(40));
     }
     {
-        auto edison = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "outro.fs");
-        auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "fxaa.vs", "fxaa.fs");
+        auto edison = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "eldur/outro.fs");
+        auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "common/fxaa.vs", "common/fxaa.fs");
         fxaa->setInputs(edison);
 
-        auto post = Buffer::construct(sceneSize.x, sceneSize.y, "post.vs", "post.fs");
+        auto post = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "eldur/post.fs");
         post->setInputs(fxaa);
 
         scenes.emplace_back(post, Duration::seconds(40));

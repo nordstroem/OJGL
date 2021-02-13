@@ -363,7 +363,7 @@
     <ClInclude Include="src\winapi\wglext.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="examples\shaders\cachedGeometry.fs" />
+    <None Include="examples\shaders\experiments\cachedGeometry.fs" />
     <None Include="examples\shaders\common\noise.fs" />
     <None Include="examples\shaders\common\primitives.fs" />
     <None Include="examples\shaders\common\quad.vs" />
@@ -371,20 +371,16 @@
     <None Include="examples\shaders\common\raymarch_template.fs" />
     <None Include="examples\shaders\common\raymarch_utils.fs" />
     <None Include="examples\shaders\common\utils.fs" />
-    <None Include="examples\shaders\demo.vs" />
-    <None Include="examples\shaders\fxaa.fs" />
-    <None Include="examples\shaders\fxaa.vs" />
-    <None Include="examples\shaders\lavaIntro.fs" />
-    <None Include="examples\shaders\lavaScene2.fs" />
-    <None Include="examples\shaders\lightning.fs" />
-    <None Include="examples\shaders\mesh.fs" />
-    <None Include="examples\shaders\mesh.vs" />
-    <None Include="examples\shaders\mountain.fs" />
-    <None Include="examples\shaders\mountainNoise.fs" />
-    <None Include="examples\shaders\mountainPost.fs" />
-    <None Include="examples\shaders\outro.fs" />
-    <None Include="examples\shaders\post.fs" />
-    <None Include="examples\shaders\post.vs" />
+    <None Include="examples\shaders\common\fxaa.fs" />
+    <None Include="examples\shaders\common\fxaa.vs" />
+    <None Include="examples\shaders\eldur\lavaIntro.fs" />
+    <None Include="examples\shaders\eldur\lavaScene2.fs" />
+    <None Include="examples\shaders\experiments\lightning.fs" />
+    <None Include="examples\shaders\eldur\mountain.fs" />
+    <None Include="examples\shaders\eldur\mountainNoise.fs" />
+    <None Include="examples\shaders\eldur\mountainPost.fs" />
+    <None Include="examples\shaders\eldur\outro.fs" />
+    <None Include="examples\shaders\eldur\post.fs" />
     <None Include="examples\songs\song.inc" />
     <None Include="src\render\shaders\passThrough.fs" />
     <None Include="src\render\shaders\passThrough.vs" />
