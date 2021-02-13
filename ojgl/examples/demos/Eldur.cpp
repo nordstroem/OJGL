@@ -6,7 +6,7 @@ ojstd::vector<Scene> Eldur::buildSceneGraph(const Vector2i& sceneSize) const
 {
     ojstd::vector<Scene> scenes;
     {
-        auto edison = Buffer::construct(sceneSize.x, sceneSize.y, "edison.vs", "lavaIntro.fs");
+        auto edison = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "lavaIntro.fs");
         auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "fxaa.vs", "fxaa.fs");
         fxaa->setInputs(edison);
 
@@ -37,7 +37,7 @@ ojstd::vector<Scene> Eldur::buildSceneGraph(const Vector2i& sceneSize) const
         scenes.emplace_back(post, Duration::seconds(77));
     }
     {
-        auto edison = Buffer::construct(sceneSize.x, sceneSize.y, "edison.vs", "lavaScene2.fs");
+        auto edison = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "lavaScene2.fs");
         auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "fxaa.vs", "fxaa.fs");
         fxaa->setInputs(edison);
 
@@ -47,7 +47,7 @@ ojstd::vector<Scene> Eldur::buildSceneGraph(const Vector2i& sceneSize) const
         scenes.emplace_back(post, Duration::seconds(40));
     }
     {
-        auto edison = Buffer::construct(sceneSize.x, sceneSize.y, "edison.vs", "outro.fs");
+        auto edison = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "outro.fs");
         auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "fxaa.vs", "fxaa.fs");
         fxaa->setInputs(edison);
 

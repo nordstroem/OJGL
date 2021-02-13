@@ -2,6 +2,7 @@
 #include "FreeCameraController.h"
 #include "demo/Demo.h"
 #include "demos/Eldur.h"
+#include "demos/QED.h"
 #include "demos/Template.h"
 #include "render/GLState.h"
 #include "render/Popup.h"
@@ -27,6 +28,8 @@ ojstd::shared_ptr<Demo> getDemo(DemoType type)
     switch (type) {
     case DemoType::Eldur:
         return ojstd::make_shared<Eldur>();
+    case DemoType::QED:
+      return ojstd::make_shared<QED>();
     case DemoType::Template:
         return ojstd::make_shared<Template>();
     }

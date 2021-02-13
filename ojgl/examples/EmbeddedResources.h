@@ -101,11 +101,6 @@ namespace ojgl::resources {
           },
 
           {
-  #include "shaders/edison.vs"
-          , "edison.vs"
-          },
-
-          {
   #include "shaders/fxaa.vs"
           , "fxaa.vs"
           },
