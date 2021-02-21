@@ -344,3 +344,11 @@ ojstd::string QED::getTitle() const
 {
     return "OJ - Q.E.D.";
 }
+
+static const unsigned char song[] = {
+#include "songs/qed_song.inc"
+};
+
+const unsigned char* QED::getSong() const {
+  return song;
+}

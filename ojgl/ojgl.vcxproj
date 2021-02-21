@@ -392,7 +392,8 @@
     <None Include="examples\shaders\QED\sphere.fs" />
     <None Include="examples\shaders\QED\sphere.vs" />
     <None Include="examples\shaders\QED\tower.fs" />
-    <None Include="examples\songs\song.inc" />
+    <None Include="examples\songs\eldur_song.inc" />
+    <None Include="examples\songs\qed_song.inc" />
     <None Include="src\render\shaders\passThrough.fs" />
     <None Include="src\render\shaders\passThrough.vs" />
   </ItemGroup>

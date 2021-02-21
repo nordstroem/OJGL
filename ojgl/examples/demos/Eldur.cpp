@@ -66,7 +66,7 @@ ojstd::string Eldur::getTitle() const
 }
 
 static const unsigned char song[] = {
-#include "songs/song.inc"
+#include "songs/eldur_song.inc"
 };
 
 const unsigned char* Eldur::getSong() const
