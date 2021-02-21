@@ -49,7 +49,7 @@ static auto generateRandomMatrices(int number)
 
 class SphereMeshCallback {
 public:
-    auto operator()(float relativeSceneTime)
+    ojstd::vector<ojstd::Pair<ojstd::shared_ptr<Mesh>, Matrix>> operator()(float relativeSceneTime)
     {
         auto& cameraController = FreeCameraController::instance();
 
@@ -311,6 +311,13 @@ ojstd::vector<Scene> QED::buildSceneGraph(const Vector2i& sceneSize) const
 
         auto rayMarch = Buffer::construct(sceneSize.x, sceneSize.y, "QED/rayMarch.vs", "QED/rayMarch.fs");
         rayMarch->setInputs(sphere);
+
+        rayMarch->setUniformCallback([&cameraController](float relativeSceneTime) -> Buffer::UniformVector {
+            Matrix cameraMatrix = cameraController.getCameraMatrix();
+            return {
+                ojstd::make_shared<UniformMatrix4fv>("iCameraMatrix", cameraMatrix),
+            };
+        });
 
         auto blur1 = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "QED/blur1.fs");
         blur1->setInputs(rayMarch);
