@@ -311,6 +311,7 @@
     <ClCompile Include="examples\demos\Template.cpp" />
     <ClCompile Include="examples\FreeCameraController.cpp" />
     <ClCompile Include="examples\Main.cpp" />
+    <ClCompile Include="examples\demos\InnerSystemLab.cpp" />
     <ClCompile Include="src\music\Music.cpp" />
     <ClCompile Include="src\music\SyncChannel.cpp" />
     <ClCompile Include="src\music\V2MPlayer.cpp" />
@@ -334,6 +335,7 @@
     <ClInclude Include="examples\demos\Eldur.h" />
     <ClInclude Include="examples\demos\QED.h" />
     <ClInclude Include="examples\demos\Template.h" />
+    <ClInclude Include="examples\demos\InnerSystemLab.h" />
     <ClInclude Include="src\demo\Demo.h" />
     <ClInclude Include="examples\EmbeddedResources.h" />
     <ClInclude Include="examples\FreeCameraController.h" />
@@ -389,6 +391,11 @@
     <None Include="examples\shaders\eldur\mountainPost.fs" />
     <None Include="examples\shaders\eldur\outro.fs" />
     <None Include="examples\shaders\eldur\post.fs" />
+    <None Include="examples\shaders\innersystemlab\edison_1.fs" />
+    <None Include="examples\shaders\innersystemlab\edison_1_post.fs" />
+    <None Include="examples\shaders\innersystemlab\edison_2.fs" />
+    <None Include="examples\shaders\innersystemlab\edison_planets.fs" />
+    <None Include="examples\shaders\innersystemlab\hospital.fs" />
     <None Include="examples\shaders\QED\blur1.fs" />
     <None Include="examples\shaders\QED\post.fs" />
     <None Include="examples\shaders\QED\rayMarch.fs" />
@@ -402,6 +409,7 @@
     <None Include="examples\shaders\QED\tower.fs" />
     <None Include="examples\songs\dodenstriumf_song.inc" />
     <None Include="examples\songs\eldur_song.inc" />
+    <None Include="examples\songs\innersystemlab_song.inc" />
     <None Include="examples\songs\qed_song.inc" />
     <None Include="src\render\shaders\passThrough.fs" />
     <None Include="src\render\shaders\passThrough.vs" />

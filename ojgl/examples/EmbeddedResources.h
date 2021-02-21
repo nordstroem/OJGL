@@ -168,6 +168,31 @@ namespace ojgl::resources {
           {
 #include "shaders/dodenstriumf/roomScenePost.fs"
           , "dodenstriumf/roomScenePost.fs"
+          },
+
+          {
+#include "shaders/innersystemlab/edison_1.fs"
+            , "innersystemlab/edison_1.fs"
+          },
+
+          {
+#include "shaders/innersystemlab/edison_1_post.fs"
+            , "innersystemlab/edison_1_post.fs"
+          },
+
+          {
+#include "shaders/innersystemlab/edison_2.fs"
+            , "innersystemlab/edison_2.fs"
+          },
+
+          {
+#include "shaders/innersystemlab/edison_planets.fs"
+            , "innersystemlab/edison_planets.fs"
+          },
+
+          {
+#include "shaders/innersystemlab/hospital.fs"
+            , "innersystemlab/hospital.fs"
           }
 
   };

@@ -3,6 +3,7 @@
 #include "demo/Demo.h"
 #include "demos/DodensTriumf.h"
 #include "demos/Eldur.h"
+#include "demos/InnerSystemLab.h"
 #include "demos/QED.h"
 #include "demos/Template.h"
 #include "render/GLState.h"
@@ -30,9 +31,11 @@ ojstd::shared_ptr<Demo> getDemo(DemoType type)
     case DemoType::Eldur:
         return ojstd::make_shared<Eldur>();
     case DemoType::QED:
-      return ojstd::make_shared<QED>();
+        return ojstd::make_shared<QED>();
     case DemoType::DodensTriumf:
-      return ojstd::make_shared<DodensTriumf>();
+        return ojstd::make_shared<DodensTriumf>();
+    case DemoType::InnerSystemLab:
+        return ojstd::make_shared<InnerSystemLab>();
     case DemoType::Template:
         return ojstd::make_shared<Template>();
     }
@@ -53,7 +56,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
     for (const auto& [content, path] : resources::shaders)
         ShaderReader::preLoad(path, content);
 
-    const auto demo = getDemo(DemoType::DodensTriumf);
+    const auto demo = getDemo(DemoType::InnerSystemLab);
     Window window(windowSize, demo->getTitle(), fullScreen, showCursor);
     GLState glState(window, *demo);
 
