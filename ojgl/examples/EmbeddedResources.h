@@ -106,12 +106,12 @@ namespace ojgl::resources {
           },
 
           {
-  #include "shaders/QED/blur1.fs"
+#include "shaders/QED/blur1.fs"
           , "QED/blur1.fs"
           },
 
           {
-  #include "shaders/QED/post.fs"
+#include "shaders/QED/post.fs"
           , "QED/post.fs"
           },
 
@@ -138,9 +138,38 @@ namespace ojgl::resources {
           {
 #include "shaders/QED/tower.fs"
           , "QED/tower.fs"
+          },
+
+          {
+#include "shaders/dodenstriumf/graveScene.fs"
+          , "dodenstriumf/graveScene.fs"
+          },
+
+          {
+#include "shaders/dodenstriumf/graveScenePost.fs"
+          , "dodenstriumf/graveScenePost.fs"
+          },
+
+          {
+#include "shaders/dodenstriumf/introScene.fs"
+          , "dodenstriumf/introScene.fs"
+          },
+
+          {
+#include "shaders/dodenstriumf/post.fs"
+          , "dodenstriumf/post.fs"
+          },
+
+          {
+#include "shaders/dodenstriumf/roomScene.fs"
+          , "dodenstriumf/roomScene.fs"
+          },
+
+          {
+#include "shaders/dodenstriumf/roomScenePost.fs"
+          , "dodenstriumf/roomScenePost.fs"
           }
 
   };
 // clang-format on
-
 }

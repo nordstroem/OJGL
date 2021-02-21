@@ -1,6 +1,7 @@
 #include "EmbeddedResources.h"
 #include "FreeCameraController.h"
 #include "demo/Demo.h"
+#include "demos/DodensTriumf.h"
 #include "demos/Eldur.h"
 #include "demos/QED.h"
 #include "demos/Template.h"
@@ -30,6 +31,8 @@ ojstd::shared_ptr<Demo> getDemo(DemoType type)
         return ojstd::make_shared<Eldur>();
     case DemoType::QED:
       return ojstd::make_shared<QED>();
+    case DemoType::DodensTriumf:
+      return ojstd::make_shared<DodensTriumf>();
     case DemoType::Template:
         return ojstd::make_shared<Template>();
     }
@@ -50,7 +53,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
     for (const auto& [content, path] : resources::shaders)
         ShaderReader::preLoad(path, content);
 
-    const auto demo = getDemo(DemoType::QED);
+    const auto demo = getDemo(DemoType::DodensTriumf);
     Window window(windowSize, demo->getTitle(), fullScreen, showCursor);
     GLState glState(window, *demo);
 
