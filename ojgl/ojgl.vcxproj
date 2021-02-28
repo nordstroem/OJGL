@@ -336,6 +336,7 @@
     <ClInclude Include="examples\demos\QED.h" />
     <ClInclude Include="examples\demos\Template.h" />
     <ClInclude Include="examples\demos\InnerSystemLab.h" />
+    <ClInclude Include="examples\renderdoc_app.h" />
     <ClInclude Include="src\demo\Demo.h" />
     <ClInclude Include="examples\EmbeddedResources.h" />
     <ClInclude Include="examples\FreeCameraController.h" />

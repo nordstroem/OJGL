@@ -15,6 +15,15 @@
 #include "utility/OJstd.h"
 #include "utility/ShaderReader.h"
 
+
+
+#ifdef _DEBUG
+#include <windows.h>
+#include "renderdoc_app.h"
+
+RENDERDOC_API_1_1_2* renderdocApi = nullptr;
+#endif
+
 using namespace ojgl;
 
 enum class DemoType {
@@ -46,6 +55,14 @@ ojstd::shared_ptr<Demo> getDemo(DemoType type)
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
 {
+
+#ifdef _DEBUG
+  if (HMODULE mod = GetModuleHandleA("renderdoc.dll")) {
+      pRENDERDOC_GetAPI RENDERDOC_GetAPI = (pRENDERDOC_GetAPI)GetProcAddress(mod, "RENDERDOC_GetAPI");
+      const int ret = RENDERDOC_GetAPI(eRENDERDOC_API_Version_1_1_2, (void**)&renderdocApi);
+      _ASSERTE(ret == 1);
+  }
+#endif
     const auto popupData = popup::show();
 
     const Vector2i windowSize(popupData.width, popupData.height);
@@ -56,7 +73,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
     for (const auto& [content, path] : resources::shaders)
         ShaderReader::preLoad(path, content);
 
-    const auto demo = getDemo(DemoType::InnerSystemLab);
+    const auto demo = getDemo(DemoType::QED);
     Window window(windowSize, demo->getTitle(), fullScreen, showCursor);
     GLState glState(window, *demo);
 
@@ -65,9 +82,10 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
         timer.start();
 #ifdef _DEBUG
         FreeCameraController::instance().update(window);
+
+        bool captureFrame = false;
 #endif
         window.getMessages();
-
         for (auto key : window.getPressedKeys()) {
             switch (key) {
             case Window::KEY_ESCAPE:
@@ -97,6 +115,10 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
                 glState.previousScene();
                 break;
 
+            case Window::KEY_P:
+              captureFrame = true;
+              break;
+
             case Window::KEY_C:
                 const FreeCameraController& c = FreeCameraController::instance();
                 LOG_INFO("Camera: (" << c.position.x << ", " << c.position.y << ", " << c.position.z << ")"
@@ -106,7 +128,20 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
             }
         }
 
+
+#ifdef _DEBUG
+        if (renderdocApi && captureFrame) {
+          renderdocApi->StartFrameCapture(nullptr, nullptr);
+        }
+#endif
+
         glState.update();
+
+#ifdef _DEBUG
+        if (renderdocApi && captureFrame) {
+          renderdocApi->EndFrameCapture(nullptr, nullptr);
+        }
+#endif
         timer.end();
 
 #ifdef _DEBUG
