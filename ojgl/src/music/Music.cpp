@@ -19,6 +19,21 @@ Music::~Music()
     dsClose();
 }
 
+static ojstd::shared_ptr<Music> music;
+
+ojstd::shared_ptr<Music> Music::instance()
+{
+    return music;
+}
+
+void Music::createInstance(const unsigned char* song)
+{
+    if (music != nullptr) {
+      _ASSERT_EXPR(false, "Music already created");
+    }
+    music = ojstd::shared_ptr<Music>(new Music(song));
+}
+
 void Music::play()
 {
     this->_player->Init();

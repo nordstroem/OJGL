@@ -3,7 +3,6 @@
 #include "Scene.h"
 #include "Window.h"
 #include "demo/Demo.h"
-#include "music/Music.h"
 #include "utility/OJstd.h"
 #include "utility/Timer.hpp"
 #include "utility/Vector.h"
@@ -45,7 +44,6 @@ private:
     Timepoint _systemClockStartTime;
     Duration _pauseTime;
     bool _paused = false;
-    ojstd::shared_ptr<Music> _music = nullptr;
     Clock _clock = Clock::System;
     ojstd::shared_ptr<Buffer> _mainBuffer;
 };

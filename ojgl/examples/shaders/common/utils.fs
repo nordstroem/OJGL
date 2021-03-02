@@ -42,4 +42,19 @@ mat3 rotateAngle(vec3 v, float a)
     float ic = 1.0 - co;
     return mat3(v.x * v.x * ic + co, v.y * v.x * ic - si * v.z, v.z * v.x * ic + si * v.y, v.x * v.y * ic + si * v.z, v.y * v.y * ic + co, v.z * v.y * ic - si * v.x, v.x * v.z * ic - si * v.y, v.y * v.z * ic + si * v.x, v.z * v.z * ic + co);
 }
+
+void mo(inout vec2 p, vec2 d)
+{
+    p = abs(p) - d;
+    if (p.y > p.x) p = p.yx;
+}
+
+float psin(float v){
+	return 0.5 * (1.0 + sin(v));
+}
+float smink( float a, float b, float k )
+{
+    float h = clamp( 0.5+0.5*(b-a)/k, 0.0, 1.0);
+    return mix( b, a, h ) - k*h*(1.0-h);
+}
 )""

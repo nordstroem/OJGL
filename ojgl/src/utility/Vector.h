@@ -1,6 +1,7 @@
 #pragma once
 
 #include <type_traits>
+#include "utility/OJstd.h"
 
 template <typename T>
 struct Vector3 {
@@ -31,12 +32,12 @@ struct Vector3 {
 
     Vector3 operator-(Vector3 v)
     {
-        return Vec3(x - v.x, y - v.y, z - v.z);
+        return Vector3(x - v.x, y - v.y, z - v.z);
     }
 
     void normalize()
     {
-        T len = static_cast<T>(sqrt_asm(static_cast<double>(x * x + y * y + z * z)));
+        T len = static_cast<T>(ojstd::sqrt(static_cast<double>(x * x + y * y + z * z)));
         x /= len;
         y /= len;
         z /= len;

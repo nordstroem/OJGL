@@ -1,5 +1,6 @@
 #include "GLState.h"
 #include "Uniform.hpp"
+#include "music/Music.h"
 #include "utility/Log.h"
 #include "utility/ShaderReader.h"
 #include "utility/Timepoint.h"
@@ -31,8 +32,8 @@ GLState::GLState(const Window& window, const Demo& demo)
     _scenes = demo.buildSceneGraph(sceneSize);
 
     if (const auto* song = demo.getSong()) {
-        _music = ojstd::make_shared<Music>(song);
-        _music->play();
+        Music::createInstance(song);
+        Music::instance()->play();
         _clock = Clock::Music;
     }
 
@@ -91,8 +92,8 @@ void GLState::update()
 {
     this->render();
     if (!this->isPaused())
-        if (_music != nullptr)
-            _music->updateSync();
+        if (Music::instance() != nullptr)
+            Music::instance()->updateSync();
 
     // Clear meshes
     for (auto& v : _scenes) {
@@ -110,7 +111,7 @@ Duration GLState::elapsedTime() const
         return Timepoint::now() - _systemClockStartTime;
     } else {
         // @todo assert that the DirectSound is active.
-        return _music->elapsedTime();
+        return Music::instance()->elapsedTime();
     }
 }
 
@@ -127,8 +128,8 @@ void GLState::changeTime(Duration time)
 void GLState::setTime(Duration time)
 {
     _systemClockStartTime = Timepoint::now() - time;
-    if (_music != nullptr)
-        _music->setTime(time);
+    if (Music::instance() != nullptr)
+        Music::instance()->setTime(time);
     _pauseTime = time;
 }
 
@@ -136,8 +137,8 @@ void GLState::togglePause()
 {
     if (!_paused) {
         _pauseTime = this->elapsedTime();
-        if (_music != nullptr)
-            _music->stop();
+        if (Music::instance() != nullptr)
+            Music::instance()->stop();
     } else {
         this->setTime(_pauseTime);
     }
@@ -161,8 +162,8 @@ void GLState::restart()
 {
     _systemClockStartTime = Timepoint::now();
     _paused = false;
-    if (_music != nullptr)
-        _music->setTime(Duration::milliseconds(0));
+    if (Music::instance() != nullptr)
+        Music::instance()->setTime(Duration::milliseconds(0));
 }
 
 void GLState::nextScene()

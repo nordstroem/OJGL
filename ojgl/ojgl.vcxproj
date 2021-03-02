@@ -305,11 +305,13 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="examples\demos\DodensTriumf.cpp" />
     <ClCompile Include="examples\demos\Eldur.cpp" />
     <ClCompile Include="examples\demos\QED.cpp" />
     <ClCompile Include="examples\demos\Template.cpp" />
     <ClCompile Include="examples\FreeCameraController.cpp" />
     <ClCompile Include="examples\Main.cpp" />
+    <ClCompile Include="examples\demos\InnerSystemLab.cpp" />
     <ClCompile Include="src\music\Music.cpp" />
     <ClCompile Include="src\music\SyncChannel.cpp" />
     <ClCompile Include="src\music\V2MPlayer.cpp" />
@@ -329,9 +331,11 @@
     <ClCompile Include="src\winapi\gl_loader.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="examples\demos\DodensTriumf.h" />
     <ClInclude Include="examples\demos\Eldur.h" />
     <ClInclude Include="examples\demos\QED.h" />
     <ClInclude Include="examples\demos\Template.h" />
+    <ClInclude Include="examples\demos\InnerSystemLab.h" />
     <ClInclude Include="src\demo\Demo.h" />
     <ClInclude Include="examples\EmbeddedResources.h" />
     <ClInclude Include="examples\FreeCameraController.h" />
@@ -363,7 +367,13 @@
     <ClInclude Include="src\winapi\wglext.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="examples\shaders\cachedGeometry.fs" />
+    <None Include="examples\shaders\dodenstriumf\graveScene.fs" />
+    <None Include="examples\shaders\dodenstriumf\graveScenePost.fs" />
+    <None Include="examples\shaders\dodenstriumf\introScene.fs" />
+    <None Include="examples\shaders\dodenstriumf\post.fs" />
+    <None Include="examples\shaders\dodenstriumf\roomScene.fs" />
+    <None Include="examples\shaders\dodenstriumf\roomScenePost.fs" />
+    <None Include="examples\shaders\experiments\cachedGeometry.fs" />
     <None Include="examples\shaders\common\noise.fs" />
     <None Include="examples\shaders\common\primitives.fs" />
     <None Include="examples\shaders\common\quad.vs" />
@@ -371,22 +381,36 @@
     <None Include="examples\shaders\common\raymarch_template.fs" />
     <None Include="examples\shaders\common\raymarch_utils.fs" />
     <None Include="examples\shaders\common\utils.fs" />
-    <None Include="examples\shaders\demo.vs" />
-    <None Include="examples\shaders\edison.vs" />
-    <None Include="examples\shaders\fxaa.fs" />
-    <None Include="examples\shaders\fxaa.vs" />
-    <None Include="examples\shaders\lavaIntro.fs" />
-    <None Include="examples\shaders\lavaScene2.fs" />
-    <None Include="examples\shaders\lightning.fs" />
-    <None Include="examples\shaders\mesh.fs" />
-    <None Include="examples\shaders\mesh.vs" />
-    <None Include="examples\shaders\mountain.fs" />
-    <None Include="examples\shaders\mountainNoise.fs" />
-    <None Include="examples\shaders\mountainPost.fs" />
-    <None Include="examples\shaders\outro.fs" />
-    <None Include="examples\shaders\post.fs" />
-    <None Include="examples\shaders\post.vs" />
-    <None Include="examples\songs\song.inc" />
+    <None Include="examples\shaders\common\fxaa.fs" />
+    <None Include="examples\shaders\common\fxaa.vs" />
+    <None Include="examples\shaders\eldur\lavaIntro.fs" />
+    <None Include="examples\shaders\eldur\lavaScene2.fs" />
+    <None Include="examples\shaders\experiments\lightning.fs" />
+    <None Include="examples\shaders\eldur\mountain.fs" />
+    <None Include="examples\shaders\eldur\mountainNoise.fs" />
+    <None Include="examples\shaders\eldur\mountainPost.fs" />
+    <None Include="examples\shaders\eldur\outro.fs" />
+    <None Include="examples\shaders\eldur\post.fs" />
+    <None Include="examples\shaders\innersystemlab\edison_1.fs" />
+    <None Include="examples\shaders\innersystemlab\edison_1_post.fs" />
+    <None Include="examples\shaders\innersystemlab\edison_2.fs" />
+    <None Include="examples\shaders\innersystemlab\edison_planets.fs" />
+    <None Include="examples\shaders\innersystemlab\hospital.fs" />
+    <None Include="examples\shaders\QED\blur1.fs" />
+    <None Include="examples\shaders\QED\post.fs" />
+    <None Include="examples\shaders\QED\rayMarch.fs" />
+    <None Include="examples\shaders\QED\rayMarch.vs" />
+    <None Include="examples\shaders\QED\raymarch_utils.fs" />
+    <None Include="examples\shaders\QED\raymarch_utils_tower.fs" />
+    <None Include="examples\shaders\experiments\smoke.fs" />
+    <None Include="examples\shaders\experiments\smoke.vs" />
+    <None Include="examples\shaders\QED\sphere.fs" />
+    <None Include="examples\shaders\QED\sphere.vs" />
+    <None Include="examples\shaders\QED\tower.fs" />
+    <None Include="examples\songs\dodenstriumf_song.inc" />
+    <None Include="examples\songs\eldur_song.inc" />
+    <None Include="examples\songs\innersystemlab_song.inc" />
+    <None Include="examples\songs\qed_song.inc" />
     <None Include="src\render\shaders\passThrough.fs" />
     <None Include="src\render\shaders\passThrough.vs" />
   </ItemGroup>
