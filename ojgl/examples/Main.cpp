@@ -15,9 +15,7 @@
 #include "utility/OJstd.h"
 #include "utility/ShaderReader.h"
 
-
-
-#ifdef _DEBUG
+#ifdef RENDERDOC
 #include <windows.h>
 #include "renderdoc_app.h"
 
@@ -56,7 +54,7 @@ ojstd::shared_ptr<Demo> getDemo(DemoType type)
 int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
 {
 
-#ifdef _DEBUG
+#ifdef RENDERDOC
   if (HMODULE mod = GetModuleHandleA("renderdoc.dll")) {
       pRENDERDOC_GetAPI RENDERDOC_GetAPI = (pRENDERDOC_GetAPI)GetProcAddress(mod, "RENDERDOC_GetAPI");
       const int ret = RENDERDOC_GetAPI(eRENDERDOC_API_Version_1_1_2, (void**)&renderdocApi);
@@ -129,7 +127,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
         }
 
 
-#ifdef _DEBUG
+#ifdef RENDERDOC
         if (renderdocApi && captureFrame) {
           renderdocApi->StartFrameCapture(nullptr, nullptr);
         }
@@ -137,7 +135,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
 
         glState.update();
 
-#ifdef _DEBUG
+#ifdef RENDERDOC
         if (renderdocApi && captureFrame) {
           renderdocApi->EndFrameCapture(nullptr, nullptr);
         }
