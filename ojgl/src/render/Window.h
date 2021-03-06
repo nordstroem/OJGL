@@ -28,6 +28,7 @@ public:
     static constexpr int KEY_ESCAPE = 27;
     static constexpr int KEY_SPACE = 32;
     static constexpr int KEY_R = 82;
+    static constexpr int KEY_P = 80;
     static constexpr int KEY_F1 = 112;
     static constexpr int KEY_W = 0x57;
     static constexpr int KEY_S = 0x53;
