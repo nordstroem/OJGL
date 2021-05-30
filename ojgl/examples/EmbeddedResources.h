@@ -193,7 +193,16 @@ namespace ojgl::resources {
           {
 #include "shaders/innersystemlab/hospital.fs"
             , "innersystemlab/hospital.fs"
-          }
+          },
+                          {
+#include "shaders/edison2021/raymarch_settings.fs"
+            , "edison2021/raymarch_settings.fs"
+          },
+
+          {
+#include "shaders/edison2021/main.fs"
+            , "edison2021/main.fs"
+          },
 
   };
 // clang-format on

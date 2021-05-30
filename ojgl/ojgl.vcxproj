@@ -306,6 +306,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="examples\demos\DodensTriumf.cpp" />
+    <ClCompile Include="examples\demos\Edison2021.cpp" />
     <ClCompile Include="examples\demos\Eldur.cpp" />
     <ClCompile Include="examples\demos\QED.cpp" />
     <ClCompile Include="examples\demos\Template.cpp" />
@@ -332,6 +333,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="examples\demos\DodensTriumf.h" />
+    <ClInclude Include="examples\demos\Edison2021.h" />
     <ClInclude Include="examples\demos\Eldur.h" />
     <ClInclude Include="examples\demos\QED.h" />
     <ClInclude Include="examples\demos\Template.h" />
@@ -374,6 +376,8 @@
     <None Include="examples\shaders\dodenstriumf\post.fs" />
     <None Include="examples\shaders\dodenstriumf\roomScene.fs" />
     <None Include="examples\shaders\dodenstriumf\roomScenePost.fs" />
+    <None Include="examples\shaders\edison2021\main.fs" />
+    <None Include="examples\shaders\edison2021\raymarch_settings.fs" />
     <None Include="examples\shaders\experiments\cachedGeometry.fs" />
     <None Include="examples\shaders\common\noise.fs" />
     <None Include="examples\shaders\common\primitives.fs" />
