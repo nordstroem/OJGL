@@ -69,7 +69,7 @@ VolumetricResult evaluateLight(in vec3 p)
 {
     float r = 0.00001;
     p.yz *= rot(-iTime);
-    float d = sdBoxFrame(p- vec3(0.3, 0, 0), vec3(0.15, 0.15, 0.15 * psin(iTime)), 0.01);
+    float d = sdBoxFrame(p- vec3(0.3, 0, 0), vec3(0.15, 0.15, 0.15 * psin(iTime) ), 0.01);
 
 	d = max(0.001, d);
 
