@@ -101,18 +101,22 @@ const ojstd::string& ShaderReader::get(const ojstd::string& path)
         } catch (std::ios_base::failure& e) {
             std::cerr << "ShaderReader failed: " << e.what() << '\n';
         }
-        _ASSERTE(!shaderFile.fail());
 
-        std::stringstream buffer;
-        buffer << shaderFile.rdbuf();
-        std::string fileContents = buffer.str();
-        std::string pre = "R\"\"(";
-        std::string post = ")\"\"";
-        size_t start = fileContents.find(pre);
-        size_t end = fileContents.rfind(post);
-        std::string shader = fileContents.substr(start + pre.length(), end - start - pre.length());
-        ShaderReader::_shaders[path].content = replaceIncludes(shader.c_str());
-        ShaderReader::_shaders[path].modifyTime = modifyTime(fullPath);
+        if (!shaderFile.fail()) {
+            std::stringstream buffer;
+            buffer << shaderFile.rdbuf();
+            std::string fileContents = buffer.str();
+            std::string pre = "R\"\"(";
+            std::string post = ")\"\"";
+            size_t start = fileContents.find(pre);
+            size_t end = fileContents.rfind(post);
+            std::string shader = fileContents.substr(start + pre.length(), end - start - pre.length());
+            ShaderReader::_shaders[path].content = replaceIncludes(shader.c_str());
+            ShaderReader::_shaders[path].modifyTime = modifyTime(fullPath);
+        } else {
+            LOG_INFO("Shader reading failed");
+        
+        }
     }
 #endif
     return ShaderReader::_shaders[path].content;

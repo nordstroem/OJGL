@@ -9,7 +9,7 @@ namespace ojgl {
 
 class FreeCameraController {
 public:
-    Vector3f position { 0, 0, 2 };
+    Vector3f position { 0, 0, 0 };
     float heading = 0.f;
     float elevation = 0.f;
 
