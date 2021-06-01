@@ -147,6 +147,12 @@ Buffer& Buffer::setMeshCallback(const ojstd::function<ojstd::vector<ojstd::Pair<
     return *this;
 }
 
+Buffer& Buffer::setTextureCallback(const ojstd::function<ojstd::vector<ojstd::shared_ptr<Uniform1t>>(float)>& textureCallback)
+{
+    _textureCallback = textureCallback;
+    return *this;
+}
+
 ojstd::string Buffer::name() const
 {
     return _name;
@@ -188,11 +194,13 @@ void Buffer::render(float relativeSceneTime)
         }
     }
 
-    for (auto [location, texture] : _textures) {
-        glUniform1i(glGetUniformLocation(_programID, location.c_str()), currentTextureID);
-        glActiveTexture(GL_TEXTURE0 + currentTextureID);
-        glBindTexture(GL_TEXTURE_2D, texture->textureID());
-        currentTextureID++;
+    if (_textureCallback) {
+        for (const auto& texture : _textureCallback(relativeSceneTime)) {
+            glUniform1i(glGetUniformLocation(_programID, texture->location().c_str()), currentTextureID);
+            glActiveTexture(GL_TEXTURE0 + currentTextureID);
+            glBindTexture(GL_TEXTURE_2D, texture->textureID());
+            currentTextureID++;
+        }
     }
 
     for (int i = 0, textureUniformID = 0; i < _feedbackInputs.size(); i++) {
@@ -218,6 +226,7 @@ void Buffer::render(float relativeSceneTime)
             uniform->setUniform(_programID);
         }
     }
+
     glUniform1f(glGetUniformLocation(_programID, "iTime"), relativeSceneTime);
     glUniform2f(glGetUniformLocation(_programID, "iResolution"), static_cast<GLfloat>(_width), static_cast<GLfloat>(_height));
 
@@ -321,12 +330,6 @@ void Buffer::loadShader()
 int inline Buffer::numOutTextures()
 {
     return _numOutTextures;
-}
-
-Buffer& Buffer::operator<<(const Uniform1t& b)
-{
-    _textures[b.location()] = ojstd::make_shared<Uniform1t>(b);
-    return *this;
 }
 
 void Buffer::insertMesh(const ojstd::shared_ptr<Mesh>& mesh, const Matrix& modelMatrix)

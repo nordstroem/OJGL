@@ -1,8 +1,13 @@
 #include "Edison2021.h"
 #include "FreeCameraController.h"
+#include "TextRenderer.hpp"
 #include "music/Music.h"
 
 using namespace ojgl;
+
+Edison2021::Edison2021()
+{
+}
 
 ojstd::string Edison2021::getTitle() const
 {
@@ -29,6 +34,15 @@ ojstd::vector<Scene> Edison2021::buildSceneGraph(const Vector2i& sceneSize) cons
         fxaa->setInputs(raymarch);
 
         scenes.emplace_back(fxaa, Duration::seconds(9999), "raymarchScene");
+
+        raymarch->setTextureCallback([this]([[maybe_unused]] float relativeSceneTime) {
+            if (this->_textTexture == nullptr) {
+                this->_textTexture = TextRenderer::instance().get("Edison");
+            }
+            ojstd::vector<ojstd::shared_ptr<Uniform1t>> vector;
+            vector.push_back(ojstd::make_shared<Uniform1t>("textTexture", _textTexture));
+            return vector;
+        });
     }
 
     return scenes;

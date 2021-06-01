@@ -63,35 +63,6 @@ Window::Window(Vector2i size, ojstd::string title, bool fullScreen, bool showCur
     }
 
     load_gl_functions();
-
-    ojstd::string text = "Hejsan";
-    int w = 100;
-    int h = 50;
-
-    HDC vhdc = CreateCompatibleDC(_priv->_hDC);
-    if (!vhdc)
-        throw "error with vhdc";
-    HBITMAP hbmp = CreateCompatibleBitmap(_priv->_hDC, w, h);
-    BITMAPINFO bmpi = { { sizeof(BITMAPINFOHEADER), w, -h, 1, 32, BI_RGB, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0 } };
-    SelectObject(vhdc, hbmp);
-    TextOut(vhdc, 10, 10, "HELLO WORLD", 11);
-
-    GetDIBits(vhdc, hbmp, 0, h, nullptr, &bmpi, BI_RGB);
-
-    BYTE* buf = new BYTE[bmpi.bmiHeader.biSizeImage];
-    GetDIBits(vhdc, hbmp, 0, h, buf, &bmpi, BI_RGB);
-
-    std::stringstream ss;
-    for (int j = 0; j < h; j++) {
-        for (int i = 0; i < w; i++) {
-            int val = buf[4 * (w * j + i)] > 0 ? 1 : 0;
-            ss << val;
-        }
-        ss << "\n";
-        // LOG_INFO((int)(buf[4 * i]));
-    }
-    LOG_INFO(ss.str());
-    delete[] buf;
 }
 
 Window::~Window()
@@ -288,6 +259,11 @@ LONG WINAPI Window::Details::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 Vector2i Window::size() const
 {
     return _priv->_size;
+}
+
+void* Window::hdcBackend() const
+{
+    return _priv->_hDC;
 }
 
 } // namespace ojgl

@@ -1,5 +1,6 @@
 #include "EmbeddedResources.h"
 #include "FreeCameraController.h"
+#include "TextRenderer.hpp"
 #include "demo/Demo.h"
 #include "demos/DodensTriumf.h"
 #include "demos/Edison2021.h"
@@ -81,6 +82,8 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
 
     const auto demo = getDemo(DemoType::Edison2021);
     Window window(windowSize, demo->getTitle(), fullScreen, showCursor);
+    TextRenderer::instance().setHDC(window.hdcBackend());
+
     GLState glState(window, *demo);
 
     while (!glState.end() && !window.isClosePressed()) {
