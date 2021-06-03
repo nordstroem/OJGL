@@ -204,6 +204,10 @@ namespace ojgl::resources {
             , "edison2021/main.fs"
           },
 
+          {
+#include "shaders/edison2021/main2.fs"
+            , "edison2021/main2.fs"
+          },
   };
 // clang-format on
 }

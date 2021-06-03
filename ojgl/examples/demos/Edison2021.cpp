@@ -23,7 +23,7 @@ ojstd::vector<Scene> Edison2021::buildSceneGraph(const Vector2i& sceneSize) cons
 {
     ojstd::vector<Scene> scenes;
     {
-        auto raymarch = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2021/main.fs");
+        auto raymarch = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2021/main2.fs");
         raymarch->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
             Buffer::UniformVector vector;
             vector.push_back(ojstd::make_shared<UniformMatrix4fv>("iCameraMatrix", FreeCameraController::instance().getCameraMatrix()));
@@ -37,7 +37,7 @@ ojstd::vector<Scene> Edison2021::buildSceneGraph(const Vector2i& sceneSize) cons
 
         raymarch->setTextureCallback([this]([[maybe_unused]] float relativeSceneTime) {
             if (this->_textTexture == nullptr) {
-                this->_textTexture = TextRenderer::instance().get("Edison");
+                this->_textTexture = TextRenderer::instance().get("Edison 2021");
             }
             ojstd::vector<ojstd::shared_ptr<Uniform1t>> vector;
             vector.push_back(ojstd::make_shared<Uniform1t>("textTexture", _textTexture));

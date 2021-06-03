@@ -114,7 +114,7 @@ void main()
     float noiseStrength = 1.0 - smoothstep(0.0, 0.4, length(fragColor.xyz));
     fragColor *= (1 + 0.2*noiseStrength*noise_2(vec2(u*1000,v*1000)));
 
-    fragColor = texture(textTexture, fragCoord.xy);
+    //fragColor = texture(textTexture, fragCoord.xy);
 
 }
 
