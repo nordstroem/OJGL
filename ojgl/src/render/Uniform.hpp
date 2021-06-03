@@ -2,6 +2,7 @@
 #include "Texture.h"
 #include "utility/Matrix.h"
 #include "utility/OJstd.h"
+#include <crtdbg.h>
 
 namespace ojgl {
 
