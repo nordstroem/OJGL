@@ -25,8 +25,10 @@ DistanceInfo sunk(DistanceInfo a, DistanceInfo b, float k) {
     return res;
 }
 
+vec3 eye;
 vec3 rayOrigin;
 vec3 rayDirection;
+vec3 lookAt;
 
 float sdBox2(vec3 p, vec3 b, inout vec2 uv)
 {
@@ -61,12 +63,19 @@ float cylinder(vec3 p, vec2 h)
   	vec2 d = abs(vec2(length(p.xz),p.y)) - h;
   	return min(max(d.x,d.y),0.0) + length(max(d,0.0));
 }
+
+vec3 tunnelDelta(float z)
+{
+    return vec3(5 * sin(0.03*z)*cos(0.1*z), 0.0, 0.0);
+}
+
 DistanceInfo map(in vec3 p)
 {
-    vec3 path = vec3(10 * sin(0.02*p.z)*cos(0.2*p.z), 0.0, 0.0);
-    p = p - path;
-    DistanceInfo box = {-sdBox(p, vec3(0.7, 0.7, 1000)), sphereType };
-    DistanceInfo box2 = {sdBox(p, vec3(0.3)), wallType };
+    DistanceInfo box = {-sdCappedCylinder(p.xzy - tunnelDelta(p.z), vec2(2, 50000) + 0.02*noise_3(10*p)), wallType };
+
+
+
+    DistanceInfo box2 = {sdBox(p - lookAt, vec3(0.1)), sphereType };
     
     
 
@@ -97,10 +106,10 @@ vec3 getAmbientColor(int type)
 
 vec3 getColor(in MarchResult result)
 {
-    vec3 lightPosition = vec3(0, 0, 0.0);
+    vec3 lightPosition = lookAt;//vec3(0, 0, 0.0);
     if (result.type != invalidType) {
         float d = length(lightPosition - result.position);
-        float lightStrength = 1.0;//0.0005 / (0.000001 + 0.001*d*d);
+        float lightStrength = 0.001 / (0.000001 + 0.001*d*d);
         vec3 ambient = getAmbientColor(result.type);
         vec3 invLight = normalize(lightPosition - result.position);
         vec3 normal = normal(result.position);
@@ -143,10 +152,28 @@ void main()
 {
     float u = (fragCoord.x - 0.5);
     float v = (fragCoord.y - 0.5) * iResolution.y / iResolution.x;
-    rayOrigin = (iCameraMatrix * vec4(u, v, -1.0, 1.0)).xyz;
-    vec3 eye = (iCameraMatrix * vec4(0.0, 0.0, 0.0, 1.0)).xyz;
-    rayDirection = normalize(rayOrigin - eye);
 
+    float velocity = 4.0;
+
+    lookAt  = vec3(0.0, 0.0, iTime * velocity);
+	rayOrigin = lookAt + vec3(0.0, 0.0, -3.5);
+
+    lookAt += tunnelDelta(lookAt.z);
+	rayOrigin += tunnelDelta(rayOrigin.z);
+
+    vec3 forward = normalize(lookAt - rayOrigin);
+ 	vec3 right = normalize(cross(forward, vec3(0.0, 1.0, 0.0)));   
+    vec3 up = cross(right, forward);
+    
+    float fov = PI / 3.;
+    rayDirection = normalize(u * right + v * up + fov * forward);
+
+    
+    //rayOrigin = (iCameraMatrix * vec4(u, v, -1.5, 1.0)).xyz;
+   // eye = (iCameraMatrix * vec4(0.0, 0.0, 0.0, 1.0)).xyz;
+   // rayDirection = normalize(rayOrigin - eye);
+
+   eye = rayOrigin;
     vec3 color = march(eye, rayDirection);
 
     // Tone mapping
