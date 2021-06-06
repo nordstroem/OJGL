@@ -96,7 +96,7 @@ DistanceInfo map(in vec3 p)
 
     p2.xy *= rot(0.2 * sin(iTime*0.5) * cos(iTime)); 
     DistanceInfo cylinder = {-sdCappedCylinder(p2.xzy - tunnelDelta(p.z), vec2(2 + 0.1*filteredLines(10*p2.y, 1.1) , 50000)), wallType };
-    DistanceInfo box = {-sdBox(p2 - tunnelDelta(p2.z) + vec3(0, 0.0, 0.0), vec3(3, 1.3 + 0.05*filteredLines(3*p2.x, 1.1) , 50000)), floorType };
+    DistanceInfo box = {-sdBox(p2 - tunnelDelta(p2.z) + vec3(0, -0.0, 0.0), vec3(3, 1.0 + 0.0006*sin(7*p.x + 5*p.y + 5*p.z), 50000)), floorType };
     
     DistanceInfo sphere = {sdSphere(p - path(10), 0.2), sphereType }; 
 
@@ -115,11 +115,11 @@ float getReflectiveIndex(int type)
     if (type == wallType)
         return 0.0;
     if (type == floorType)
-        return 0.0;
+        return 0.05;
     return 0.0;
 }
 
-vec3 getAmbientColor(int type) 
+vec3 getAmbientColor(int type, vec3 pos) 
 {
     if (type == sphereType)
         return vec3(1.0, 0, 0);
@@ -127,10 +127,14 @@ vec3 getAmbientColor(int type)
         return vec3(0.0);
     if (type == wallType )
         return 0.8*vec3(0.7, 0.5, 0.1);
-    if (type == floorType)
-        return 0.5*vec3(0.7, 0.5, 0.1);
+    if (type == floorType) {
+        vec3 wall = 0.8*vec3(0.7, 0.5, 0.1);
+        vec3 p =0.1*palette(mod(0.05*pos.z, 1.0), vec3(0.5), vec3(0.5), vec3(1.0, 1.0, 0.5), vec3(0.8, 0.9, 0.3));
+        return mix(p, wall, 0.1);
+    }
     return vec3(0.1);
 }
+
 
 vec3 getColor(in MarchResult result)
 {
@@ -138,11 +142,10 @@ vec3 getColor(in MarchResult result)
     if (result.type != invalidType) {
         float d = length(lightPosition - result.position);
         float lightStrength =  0.0002 / (0.000001 + 0.00005*d*d );
-        vec3 ambient = getAmbientColor(result.type);
+        vec3 ambient = getAmbientColor(result.type, result.position);
         vec3 invLight = normalize(lightPosition - result.position);
         vec3 normal = normal(result.position);
         float shadow = 1.0;//shadowFunction(result.position, lightPosition, 32);
-
         float k = max(0.0, dot(rayDirection, reflect(invLight, normal)));
         float spec = 1 * pow(k, 5000.0);
 
