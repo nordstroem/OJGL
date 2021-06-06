@@ -73,7 +73,7 @@ float cylinder(vec3 p, vec2 h)
 
 vec3 tunnelDelta(float z)
 {
-    return vec3(5 * sin(0.03*z)*cos(0.1*z), 0.0, 0.0);
+    return vec3(3 * sin(0.03*z)*cos(0.1*z), 0.0, 0.0);
 }
 
 vec3 path(float zDelta) {
@@ -83,26 +83,22 @@ vec3 path(float zDelta) {
     return pos;
 }
 
-float BrickPattern(in vec2 p) 
+float filteredLines(float y, float dp)
 {
-  p *= vec2 (1.0, 2.8);
-  vec2 f = floor (p);
-  if (2. * floor (f.y * 0.5) != f.y) 
-    p.x += 0.5;
-  p = smoothstep (0.03, 0.08, abs (fract (p + 0.5) - 0.5));
-  return 1. - 0.9 * p.x * p.y;
+    float i = 2.0*(abs(fract((y-0.5*dp)*0.5)-0.5)-
+                  abs(fract((y+0.5*dp)*0.5)-0.5))/dp;
+    return 0.5 - 0.5*i*i;                  
 }
-
 
 DistanceInfo map(in vec3 p)
 {
     vec3 p2 = p;
 
     p2.xy *= rot(0.2 * sin(iTime*0.5) * cos(iTime)); 
-    DistanceInfo cylinder = {-sdCappedCylinder(p2.xzy - tunnelDelta(p.z), vec2(2 +  0.03*BrickPattern(p2.xy) + 0.01*noise_3(25*p2), 50000)), wallType };
-    DistanceInfo box = {-sdBox(p2 - tunnelDelta(p2.z) + vec3(0, 0.0, 0.0), vec3(3, 1.3 + 0.03*noise_3(p2*4), 50000)), wallType };
+    DistanceInfo cylinder = {-sdCappedCylinder(p2.xzy - tunnelDelta(p.z), vec2(2 + 0.1*filteredLines(10*p2.y, 1.1) , 50000)), wallType };
+    DistanceInfo box = {-sdBox(p2 - tunnelDelta(p2.z) + vec3(0, 0.0, 0.0), vec3(3, 1.3 + 0.05*filteredLines(3*p2.x, 1.1) , 50000)), floorType };
     
-    DistanceInfo sphere = {sdSphere(p - path(3 ), 0.2), sphereType };
+    DistanceInfo sphere = {sdSphere(p - path(10), 0.2), sphereType }; 
 
     DistanceInfo res = sunk(cylinder, box, 0.3);
     res = un(sphere, res);
@@ -119,7 +115,7 @@ float getReflectiveIndex(int type)
     if (type == wallType)
         return 0.0;
     if (type == floorType)
-        return 0.15;
+        return 0.0;
     return 0.0;
 }
 
@@ -132,7 +128,7 @@ vec3 getAmbientColor(int type)
     if (type == wallType )
         return 0.8*vec3(0.7, 0.5, 0.1);
     if (type == floorType)
-        return vec3(0.0);
+        return 0.5*vec3(0.7, 0.5, 0.1);
     return vec3(0.1);
 }
 
@@ -151,7 +147,7 @@ vec3 getColor(in MarchResult result)
         float spec = 1 * pow(k, 5000.0);
 
         float diffuse = max(0., dot(invLight, normal)) * (1);
-        return vec3(lightStrength * (ambient * (0.04 + 0.96*diffuse) ))  * shadow;
+        return vec3(lightStrength * (ambient * (0.04 + 0.96*diffuse)))  * shadow;
     } else {
         return vec3(0.0);
     }
