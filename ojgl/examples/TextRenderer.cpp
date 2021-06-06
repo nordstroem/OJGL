@@ -17,10 +17,26 @@ void TextRenderer::setHDC(void* hdc)
 
 ojstd::shared_ptr<Texture> TextRenderer::get(const ojstd::string& text)
 {
-    int w = 830;
-    int h = 830;
-
+    int fontSize = 96;
     HDC vhdc = CreateCompatibleDC((HDC)_hdcBackend);
+    auto hFont = CreateFont(fontSize, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS,
+        CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Segoe Script"));
+
+    SelectObject(vhdc, hFont);
+
+    int totalWidth = 0;
+    for (size_t i = 0; i < text.length(); i++) {
+        const char* ptr = text.c_str();
+        int res[1];
+        GetCharWidth32A(vhdc, ptr[i], ptr[i], res);
+        totalWidth += res[0];
+    }
+
+    int w = totalWidth;
+    int h = fontSize;
+
+    RECT rect { 0, 0, w, h };
+
     if (!vhdc)
         throw "error with vhdc";
     HBITMAP hbmp = CreateCompatibleBitmap((HDC)_hdcBackend, w, h);
@@ -29,11 +45,8 @@ ojstd::shared_ptr<Texture> TextRenderer::get(const ojstd::string& text)
     SelectObject(vhdc, hbmp);
     ExtFloodFill(vhdc, 0, 0, 0x00FFFFFF, FLOODFILLBORDER);
 
-    auto hFont = CreateFont(96, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS,
-        CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Segoe Script"));
-
-    SelectObject(vhdc, hFont);
-    TextOut(vhdc, 0, 0, text.c_str(), text.length());
+    //SetTextAlign(vhdc, TA_CENTER);
+    DrawText(vhdc, text.c_str(), text.length(), &rect, DT_CENTER);
 
     GetDIBits(vhdc, hbmp, 0, h, nullptr, &bmpi, BI_RGB);
 

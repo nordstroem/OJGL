@@ -43,23 +43,23 @@ float sdBox2(vec3 p, vec3 b, inout vec2 uv)
     float dis = length(max(d, 0.0)) + min(max(d.x, max(d.y, d.z)), 0.0);
 
     uv = p.xy / (b.xy * 2) - 0.5;
-
+    uv.x*=-1;
     return dis;
 }
 
 DistanceInfo edisonText(in vec3 p)
 {
         vec2 uv;
-        DistanceInfo box = {sdBox2(p, vec3(1, 1, 0.0), uv), textType };
+        DistanceInfo box = {sdBox2(p, vec3(0.5, 0.2, 0.0), uv), textType };
 
-        if (box.distance < S_distanceEpsilon) {
-            float s = texture(textTexture, uv + vec2(0., 0.12)).x;
+        if (true && box.distance < S_distanceEpsilon) {
+            float s = texture(textTexture, uv).x;
             if (s > 0.2) { // If not on text
                 box.type = textType;
                 box.distance = 5000000;
             }
 		}
-
+        
         return box;
 }
 
@@ -77,8 +77,9 @@ vec3 tunnelDelta(float z)
 }
 
 vec3 path(float zDelta) {
+    float period = 200 * PI; // (depends on tunnelDelta)
     float velocity = 10.0;
-    vec3 pos = vec3(0.0, 0.0, iTime * velocity + zDelta);
+    vec3 pos = vec3(0.0, 0.0, mod(iTime * velocity, period) + zDelta);
     pos += tunnelDelta(pos.z);
     return pos;
 }
@@ -98,7 +99,8 @@ DistanceInfo map(in vec3 p)
     DistanceInfo cylinder = {-sdCappedCylinder(p2.xzy - tunnelDelta(p.z), vec2(2 + 0.1*filteredLines(10*p2.y, 1.1) , 50000)), wallType };
     DistanceInfo box = {-sdBox(p2 - tunnelDelta(p2.z) + vec3(0, -0.0, 0.0), vec3(3, 1.0 + 0.0006*sin(7*p.x + 5*p.y + 5*p.z), 50000)), floorType };
     
-    DistanceInfo sphere = {sdSphere(p - path(10), 0.2), sphereType }; 
+    //DistanceInfo sphere = {sdSphere(p - path(20), 0.2), sphereType }; 
+    DistanceInfo sphere = edisonText(p - path(3));//{sdSphere(p - path(20), 0.2), sphereType }; 
 
     DistanceInfo res = sunk(cylinder, box, 0.3);
     res = un(sphere, res);
@@ -109,9 +111,9 @@ DistanceInfo map(in vec3 p)
 float getReflectiveIndex(int type)
 {
     if (type == textType)
-        return 0.0;
+        return 0.1;
     if (type == sphereType)
-        return 0.5;
+        return 0.3;
     if (type == wallType)
         return 0.0;
     if (type == floorType)
@@ -121,15 +123,15 @@ float getReflectiveIndex(int type)
 
 vec3 getAmbientColor(int type, vec3 pos) 
 {
+    vec3 wall = 0.8*vec3(0.7, 0.5, 0.1); 
     if (type == sphereType)
         return vec3(1.0, 0, 0);
     if (type == textType)
-        return vec3(0.0);
+        return 45*vec3(1.0);
     if (type == wallType )
-        return 0.8*vec3(0.7, 0.5, 0.1);
+        return wall;
     if (type == floorType) {
-        vec3 wall = 0.8*vec3(0.7, 0.5, 0.1);
-        vec3 p =0.1*palette(mod(0.05*pos.z, 1.0), vec3(0.5), vec3(0.5), vec3(1.0, 1.0, 0.5), vec3(0.8, 0.9, 0.3));
+        vec3 p = 0.1*palette(mod(0.05*pos.z, 1.0), vec3(0.5), vec3(0.5), vec3(1.0, 1.0, 0.5), vec3(0.8, 0.9, 0.3));
         return mix(p, wall, 0.1);
     }
     return vec3(0.1);
