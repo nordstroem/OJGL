@@ -37,10 +37,14 @@ ojstd::vector<Scene> Edison2021::buildSceneGraph(const Vector2i& sceneSize) cons
 
         raymarch->setTextureCallback([this]([[maybe_unused]] float relativeSceneTime) {
             if (this->_textTexture == nullptr) {
-                this->_textTexture = TextRenderer::instance().get("Edison 2021");
+                this->_textTexture = TextRenderer::instance().get("For Edison 2021");
+            }
+            if (this->_textTexture2 == nullptr) {
+                this->_textTexture2 = TextRenderer::instance().get("Piratey!?");
             }
             ojstd::vector<ojstd::shared_ptr<Uniform1t>> vector;
             vector.push_back(ojstd::make_shared<Uniform1t>("textTexture", _textTexture));
+            vector.push_back(ojstd::make_shared<Uniform1t>("textTexture2", _textTexture2));
             return vector;
         });
     }

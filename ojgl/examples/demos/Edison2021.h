@@ -12,5 +12,6 @@ public:
 
 private:
     mutable ojstd::shared_ptr<Texture> _textTexture;
+    mutable ojstd::shared_ptr<Texture> _textTexture2;
 };
 }

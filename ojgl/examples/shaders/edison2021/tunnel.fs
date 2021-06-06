@@ -14,6 +14,7 @@ uniform vec2 iResolution;
 uniform mat4 iCameraMatrix;
 
 uniform sampler2D textTexture;
+uniform sampler2D textTexture2;
 
 const int sphereType = 1;
 const int wallType = 2;
@@ -50,10 +51,26 @@ float sdBox2(vec3 p, vec3 b, inout vec2 uv)
 DistanceInfo edisonText(in vec3 p)
 {
         vec2 uv;
-        DistanceInfo box = {sdBox2(p, vec3(0.5, 0.2, 0.0), uv), textType };
+        DistanceInfo box = {sdBox2(p, vec3(0.9, 0.25, 0.0), uv), textType };
 
         if (true && box.distance < S_distanceEpsilon) {
             float s = texture(textTexture, uv).x;
+            if (s > 0.2) { // If not on text
+                box.type = textType;
+                box.distance = 5000000;
+            }
+		}
+        
+        return box;
+}
+
+DistanceInfo pirateyText(in vec3 p)
+{
+        vec2 uv;
+        DistanceInfo box = {sdBox2(p, vec3(0.6, 0.2, 0.0), uv), textType };
+
+        if (true && box.distance < S_distanceEpsilon) {
+            float s = texture(textTexture2, uv).x;
             if (s > 0.2) { // If not on text
                 box.type = textType;
                 box.distance = 5000000;
@@ -96,14 +113,16 @@ DistanceInfo map(in vec3 p)
     vec3 p2 = p;
 
     p2.xy *= rot(0.2 * sin(iTime*0.5) * cos(iTime)); 
-    DistanceInfo cylinder = {-sdCappedCylinder(p2.xzy - tunnelDelta(p.z), vec2(2 + 0.1*filteredLines(10*p2.y, 1.1) , 50000)), wallType };
-    DistanceInfo box = {-sdBox(p2 - tunnelDelta(p2.z) + vec3(0, -0.0, 0.0), vec3(3, 1.0 + 0.0006*sin(7*p.x + 5*p.y + 5*p.z), 50000)), floorType };
+    DistanceInfo cylinder = {-sdCappedCylinder(p2.xzy - tunnelDelta(p.z), vec2(2 + 0.1*filteredLines(10*atan(p2.y), 1.1) , 50000)), wallType };
+    DistanceInfo box = {-sdBox(p2 - tunnelDelta(p2.z) + vec3(0, -1.2, 0.0), vec3(3, 2.0 + 0.0006*sin(7*p.x + 5*p.y + 5*p.z), 50000)), floorType };
     
     //DistanceInfo sphere = {sdSphere(p - path(20), 0.2), sphereType }; 
-    DistanceInfo sphere = edisonText(p - path(3));//{sdSphere(p - path(20), 0.2), sphereType }; 
+    DistanceInfo pirateyText = pirateyText(p - path(6));//{sdSphere(p - path(20), 0.2), sphereType }; 
+    pirateyText.distance = min(pirateyText.distance, sdBoxFrame(p - path(6) , vec3(1.0, 0.5, 0.), 0.002));
 
     DistanceInfo res = sunk(cylinder, box, 0.3);
-    res = un(sphere, res);
+    
+    res = sunk(pirateyText, res, 0.05);
     return res;
 }
 

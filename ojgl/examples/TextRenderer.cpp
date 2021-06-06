@@ -19,12 +19,12 @@ ojstd::shared_ptr<Texture> TextRenderer::get(const ojstd::string& text)
 {
     int fontSize = 96;
     HDC vhdc = CreateCompatibleDC((HDC)_hdcBackend);
-    auto hFont = CreateFont(fontSize, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS,
+    auto hFont = CreateFont(fontSize, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS,
         CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Segoe Script"));
 
     SelectObject(vhdc, hFont);
 
-    int totalWidth = 0;
+    int totalWidth = 3;
     for (size_t i = 0; i < text.length(); i++) {
         const char* ptr = text.c_str();
         int res[1];
