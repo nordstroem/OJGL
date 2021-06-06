@@ -117,8 +117,8 @@ DistanceInfo map(in vec3 p)
     DistanceInfo box = {-sdBox(p2 - tunnelDelta(p2.z) + vec3(0, -1.2, 0.0), vec3(3, 2.0 + 0.0006*sin(7*p.x + 5*p.y + 5*p.z), 50000)), floorType };
     
     //DistanceInfo sphere = {sdSphere(p - path(20), 0.2), sphereType }; 
-    DistanceInfo pirateyText = pirateyText(p - path(6));//{sdSphere(p - path(20), 0.2), sphereType }; 
-    pirateyText.distance = min(pirateyText.distance, sdBoxFrame(p - path(6) , vec3(1.0, 0.5, 0.), 0.002));
+    DistanceInfo pirateyText = pirateyText(p2 - path(6));//{sdSphere(p - path(20), 0.2), sphereType }; 
+    pirateyText.distance = min(pirateyText.distance, sdBoxFrame(p2 - path(6) , vec3(1.0, 0.5, 0.), 0.002));
 
     DistanceInfo res = sunk(cylinder, box, 0.3);
     
@@ -151,7 +151,7 @@ vec3 getAmbientColor(int type, vec3 pos)
         return wall;
     if (type == floorType) {
         vec3 p = 0.1*palette(mod(0.05*pos.z, 1.0), vec3(0.5), vec3(0.5), vec3(1.0, 1.0, 0.5), vec3(0.8, 0.9, 0.3));
-        return mix(p, wall, 0.1);
+        return mix(p, wall, 0.04);
     }
     return vec3(0.1);
 }
