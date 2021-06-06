@@ -18,12 +18,19 @@ uniform sampler2D textTexture;
 const int sphereType = 1;
 const int wallType = 2;
 const int textType = 3;
+const int floorType = 4;
 
 DistanceInfo sunk(DistanceInfo a, DistanceInfo b, float k) {
     DistanceInfo res = a.distance < b.distance ? a : b;
     res.distance = smink(a.distance, b.distance, k);
     return res;
 }
+
+vec3 palette( in float t, in vec3 a, in vec3 b, in vec3 c, in vec3 d )
+{
+    return a + b*cos( 6.28318*(c*t+d) );
+}
+
 
 vec3 eye;
 vec3 rayOrigin;
@@ -69,17 +76,37 @@ vec3 tunnelDelta(float z)
     return vec3(5 * sin(0.03*z)*cos(0.1*z), 0.0, 0.0);
 }
 
+vec3 path(float zDelta) {
+    float velocity = 10.0;
+    vec3 pos = vec3(0.0, 0.0, iTime * velocity + zDelta);
+    pos += tunnelDelta(pos.z);
+    return pos;
+}
+
+float BrickPattern(in vec2 p) 
+{
+  p *= vec2 (1.0, 2.8);
+  vec2 f = floor (p);
+  if (2. * floor (f.y * 0.5) != f.y) 
+    p.x += 0.5;
+  p = smoothstep (0.03, 0.08, abs (fract (p + 0.5) - 0.5));
+  return 1. - 0.9 * p.x * p.y;
+}
+
+
 DistanceInfo map(in vec3 p)
 {
-    DistanceInfo box = {-sdCappedCylinder(p.xzy - tunnelDelta(p.z), vec2(2, 50000) + 0.02*noise_3(10*p)), wallType };
+    vec3 p2 = p;
 
-
-
-    DistanceInfo box2 = {sdBox(p - lookAt, vec3(0.1)), sphereType };
+    p2.xy *= rot(0.2 * sin(iTime*0.5) * cos(iTime)); 
+    DistanceInfo cylinder = {-sdCappedCylinder(p2.xzy - tunnelDelta(p.z), vec2(2 +  0.03*BrickPattern(p2.xy) + 0.01*noise_3(25*p2), 50000)), wallType };
+    DistanceInfo box = {-sdBox(p2 - tunnelDelta(p2.z) + vec3(0, 0.0, 0.0), vec3(3, 1.3 + 0.03*noise_3(p2*4), 50000)), wallType };
     
-    
+    DistanceInfo sphere = {sdSphere(p - path(3 ), 0.2), sphereType };
 
-    return un(box, box2);
+    DistanceInfo res = sunk(cylinder, box, 0.3);
+    res = un(sphere, res);
+    return res;
 }
 
 
@@ -88,65 +115,49 @@ float getReflectiveIndex(int type)
     if (type == textType)
         return 0.0;
     if (type == sphereType)
-        return 0.0;
+        return 0.5;
     if (type == wallType)
         return 0.0;
-
+    if (type == floorType)
+        return 0.15;
     return 0.0;
 }
 
 vec3 getAmbientColor(int type) 
 {
     if (type == sphereType)
-        return vec3(0.5, 0.3, 0.1);
+        return vec3(1.0, 0, 0);
     if (type == textType)
+        return vec3(0.0);
+    if (type == wallType )
+        return 0.8*vec3(0.7, 0.5, 0.1);
+    if (type == floorType)
         return vec3(0.0);
     return vec3(0.1);
 }
 
 vec3 getColor(in MarchResult result)
 {
-    vec3 lightPosition = lookAt;//vec3(0, 0, 0.0);
+    vec3 lightPosition = path(12 + 0.8*sin(iTime*10));
     if (result.type != invalidType) {
         float d = length(lightPosition - result.position);
-        float lightStrength = 0.001 / (0.000001 + 0.001*d*d);
+        float lightStrength =  0.0002 / (0.000001 + 0.00005*d*d );
         vec3 ambient = getAmbientColor(result.type);
         vec3 invLight = normalize(lightPosition - result.position);
         vec3 normal = normal(result.position);
         float shadow = 1.0;//shadowFunction(result.position, lightPosition, 32);
 
         float k = max(0.0, dot(rayDirection, reflect(invLight, normal)));
-        float spec = 1 * pow(k, 20.0);
+        float spec = 1 * pow(k, 5000.0);
 
         float diffuse = max(0., dot(invLight, normal)) * (1);
-        return vec3(lightStrength * (ambient * (0.04 + 0.96*diffuse))) * result.transmittance * shadow + result.scatteredLight;
+        return vec3(lightStrength * (ambient * (0.04 + 0.96*diffuse) ))  * shadow;
     } else {
         return vec3(0.0);
     }
 }
 
-vec3 palette( in float t, in vec3 a, in vec3 b, in vec3 c, in vec3 d )
-{
-    return a + b*cos( 6.28318*(c*t+d) );
-}
 
-VolumetricResult evaluateLight(in vec3 p)
-{
-    float d = sdBox(p, vec3(0.01));
-
-	d = max(0.001, d);
-
-	float strength = 2;
-	vec3 col = vec3(0.02, 0.08, 0.01);
-	vec3 res = col * strength / (d * d);
-    
-	return VolumetricResult(d, res);
-}
-
-float getFogAmount(in vec3 p) 
-{
-    return 0.0;
-}
 
 void main()
 {
@@ -155,17 +166,14 @@ void main()
 
     float velocity = 4.0;
 
-    lookAt  = vec3(0.0, 0.0, iTime * velocity);
-	rayOrigin = lookAt + vec3(0.0, 0.0, -3.5);
-
-    lookAt += tunnelDelta(lookAt.z);
-	rayOrigin += tunnelDelta(rayOrigin.z);
+    rayOrigin = path(0);
+    lookAt = path(3.5);
 
     vec3 forward = normalize(lookAt - rayOrigin);
  	vec3 right = normalize(cross(forward, vec3(0.0, 1.0, 0.0)));   
     vec3 up = cross(right, forward);
     
-    float fov = PI / 3.;
+    float fov = PI / 4.;
     rayDirection = normalize(u * right + v * up + fov * forward);
 
     
