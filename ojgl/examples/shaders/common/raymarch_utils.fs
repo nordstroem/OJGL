@@ -12,6 +12,7 @@ struct MarchResult {
     int steps;
     float transmittance;
     vec3 scatteredLight;
+    int jump;
 };
 
 struct VolumetricResult {
@@ -83,7 +84,7 @@ vec3 march(in vec3 rayOrigin, in vec3 rayDirection)
 
             t += jumpDistance;
             if (info.distance < S_distanceEpsilon) {
-                vec3 color = getColor(MarchResult(info.type, p, steps, transmittance, scatteredLight));
+                vec3 color = getColor(MarchResult(info.type, p, steps, transmittance, scatteredLight, jump));
 #if !S_REFLECTIONS
                 return color;
 #else
@@ -98,7 +99,7 @@ vec3 march(in vec3 rayOrigin, in vec3 rayDirection)
             }
 
             if (t > S_maxDistance) {
-                vec3 color = getColor(MarchResult(invalidType, p, steps, transmittance, scatteredLight));
+                vec3 color = getColor(MarchResult(invalidType, p, steps, transmittance, scatteredLight, jump));
                 resultColor = mix(resultColor, color, reflectionModifier);
                 return resultColor;
             }

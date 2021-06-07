@@ -110,19 +110,28 @@ float filteredLines(float y, float dp)
 
 DistanceInfo map(in vec3 p)
 {
-    vec3 p2 = p;
-
-    p2.xy *= rot(0.2 * sin(iTime*0.5) * cos(iTime)); 
-    DistanceInfo cylinder = {-sdCappedCylinder(p2.xzy - tunnelDelta(p.z), vec2(2 + 0.1*filteredLines(10*atan(p2.y), 1.1) , 50000)), wallType };
-    DistanceInfo box = {-sdBox(p2 - tunnelDelta(p2.z) + vec3(0, -1.2, 0.0), vec3(3, 2.0 + 0.0006*sin(7*p.x + 5*p.y + 5*p.z), 50000)), floorType };
+    DistanceInfo cylinder = {-sdCappedCylinder(p.xzy - tunnelDelta(p.z), vec2(2 + 0.1*filteredLines(10*atan(p.y), 1.1) , 50000)), wallType };
+    DistanceInfo box = {-sdBox(p - tunnelDelta(p.z) + vec3(0, -1.2, 0.0), vec3(3, 2.0 + 0.0006*sin(7*p.x + 5*p.y + 5*p.z), 50000)), floorType };
     
-    //DistanceInfo sphere = {sdSphere(p - path(20), 0.2), sphereType }; 
-    DistanceInfo pirateyText = pirateyText(p2 - path(6));//{sdSphere(p - path(20), 0.2), sphereType }; 
-    pirateyText.distance = min(pirateyText.distance, sdBoxFrame(p2 - path(6) , vec3(1.0, 0.5, 0.), 0.002));
+    //float dSphere = sdSphere(p - path(7.2) - vec3(0, -0.2, 0), 0.4);
+    //float dCube = sdBox(p - path(7.2) - vec3(0, -0.2, 0), vec3(0.4));
 
+
+    vec3 q = p - path(7.2);
+    q.xz *= rot(sin(3*iTime)*cos(5*iTime));
+
+    mo(q.xy, vec2(0.1, 0.3));
+    q.x-=0.2;
+    q.zy *= rot(iTime);
+    mo(q.xy, vec2(0.4 + 0.2*sin(2*iTime), 0.09+ 0.2*cos(5*iTime)));
+    q *= 1.0 + 0.3*sin(15*iTime)*cos(3*iTime);
+    
+    float dFrame = sdBoxFrame(q, vec3(0.3), 0.01);
+
+    DistanceInfo thing = {dFrame, sphereType};
+    
     DistanceInfo res = sunk(cylinder, box, 0.3);
-    
-    res = sunk(pirateyText, res, 0.05);
+    res = sunk(res, thing, 0.1);
     return res;
 }
 
@@ -132,7 +141,7 @@ float getReflectiveIndex(int type)
     if (type == textType)
         return 0.1;
     if (type == sphereType)
-        return 0.3;
+        return 0.0;
     if (type == wallType)
         return 0.0;
     if (type == floorType)
@@ -144,13 +153,15 @@ vec3 getAmbientColor(int type, vec3 pos)
 {
     vec3 wall = 0.8*vec3(0.7, 0.5, 0.1); 
     if (type == sphereType)
-        return vec3(1.0, 0, 0);
+        return vec3(1.0, 0.0, 0.05);
     if (type == textType)
         return 45*vec3(1.0);
-    if (type == wallType )
-        return wall;
+    if (type == wallType){
+        //vec3 p = palette(0.05*pos.z, vec3(0.5), vec3(0.5), vec3(1.0, 1.0, 0.5), vec3(0.8, 0.9, 0.3));
+        return wall;//mix(p, wall, 0.04);
+    }
     if (type == floorType) {
-        vec3 p = 0.1*palette(mod(0.05*pos.z, 1.0), vec3(0.5), vec3(0.5), vec3(1.0, 1.0, 0.5), vec3(0.8, 0.9, 0.3));
+        vec3 p = 0.1*palette(0.05*pos.z, vec3(0.5), vec3(0.5), vec3(1.0, 1.0, 0.5), vec3(0.8, 0.9, 0.3));
         return mix(p, wall, 0.04);
     }
     return vec3(0.1);
@@ -159,18 +170,30 @@ vec3 getAmbientColor(int type, vec3 pos)
 
 vec3 getColor(in MarchResult result)
 {
-    vec3 lightPosition = path(12 + 0.8*sin(iTime*10));
     if (result.type != invalidType) {
+        vec3 lightPosition = path(12 + 0.8*sin(iTime*10));
         float d = length(lightPosition - result.position);
+        
         float lightStrength =  0.0002 / (0.000001 + 0.00005*d*d );
         vec3 ambient = getAmbientColor(result.type, result.position);
         vec3 invLight = normalize(lightPosition - result.position);
         vec3 normal = normal(result.position);
-        float shadow = 1.0;//shadowFunction(result.position, lightPosition, 32);
+        float shadow = 1.0;
+        //if (result.position.z < lightPosition.z)
+        //    shadow = 0.3 + 0.7*shadowFunction(result.position, lightPosition, 32);
+      
         float k = max(0.0, dot(rayDirection, reflect(invLight, normal)));
         float spec = 1 * pow(k, 5000.0);
 
         float diffuse = max(0., dot(invLight, normal)) * (1);
+
+        if (result.type != wallType && result.type != floorType){
+            invLight = normalize(vec3(1, 1, -1));
+        
+            float frontDiffuse = max(0., dot(invLight, normal));
+            diffuse = max(diffuse, frontDiffuse);
+            lightStrength = max(1.0, lightStrength);
+        }
         return vec3(lightStrength * (ambient * (0.04 + 0.96*diffuse)))  * shadow;
     } else {
         return vec3(0.0);
@@ -187,7 +210,7 @@ void main()
     float velocity = 4.0;
 
     rayOrigin = path(0);
-    lookAt = path(3.5);
+    lookAt = path(10.5);
 
     vec3 forward = normalize(lookAt - rayOrigin);
  	vec3 right = normalize(cross(forward, vec3(0.0, 1.0, 0.0)));   
