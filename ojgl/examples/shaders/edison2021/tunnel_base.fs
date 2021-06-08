@@ -96,7 +96,7 @@ vec3 tunnelDelta(float z)
 vec3 path(float zDelta) {
     float period = 200 * PI; // (depends on tunnelDelta)
     float velocity = 10.0;
-    vec3 pos = vec3(0.0, 0.0, mod(iTime * velocity, period) + zDelta);
+    vec3 pos = vec3(0.0, 0.0, -mod(iTime * velocity, period) + zDelta);
     pos += tunnelDelta(pos.z);
     return pos;
 }
@@ -107,34 +107,6 @@ float filteredLines(float y, float dp)
                   abs(fract((y+0.5*dp)*0.5)-0.5))/dp;
     return 0.5 - 0.5*i*i;                  
 }
-
-DistanceInfo map(in vec3 p)
-{
-    DistanceInfo cylinder = {-sdCappedCylinder(p.xzy - tunnelDelta(p.z), vec2(2 + 0.1*filteredLines(10*atan(p.y), 1.1) , 50000)), wallType };
-    DistanceInfo box = {-sdBox(p - tunnelDelta(p.z) + vec3(0, -1.2, 0.0), vec3(3, 2.0 + 0.0006*sin(7*p.x + 5*p.y + 5*p.z), 50000)), floorType };
-    
-    //float dSphere = sdSphere(p - path(7.2) - vec3(0, -0.2, 0), 0.4);
-    //float dCube = sdBox(p - path(7.2) - vec3(0, -0.2, 0), vec3(0.4));
-
-
-    vec3 q = p - path(7.2);
-    q.xz *= rot(sin(3*iTime)*cos(5*iTime));
-
-    mo(q.xy, vec2(0.1, 0.3));
-    q.x-=0.2;
-    q.zy *= rot(iTime);
-    mo(q.xy, vec2(0.4 + 0.2*sin(2*iTime), 0.09+ 0.2*cos(5*iTime)));
-    q *= 1.0 + 0.3*sin(15*iTime)*cos(3*iTime);
-    
-    float dFrame = sdBoxFrame(q, vec3(0.3), 0.01);
-
-    DistanceInfo thing = {dFrame, sphereType};
-    
-    DistanceInfo res = sunk(cylinder, box, 0.3);
-    res = sunk(res, thing, 0.1);
-    return res;
-}
-
 
 float getReflectiveIndex(int type)
 {
@@ -171,7 +143,7 @@ vec3 getAmbientColor(int type, vec3 pos)
 vec3 getColor(in MarchResult result)
 {
     if (result.type != invalidType) {
-        vec3 lightPosition = path(12 + 0.8*sin(iTime*10));
+        vec3 lightPosition = path(-12 + 0.8*sin(iTime*10));
         float d = length(lightPosition - result.position);
         
         float lightStrength =  0.0002 / (0.000001 + 0.00005*d*d );
@@ -188,7 +160,7 @@ vec3 getColor(in MarchResult result)
         float diffuse = max(0., dot(invLight, normal)) * (1);
 
         if (result.type != wallType && result.type != floorType){
-            invLight = normalize(vec3(1, 1, -1));
+            invLight = normalize(vec3(1, 1, 1));
         
             float frontDiffuse = max(0., dot(invLight, normal));
             diffuse = max(diffuse, frontDiffuse);
@@ -210,7 +182,7 @@ void main()
     float velocity = 4.0;
 
     rayOrigin = path(0);
-    lookAt = path(10.5);
+    lookAt = path(-10.5);
 
     vec3 forward = normalize(lookAt - rayOrigin);
  	vec3 right = normalize(cross(forward, vec3(0.0, 1.0, 0.0)));   

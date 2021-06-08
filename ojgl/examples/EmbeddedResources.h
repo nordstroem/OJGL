@@ -208,10 +208,13 @@ namespace ojgl::resources {
 #include "shaders/edison2021/main2.fs"
             , "edison2021/main2.fs"
           },
-
           {
-#include "shaders/edison2021/tunnel.fs"
-            , "edison2021/tunnel.fs"
+#include "shaders/edison2021/tunnel_base.fs"
+            , "edison2021/tunnel_base.fs"
+          },
+          {
+#include "shaders/edison2021/bird.fs"
+          , "edison2021/bird.fs"
           },
   };
 // clang-format on
