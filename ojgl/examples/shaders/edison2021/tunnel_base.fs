@@ -125,7 +125,7 @@ vec3 getAmbientColor(int type, vec3 pos)
 {
     vec3 wall = 0.8*vec3(0.7, 0.5, 0.1); 
     if (type == sphereType)
-        return vec3(1.0, 0.0, 0.05);
+        return vec3(1.0);
     if (type == textType)
         return 45*vec3(1.0);
     if (type == wallType){
