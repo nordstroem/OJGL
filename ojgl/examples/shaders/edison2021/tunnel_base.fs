@@ -21,6 +21,11 @@ const int wallType = 2;
 const int textType = 3;
 const int floorType = 4;
 
+// Pipes scene
+const int pipesAType = 5;
+const int pipesBType = 6;
+const int starType = 7;
+
 DistanceInfo sunk(DistanceInfo a, DistanceInfo b, float k) {
     DistanceInfo res = a.distance < b.distance ? a : b;
     res.distance = smink(a.distance, b.distance, k);
@@ -118,6 +123,10 @@ float getReflectiveIndex(int type)
         return 0.0;
     if (type == floorType)
         return 0.05;
+    if (type == pipesAType || type == pipesBType)
+        return 0.8;
+    if (type == starType)
+        return 0.8;
     return 0.0;
 }
 
@@ -135,6 +144,15 @@ vec3 getAmbientColor(int type, vec3 pos)
     if (type == floorType) {
         vec3 p = 0.1*palette(0.05*pos.z, vec3(0.5), vec3(0.5), vec3(1.0, 1.0, 0.5), vec3(0.8, 0.9, 0.3));
         return mix(p, wall, 0.04);
+    }
+    if (type == pipesAType) {
+        return vec3(1, 0, 1);
+    }
+    if (type == pipesBType) {
+        return vec3(0, 1, 1);
+    }
+    if (type == starType) {
+        return 30 * vec3(1, 1, 1);
     }
     return vec3(0.1);
 }

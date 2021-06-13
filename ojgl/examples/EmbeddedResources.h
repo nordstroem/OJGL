@@ -216,6 +216,10 @@ namespace ojgl::resources {
 #include "shaders/edison2021/bird.fs"
           , "edison2021/bird.fs"
           },
+                        {
+#include "shaders/edison2021/pipes.fs"
+          , "edison2021/pipes.fs"
+          },
   };
 // clang-format on
 }

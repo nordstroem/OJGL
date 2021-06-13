@@ -381,6 +381,7 @@
     <None Include="examples\shaders\edison2021\bird.fs" />
     <None Include="examples\shaders\edison2021\main.fs" />
     <None Include="examples\shaders\edison2021\main2.fs" />
+    <None Include="examples\shaders\edison2021\pipes.fs" />
     <None Include="examples\shaders\edison2021\raymarch_settings.fs" />
     <None Include="examples\shaders\edison2021\wire_cube.fs" />
     <None Include="examples\shaders\edison2021\tunnel_base.fs" />
