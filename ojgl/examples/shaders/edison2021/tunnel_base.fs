@@ -182,7 +182,8 @@ vec3 getColor(in MarchResult result)
         
             float frontDiffuse = max(0., dot(invLight, normal));
             diffuse = max(diffuse, frontDiffuse);
-            lightStrength = max(1.0, lightStrength);
+            if (result.position.z > path(-5).z)
+                lightStrength = max(1.0, lightStrength);
         }
         return vec3(lightStrength * (ambient * (0.04 + 0.96*diffuse)))  * shadow;
     } else {
