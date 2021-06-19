@@ -63,7 +63,7 @@ Duration Scene::duration() const
     return this->_duration;
 }
 
-void Scene::render(float relativeSceneTime)
+void Scene::render(float relativeSceneTime, float absoluteTime)
 {
 
     auto available = buffers();
@@ -89,7 +89,7 @@ void Scene::render(float relativeSceneTime)
             }
         }
         if (allRendered) {
-            cur->render(relativeSceneTime);
+            cur->render(relativeSceneTime, absoluteTime);
             rendered.insert(cur);
             curIter = available.erase(curIter);
         } else {

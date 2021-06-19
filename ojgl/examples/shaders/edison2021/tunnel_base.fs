@@ -10,6 +10,7 @@ in vec2 fragCoord;
 out vec4 fragColor;
 
 uniform float iTime;
+uniform float iAbsoluteTime;
 uniform vec2 iResolution;
 uniform mat4 iCameraMatrix;
 
@@ -101,7 +102,7 @@ vec3 tunnelDelta(float z)
 vec3 path(float zDelta) {
     float period = 200 * PI; // (depends on tunnelDelta)
     float velocity = 10.0;
-    vec3 pos = vec3(0.0, 0.0, mod(-iTime * velocity, period) + zDelta);
+    vec3 pos = vec3(0.0, 0.0, mod(-iAbsoluteTime * velocity, period) + zDelta);
     pos += tunnelDelta(pos.z);
     return pos;
 }
@@ -120,7 +121,7 @@ float getReflectiveIndex(int type)
     if (type == sphereType)
         return 0.0;
     if (type == wallType)
-        return 0.0;
+        return 0.02;
     if (type == floorType)
         return 0.05;
     if (type == pipesAType || type == pipesBType)
@@ -132,7 +133,7 @@ float getReflectiveIndex(int type)
 
 vec3 getAmbientColor(int type, vec3 pos) 
 {
-    vec3 wall = 0.8*vec3(0.7, 0.5, 0.1); 
+    vec3 wall = 0.2*vec3(0.2, 0.2, 0.2); 
     if (type == sphereType)
         return vec3(1.0);
     if (type == textType)
@@ -143,7 +144,8 @@ vec3 getAmbientColor(int type, vec3 pos)
     }
     if (type == floorType) {
         vec3 p = 0.1*palette(0.05*pos.z, vec3(0.5), vec3(0.5), vec3(1.0, 1.0, 0.5), vec3(0.8, 0.9, 0.3));
-        return mix(p, wall, 0.04);
+        return wall;//mix(p, wall, 0.04);
+        //return vec3(0.5, 0.4, 0.7);
     }
     if (type == pipesAType) {
         return vec3(1, 0, 1);
@@ -157,14 +159,13 @@ vec3 getAmbientColor(int type, vec3 pos)
     return vec3(0.1);
 }
 
-
 vec3 getColor(in MarchResult result)
 {
     if (result.type != invalidType) {
-        vec3 lightPosition = path(-12 + 0.8*sin(iTime*10));
+        vec3 lightPosition = path(-5.5);
         float d = length(lightPosition - result.position);
         
-        float lightStrength =  0.0002 / (0.000001 + 0.00005*d*d );
+        float lightStrength =  0.00002 / (0.000001 + 0.00005*d*d );
         vec3 ambient = getAmbientColor(result.type, result.position);
         vec3 invLight = normalize(lightPosition - result.position);
         vec3 normal = normal(result.position);
@@ -185,7 +186,10 @@ vec3 getColor(in MarchResult result)
             if (result.position.z > path(-5).z)
                 lightStrength = max(1.0, lightStrength);
         }
-        return vec3(lightStrength * (ambient * (0.04 + 0.96*diffuse)))  * shadow;
+
+        //        return vec3(ambient * (0.04 + 0.96*diffuse)) * result.transmittance + result.scatteredLight;
+
+        return vec3(lightStrength * (ambient * (0.04 + 0.96*diffuse))) * result.transmittance * shadow + result.scatteredLight;
     } else {
         return vec3(0.0);
     }

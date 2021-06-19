@@ -44,7 +44,7 @@ public:
     }
     ojstd::string name() const;
     void generateFBO(bool isOutputBuffer = false);
-    void render(float relativeSceneTime);
+    void render(float relativeSceneTime, float absoluteTime);
     void insertMesh(const ojstd::shared_ptr<Mesh>& mesh, const Matrix& modelMatrix);
     void clearMeshes();
 

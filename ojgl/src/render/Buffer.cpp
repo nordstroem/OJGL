@@ -158,7 +158,7 @@ ojstd::string Buffer::name() const
     return _name;
 }
 
-void Buffer::render(float relativeSceneTime)
+void Buffer::render(float relativeSceneTime, float absoluteTime)
 {
     if (ShaderReader::modified(_vertexPath) || ShaderReader::modified(_fragmentPath)) {
         loadShader();
@@ -228,6 +228,7 @@ void Buffer::render(float relativeSceneTime)
     }
 
     glUniform1f(glGetUniformLocation(_programID, "iTime"), relativeSceneTime);
+    glUniform1f(glGetUniformLocation(_programID, "iAbsoluteTime"), absoluteTime);
     glUniform2f(glGetUniformLocation(_programID, "iResolution"), static_cast<GLfloat>(_width), static_cast<GLfloat>(_height));
 
     for (const auto& mesh : _meshes) {
