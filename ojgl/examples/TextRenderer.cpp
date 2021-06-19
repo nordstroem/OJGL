@@ -37,8 +37,8 @@ ojstd::shared_ptr<Texture> TextRenderer::get(const ojstd::string& text)
 
     RECT rect { 0, 0, w, h };
 
-    if (!vhdc)
-        throw "error with vhdc";
+    _ASSERT_EXPR(vhdc, "error with vhdc");
+
     HBITMAP hbmp = CreateCompatibleBitmap((HDC)_hdcBackend, w, h);
     BITMAPINFO bmpi = { { sizeof(BITMAPINFOHEADER), w, h, 1, 32, BI_RGB, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0 } };
 
