@@ -30,11 +30,11 @@ ojstd::vector<Scene> Edison2021::buildSceneGraph(const Vector2i& sceneSize) cons
             return vector;
         });
 
-        //auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "common/fxaa.vs", "common/fxaa.fs");
-        //fxaa->setInputs(raymarch);
+        auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "common/fxaa.vs", "common/fxaa.fs");
+        fxaa->setInputs(raymarch);
 
         auto radialBlur = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "common/radial_blur.fs");
-        radialBlur->setInputs(raymarch);
+        radialBlur->setInputs(fxaa);
 
         scenes.emplace_back(radialBlur, Duration::seconds(9999), "raymarchScene");
 
@@ -43,7 +43,7 @@ ojstd::vector<Scene> Edison2021::buildSceneGraph(const Vector2i& sceneSize) cons
                 this->_textTexture = TextRenderer::instance().get("For Edison 2021");
             }
             if (this->_textTexture2 == nullptr) {
-                this->_textTexture2 = TextRenderer::instance().get("Piratey!?");
+                this->_textTexture2 = TextRenderer::instance().get("OJ");
             }
             ojstd::vector<ojstd::shared_ptr<Uniform1t>> vector;
             vector.push_back(ojstd::make_shared<Uniform1t>("textTexture", _textTexture));

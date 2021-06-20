@@ -40,7 +40,7 @@ DistanceInfo birdie(in vec3 p) {
 
 VolumetricResult evaluateLight(in vec3 p)
 {
-    DistanceInfo bird = birdie(p);
+   /* DistanceInfo bird = birdie(p);
     float d = bird.distance;
 
 	d = max(0.001, d);
@@ -53,11 +53,30 @@ VolumetricResult evaluateLight(in vec3 p)
 	vec3 col = mix(red, yellow, 0.01);
 	vec3 res2 = col * strength / (d * d);
 	return VolumetricResult(d, res2);
+    */
+	return VolumetricResult(1000, vec3(0));
+
 }
 
 float getFogAmount(in vec3 p) 
 {
     return 0.0001;
+}
+
+DistanceInfo ojText(in vec3 p)
+{
+        vec2 uv;
+        DistanceInfo box = {sdBox2(p, vec3(0.25, 0.2, 0.0), uv), textType };
+        uv.x *=-1;
+        if (true && box.distance < S_distanceEpsilon) {
+            float s = texture(textTexture2, uv).x;
+            if (s > 0.2) { // If not on text
+                box.type = textType;
+                box.distance = 5000000;
+            }
+		}
+        
+        return box;
 }
 
 DistanceInfo map(in vec3 p)
@@ -67,9 +86,14 @@ DistanceInfo map(in vec3 p)
     DistanceInfo floorBox = {-sdBox(p - tunnelDelta(p.z) + vec3(0, -0.9, 0.0), vec3(2, 1.4 + 0.0006*sin(7*p.x + 5*p.y + 5*p.z), 50000)), floorType };
    
     
-    DistanceInfo pirate = pirateyText(p - path(-5.5) - vec3(0, -0.3, 0));
-	DistanceInfo res = sunk(cylinder, floorBox, 0.3);
-    res = un(res, pirate);
+    vec3 p3 = p - path(-5.5);
+    p3.xy *= rot(sin(iTime)*0.2);
+    p3.xz *= rot(cos(iTime)*0.5);
+    DistanceInfo pirate = ojText(p3);
+    DistanceInfo wireBox = {sdBoxFrame(p3, vec3(0.6, 0.3, 0.), 0.002), textType};
+	pirate = un(wireBox, pirate);
+    DistanceInfo res = sunk(cylinder, floorBox, 0.3);
+    res = sunk(res, pirate, 0.05);
     return res;
 }
 

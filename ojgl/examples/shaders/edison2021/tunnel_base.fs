@@ -122,7 +122,7 @@ float getReflectiveIndex(int type)
     if (type == sphereType)
         return 0.0;
     if (type == wallType)
-        return 0.005;
+        return 0.05;
     if (type == floorType)
         return 0.02;
     if (type == pipesAType || type == pipesBType)
@@ -138,7 +138,8 @@ vec3 getAmbientColor(int type, vec3 pos)
     if (type == sphereType)
         return vec3(1.0);
     if (type == textType)
-        return 145*vec3(1.0);
+       return 145*palette(sin(pos.x*0.2) + 0.2*iTime, vec3(0.5), vec3(0.5), vec3(1.0, 1.0, 0.5), vec3(0.8, 0.9, 0.3));
+       // return 145*vec3(0.0, 0.5, 1.0);
     if (type == wallType){
         //vec3 p = palette(0.05*pos.z, vec3(0.5), vec3(0.5), vec3(1.0, 1.0, 0.5), vec3(0.8, 0.9, 0.3));
         return wall;
@@ -184,8 +185,8 @@ vec3 getColor(in MarchResult result)
         
             float frontDiffuse = max(0., dot(invLight, normal));
             diffuse = max(diffuse, frontDiffuse);
-            if (result.position.z > path(-5).z)
-                lightStrength = max(1.0, lightStrength);
+          //  if (result.position.z > path(-6).z)
+          //      lightStrength = max(1.0, lightStrength);
         }
 
         //        return vec3(ambient * (0.04 + 0.96*diffuse)) * result.transmittance + result.scatteredLight;
