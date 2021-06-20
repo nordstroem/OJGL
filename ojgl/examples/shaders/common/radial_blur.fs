@@ -15,7 +15,7 @@ void main()
 {
     vec2 center = vec2(0.5, 0.5);
 	float blurStart = 1.0;
-    float blurWidth = 0.03;
+    float blurWidth = 0.02;
 
     
     float u = (fragCoord.x);

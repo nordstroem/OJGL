@@ -20,7 +20,7 @@ ojstd::shared_ptr<Texture> TextRenderer::get(const ojstd::string& text)
     int fontSize = 96;
     HDC vhdc = CreateCompatibleDC((HDC)_hdcBackend);
     auto hFont = CreateFont(fontSize, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS,
-        CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Segoe Script"));
+        CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Candara"));
 
     SelectObject(vhdc, hFont);
 

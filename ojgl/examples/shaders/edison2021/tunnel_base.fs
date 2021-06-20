@@ -58,6 +58,7 @@ DistanceInfo edisonText(in vec3 p)
 {
         vec2 uv;
         DistanceInfo box = {sdBox2(p, vec3(0.9, 0.25, 0.0), uv), textType };
+        uv.x *=-1;
 
         if (true && box.distance < S_distanceEpsilon) {
             float s = texture(textTexture, uv).x;
@@ -74,7 +75,7 @@ DistanceInfo pirateyText(in vec3 p)
 {
         vec2 uv;
         DistanceInfo box = {sdBox2(p, vec3(0.6, 0.2, 0.0), uv), textType };
-
+        uv.x *=-1;
         if (true && box.distance < S_distanceEpsilon) {
             float s = texture(textTexture2, uv).x;
             if (s > 0.2) { // If not on text
@@ -121,9 +122,9 @@ float getReflectiveIndex(int type)
     if (type == sphereType)
         return 0.0;
     if (type == wallType)
-        return 0.02;
+        return 0.005;
     if (type == floorType)
-        return 0.05;
+        return 0.02;
     if (type == pipesAType || type == pipesBType)
         return 0.8;
     if (type == starType)
@@ -133,14 +134,14 @@ float getReflectiveIndex(int type)
 
 vec3 getAmbientColor(int type, vec3 pos) 
 {
-    vec3 wall = 0.2*vec3(0.2, 0.2, 0.2); 
+    vec3 wall = 3.0*vec3(0.2, 0.2, 0.2); 
     if (type == sphereType)
         return vec3(1.0);
     if (type == textType)
-        return 45*vec3(1.0);
+        return 145*vec3(1.0);
     if (type == wallType){
         //vec3 p = palette(0.05*pos.z, vec3(0.5), vec3(0.5), vec3(1.0, 1.0, 0.5), vec3(0.8, 0.9, 0.3));
-        return wall;//mix(p, wall, 0.04);
+        return wall;
     }
     if (type == floorType) {
         vec3 p = 0.1*palette(0.05*pos.z, vec3(0.5), vec3(0.5), vec3(1.0, 1.0, 0.5), vec3(0.8, 0.9, 0.3));
@@ -162,10 +163,10 @@ vec3 getAmbientColor(int type, vec3 pos)
 vec3 getColor(in MarchResult result)
 {
     if (result.type != invalidType) {
-        vec3 lightPosition = path(-5.5);
+        vec3 lightPosition = path(-11.5);
         float d = length(lightPosition - result.position);
         
-        float lightStrength =  0.00002 / (0.000001 + 0.00005*d*d );
+        float lightStrength =  0.0002 / (0.000001 + 0.0005*d*d );
         vec3 ambient = getAmbientColor(result.type, result.position);
         vec3 invLight = normalize(lightPosition - result.position);
         vec3 normal = normal(result.position);

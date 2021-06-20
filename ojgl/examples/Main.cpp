@@ -69,7 +69,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
     popup::Data popupData; //= popup::show();
 
     popupData.width = 1280;
-    popupData.height = 720;
+    popupData.height = 729;
     popupData.full = false;
 
     const Vector2i windowSize(popupData.width, popupData.height);
