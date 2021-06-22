@@ -97,7 +97,7 @@ float cylinder(vec3 p, vec2 h)
 
 vec3 tunnelDelta(float z)
 {
-    return vec3(3 * sin(0.03*z)*cos(0.1*z), 0.0, 0.0);
+    return vec3(5 * sin(0.03*z)*cos(0.1*z), 0.0, 0.0);
 }
 
 vec3 path(float zDelta) {
@@ -120,7 +120,7 @@ float getReflectiveIndex(int type)
     if (type == textType)
         return 0.1;
     if (type == sphereType)
-        return 0.0;
+        return 0.5;
     if (type == wallType)
         return 0.05;
     if (type == floorType)
@@ -136,7 +136,7 @@ vec3 getAmbientColor(int type, vec3 pos)
 {
     vec3 wall = 3.0*vec3(0.2, 0.2, 0.2); 
     if (type == sphereType)
-        return vec3(1.0);
+        return vec3(2.0, 15.0, 0.0);
     if (type == textType)
        return 145*palette(sin(pos.x*0.2) + 0.2*iTime, vec3(0.5), vec3(0.5), vec3(1.0, 1.0, 0.5), vec3(0.8, 0.9, 0.3));
        // return 145*vec3(0.0, 0.5, 1.0);
