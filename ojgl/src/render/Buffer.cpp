@@ -271,55 +271,61 @@ void Buffer::generateFBO(bool isOutputBuffer)
         _fbos.emplace_back(Vector2i(_width, _height), _numOutTextures, _format == BufferFormat::Meshes, isOutputBuffer);
 }
 
+#define GL_CHECK_ERROR(functionCall) functionCall; \
+    _ASSERTE(glGetError() == GL_NO_ERROR);
+
+#define GL_CHECK_LOG(functionCall, id, logFunction, errorStr) functionCall; \
+    functionCall; \
+    if (param == GL_FALSE) {\
+        LOG_ERROR(errorStr); \
+        int len; \
+        constexpr int logSize = 200; \
+        char log[logSize]; \
+        logFunction(id, logSize, &len, log); \
+        _ASSERT_EXPR(len <= logSize, "Could not fit entire log, increase logSize"); \
+        LOG_ERROR(log); \
+    } \
+
+
 void Buffer::loadShader()
 {
     if (_programID != 0)
         glDeleteProgram(_programID);
 
     _programID = glCreateProgram();
+    _ASSERTE(_programID != 0);
+
     int vertID = glCreateShader(GL_VERTEX_SHADER);
     int fragID = glCreateShader(GL_FRAGMENT_SHADER);
+
+    GLint param;
+
+    // Vertex shader
     int vertexShaderLength = ShaderReader::get(_vertexPath).length();
     auto vertexChar = ShaderReader::get(_vertexPath).c_str();
-    glShaderSource(vertID, 1, &vertexChar, &vertexShaderLength);
+    GL_CHECK_ERROR(glShaderSource(vertID, 1, &vertexChar, &vertexShaderLength));
+    GL_CHECK_ERROR(glCompileShader(vertID));
+    GL_CHECK_LOG(glGetShaderiv(vertID, GL_COMPILE_STATUS, &param), vertID, glGetShaderInfoLog, "Failed to compile vertex shader!");
 
+
+    // Fragment shader
     int fragmentShaderLength = ShaderReader::get(_fragmentPath).length();
     auto fragmentChar = ShaderReader::get(_fragmentPath).c_str();
-    glShaderSource(fragID, 1, &fragmentChar, &fragmentShaderLength);
-    glCompileShader(vertID);
-    GLint param;
-    glGetShaderiv(vertID, GL_COMPILE_STATUS, &param);
-    if (param == GL_FALSE) {
-        LOG_ERROR("Failed to compile vertex shader!");
-        int len;
-        char log[200];
-        glGetShaderInfoLog(fragID, 200, &len, log);
-        LOG_ERROR(log);
-    }
+    GL_CHECK_ERROR(glShaderSource(fragID, 1, &fragmentChar, &fragmentShaderLength));
+    GL_CHECK_ERROR(glCompileShader(fragID));
+    GL_CHECK_LOG(glGetShaderiv(fragID, GL_COMPILE_STATUS, &param), fragID, glGetShaderInfoLog, "Failed to compile fragment shader!");
 
-    glCompileShader(fragID);
-    glGetShaderiv(fragID, GL_COMPILE_STATUS, &param);
-    if (param == GL_FALSE) {
-        LOG_ERROR("Failed to compile fragment shader!");
-        int len;
-        char log[200];
-        glGetShaderInfoLog(fragID, 200, &len, log);
-        LOG_ERROR(log);
-    }
-
+    // Attach shaders
     glAttachShader(_programID, vertID);
     glAttachShader(_programID, fragID);
-    glLinkProgram(_programID);
-    glValidateProgram(_programID);
-    glGetProgramiv(_programID, GL_VALIDATE_STATUS, &param);
 
-    if (param == GL_FALSE) {
-        LOG_ERROR("Shader program is not valid!");
-        int len;
-        char log[200];
-        glGetShaderInfoLog(fragID, 200, &len, log);
-        LOG_ERROR(log);
-    }
+    // Link program
+    GL_CHECK_ERROR(glLinkProgram(_programID));
+    GL_CHECK_LOG(glGetProgramiv(_programID, GL_LINK_STATUS, &param), _programID, glGetProgramInfoLog, "Shader program linking did not succeed.");
+
+    // Validate program
+    GL_CHECK_ERROR(glValidateProgram(_programID));
+    GL_CHECK_LOG(glGetProgramiv(_programID, GL_VALIDATE_STATUS, &param), _programID, glGetProgramInfoLog, "Shader program is not valid!");
 
     //Delete the shaders
     glDetachShader(_programID, vertID);
@@ -327,6 +333,9 @@ void Buffer::loadShader()
     glDeleteShader(vertID);
     glDeleteShader(fragID);
 }
+
+#undef GL_CHECK_ERROR
+#undef GL_CHECK_LOG
 
 int inline Buffer::numOutTextures()
 {
