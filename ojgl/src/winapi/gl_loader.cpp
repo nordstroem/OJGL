@@ -105,7 +105,7 @@ int load_gl_functions()
         gl_function_pointers[i] = ptr;
         if (ptr == NULL) {
 #ifdef _DEBUG
-            // Do not assert on mising AMD specifc functions
+            // Do not assert on mising AMD specific functions
             if (name != "glDebugMessageCallbackAMD" && name != "glDebugMessageEnableAMD" && name != "glDebugMessageInsertAMD" && name != "glGetDebugMessageLogAMD") {
                 _ASSERT_EXPR(false, "Failed to load GL func");
             }
