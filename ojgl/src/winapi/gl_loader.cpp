@@ -77,7 +77,8 @@ const char* gl_function_names[] = {
     "glValidateProgram",
     "glUniform1fv",
     "glUniform2f",
-    "glGetProgramInfoLog"
+    "glGetProgramInfoLog",
+    "glIsProgram"
 };
 
 void* gl_function_pointers[sizeof(gl_function_names) / sizeof(const char*)];
