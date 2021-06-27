@@ -233,6 +233,14 @@ namespace ojgl::resources {
 #include "shaders/edison2021/introText.fs"
           , "edison2021/introText.fs"
           },
+          {
+#include "shaders/edison2021/wire_cube.fs"
+          , "edison2021/wire_cube.fs"
+          },
+          {
+#include "shaders/edison2021/tunnel_transform.fs"
+          , "edison2021/tunnel_transform.fs"
+          },
   };
 // clang-format on
 }

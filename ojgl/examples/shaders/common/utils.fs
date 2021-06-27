@@ -57,4 +57,18 @@ float smink( float a, float b, float k )
     float h = clamp( 0.5+0.5*(b-a)/k, 0.0, 1.0);
     return mix( b, a, h ) - k*h*(1.0-h);
 }
+
+float beat(float time, float beatTime, float strength)
+{
+    float dt = time - beatTime;
+    if (dt >= -0.5 && dt <= 0.5)
+        return pow(psin(2 * PI * (dt - 0.5) - PI / 2), strength);
+    return 0.0;
+}
+
+float cbeat(float time, float period, float strength)
+{
+    return pow(psin(2 * PI / period * (time - 0.5 * period) - PI / 2), strength);
+}
+
 )""
