@@ -97,7 +97,7 @@ float cylinder(vec3 p, vec2 h)
 
 vec3 tunnelDelta(float z)
 {
-    return vec3(5 * sin(0.03*z)*cos(0.1*z), 0.0, 0.0);
+    return vec3(3 * sin(0.03*z)*cos(0.1*z), 0.0, 0.0);
 }
 
 vec3 path(float zDelta) {
@@ -132,34 +132,8 @@ float getReflectiveIndex(int type)
     return 0.0;
 }
 
-vec3 getAmbientColor(int type, vec3 pos) 
-{
-    vec3 wall = 3.0*vec3(0.2, 0.2, 0.2); 
-    if (type == sphereType)
-        return vec3(2.0, 15.0, 0.0);
-    if (type == textType)
-       return 145*palette(sin(pos.x*0.2) + 0.2*iTime, vec3(0.5), vec3(0.5), vec3(1.0, 1.0, 0.5), vec3(0.8, 0.9, 0.3));
-       // return 145*vec3(0.0, 0.5, 1.0);
-    if (type == wallType){
-        //vec3 p = palette(0.05*pos.z, vec3(0.5), vec3(0.5), vec3(1.0, 1.0, 0.5), vec3(0.8, 0.9, 0.3));
-        return wall;
-    }
-    if (type == floorType) {
-        vec3 p = 0.1*palette(0.05*pos.z, vec3(0.5), vec3(0.5), vec3(1.0, 1.0, 0.5), vec3(0.8, 0.9, 0.3));
-        return wall;//mix(p, wall, 0.04);
-        //return vec3(0.5, 0.4, 0.7);
-    }
-    if (type == pipesAType) {
-        return vec3(1, 0, 1);
-    }
-    if (type == pipesBType) {
-        return vec3(0, 1, 1);
-    }
-    if (type == starType) {
-        return 30 * vec3(1, 1, 1);
-    }
-    return vec3(0.1);
-}
+vec3 getAmbientColor(int type, vec3 pos);
+
 
 vec3 getColor(in MarchResult result)
 {
