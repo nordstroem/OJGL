@@ -19,35 +19,33 @@ const unsigned char* Edison2021::getSong() const
     return nullptr;
 }
 
+ojstd::shared_ptr<Texture> Edison2021::getText(const ojstd::string& text) const
+{
+    if (!this->_textures.contains(text))
+        this->_textures[text] = TextRenderer::instance().get(text);
+
+    return this->_textures[text];
+}
+
 ojstd::vector<Scene> Edison2021::buildSceneGraph(const Vector2i& sceneSize) const
 {
     ojstd::vector<Scene> scenes;
     {
-        auto raymarch = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2021/experiments.fs");
-        raymarch->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
+        auto introText = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2021/introText.fs");
+        introText->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
             Buffer::UniformVector vector;
             vector.push_back(ojstd::make_shared<UniformMatrix4fv>("iCameraMatrix", FreeCameraController::instance().getCameraMatrix()));
             return vector;
         });
 
-        //auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "common/fxaa.vs", "common/fxaa.fs");
-        //fxaa->setInputs(raymarch);
-
         auto radialBlur = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "common/radial_blur.fs");
-        radialBlur->setInputs(raymarch);
+        radialBlur->setInputs(introText);
 
-        scenes.emplace_back(radialBlur, Duration::seconds(9999), "raymarchScene");
+        scenes.emplace_back(radialBlur, Duration::seconds(5), "raymarchScene");
 
-        raymarch->setTextureCallback([this]([[maybe_unused]] float relativeSceneTime) {
-            if (this->_textTexture == nullptr) {
-                this->_textTexture = TextRenderer::instance().get("For Edison 2021");
-            }
-            if (this->_textTexture2 == nullptr) {
-                this->_textTexture2 = TextRenderer::instance().get("Piratey!?");
-            }
+        introText->setTextureCallback([this]([[maybe_unused]] float relativeSceneTime) {
             ojstd::vector<ojstd::shared_ptr<Uniform1t>> vector;
-            vector.push_back(ojstd::make_shared<Uniform1t>("textTexture", _textTexture));
-            vector.push_back(ojstd::make_shared<Uniform1t>("textTexture2", _textTexture2));
+            vector.push_back(ojstd::make_shared<Uniform1t>("pirateyTexture", this->getText("Piratey!?")));
             return vector;
         });
     }
@@ -60,23 +58,23 @@ ojstd::vector<Scene> Edison2021::buildSceneGraph(const Vector2i& sceneSize) cons
             return vector;
         });
 
-        auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "common/fxaa.vs", "common/fxaa.fs");
-        fxaa->setInputs(raymarch);
+        auto radialBlur = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "common/radial_blur.fs");
+        radialBlur->setInputs(raymarch);
 
-        scenes.emplace_back(fxaa, Duration::seconds(9999), "raymarchScene");
+        scenes.emplace_back(radialBlur, Duration::seconds(5), "raymarchScene");
+    }
 
-        raymarch->setTextureCallback([this]([[maybe_unused]] float relativeSceneTime) {
-            if (this->_textTexture == nullptr) {
-                this->_textTexture = TextRenderer::instance().get("For Edison 2021");
-            }
-            if (this->_textTexture2 == nullptr) {
-                this->_textTexture2 = TextRenderer::instance().get("Piratey!?");
-            }
-            ojstd::vector<ojstd::shared_ptr<Uniform1t>> vector;
-            vector.push_back(ojstd::make_shared<Uniform1t>("textTexture", _textTexture));
-            vector.push_back(ojstd::make_shared<Uniform1t>("textTexture2", _textTexture2));
+    {
+        auto blob = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2021/blob.fs");
+        blob->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
+            Buffer::UniformVector vector;
+            vector.push_back(ojstd::make_shared<UniformMatrix4fv>("iCameraMatrix", FreeCameraController::instance().getCameraMatrix()));
             return vector;
         });
+
+        auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "common/fxaa.vs", "common/fxaa.fs");
+        fxaa->setInputs(blob);
+        scenes.emplace_back(fxaa, Duration::seconds(5), "blobScene");
     }
 
     {
@@ -90,7 +88,7 @@ ojstd::vector<Scene> Edison2021::buildSceneGraph(const Vector2i& sceneSize) cons
         auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "common/fxaa.vs", "common/fxaa.fs");
         fxaa->setInputs(raymarch);
 
-        scenes.emplace_back(fxaa, Duration::seconds(9999), "pipesScene");
+        scenes.emplace_back(fxaa, Duration::seconds(5), "pipesScene");
     }
 
     return scenes;

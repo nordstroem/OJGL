@@ -11,7 +11,7 @@ public:
     const unsigned char* getSong() const override;
 
 private:
-    mutable ojstd::shared_ptr<Texture> _textTexture;
-    mutable ojstd::shared_ptr<Texture> _textTexture2;
+    ojstd::shared_ptr<Texture> getText(const ojstd::string& text) const;
+    mutable ojstd::unordered_map<ojstd::string, ojstd::shared_ptr<Texture>> _textures;
 };
 }

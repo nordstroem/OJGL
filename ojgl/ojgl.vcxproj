@@ -380,7 +380,8 @@
     <None Include="examples\shaders\dodenstriumf\roomScene.fs" />
     <None Include="examples\shaders\dodenstriumf\roomScenePost.fs" />
     <None Include="examples\shaders\edison2021\bird.fs" />
-    <None Include="examples\shaders\edison2021\experiments.fs" />
+    <None Include="examples\shaders\edison2021\blob.fs" />
+    <None Include="examples\shaders\edison2021\introText.fs" />
     <None Include="examples\shaders\edison2021\main.fs" />
     <None Include="examples\shaders\edison2021\main2.fs" />
     <None Include="examples\shaders\edison2021\pipes.fs" />

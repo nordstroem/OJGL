@@ -1,6 +1,11 @@
 R""(
 #include "edison2021/tunnel_base.fs"
 
+const int pipesAType = lastBaseType + 1;
+const int pipesBType = lastBaseType + 2;
+const int starType = lastBaseType + 3;
+
+
 VolumetricResult evaluateLight(in vec3 p)
 {
  
@@ -43,6 +48,35 @@ VolumetricResult evaluateLight(in vec3 p)
 float getFogAmount(in vec3 p) 
 {
     return 0.0005;
+}
+
+float getReflectiveIndex(int type)
+{
+    if (type == wallType)
+        return 0.02;
+    if (type == pipesAType || type == pipesBType)
+        return 0.8;
+    if (type == starType)
+        return 0.8;
+    return 0.0;
+}
+
+vec3 getAmbientColor(int type, vec3 pos) 
+{
+    vec3 wall = 0.5*vec3(0.2, 0.2, 0.2); 
+    if (type == wallType || type == floorType){
+        return wall;
+    }
+    if (type == pipesAType) {
+        return vec3(1, 0, 1);
+    }
+    if (type == pipesBType) {
+        return vec3(0, 1, 1);
+    }
+    if (type == starType) {
+        return 30 * vec3(1, 1, 1);
+    }
+    return vec3(0.1);
 }
 
 DistanceInfo map(in vec3 p)
