@@ -226,8 +226,20 @@ namespace ojgl::resources {
           , "edison2021/pipes.fs"
           },
           {
-#include "shaders/edison2021/experiments.fs"
-          , "edison2021/experiments.fs"
+#include "shaders/edison2021/blob.fs"
+          , "edison2021/blob.fs"
+          },
+          {
+#include "shaders/edison2021/introText.fs"
+          , "edison2021/introText.fs"
+          },
+          {
+#include "shaders/edison2021/wire_cube.fs"
+          , "edison2021/wire_cube.fs"
+          },
+          {
+#include "shaders/edison2021/tunnel_transform.fs"
+          , "edison2021/tunnel_transform.fs"
           },
   };
 // clang-format on

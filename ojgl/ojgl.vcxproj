@@ -372,6 +372,7 @@
     <ClInclude Include="src\winapi\wglext.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\edison_shaders\wire_cube.fs" />
     <None Include="examples\shaders\common\radial_blur.fs" />
     <None Include="examples\shaders\dodenstriumf\graveScene.fs" />
     <None Include="examples\shaders\dodenstriumf\graveScenePost.fs" />
@@ -380,11 +381,13 @@
     <None Include="examples\shaders\dodenstriumf\roomScene.fs" />
     <None Include="examples\shaders\dodenstriumf\roomScenePost.fs" />
     <None Include="examples\shaders\edison2021\bird.fs" />
-    <None Include="examples\shaders\edison2021\experiments.fs" />
+    <None Include="examples\shaders\edison2021\blob.fs" />
+    <None Include="examples\shaders\edison2021\introText.fs" />
     <None Include="examples\shaders\edison2021\main.fs" />
     <None Include="examples\shaders\edison2021\main2.fs" />
     <None Include="examples\shaders\edison2021\pipes.fs" />
     <None Include="examples\shaders\edison2021\raymarch_settings.fs" />
+    <None Include="examples\shaders\edison2021\tunnel_transform.fs" />
     <None Include="examples\shaders\edison2021\wire_cube.fs" />
     <None Include="examples\shaders\edison2021\tunnel_base.fs" />
     <None Include="examples\shaders\experiments\cachedGeometry.fs" />
