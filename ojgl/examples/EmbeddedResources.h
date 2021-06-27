@@ -241,6 +241,10 @@ namespace ojgl::resources {
 #include "shaders/edison2021/tunnel_transform.fs"
           , "edison2021/tunnel_transform.fs"
           },
+          {
+#include "shaders/edison2021/plane.fs"
+          , "edison2021/plane.fs"
+          },
   };
 // clang-format on
 }
