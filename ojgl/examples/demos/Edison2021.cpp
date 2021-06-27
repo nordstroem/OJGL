@@ -126,10 +126,10 @@ ojstd::vector<Scene> Edison2021::buildSceneGraph(const Vector2i& sceneSize) cons
             return vector;
         });
 
-        auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "common/fxaa.vs", "common/fxaa.fs");
-        fxaa->setInputs(raymarch);
+        auto radialBlur = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "common/radial_blur.fs");
+        radialBlur->setInputs(raymarch);
 
-        scenes.emplace_back(fxaa, Duration::seconds(30), "planeScene");
+        scenes.emplace_back(radialBlur, Duration::seconds(99999), "planeScene");
     }
 
     return scenes;

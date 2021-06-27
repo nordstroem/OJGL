@@ -7,21 +7,73 @@ const int starType = lastBaseType + 3;
 const int planeType = lastBaseType + 4;
 const int lightTpe = lastBaseType + 5;
 
+const float transitionStartTime = 10;
+
+float tunnelDeltaModifier() {
+    return 1;
+}
+
+float birdDis(in vec3 p) {
+    const float since = iTime - transitionStartTime;
+    p.y += smoothstep(0.0, 0.5, since) * 0.3;
+
+    p = p - path(-5.5);
+    p.y -= 0.3*sin(iTime);
+    p.zy *= rot(-0.15);
+    
+    p = p.xzy;
+    p.y += cos(3*iTime)*sin(iTime);
+
+    DistanceInfo b0 = {sdVerticalCapsule(p - vec3(0, 0, -0.035), 0.3, 0.02), sphereType};
+
+    p.x = abs(p.x);
+    
+    p.xz *= rot(0.5*sin(7*iTime));
+
+    DistanceInfo b1 = {sdBox(p, vec3(0.4, 0.2, 0.005)), sphereType};
+    
+
+    p = p - vec3(0.6, 0, 0);
+    p.x+=0.2;
+    p.xz *= rot(0.6*sin(7*(iTime - 0.15)));
+    p.x-=0.2;
+
+    float tipWidth = 0.2;
+    float r = clamp(1-(p.x+tipWidth)/(tipWidth*2), 0, 1);
+
+    DistanceInfo b2 = {sdBox(p, vec3(tipWidth, 0.18*r, 0.001)), sphereType};
+    DistanceInfo bird = sunk(b0, sunk(b1, b2, 0), 0.15);
+
+   return bird.distance;
+}
+
+vec3 planeFlyIn(in vec3 p) {
+     p.z -= 7 * (1.0 - smoothstep(0, 5, iTime));
+     return p;
+}
 
 VolumetricResult evaluateLight(in vec3 p)
 {
- 
-    
-
     DistanceInfo res = {99999, 0};
 
     {
-        float r = 0.06 + sin(p.z* 100) * 0.05;
-        r -= (p.z - path(-5.5).z) * 0.08;
-        float d3 = sdCappedCylinder((p - path(-5.5) - vec3(0.5, -0.6, 0.5)).xzy, vec2(r, 0.3));
-        float d4 = sdCappedCylinder((p - path(-5.5) - vec3(-0.5, -0.6, 0.5)).xzy, vec2(r, 0.3));
-        float d = min(d3, d4);
-        res = un(res, DistanceInfo(d, planeType));
+        {
+            p = planeFlyIn(p);
+
+            float r = 0.06 + sin(p.z* 100) * 0.05;
+            r -= (p.z - path(-5.5).z) * 0.08;
+            float d3 = sdCappedCylinder((p - path(-5.5) - vec3(0.5, -0.6, 0.5)).xzy, vec2(r, 0.3));
+            float d4 = sdCappedCylinder((p - path(-5.5) - vec3(-0.5, -0.6, 0.5)).xzy, vec2(r, 0.3));
+            float d = min(d3, d4);
+            res = un(res, DistanceInfo(d, planeType));
+        }
+
+        if (iTime > transitionStartTime) {
+
+            float dd = birdDis(p);
+            res.distance = mix(res.distance, dd, min(1.0, (iTime - transitionStartTime) * 0.8));
+        }
+
     }
 
     {
@@ -106,9 +158,16 @@ DistanceInfo map(in vec3 p)
    
 	DistanceInfo res =  cylinder;
 
-
+    
 
     {
+       p = planeFlyIn(p);
+
+        if (iTime > transitionStartTime + 0.5) {
+            const float since = iTime - transitionStartTime - 0.5;
+            p.y += 0.3 * since;
+            p.z -= since * 2.0;
+        }
         float d = sdCappedCylinder((p - path(-5.5) - vec3(0, -0.5, 0.0)).xzy, vec2(0.12, 0.4));
         float d3 = sdCappedCylinder((p - path(-5.5) - vec3(0.5, -0.6, 0.0)).xzy, vec2(0.08, 0.2));
         float d4 = sdCappedCylinder((p - path(-5.5) - vec3(-0.5, -0.6, 0.0)).xzy, vec2(0.08, 0.2));

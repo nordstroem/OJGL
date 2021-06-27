@@ -3,6 +3,9 @@ R""(
 
 const int blobType = lastBaseType + 1;
 
+float tunnelDeltaModifier() {
+    return 3;
+}
 
 VolumetricResult evaluateLight(in vec3 p)
 {

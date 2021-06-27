@@ -35,9 +35,11 @@ vec3 rayOrigin;
 vec3 rayDirection;
 vec3 lookAt;
 
+float tunnelDeltaModifier();
+
 vec3 tunnelDelta(float z)
 {
-    return vec3(3 * sin(0.03*z)*cos(0.1*z), 0.0, 0.0);
+    return vec3(tunnelDeltaModifier() * sin(0.03*z)*cos(0.1*z), 0.0, 0.0);
 }
 
 vec3 path(float zDelta) {
@@ -66,6 +68,7 @@ vec3 getColor(in MarchResult result)
         float d = length(lightPosition - result.position);
         
         float lightStrength =  0.0002 / (0.000001 + 0.0005*d*d );
+
         vec3 ambient = getAmbientColor(result.type, result.position);
         vec3 invLight = normalize(lightPosition - result.position);
         vec3 normal = normal(result.position);
@@ -93,8 +96,6 @@ void main()
 {
     float u = (fragCoord.x - 0.5);
     float v = (fragCoord.y - 0.5) * iResolution.y / iResolution.x;
-
-    float velocity = 4.0;
 
     rayOrigin = path(0);
     lookAt = path(-10.5);
