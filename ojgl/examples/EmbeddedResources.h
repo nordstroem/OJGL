@@ -99,7 +99,10 @@ namespace ojgl::resources {
 #include "shaders/common/radial_blur.fs"
           , "common/radial_blur.fs"
           },
-
+          {
+  #include "shaders/common/fade.fs"
+          , "common/fade.fs"
+          },
           {
 #include "shaders/QED/raymarch_utils.fs"
             , "QED/raymarch_utils.fs"

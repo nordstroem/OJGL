@@ -29,7 +29,7 @@ vec3 palette( in float t, in vec3 a, in vec3 b, in vec3 c, in vec3 d )
     return a + b*cos( 6.28318*(c*t+d) );
 }
 
-vec3 eye;
+
 vec3 rayOrigin;
 vec3 rayDirection;
 vec3 lookAt;
@@ -94,6 +94,10 @@ vec3 getColor(in MarchResult result)
 }
 
 
+#ifdef CUSTOM_CAMERA
+void updateCamera(inout vec3 rayOrigin, inout vec3 lookAt);
+#endif
+
 void main()
 {
     float u = (fragCoord.x - 0.5);
@@ -101,7 +105,9 @@ void main()
 
     rayOrigin = path(0);
     lookAt = path(-10.5);
-
+#ifdef CUSTOM_CAMERA
+    updateCamera(rayOrigin, lookAt);
+#endif
     vec3 forward = normalize(lookAt - rayOrigin);
  	vec3 right = normalize(cross(forward, vec3(0.0, 1.0, 0.0)));   
     vec3 up = cross(right, forward);
@@ -109,8 +115,7 @@ void main()
     float fov = PI / 4.;
     rayDirection = normalize(u * right + v * up + fov * forward);
 
-    eye = rayOrigin;
-    vec3 color = march(eye, rayDirection);
+    vec3 color = march(rayOrigin, rayDirection);
 
     // Tone mapping
     color /= (color + vec3(1.0));

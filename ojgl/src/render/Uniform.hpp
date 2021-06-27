@@ -104,4 +104,16 @@ private:
     const ojstd::string _location;
     const ojstd::shared_ptr<Texture> _texture;
 };
+
+class Uniform1b : public UniformBase {
+public:
+    Uniform1b(const ojstd::string& location, bool x)
+        : UniformBase(location)
+        , _x(x) {};
+    void setUniform(int programID) override;
+
+private:
+    const bool _x;
+};
+
 } //namespace ojgl

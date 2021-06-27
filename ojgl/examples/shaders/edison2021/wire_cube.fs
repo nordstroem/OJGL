@@ -58,5 +58,4 @@ DistanceInfo map(in vec3 p)
     return res;
 }
 
-
 )""

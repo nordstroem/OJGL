@@ -41,28 +41,25 @@ ojstd::vector<Scene> Edison2021::buildSceneGraph(const Vector2i& sceneSize) cons
 
         auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "common/fxaa.vs", "common/fxaa.fs");
         fxaa->setInputs(introText);
+        auto fade = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "common/fade.fs");
+        fade->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
+            Buffer::UniformVector vector;
+            vector.push_back(ojstd::make_shared<Uniform1f>("startFadeTime", 0.f));
+            vector.push_back(ojstd::make_shared<Uniform1f>("endFadeTime", 5.f));
+            vector.push_back(ojstd::make_shared<Uniform1b>("fadeIn", true));
+            return vector;
+        });
 
-        scenes.emplace_back(fxaa, Duration::seconds(5), "raymarchScene");
+        fade->setInputs(fxaa);
+        scenes.emplace_back(fade, Duration::seconds(30), "raymarchScene");
 
         introText->setTextureCallback([this]([[maybe_unused]] float relativeSceneTime) {
             ojstd::vector<ojstd::shared_ptr<Uniform1t>> vector;
-            vector.push_back(ojstd::make_shared<Uniform1t>("pirateyTexture", this->getText("Piratey!?")));
+            vector.push_back(ojstd::make_shared<Uniform1t>("moltresTexture", this->getText("Moltres")));
+            vector.push_back(ojstd::make_shared<Uniform1t>("ojTexture", this->getText("by OJ")));
+            vector.push_back(ojstd::make_shared<Uniform1t>("edisonTexture", this->getText("For Edison 2021")));
             return vector;
         });
-    }
-
-    {
-        auto raymarch = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2021/bird.fs");
-        raymarch->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
-            Buffer::UniformVector vector;
-            vector.push_back(ojstd::make_shared<UniformMatrix4fv>("iCameraMatrix", FreeCameraController::instance().getCameraMatrix()));
-            return vector;
-        });
-
-        auto radialBlur = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "common/radial_blur.fs");
-        radialBlur->setInputs(raymarch);
-
-        scenes.emplace_back(radialBlur, Duration::seconds(5), "raymarchScene");
     }
 
     {
@@ -75,7 +72,18 @@ ojstd::vector<Scene> Edison2021::buildSceneGraph(const Vector2i& sceneSize) cons
 
         auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "common/fxaa.vs", "common/fxaa.fs");
         fxaa->setInputs(blob);
-        scenes.emplace_back(fxaa, Duration::seconds(5), "blobScene");
+
+        auto fade = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "common/fade.fs");
+        fade->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
+            Buffer::UniformVector vector;
+            vector.push_back(ojstd::make_shared<Uniform1f>("startFadeTime", 19.5f));
+            vector.push_back(ojstd::make_shared<Uniform1f>("endFadeTime", 20.f));
+            vector.push_back(ojstd::make_shared<Uniform1b>("fadeIn", false));
+            return vector;
+        });
+
+        fade->setInputs(fxaa);
+        scenes.emplace_back(fade, Duration::seconds(20), "blobScene");
     }
 
     {
@@ -89,7 +97,17 @@ ojstd::vector<Scene> Edison2021::buildSceneGraph(const Vector2i& sceneSize) cons
         auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "common/fxaa.vs", "common/fxaa.fs");
         fxaa->setInputs(introText);
 
-        scenes.emplace_back(fxaa, Duration::seconds(5), "tunnelTransformScene");
+        auto fade = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "common/fade.fs");
+        fade->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
+            Buffer::UniformVector vector;
+            vector.push_back(ojstd::make_shared<Uniform1f>("startFadeTime", 0.0f));
+            vector.push_back(ojstd::make_shared<Uniform1f>("endFadeTime", 0.5f));
+            vector.push_back(ojstd::make_shared<Uniform1b>("fadeIn", true));
+            return vector;
+        });
+        fade->setInputs(fxaa);
+
+        scenes.emplace_back(fade, Duration::seconds(5), "tunnelTransformScene");
     }
 
     {

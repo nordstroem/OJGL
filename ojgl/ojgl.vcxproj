@@ -373,6 +373,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\edison_shaders\wire_cube.fs" />
+    <None Include="examples\shaders\common\fade.fs" />
     <None Include="examples\shaders\common\radial_blur.fs" />
     <None Include="examples\shaders\dodenstriumf\graveScene.fs" />
     <None Include="examples\shaders\dodenstriumf\graveScenePost.fs" />
