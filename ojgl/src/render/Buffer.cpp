@@ -170,7 +170,6 @@ ojstd::string Buffer::name() const
 
 #define GL_CHECK_LOG(functionCall, id, logFunction, errorStr)                       \
     functionCall;                                                                   \
-    functionCall;                                                                   \
     if (param == GL_FALSE) {                                                        \
         LOG_ERROR(errorStr);                                                        \
         int len;                                                                    \
