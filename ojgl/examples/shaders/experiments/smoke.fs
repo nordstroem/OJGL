@@ -1,5 +1,4 @@
 R""(
-#version 430
 #include "common/noise.fs"
 
 in vec2 fragCoord;

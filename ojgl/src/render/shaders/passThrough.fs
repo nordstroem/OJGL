@@ -1,5 +1,4 @@
 R""(
-#version 430
 
 in vec2 fragCoord;
 out vec4 fragColor;
