@@ -158,27 +158,28 @@ ojstd::string Buffer::name() const
     return _name;
 }
 
-#define GL_CHECK_ERROR(functionCall) functionCall; \
-    { \
-        GLenum error = glGetError(); \
-        if (error != GL_NO_ERROR) { \
-            _ASSERTE(false); \
+#define GL_CHECK_ERROR(functionCall)          \
+    functionCall;                             \
+    {                                         \
+        GLenum error = glGetError();          \
+        if (error != GL_NO_ERROR) {           \
+            _ASSERTE(false);                  \
             LOG_ERROR("GL Error: " << error); \
-        } \
+        }                                     \
     }
 
-#define GL_CHECK_LOG(functionCall, id, logFunction, errorStr) functionCall; \
-    functionCall; \
-    if (param == GL_FALSE) {\
-        LOG_ERROR(errorStr); \
-        int len; \
-        constexpr int logSize = 200; \
-        char log[logSize]; \
-        logFunction(id, logSize, &len, log); \
+#define GL_CHECK_LOG(functionCall, id, logFunction, errorStr)                       \
+    functionCall;                                                                   \
+    functionCall;                                                                   \
+    if (param == GL_FALSE) {                                                        \
+        LOG_ERROR(errorStr);                                                        \
+        int len;                                                                    \
+        constexpr int logSize = 200;                                                \
+        char log[logSize];                                                          \
+        logFunction(id, logSize, &len, log);                                        \
         _ASSERT_EXPR(len <= logSize, "Could not fit entire log, increase logSize"); \
-        LOG_ERROR(log); \
-    } \
-
+        LOG_ERROR(log);                                                             \
+    }
 
 void Buffer::render(float relativeSceneTime, float absoluteTime)
 {
@@ -190,8 +191,6 @@ void Buffer::render(float relativeSceneTime, float absoluteTime)
     if (_hasRendered && _renderOnce)
         return;
 
-    
-   
     {
         GLint validationStatus;
         glValidateProgram(_programID);
@@ -202,7 +201,6 @@ void Buffer::render(float relativeSceneTime, float absoluteTime)
             return;
         }
     }
-
 
     // Render to the next buffer.
     auto& currentFBO = pushNextFBO();
@@ -272,8 +270,7 @@ void Buffer::render(float relativeSceneTime, float absoluteTime)
         GL_CHECK_ERROR(glUniformMatrix4fv(glGetUniformLocation(_programID, "M"), 1, false, mesh.second.data()));
         if (mesh.first->usesIndices()) {
             GL_CHECK_ERROR(glDrawElements(GL_TRIANGLES, mesh.first->verticesCount(), GL_UNSIGNED_INT, nullptr));
-        }
-        else {
+        } else {
             GL_CHECK_ERROR(glDrawArrays(GL_TRIANGLES, 0, mesh.first->verticesCount()));
         }
     }
@@ -325,16 +322,17 @@ void Buffer::loadShader()
     GLint param;
 
     // Vertex shader
-    int vertexShaderLength = ShaderReader::get(_vertexPath).length();
-    auto vertexChar = ShaderReader::get(_vertexPath).c_str();
+    ojstd::string vertexShader = "#version 430\n" + ShaderReader::get(_vertexPath);
+    int vertexShaderLength = vertexShader.length();
+    auto vertexChar = vertexShader.c_str();
     GL_CHECK_ERROR(glShaderSource(vertID, 1, &vertexChar, &vertexShaderLength));
     GL_CHECK_ERROR(glCompileShader(vertID));
     GL_CHECK_LOG(glGetShaderiv(vertID, GL_COMPILE_STATUS, &param), vertID, glGetShaderInfoLog, "Failed to compile vertex shader!");
 
-
     // Fragment shader
-    int fragmentShaderLength = ShaderReader::get(_fragmentPath).length();
-    auto fragmentChar = ShaderReader::get(_fragmentPath).c_str();
+    ojstd::string fragmentShader = "#version 430\n" + ShaderReader::get(_fragmentPath);
+    int fragmentShaderLength = fragmentShader.length();
+    auto fragmentChar = fragmentShader.c_str();
     GL_CHECK_ERROR(glShaderSource(fragID, 1, &fragmentChar, &fragmentShaderLength));
     GL_CHECK_ERROR(glCompileShader(fragID));
     GL_CHECK_LOG(glGetShaderiv(fragID, GL_COMPILE_STATUS, &param), fragID, glGetShaderInfoLog, "Failed to compile fragment shader!");

@@ -1,5 +1,4 @@
 R""(
-#version 430
 
 in vec2 fragCoord;
 layout(location = 0) out vec4 fragPos;
