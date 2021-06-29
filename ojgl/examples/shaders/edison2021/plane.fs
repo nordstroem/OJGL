@@ -1,4 +1,8 @@
 R""(
+#define CUSTOM_DELTA_MODIFIER
+float tunnelDeltaModifier() {
+    return 1.0;
+};
 #include "edison2021/tunnel_base.fs"
 
 const int pipesAType = lastBaseType + 1;
