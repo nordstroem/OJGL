@@ -115,7 +115,7 @@ ojstd::vector<Scene> Edison2021::buildSceneGraph(const Vector2i& sceneSize) cons
         auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "common/fxaa.vs", "common/fxaa.fs");
         fxaa->setInputs(raymarch);
 
-        scenes.emplace_back(fxaa, Duration::seconds(30), "pipesScene");
+        scenes.emplace_back(fxaa, Duration::seconds(31), "pipesScene");
     }
 
     {

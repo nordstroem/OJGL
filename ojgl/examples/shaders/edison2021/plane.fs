@@ -9,7 +9,6 @@ const int pipesAType = lastBaseType + 1;
 const int pipesBType = lastBaseType + 2;
 const int starType = lastBaseType + 3;
 const int planeType = lastBaseType + 4;
-const int lightTpe = lastBaseType + 5;
 
 const float transitionStartTime = 10;
 
@@ -76,12 +75,6 @@ VolumetricResult evaluateLight(in vec3 p)
 
     }
 
-    {
-        float d = length(p - path(-5.5)) - 0.01;
-        //res = un(res, DistanceInfo(d, lightTpe));
-    }
-
-
     float d = max(0.001, res.distance);
     vec3 col = vec3(0);
 	float strength = 10;
@@ -102,18 +95,16 @@ VolumetricResult evaluateLight(in vec3 p)
         
 
         strength = 10 + sin(iTime * 30) * 1;
-    } else if (res.type == lightTpe) {
-        col = vec3(1.0, 0.01, 0.01);
-        strength = 5;
-    }
+    } 
 
+    col *=  smoothstep(2, 3, iTime);
 	vec3 res2 = col * strength / (d * d);
 	return VolumetricResult(d, res2);
 }
 
 float getFogAmount(in vec3 p) 
 {
-    return 0.0005;
+    return 0.0005 + (1.0 - smoothstep(0, 2, iTime));
 }
 
 float getReflectiveIndex(int type)
@@ -165,7 +156,7 @@ DistanceInfo map(in vec3 p)
 
         if (iTime > transitionStartTime + 0.5) {
             const float since = iTime - transitionStartTime - 0.5;
-            p.y += 0.3 * since;
+            p.y += 0.2 * since;
             p.z -= since * 2.0;
         }
         float d = sdCappedCylinder((p - path(-5.5) - vec3(0, -0.5, 0.0)).xzy, vec2(0.12, 0.4));
