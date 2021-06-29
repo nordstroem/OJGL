@@ -29,7 +29,6 @@ vec3 palette( in float t, in vec3 a, in vec3 b, in vec3 c, in vec3 d )
     return a + b*cos( 6.28318*(c*t+d) );
 }
 
-
 vec3 eye;
 vec3 rayOrigin;
 vec3 rayDirection;
@@ -37,7 +36,12 @@ vec3 lookAt;
 
 vec3 tunnelDelta(float z)
 {
-    return vec3(3 * sin(0.03*z)*cos(0.1*z), 0.0, 0.0);
+#ifdef CUSTOM_DELTA_MODIFIER
+    const float deltaModifier = tunnelDeltaModifier();
+#else
+    const float deltaModifier = 3;
+#endif
+    return vec3(deltaModifier * sin(0.03*z)*cos(0.1*z), 0.0, 0.0);
 }
 
 vec3 path(float zDelta) {
@@ -66,6 +70,7 @@ vec3 getColor(in MarchResult result)
         float d = length(lightPosition - result.position);
         
         float lightStrength =  0.0002 / (0.000001 + 0.0005*d*d );
+
         vec3 ambient = getAmbientColor(result.type, result.position);
         vec3 invLight = normalize(lightPosition - result.position);
         vec3 normal = normal(result.position);
@@ -84,7 +89,7 @@ vec3 getColor(in MarchResult result)
         }
         return vec3(lightStrength * (ambient * (0.04 + 0.96*diffuse))) * result.transmittance * shadow + result.scatteredLight;
     } else {
-        return vec3(0.0);
+        return result.scatteredLight;
     }
 }
 
@@ -93,8 +98,6 @@ void main()
 {
     float u = (fragCoord.x - 0.5);
     float v = (fragCoord.y - 0.5) * iResolution.y / iResolution.x;
-
-    float velocity = 4.0;
 
     rayOrigin = path(0);
     lookAt = path(-10.5);

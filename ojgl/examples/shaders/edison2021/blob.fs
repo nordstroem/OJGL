@@ -3,7 +3,6 @@ R""(
 
 const int blobType = lastBaseType + 1;
 
-
 VolumetricResult evaluateLight(in vec3 p)
 {
 	return VolumetricResult(1000, vec3(0));

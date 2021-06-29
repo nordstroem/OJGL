@@ -6,6 +6,7 @@ const int pipesBType = lastBaseType + 2;
 const int starType = lastBaseType + 3;
 
 
+
 VolumetricResult evaluateLight(in vec3 p)
 {
  
@@ -20,7 +21,9 @@ VolumetricResult evaluateLight(in vec3 p)
 
     DistanceInfo res = {sdTorus(starP, vec2(r, 0.0)), starType};
 
-    { // Pipes
+    const int pipeStartTime = 10;
+
+    if (iTime > pipeStartTime) { // Pipes
         const float spinFrequency = 1.0;
         float pipeAdis = sdCylinder(p - vec3(tunnelDelta(p.z).x + sin(p.z * spinFrequency)        * 0.2, 0.0 +  cos(p.z * spinFrequency)        * 0.2, 0), 0.0);
         float pipeBdis = sdCylinder(p - vec3(tunnelDelta(p.z).x + sin(p.z * spinFrequency + 3.14) * 0.2, 0.0 +  cos(p.z * spinFrequency + 3.14) * 0.2, 0), 0.0);
@@ -31,7 +34,7 @@ VolumetricResult evaluateLight(in vec3 p)
 
     float d = max(0.001, res.distance);
     vec3 col = vec3(0);
-	float strength = 10;
+	float strength = smoothstep(pipeStartTime, pipeStartTime + 5, iTime);
     if (res.type == starType) {
         col = vec3(0.1, 0.1, 1.0);
         strength = 100;
@@ -40,6 +43,7 @@ VolumetricResult evaluateLight(in vec3 p)
     } else if (res.type == pipesBType) {
         col = vec3(1.0, 1.0, 1.0);
     }
+        col = vec3(0.1, 0.1, 1.0);
 
 	vec3 res2 = col * strength / (d * d);
 	return VolumetricResult(d, res2);
