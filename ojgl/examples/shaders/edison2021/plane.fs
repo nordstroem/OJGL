@@ -1,7 +1,7 @@
 R""(
 #define CUSTOM_DELTA_MODIFIER
 float tunnelDeltaModifier() {
-    return 1.0;
+    return 0.0;
 };
 #include "edison2021/tunnel_base.fs"
 

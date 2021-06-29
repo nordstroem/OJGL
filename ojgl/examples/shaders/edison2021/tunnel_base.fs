@@ -89,7 +89,7 @@ vec3 getColor(in MarchResult result)
         }
         return vec3(lightStrength * (ambient * (0.04 + 0.96*diffuse))) * result.transmittance * shadow + result.scatteredLight;
     } else {
-        return vec3(0.0);
+        return result.scatteredLight;
     }
 }
 
