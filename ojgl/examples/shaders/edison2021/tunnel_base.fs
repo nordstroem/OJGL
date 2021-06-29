@@ -29,17 +29,19 @@ vec3 palette( in float t, in vec3 a, in vec3 b, in vec3 c, in vec3 d )
     return a + b*cos( 6.28318*(c*t+d) );
 }
 
-
 vec3 eye;
 vec3 rayOrigin;
 vec3 rayDirection;
 vec3 lookAt;
 
-float tunnelDeltaModifier();
-
 vec3 tunnelDelta(float z)
 {
-    return vec3(tunnelDeltaModifier() * sin(0.03*z)*cos(0.1*z), 0.0, 0.0);
+#ifdef CUSTOM_DELTA_MODIFIER
+    const float deltaModifier = tunnelDeltaModifier();
+#else
+    const float deltaModifier = 3;
+#endif
+    return vec3(deltaModifier * sin(0.03*z)*cos(0.1*z), 0.0, 0.0);
 }
 
 vec3 path(float zDelta) {

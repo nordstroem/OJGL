@@ -9,10 +9,6 @@ const int lightTpe = lastBaseType + 5;
 
 const float transitionStartTime = 10;
 
-float tunnelDeltaModifier() {
-    return 1;
-}
-
 float birdDis(in vec3 p) {
     const float since = iTime - transitionStartTime;
     p.y += smoothstep(0.0, 0.5, since) * 0.3;

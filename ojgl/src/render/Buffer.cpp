@@ -81,11 +81,12 @@ int Buffer::getNumberOfInputs(const ojstd::vector<BufferPtr>& inputs)
     return numInputs;
 }
 
-Buffer::Buffer(unsigned width, unsigned height, const ojstd::string& vertexPath, const ojstd::string& fragmentPath)
+Buffer::Buffer(unsigned width, unsigned height, const ojstd::string& vertexPath, const ojstd::string& fragmentPath, const ojstd::string& fragmentPrefix)
     : _width(width)
     , _height(height)
     , _vertexPath(vertexPath)
     , _fragmentPath(fragmentPath)
+    , _fragmentPrefix(fragmentPrefix)
 {
     setFormat(BufferFormat::Quad);
     loadShader();
@@ -329,7 +330,7 @@ void Buffer::loadShader()
     GL_CHECK_LOG(glGetShaderiv(vertID, GL_COMPILE_STATUS, &param), vertID, glGetShaderInfoLog, "Failed to compile vertex shader!");
 
     // Fragment shader
-    ojstd::string fragmentShader = "#version 430\n" + ShaderReader::get(_fragmentPath);
+    ojstd::string fragmentShader = "#version 430\n" + _fragmentPrefix + ShaderReader::get(_fragmentPath);
     int fragmentShaderLength = fragmentShader.length();
     auto fragmentChar = fragmentShader.c_str();
     GL_CHECK_ERROR(glShaderSource(fragID, 1, &fragmentChar, &fragmentShaderLength));
@@ -375,7 +376,7 @@ void Buffer::clearMeshes()
         _meshes.clear();
 }
 
-ojstd::shared_ptr<Buffer> Buffer::construct(unsigned width, unsigned height, const ojstd::string& vertexPath, const ojstd::string& fragmentPath)
+ojstd::shared_ptr<Buffer> Buffer::construct(unsigned width, unsigned height, const ojstd::string& vertexPath, const ojstd::string& fragmentPath,const ojstd::string& fragmentPrefix)
 {
-    return ojstd::shared_ptr<Buffer>(new Buffer(width, height, vertexPath, fragmentPath));
+    return ojstd::shared_ptr<Buffer>(new Buffer(width, height, vertexPath, fragmentPath, fragmentPrefix));
 }

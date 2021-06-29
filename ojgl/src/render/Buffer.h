@@ -55,7 +55,7 @@ public:
     auto end() const { return _inputs.cend(); }
     auto cend() const { return _inputs.cend(); }
 
-    static BufferPtr construct(unsigned width, unsigned height, const ojstd::string& vertexPath, const ojstd::string& fragmentPath);
+    static BufferPtr construct(unsigned width, unsigned height, const ojstd::string& vertexPath, const ojstd::string& fragmentPath, const ojstd::string& fragmentPrefix = "");
 
 private:
     class FBO {
@@ -75,7 +75,7 @@ private:
     };
 
 private:
-    Buffer(unsigned width, unsigned height, const ojstd::string& vertexPath, const ojstd::string& fragmentPath);
+    Buffer(unsigned width, unsigned height, const ojstd::string& vertexPath, const ojstd::string& fragmentPath, const ojstd::string& fragmentPrefix);
     void loadShader();
     int numOutTextures();
     static int getNumberOfInputs(const ojstd::vector<BufferPtr>& inputs);
@@ -89,6 +89,7 @@ private:
     ojstd::string _name = "default";
     const ojstd::string _vertexPath;
     const ojstd::string _fragmentPath;
+    const ojstd::string _fragmentPrefix;
     BufferFormat _format = BufferFormat::Quad;
     const unsigned _width;
     const unsigned _height;

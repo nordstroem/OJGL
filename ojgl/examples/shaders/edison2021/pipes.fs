@@ -5,9 +5,7 @@ const int pipesAType = lastBaseType + 1;
 const int pipesBType = lastBaseType + 2;
 const int starType = lastBaseType + 3;
 
-float tunnelDeltaModifier() {
-    return 3;
-}
+
 
 VolumetricResult evaluateLight(in vec3 p)
 {

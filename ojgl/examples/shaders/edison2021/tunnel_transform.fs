@@ -1,10 +1,6 @@
 R""(
 #include "edison2021/tunnel_base.fs"
 
-float tunnelDeltaModifier() {
-    return 3;
-}
-
 VolumetricResult evaluateLight(in vec3 p)
 {
 	return VolumetricResult(1000, vec3(0));
