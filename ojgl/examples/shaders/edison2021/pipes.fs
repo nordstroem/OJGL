@@ -5,25 +5,30 @@ const int pipesAType = lastBaseType + 1;
 const int pipesBType = lastBaseType + 2;
 const int starType = lastBaseType + 3;
 
-
+const float fadeOutStartTime = 25;
 
 VolumetricResult evaluateLight(in vec3 p)
 {
- 
-     // Star
-    const float distance = 40.0;
-    vec3 starP = p;
-    starP.z = mod(starP.z +  iTime * 20, distance) - distance * 0.5;
-    starP = (starP - vec3(tunnelDelta(p.z).x, 0, 0)).xzy;
+    DistanceInfo res = {9999999, 0};
+     
 
-    float r = 1.1 + sin(10*atan(starP.z, starP.x) + iTime * 25.0) * 0.2 + sin(iTime * 10.0) * 0.2;
-    r *= 0.5;
+    if (iTime < fadeOutStartTime - 2) {
+        // Star
+        const float distance = 40.0;
+        vec3 starP = p;
+        starP.z = mod(starP.z +  iTime * 20, distance) - distance * 0.5;
+        starP = (starP - vec3(tunnelDelta(p.z).x, 0, 0)).xzy;
 
-    DistanceInfo res = {sdTorus(starP, vec2(r, 0.0)), starType};
+        float r = 1.1 + sin(10*atan(starP.z, starP.x) + iTime * 25.0) * 0.2 + sin(iTime * 10.0) * 0.2;
+        r *= 0.5;
+
+        res = DistanceInfo(sdTorus(starP, vec2(r, 0.0)), starType);
+    }
 
     const int pipeStartTime = 10;
 
     if (iTime > pipeStartTime) { // Pipes
+        float since = iTime - pipeStartTime;
         const float spinFrequency = 1.0;
         float pipeAdis = sdCylinder(p - vec3(tunnelDelta(p.z).x + sin(p.z * spinFrequency)        * 0.2, 0.0 +  cos(p.z * spinFrequency)        * 0.2, 0), 0.0);
         float pipeBdis = sdCylinder(p - vec3(tunnelDelta(p.z).x + sin(p.z * spinFrequency + 3.14) * 0.2, 0.0 +  cos(p.z * spinFrequency + 3.14) * 0.2, 0), 0.0);
@@ -36,14 +41,13 @@ VolumetricResult evaluateLight(in vec3 p)
     vec3 col = vec3(0);
 	float strength = smoothstep(pipeStartTime, pipeStartTime + 5, iTime);
     if (res.type == starType) {
-        col = vec3(0.1, 0.1, 1.0);
         strength = 100;
-    } else if (res.type == pipesAType) {
-        col = vec3(1.0, 0.5, 0.1);
-    } else if (res.type == pipesBType) {
-        col = vec3(1.0, 1.0, 1.0);
     }
-        col = vec3(0.1, 0.1, 1.0);
+        
+        
+    col = vec3(0.1, 0.1, 1.0);
+    strength *= 1.0 - smoothstep(fadeOutStartTime, 29, iTime);
+
 
 	vec3 res2 = col * strength / (d * d);
 	return VolumetricResult(d, res2);
@@ -51,7 +55,7 @@ VolumetricResult evaluateLight(in vec3 p)
 
 float getFogAmount(in vec3 p) 
 {
-    return 0.0005;
+    return 0.0005 + smoothstep(20, fadeOutStartTime, iTime);
 }
 
 float getReflectiveIndex(int type)
