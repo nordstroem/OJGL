@@ -41,7 +41,7 @@ vec3 tunnelDelta(float z)
 #else
     const float deltaModifier = 3;
 #endif
-    return vec3(deltaModifier * sin(0.03*z)*cos(0.1*z), 0.0, 0.0);
+    return vec3(deltaModifier * sin(0.03*z)*cos(0.1*z), 0.08*sin(z*0.1)*cos(0.05*z), 0.0);
 }
 
 vec3 path(float zDelta) {

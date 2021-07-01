@@ -115,9 +115,9 @@ float getFogAmount(in vec3 p)
 float getReflectiveIndex(int type)
 {
     if (type == wallType)
-        return 0.02;
+        return 0.05;
     if (type == floorType)
-        return 0.2;
+        return 0.05;
     return 0.1;
 }
 

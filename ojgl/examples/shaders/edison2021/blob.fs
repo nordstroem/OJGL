@@ -10,13 +10,15 @@ VolumetricResult evaluateLight(in vec3 p)
     vec3 orgP = p;
     p = orgP.xzy - vec3(0.0, path(-5.5).z, 0.0);
 
+    
+    float wScaler0 = 1.0 - smoothstep(22.0, 24.0, iTime);;
     float wScaler = smoothstep(0.0, 10.0, iTime);
     float wScaler2 = smoothstep(5.0, 10.0, iTime);
     float wScaler3 = smoothstep(9.0, 10.0, iTime);
 
     float wormRadius = 3.0 * wScaler;
     float r = wormRadius - (p.y + wormRadius )/2;
-    float yDelta = -0.8 - -0.15*r + 0.5*psin(5 * r + 10* iTime);
+    float yDelta = -0.8 - -0.15*r + 0.5*psin(5 * r + 10* iTime)*wScaler0 - (1-wScaler0);
 
     vec3 p2 = orgP - path(-5.5 -wormRadius-0.05) - vec3(-wScaler2*0.2, yDelta+wScaler2*0.08, 0.0) + 0.1*sin(3*p.x);
     DistanceInfo head = {sdSphere(p2, 0.07*wScaler2), headType};
@@ -40,7 +42,7 @@ VolumetricResult evaluateLight(in vec3 p)
 
     float d = max(0.0001, head.distance);
     
-	float strength = head.type == headType && iTime > 12.0 ? 1.0 : wScaler*0.0006;
+	float strength = head.type == headType && iTime > 12.0 && iTime < 20.0 ? 1.0 : wScaler*0.0006;
 	vec3 col = vec3(0.1, 1.0, 0.1);
 	vec3 res2 = col * strength / (d * d);
 	return VolumetricResult(d, res2);
@@ -54,9 +56,9 @@ float getFogAmount(in vec3 p)
 float getReflectiveIndex(int type)
 {
     if (type == wallType)
-        return 0.02;
+        return 0.05;
     if (type == floorType)
-        return 0.2;
+        return 0.05;
     if (type == blobType)
         return 0.0;
     if (type == headType)
@@ -95,7 +97,7 @@ DistanceInfo map(in vec3 p)
 
 void updateCamera(inout vec3 rayOrigin, inout vec3 lookAt) 
 {
-    if (iTime > 12.0)
+    if (iTime > 12.0 && iTime < 20.0)
         rayOrigin = path(-22.0) - vec3(0.0, 0.0, 0.0);
     else
         rayOrigin = path(0.0);
