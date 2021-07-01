@@ -108,7 +108,7 @@ VolumetricResult evaluateLight(in vec3 p)
 
 float getFogAmount(in vec3 p) 
 {
-    return 0.01;
+    return 0.003;
 }
 
 
@@ -142,8 +142,8 @@ vec3 getAmbientColor(int type, vec3 pos)
 DistanceInfo map(in vec3 p)
 {
     vec3 p2 = p.xzy - tunnelDelta(p.z);
-    DistanceInfo cylinder = {-sdCappedCylinder(p.xzy - tunnelDelta(p.z) - vec3(0, 0., 0.0), vec2(1 + 0.1*filteredLines(10*atan(p.y), 1.1), 50000)), wallType };
-    DistanceInfo floorBox = {-sdBox(p - tunnelDelta(p.z) + vec3(0, -0.9, 0.0), vec3(2, 1.4 + 0.0006*sin(7*p.x + 5*p.y + 5*p.z), 50000)), floorType };
+    DistanceInfo cylinder = {-sdCappedCylinder(p.xzy - tunnelDelta(p.z), vec2(1 + 0.1*filteredLines(10*atan(p.y), 1.1), 50000)), wallType };
+    DistanceInfo floorBox = {-sdBox(p - tunnelDelta(p.z) + vec3(0, -0.8, 0.0), vec3(2, 1.4 + 0.0006*sin(7*p.x + 5*p.y + 5*p.z), 50000)), floorType };
    
     
     float z = -6.5 + 40*smoothstep(5.0, 10.0, iTime) + 30*smoothstep(15., 20.0, iTime) + 40*smoothstep(25., 30.0, iTime);

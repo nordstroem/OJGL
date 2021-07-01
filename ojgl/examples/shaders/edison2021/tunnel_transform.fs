@@ -7,13 +7,13 @@ const int cubeType = lastBaseType + 1;
 
 DistanceInfo wireCube(vec3 p) {
     vec3 q = p;
-    q.xz *= rot(sin(3*iTime)*cos(5*iTime));
+    q.xz *= rot(sin(3*iAbsoluteTime)*cos(5*iAbsoluteTime));
 
     mo(q.xy, vec2(0.1, 0.3));
     q.x-=0.2;
-    q.zy *= rot(iTime);
-    mo(q.xy, vec2(0.4 + 0.2*sin(2*iTime), 0.09+ 0.2*cos(5*iTime)));
-    q *= 1.0 + 0.3*sin(15*iTime)*cos(3*iTime);
+    q.zy *= rot(iAbsoluteTime);
+    mo(q.xy, vec2(0.4 + 0.2*sin(2*iAbsoluteTime), 0.09+ 0.2*cos(5*iAbsoluteTime)));
+    q *= 1.0 + 0.3*sin(15*iAbsoluteTime)*cos(3*iAbsoluteTime);
     
     float dFrame = sdBoxFrame(q, vec3(0.3), 0.01);
 
@@ -75,7 +75,7 @@ DistanceInfo map(in vec3 p)
 {
    // p.y+=0.5 * ( smoothstep(2.0, 8.0, iTime));
     DistanceInfo cylinder = {-sdCappedCylinder(p.xzy - tunnelDelta(p.z) - vec3(0, 0., 0.0), vec2(1 + 0.1*filteredLines(10*atan(p.y), 1.1), 50000)), wallType };
-    DistanceInfo floorBox = {-sdBox(p - tunnelDelta(p.z) + vec3(0, -0.9 + 0.5 * ( smoothstep(2.0, 8.0, iTime)), 0.0), vec3(2, 1.4 + 0.0006*sin(7*p.x + 5*p.y + 5*p.z), 50000)), floorType };
+    DistanceInfo floorBox = {-sdBox(p - tunnelDelta(p.z) + vec3(0, -0.8 + 0.5 * ( smoothstep(2.0, 8.0, iTime)), 0.0), vec3(2, 1.4 + 0.0006*sin(7*p.x + 5*p.y + 5*p.z), 50000)), floorType };
 
   //  DistanceInfo cylinder = {-sdCappedCylinder(p.xzy - tunnelDelta(p.z) - vec3(0, 0., 0.0), vec2(1 + 0.1*filteredLines(10*atan(p.y), 1.1), 50000)), wallType };
   //  DistanceInfo floorBox = {-sdRoundBox(p - tunnelDelta(p.z) + vec3(0, -1.3 * (1.0 - smoothstep(2.0, 6.0, iTime)), 0.0), vec3(2.0 + 0.006*sin(7*p.x + 5*p.y + 5*p.z), 1.4 + 0.006*sin(7*p.x + 5*p.y + 5*p.z), 50000), 0.5), wallType };

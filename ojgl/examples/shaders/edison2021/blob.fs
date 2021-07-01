@@ -11,14 +11,14 @@ VolumetricResult evaluateLight(in vec3 p)
     p = orgP.xzy - vec3(0.0, path(-5.5).z, 0.0);
 
     
-    float wScaler0 = 1.0 - smoothstep(22.0, 24.0, iTime);;
+    float wScaler0 = 1.0 - smoothstep(22.0, 24.0, iTime);
     float wScaler = smoothstep(0.0, 10.0, iTime);
     float wScaler2 = smoothstep(5.0, 10.0, iTime);
     float wScaler3 = smoothstep(9.0, 10.0, iTime);
 
     float wormRadius = 3.0 * wScaler;
     float r = wormRadius - (p.y + wormRadius )/2;
-    float yDelta = -0.8 - -0.15*r + 0.5*psin(5 * r + 10* iTime)*wScaler0 - (1-wScaler0);
+    float yDelta = -0.9 - -0.15*r + 0.5*psin(5 * r + 10* iTime)*wScaler0 - (1-wScaler0);
 
     vec3 p2 = orgP - path(-5.5 -wormRadius-0.05) - vec3(-wScaler2*0.2, yDelta+wScaler2*0.08, 0.0) + 0.1*sin(3*p.x);
     DistanceInfo head = {sdSphere(p2, 0.07*wScaler2), headType};
@@ -86,7 +86,7 @@ vec3 getAmbientColor(int type, vec3 pos)
 DistanceInfo map(in vec3 p)
 {
     DistanceInfo cylinder = {-sdCappedCylinder(p.xzy - tunnelDelta(p.z) - vec3(0, 0., 0.0), vec2(1 + 0.1*filteredLines(10*atan(p.y), 1.1), 50000)), wallType };
-    DistanceInfo floorBox = {-sdBox(p - tunnelDelta(p.z) + vec3(0, -0.9, 0.0), vec3(2, 1.4 + 0.0006*sin(7*p.x + 5*p.y + 5*p.z), 50000)), floorType };
+    DistanceInfo floorBox = {-sdBox(p - tunnelDelta(p.z) + vec3(0, -0.8, 0.0), vec3(2, 1.4 + 0.0006*sin(7*p.x + 5*p.y + 5*p.z), 50000)), floorType };
     DistanceInfo tunnel = sunk(cylinder, floorBox, 0.3);
     
 

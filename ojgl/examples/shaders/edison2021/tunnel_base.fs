@@ -128,8 +128,8 @@ void main()
     fragColor = vec4(pow(color, vec3(0.4545)), 1.0);
 
     // Add noise to reduce aliasing
-    float noiseStrength = 1.0 - smoothstep(0.0, 0.4, length(fragColor.xyz));
-    fragColor *= (1 + 0.2*noiseStrength*noise_2(vec2(u*1000,v*1000)));
+    //float noiseStrength = 1.0 - smoothstep(0.0, 0.4, length(fragColor.xyz));
+    //fragColor *= (1 + 0.2*noiseStrength*noise_2(vec2(u*1000,v*1000)));
 
 
 }
