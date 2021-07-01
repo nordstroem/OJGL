@@ -41,6 +41,7 @@ ojstd::vector<Scene> Edison2021::buildSceneGraph(const Vector2i& sceneSize) cons
 
         auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "common/fxaa.vs", "common/fxaa.fs");
         fxaa->setInputs(introText);
+
         auto fade = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "common/fade.fs");
         fade->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
             Buffer::UniformVector vector;
@@ -87,15 +88,15 @@ ojstd::vector<Scene> Edison2021::buildSceneGraph(const Vector2i& sceneSize) cons
     }
 
     {
-        auto introText = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2021/tunnel_transform.fs");
-        introText->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
+        auto tunnelTransform = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2021/tunnel_transform.fs");
+        tunnelTransform->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
             Buffer::UniformVector vector;
             vector.push_back(ojstd::make_shared<UniformMatrix4fv>("iCameraMatrix", FreeCameraController::instance().getCameraMatrix()));
             return vector;
         });
 
         auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "common/fxaa.vs", "common/fxaa.fs");
-        fxaa->setInputs(introText);
+        fxaa->setInputs(tunnelTransform);
 
         auto fade = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "common/fade.fs");
         fade->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
@@ -107,21 +108,9 @@ ojstd::vector<Scene> Edison2021::buildSceneGraph(const Vector2i& sceneSize) cons
         });
         fade->setInputs(fxaa);
 
-        scenes.emplace_back(fade, Duration::seconds(5), "tunnelTransformScene");
+        scenes.emplace_back(fade, Duration::seconds(20), "tunnelTransformScene");
     }
 
-    {
-        auto wireCube = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2021/wire_cube.fs");
-        wireCube->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
-            Buffer::UniformVector vector;
-            vector.push_back(ojstd::make_shared<UniformMatrix4fv>("iCameraMatrix", FreeCameraController::instance().getCameraMatrix()));
-            return vector;
-        });
-
-        auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "common/fxaa.vs", "common/fxaa.fs");
-        fxaa->setInputs(wireCube);
-        scenes.emplace_back(fxaa, Duration::seconds(5), "wireCubeScene");
-    }
     {
         auto raymarch = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2021/pipes.fs");
         raymarch->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {

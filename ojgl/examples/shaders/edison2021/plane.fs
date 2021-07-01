@@ -17,11 +17,11 @@ float birdDis(in vec3 p) {
     p.y += smoothstep(0.0, 0.5, since) * 0.3;
 
     p = p - path(-5.5);
-    p.y -= 0.3*sin(iTime);
+    p.y -= 0.1*sin(iTime);
     p.zy *= rot(-0.15);
     
     p = p.xzy;
-    p.y += cos(3*iTime)*sin(iTime);
+    p.y += 0.5*cos(3*iTime)*sin(iTime);
 
     DistanceInfo b0 = {sdVerticalCapsule(p - vec3(0, 0, -0.035), 0.3, 0.02), sphereType};
 

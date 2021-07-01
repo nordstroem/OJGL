@@ -248,6 +248,10 @@ namespace ojgl::resources {
 #include "shaders/edison2021/plane.fs"
           , "edison2021/plane.fs"
           },
+          {
+#include "shaders/edison2021/chrom_ab.fs"
+          , "edison2021/chrom_ab.fs"
+          },
   };
 // clang-format on
 }

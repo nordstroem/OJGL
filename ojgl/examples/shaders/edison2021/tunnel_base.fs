@@ -46,7 +46,12 @@ vec3 tunnelDelta(float z)
 
 vec3 path(float zDelta) {
     float period = 200 * PI; // (depends on tunnelDelta)
+#ifdef CUSTOM_VELOCITY
+    float velocity = CUSTOM_VELOCITY;
+#else
     float velocity = 10.0;
+#endif
+
     vec3 pos = vec3(0.0, 0.0, mod(-iAbsoluteTime * velocity, period) + zDelta);
     pos += tunnelDelta(pos.z);
     return pos;

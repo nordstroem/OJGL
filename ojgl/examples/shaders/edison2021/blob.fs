@@ -29,7 +29,7 @@ VolumetricResult evaluateLight(in vec3 p)
     
     p2 = orgP - path(-5.5 -wormRadius) - vec3(0.0, yDelta, -0.0) + 0.1*sin(3*p.x);
     p2.y*=-1;
-    DistanceInfo head3 = {sdSphere(p2 - vec3(0.0, 0.2, 0.0), wScaler3*(0.01 + 0.1*psin(10*iTime))), headType};
+    DistanceInfo head3 = {sdSphere(p2 - vec3(0.0, 0.2, 0.0), wScaler3*(0.04)), headType};
     head = un(head, head3);
 
     float d = max(0.0001, head.distance);
