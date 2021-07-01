@@ -1,5 +1,5 @@
 R""(
-#define CUSTOM_VELOCITY 15.0
+#define CUSTOM_VELOCITY 10.0
 #include "edison2021/tunnel_base.fs"
 
 const int cubeType = lastBaseType + 1;
@@ -75,7 +75,7 @@ DistanceInfo map(in vec3 p)
 {
     DistanceInfo cylinder = {-sdCappedCylinder(p.xzy - tunnelDelta(p.z) - vec3(0, 0., 0.0), vec2(1 + 0.1*filteredLines(10*atan(p.y), 1.1), 50000)), wallType };
     DistanceInfo floorBox = {-sdRoundBox(p - tunnelDelta(p.z) + vec3(0, -1.4 * (1.0 - smoothstep(3.0, 6.0, iTime)), 0.0), vec3(2.0 + 0.006*sin(7*p.x + 5*p.y + 5*p.z), 1.4 + 0.006*sin(7*p.x + 5*p.y + 5*p.z), 50000), 0.5), wallType };
-    cylinder.distance = mix(cylinder.distance, floorBox.distance, smoothstep(3.0, 8.0, iTime) - smoothstep(10.0, 15.0, iTime));
+    cylinder.distance = mix(cylinder.distance, floorBox.distance, smoothstep(3.0, 8.0, iTime) - smoothstep(13.0, 17.0, iTime));
     DistanceInfo tunnel = sunk(cylinder, floorBox, 0.2);
 
 

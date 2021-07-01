@@ -18,33 +18,31 @@ VolumetricResult evaluateLight(in vec3 p)
     float r = wormRadius - (p.y + wormRadius )/2;
     float yDelta = -0.8 - -0.15*r + 0.5*psin(5 * r + 10* iTime);
 
-    vec3 p2 = orgP - path(-5.5 -wormRadius) - vec3(-wScaler2*0.2, yDelta+wScaler2*0.08, 0.0) + 0.1*sin(3*p.x);
+    vec3 p2 = orgP - path(-5.5 -wormRadius-0.05) - vec3(-wScaler2*0.2, yDelta+wScaler2*0.08, 0.0) + 0.1*sin(3*p.x);
     DistanceInfo head = {sdSphere(p2, 0.07*wScaler2), headType};
 
-    p2 = orgP - path(-5.5 -wormRadius) - vec3(wScaler*0.2, yDelta+wScaler2*0.08, 0.0) + 0.1*sin(3*p.x);
+    p2 = orgP - path(-5.5 -wormRadius-0.05) - vec3(wScaler*0.2, yDelta+wScaler2*0.08, 0.0) + 0.1*sin(3*p.x);
     DistanceInfo head2 = {sdSphere(p2, 0.07*wScaler2), headType};
     head = un(head, head2);
 
 
     
-    p2 = orgP - path(-5.5 -wormRadius) - vec3(0.0, yDelta, -0.0) + 0.1*sin(3*p.x);
+    p2 = orgP - path(-5.5 -wormRadius-0.05) - vec3(0.0, yDelta, -0.0) + 0.1*sin(3*p.x);
     p2.y*=-1;
     DistanceInfo head3 = {sdSphere(p2 - vec3(0.0, 0.2, 0.0), wScaler3*(0.04)), headType};
     head = un(head, head3);
 
     float d = max(0.0001, head.distance);
     
-	float strength = wScaler*5;
-    vec3 red = vec3(1.0, 0.0, 0.0);
-    vec3 yellow = vec3(1.0, 1.0, 0.0);
-	vec3 col = vec3(0.8, 1.0, 0.1);//mix(red, yellow, 0.5);
+	float strength = wScaler*1;
+	vec3 col = vec3(1.0);
 	vec3 res2 = col * strength / (d * d);
 	return VolumetricResult(d, res2);
 }
 
 float getFogAmount(in vec3 p) 
 {
-    return 0.0001;
+    return 0.002;
 }
 
 float getReflectiveIndex(int type)
@@ -54,7 +52,7 @@ float getReflectiveIndex(int type)
     if (type == floorType)
         return 0.2;
     if (type == blobType)
-        return 0.5;
+        return 0.0;
     if (type == headType)
         return 0.0;
     return 0.0;
@@ -67,7 +65,7 @@ vec3 getAmbientColor(int type, vec3 pos)
         return wall;
     }
     if (type == blobType) {
-        return 15*vec3(0.3 * psin(10 * iTime), 1.0, 0.2);
+        return 15*vec3(0.3, 0.5, 0.2);
 	}
     if (type == headType) {
         return 0.0*vec3(1.0, 1.0, 1.0);
