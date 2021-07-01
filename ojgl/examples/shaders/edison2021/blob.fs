@@ -32,17 +32,23 @@ VolumetricResult evaluateLight(in vec3 p)
     DistanceInfo head3 = {sdSphere(p2 - vec3(0.0, 0.2, 0.0), wScaler3*(0.04)), headType};
     head = un(head, head3);
 
+    p = orgP.xzy - vec3(0.0, path(-5.5).z, 0.0);
+    float cylinderRadius = 0.03 + 0.04*r*r;
+    DistanceInfo blob = {sdCappedCylinder(p - tunnelDelta(orgP.z) + 0.1*sin(3*p.x) - vec3(0, 0, yDelta), vec2(cylinderRadius, wormRadius)), blobType};
+
+    head = un(head, blob);
+
     float d = max(0.0001, head.distance);
     
-	float strength = wScaler*1;
-	vec3 col = vec3(1.0);
+	float strength = head.type == headType && iTime > 12.0 ? 1.0 : wScaler*0.0006;
+	vec3 col = vec3(0.1, 1.0, 0.1);
 	vec3 res2 = col * strength / (d * d);
 	return VolumetricResult(d, res2);
 }
 
 float getFogAmount(in vec3 p) 
 {
-    return 0.002;
+    return 0.00002;
 }
 
 float getReflectiveIndex(int type)
@@ -81,16 +87,9 @@ DistanceInfo map(in vec3 p)
     DistanceInfo floorBox = {-sdBox(p - tunnelDelta(p.z) + vec3(0, -0.9, 0.0), vec3(2, 1.4 + 0.0006*sin(7*p.x + 5*p.y + 5*p.z), 50000)), floorType };
     DistanceInfo tunnel = sunk(cylinder, floorBox, 0.3);
     
-    vec3 orgP = p;
-    p = orgP.xzy - vec3(0.0, path(-5.5).z, 0.0);
-    float wScaler = smoothstep(0.0, 10.0, iTime);
-    float wormRadius = 3.0 * wScaler;
-    float r = wormRadius - (p.y + wormRadius )/2;
-    float yDelta = -0.8 - -0.15*r + 0.5*psin(5 * r + 10* iTime);
-    float cylinderRadius = 0.03 + 0.04*r*r;
-    DistanceInfo blob = {sdCappedCylinder(p - tunnelDelta(orgP.z) + 0.1*sin(3*p.x) - vec3(0, 0, yDelta), vec2(cylinderRadius, wormRadius)), blobType};
 
-    return sunk(tunnel, blob, 0.1);
+
+    return tunnel;//sunk(tunnel, blob, 0.1);
 }
 
 
