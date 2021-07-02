@@ -23,7 +23,7 @@ float uvBox(vec3 p, vec3 b, inout vec2 uv)
 DistanceInfo moltresText(in vec3 p)
 {
     vec2 uv;
-    DistanceInfo box = {uvBox(p, vec3(0.5, 0.2, 0.0), uv), moltresType };
+    DistanceInfo box = {uvBox(p, vec3(0.7, 0.2, 0.0), uv), moltresType };
     uv.x *=-1;
     if (box.distance < S_distanceEpsilon) {
         float s = texture(moltresTexture, uv).x;
@@ -72,15 +72,15 @@ DistanceInfo edisonText(in vec3 p)
 
 VolumetricResult evaluateLight(in vec3 p)
 {
-    float z = -6.5 + 40*smoothstep(5.0, 10.0, iTime) + 30*smoothstep(15., 20.0, iTime) + 40*smoothstep(25., 30.0, iTime);
+    float z = -6.5 + 40*smoothstep(6.0, 10.0, iTime) + 30*smoothstep(15., 20.0, iTime) + 40*smoothstep(25., 30.0, iTime);
 
     DistanceInfo wireBox = {0.0, invalidType};
 
-    if (iTime < 6.5) {
+    if (iTime < 7.5) {
         vec3 p3 = p - path(z);
         p3.xy *= rot(sin(iTime)*0.2);
         p3.xz *= rot(cos(iTime)*0.5);
-        wireBox = DistanceInfo(sdBoxFrame(p3, vec3(0.6, 0.3, 0.02), 0.01), moltresType);
+        wireBox = DistanceInfo(sdBoxFrame(p3, vec3(0.8, 0.3, 0.02), 0.01), moltresType);
     } else if (iTime < 17) {
         vec3 p3 = p - path(z - 40);
         p3.xy *= rot(sin(iTime)*0.2);
@@ -128,7 +128,7 @@ vec3 getAmbientColor(int type, vec3 pos)
         return wall;
     }
     if (type == moltresType) {
-        return 250*vec3(1.0, 0.1, 0.0);
+        return 250*vec3(0.2, 0.01, 1.0);
 	}
      if (type == ojType) {
         return 250*vec3(1.0, 1.0, 0.05);
@@ -146,11 +146,11 @@ DistanceInfo map(in vec3 p)
     DistanceInfo floorBox = {-sdBox(p - tunnelDelta(p.z) + vec3(0, -0.8, 0.0), vec3(2, 1.4 + 0.0006*sin(7*p.x + 5*p.y + 5*p.z), 50000)), floorType };
    
     
-    float z = -6.5 + 40*smoothstep(5.0, 10.0, iTime) + 30*smoothstep(15., 20.0, iTime) + 40*smoothstep(25., 30.0, iTime);
+    float z = -6.5 + 40*smoothstep(6.0, 10.0, iTime) + 30*smoothstep(15., 20.0, iTime) + 40*smoothstep(25., 30.0, iTime);
     
     DistanceInfo text = {10000, invalidType};
 
-    if (iTime < 6.5) {
+    if (iTime < 7.5) {
         vec3 p3 = p - path(z);
         p3.xy *= rot(sin(iTime)*0.2);
         p3.xz *= rot(cos(iTime)*0.5);

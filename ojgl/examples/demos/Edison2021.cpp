@@ -46,7 +46,7 @@ ojstd::vector<Scene> Edison2021::buildSceneGraph(const Vector2i& sceneSize) cons
         fade->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
             Buffer::UniformVector vector;
             vector.push_back(ojstd::make_shared<Uniform1f>("startFadeTime", 0.f));
-            vector.push_back(ojstd::make_shared<Uniform1f>("endFadeTime", 5.f));
+            vector.push_back(ojstd::make_shared<Uniform1f>("endFadeTime", 10.f));
             vector.push_back(ojstd::make_shared<Uniform1b>("fadeIn", true));
             return vector;
         });
@@ -56,7 +56,7 @@ ojstd::vector<Scene> Edison2021::buildSceneGraph(const Vector2i& sceneSize) cons
 
         introText->setTextureCallback([this]([[maybe_unused]] float relativeSceneTime) {
             ojstd::vector<ojstd::shared_ptr<Uniform1t>> vector;
-            vector.push_back(ojstd::make_shared<Uniform1t>("moltresTexture", this->getText("Moltres")));
+            vector.push_back(ojstd::make_shared<Uniform1t>("moltresTexture", this->getText("Enigma Pipe")));
             vector.push_back(ojstd::make_shared<Uniform1t>("ojTexture", this->getText("by OJ")));
             vector.push_back(ojstd::make_shared<Uniform1t>("edisonTexture", this->getText("For Edison 2021")));
             return vector;
@@ -87,8 +87,7 @@ ojstd::vector<Scene> Edison2021::buildSceneGraph(const Vector2i& sceneSize) cons
         auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "common/fxaa.vs", "common/fxaa.fs");
         fxaa->setInputs(tunnelTransform);
 
-
-        scenes.emplace_back(fxaa, Duration::seconds(20), "tunnelTransformScene");
+        scenes.emplace_back(fxaa, Duration::seconds(25), "tunnelTransformScene");
     }
 
     {

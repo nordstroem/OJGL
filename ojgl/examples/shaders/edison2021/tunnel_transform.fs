@@ -32,12 +32,12 @@ VolumetricResult evaluateLight(in vec3 p)
 
 	float d2 = max(0.001, cube.distance);
     
-	float strength = 0.0 + 1.0 * smoothstep(7.0, 13.0, iTime);
+	float strength = 0.0 + 1.0 * smoothstep(10.0, 16.0, iTime);
     vec3 col = vec3(0.1, 0.1, 1.0);
 	vec3 res2 = col * strength / (d2 * d2 );
     
 
-	return VolumetricResult(mix(d, d2, smoothstep(2.0, 10.0, iTime)), res2);
+	return VolumetricResult(mix(d, d2, smoothstep(10.0, 13.0, iTime)), res2);
 }
 
 float getFogAmount(in vec3 p) 
@@ -60,9 +60,9 @@ vec3 getAmbientColor(int type, vec3 pos)
     if (type == wallType || type == floorType){
         vec3 wall = 0.9*vec3(0.2, 0.2, 0.2); 
         vec3 wallColored = 3.0*palette(0.05*pos.z, vec3(0.5), vec3(0.5), vec3(1.0, 1.0, 1.0), vec3(0.0, 0.33, 0.67));
-        wall = mix(wall, wallColored, smoothstep(2.0, 8.0, iTime));
+        wall = mix(wall, wallColored, smoothstep(1.0, 8.0, iTime));
         vec3 wallColored2 = 0.6*vec3(0.2, 0.2, 3.0);
-        wall = mix(wall, wallColored2, smoothstep(2.0, 8.0, iTime));
+        wall = mix(wall, wallColored2, smoothstep(1.0, 8.0, iTime));
         return wall;
     } else if (type == cubeType) {
         return 30*vec3(1.0, 1.0, 0.1);
@@ -73,14 +73,14 @@ vec3 getAmbientColor(int type, vec3 pos)
 
 DistanceInfo map(in vec3 p)
 {
-   // p.y+=0.5 * ( smoothstep(2.0, 8.0, iTime));
+   // p.y+=0.5 * ( smoothstep(1.0, 8.0, iTime));
     DistanceInfo cylinder = {-sdCappedCylinder(p.xzy - tunnelDelta(p.z) - vec3(0, 0., 0.0), vec2(1 + 0.1*filteredLines(10*atan(p.y), 1.1), 50000)), wallType };
-    DistanceInfo floorBox = {-sdBox(p - tunnelDelta(p.z) + vec3(0, -0.8 + 0.5 * ( smoothstep(2.0, 8.0, iTime)), 0.0), vec3(2, 1.4 + 0.0006*sin(7*p.x + 5*p.y + 5*p.z), 50000)), floorType };
+    DistanceInfo floorBox = {-sdBox(p - tunnelDelta(p.z) + vec3(0, -0.8 + 0.5 * ( smoothstep(1.0, 8.0, iTime)), 0.0), vec3(2, 1.4 + 0.0006*sin(7*p.x + 5*p.y + 5*p.z), 50000)), floorType };
 
   //  DistanceInfo cylinder = {-sdCappedCylinder(p.xzy - tunnelDelta(p.z) - vec3(0, 0., 0.0), vec2(1 + 0.1*filteredLines(10*atan(p.y), 1.1), 50000)), wallType };
-  //  DistanceInfo floorBox = {-sdRoundBox(p - tunnelDelta(p.z) + vec3(0, -1.3 * (1.0 - smoothstep(2.0, 6.0, iTime)), 0.0), vec3(2.0 + 0.006*sin(7*p.x + 5*p.y + 5*p.z), 1.4 + 0.006*sin(7*p.x + 5*p.y + 5*p.z), 50000), 0.5), wallType };
-    cylinder.distance = mix(cylinder.distance, floorBox.distance, smoothstep(2.0, 8.0, iTime) - smoothstep(13.0, 17.0, iTime));
-    floorBox.distance = mix(floorBox.distance, cylinder.distance, smoothstep(13.0, 15.0, iTime));
+  //  DistanceInfo floorBox = {-sdRoundBox(p - tunnelDelta(p.z) + vec3(0, -1.3 * (1.0 - smoothstep(1.0, 6.0, iTime)), 0.0), vec3(2.0 + 0.006*sin(7*p.x + 5*p.y + 5*p.z), 1.4 + 0.006*sin(7*p.x + 5*p.y + 5*p.z), 50000), 0.5), wallType };
+    cylinder.distance = mix(cylinder.distance, floorBox.distance, smoothstep(1.0, 8.0, iTime) - smoothstep(17.0, 21.0, iTime));
+    floorBox.distance = mix(floorBox.distance, cylinder.distance, smoothstep(18.0, 22.0, iTime));
     DistanceInfo tunnel = sunk(cylinder, floorBox, 0.3*(1.0 - smoothstep(13.0, 15.0, iTime)));
 
 
