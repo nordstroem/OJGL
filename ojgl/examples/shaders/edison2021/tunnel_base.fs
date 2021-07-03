@@ -29,7 +29,7 @@ vec3 palette( in float t, in vec3 a, in vec3 b, in vec3 c, in vec3 d )
     return a + b*cos( 6.28318*(c*t+d) );
 }
 
-vec3 eye;
+
 vec3 rayOrigin;
 vec3 rayDirection;
 vec3 lookAt;
@@ -41,12 +41,17 @@ vec3 tunnelDelta(float z)
 #else
     const float deltaModifier = 3;
 #endif
-    return vec3(deltaModifier * sin(0.03*z)*cos(0.1*z), 0.0, 0.0);
+    return vec3(deltaModifier * sin(0.03*z)*cos(0.1*z), 0.08*sin(z*0.1)*cos(0.05*z), 0.0);
 }
 
 vec3 path(float zDelta) {
     float period = 200 * PI; // (depends on tunnelDelta)
+#ifdef CUSTOM_VELOCITY
+    float velocity = CUSTOM_VELOCITY;
+#else
     float velocity = 10.0;
+#endif
+
     vec3 pos = vec3(0.0, 0.0, mod(-iAbsoluteTime * velocity, period) + zDelta);
     pos += tunnelDelta(pos.z);
     return pos;
@@ -94,6 +99,10 @@ vec3 getColor(in MarchResult result)
 }
 
 
+#ifdef CUSTOM_CAMERA
+void updateCamera(inout vec3 rayOrigin, inout vec3 lookAt);
+#endif
+
 void main()
 {
     float u = (fragCoord.x - 0.5);
@@ -101,7 +110,9 @@ void main()
 
     rayOrigin = path(0);
     lookAt = path(-10.5);
-
+#ifdef CUSTOM_CAMERA
+    updateCamera(rayOrigin, lookAt);
+#endif
     vec3 forward = normalize(lookAt - rayOrigin);
  	vec3 right = normalize(cross(forward, vec3(0.0, 1.0, 0.0)));   
     vec3 up = cross(right, forward);
@@ -109,8 +120,7 @@ void main()
     float fov = PI / 4.;
     rayDirection = normalize(u * right + v * up + fov * forward);
 
-    eye = rayOrigin;
-    vec3 color = march(eye, rayDirection);
+    vec3 color = march(rayOrigin, rayDirection);
 
     // Tone mapping
     color /= (color + vec3(1.0));
@@ -118,8 +128,8 @@ void main()
     fragColor = vec4(pow(color, vec3(0.4545)), 1.0);
 
     // Add noise to reduce aliasing
-    float noiseStrength = 1.0 - smoothstep(0.0, 0.4, length(fragColor.xyz));
-    fragColor *= (1 + 0.2*noiseStrength*noise_2(vec2(u*1000,v*1000)));
+    //float noiseStrength = 1.0 - smoothstep(0.0, 0.4, length(fragColor.xyz));
+    //fragColor *= (1 + 0.2*noiseStrength*noise_2(vec2(u*1000,v*1000)));
 
 
 }

@@ -99,7 +99,10 @@ namespace ojgl::resources {
 #include "shaders/common/radial_blur.fs"
           , "common/radial_blur.fs"
           },
-
+          {
+  #include "shaders/common/fade.fs"
+          , "common/fade.fs"
+          },
           {
 #include "shaders/QED/raymarch_utils.fs"
             , "QED/raymarch_utils.fs"
@@ -244,6 +247,10 @@ namespace ojgl::resources {
           {
 #include "shaders/edison2021/plane.fs"
           , "edison2021/plane.fs"
+          },
+          {
+#include "shaders/edison2021/chrom_ab.fs"
+          , "edison2021/chrom_ab.fs"
           },
   };
 // clang-format on
