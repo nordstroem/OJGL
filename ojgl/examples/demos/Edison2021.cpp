@@ -20,7 +20,7 @@ static const unsigned char song[] = {
 
 const unsigned char* Edison2021::getSong() const
 {
-    return nullptr; //song;
+    return song;
 }
 
 ojstd::shared_ptr<Texture> Edison2021::getText(const ojstd::string& text) const
