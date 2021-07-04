@@ -14,9 +14,13 @@ ojstd::string Edison2021::getTitle() const
     return "OJ - Edison 2021";
 }
 
+static const unsigned char song[] = {
+#include "songs/edison_2021_song.inc"
+};
+
 const unsigned char* Edison2021::getSong() const
 {
-    return nullptr;
+    return nullptr; //song;
 }
 
 ojstd::shared_ptr<Texture> Edison2021::getText(const ojstd::string& text) const

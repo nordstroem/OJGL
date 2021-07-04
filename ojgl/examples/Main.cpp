@@ -2,12 +2,7 @@
 #include "FreeCameraController.h"
 #include "TextRenderer.hpp"
 #include "demo/Demo.h"
-#include "demos/DodensTriumf.h"
 #include "demos/Edison2021.h"
-#include "demos/Eldur.h"
-#include "demos/InnerSystemLab.h"
-#include "demos/QED.h"
-#include "demos/Template.h"
 #include "render/GLState.h"
 #include "render/Popup.h"
 #include "render/Texture.h"
@@ -35,27 +30,6 @@ enum class DemoType {
     Edison2021
 };
 
-ojstd::shared_ptr<Demo> getDemo(DemoType type)
-{
-    switch (type) {
-    case DemoType::Eldur:
-        return ojstd::make_shared<Eldur>();
-    case DemoType::QED:
-        return ojstd::make_shared<QED>();
-    case DemoType::DodensTriumf:
-        return ojstd::make_shared<DodensTriumf>();
-    case DemoType::InnerSystemLab:
-        return ojstd::make_shared<InnerSystemLab>();
-    case DemoType::Template:
-        return ojstd::make_shared<Template>();
-    case DemoType::Edison2021:
-        return ojstd::make_shared<Edison2021>();
-    }
-
-    _ASSERTE(false);
-    return nullptr;
-}
-
 int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
 {
 
@@ -80,7 +54,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
     for (const auto& [content, path] : resources::shaders)
         ShaderReader::preLoad(path, content);
 
-    const auto demo = getDemo(DemoType::Edison2021);
+    const auto demo = ojstd::make_shared<Edison2021>();
     Window window(windowSize, demo->getTitle(), fullScreen, showCursor);
     TextRenderer::instance().setHDC(window.hdcBackend());
 
