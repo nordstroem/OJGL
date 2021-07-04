@@ -56,7 +56,7 @@ ojstd::vector<Scene> Edison2021::buildSceneGraph(const Vector2i& sceneSize) cons
 
         introText->setTextureCallback([this]([[maybe_unused]] float relativeSceneTime) {
             ojstd::vector<ojstd::shared_ptr<Uniform1t>> vector;
-            vector.push_back(ojstd::make_shared<Uniform1t>("moltresTexture", this->getText("Enigma Pipe")));
+            vector.push_back(ojstd::make_shared<Uniform1t>("moltresTexture", this->getText("Enigma")));
             vector.push_back(ojstd::make_shared<Uniform1t>("ojTexture", this->getText("by OJ")));
             vector.push_back(ojstd::make_shared<Uniform1t>("edisonTexture", this->getText("For Edison 2021")));
             return vector;

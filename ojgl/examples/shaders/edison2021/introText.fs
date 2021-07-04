@@ -23,7 +23,7 @@ float uvBox(vec3 p, vec3 b, inout vec2 uv)
 DistanceInfo moltresText(in vec3 p)
 {
     vec2 uv;
-    DistanceInfo box = {uvBox(p, vec3(0.7, 0.2, 0.0), uv), moltresType };
+    DistanceInfo box = {uvBox(p, vec3(0.5, 0.2, 0.0), uv), moltresType };
     uv.x *=-1;
     if (box.distance < S_distanceEpsilon) {
         float s = texture(moltresTexture, uv).x;
@@ -80,7 +80,7 @@ VolumetricResult evaluateLight(in vec3 p)
         vec3 p3 = p - path(z);
         p3.xy *= rot(sin(iTime)*0.2);
         p3.xz *= rot(cos(iTime)*0.5);
-        wireBox = DistanceInfo(sdBoxFrame(p3, vec3(0.8, 0.3, 0.02), 0.01), moltresType);
+        wireBox = DistanceInfo(sdBoxFrame(p3, vec3(0.6, 0.3, 0.02), 0.01), moltresType);
     } else if (iTime < 17) {
         vec3 p3 = p - path(z - 40);
         p3.xy *= rot(sin(iTime)*0.2);
