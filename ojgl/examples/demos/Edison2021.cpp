@@ -99,6 +99,7 @@ ojstd::vector<Scene> Edison2021::buildSceneGraph(const Vector2i& sceneSize) cons
         raymarch->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
             Buffer::UniformVector vector;
             vector.push_back(ojstd::make_shared<UniformMatrix4fv>("iCameraMatrix", FreeCameraController::instance().getCameraMatrix()));
+            vector.push_back(ojstd::make_shared<Uniform1f>("drum", Music::instance()->syncChannels()[3].getTimeSinceLast(0).toSeconds()));
             return vector;
         });
 

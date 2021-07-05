@@ -1,6 +1,8 @@
 R""(
 #include "edison2021/tunnel_base.fs"
 
+uniform float drum;
+
 const int pipesAType = lastBaseType + 1;
 const int pipesBType = lastBaseType + 2;
 const int starType = lastBaseType + 3;
@@ -11,7 +13,7 @@ const float fadeOutStartTime = 25;
 VolumetricResult evaluateLight(in vec3 p)
 {
     DistanceInfo res = {9999999, 0};
-     
+
 
     if (iTime < fadeOutStartTime - 2) {
         // Star
@@ -46,16 +48,18 @@ VolumetricResult evaluateLight(in vec3 p)
     }
 
     float d = max(0.001, res.distance);
-        
+
     col = vec3(0.1, 0.1, 1.0);
     strength *= 1.0 - smoothstep(fadeOutStartTime, 29, iTime);
 
+
+    strength *= 1.0 + max(0.0, 1.0 - drum * 3.0) * 50.0;
 
 	vec3 res2 = col * strength / (d * d);
 	return VolumetricResult(d, res2);
 }
 
-float getFogAmount(in vec3 p) 
+float getFogAmount(in vec3 p)
 {
     return 0.0005 + smoothstep(20, fadeOutStartTime, iTime);
 }
@@ -71,9 +75,9 @@ float getReflectiveIndex(int type)
     return 0.0;
 }
 
-vec3 getAmbientColor(int type, vec3 pos) 
+vec3 getAmbientColor(int type, vec3 pos)
 {
-    vec3 wall = 0.6*vec3(0.2, 0.2, 0.2); 
+    vec3 wall = 0.6*vec3(0.2, 0.2, 0.2);
     if (type == wallType || type == floorType){
         return wall;
     }
