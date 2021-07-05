@@ -32,7 +32,7 @@ VolumetricResult evaluateLight(in vec3 p)
 
 	float d2 = max(0.001, cube.distance);
     
-	float strength = 0.0 + 1.0 * smoothstep(10.0, 16.0, iTime);
+	float strength = 0.0 + 1.0 * smoothstep(11.0, 16.0, iTime);
     vec3 col = vec3(0.1, 0.1, 1.0);
 	vec3 res2 = col * strength / (d2 * d2 );
     
