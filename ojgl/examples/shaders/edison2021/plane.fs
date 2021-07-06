@@ -3,6 +3,9 @@ R""(
 float tunnelDeltaModifier() {
     return 0.0;
 };
+
+#define CUSTOM_CAMERA 1
+
 #include "edison2021/tunnel_base.fs"
 
 const int pipesAType = lastBaseType + 1;
@@ -12,30 +15,64 @@ const int planeType = lastBaseType + 4;
 
 const float transitionStartTime = 10;
 
+float smoothstepIntegral(float t, in float T )
+{
+    if( t>=T ) return t - 0.5*T;
+    float f = t/T;
+    return f*f*f*(T-t*0.5);
+}
+
+
+vec3 path2(float zPos) {
+    float period = 200 * PI; // (depends on tunnelDelta)
+    vec3 pos = vec3(0.0, 0.0, mod(zPos, period));
+    pos += tunnelDelta(pos.z);
+    return pos;
+}
+
+void updateCamera(inout vec3 rayOrigin, inout vec3 lookAt) {
+    const float lol = 29 + 26 + 25 + 31;
+    if (iTime > 15.0) {
+        float t0 = iTime - 15.0;
+        float orgZ = iAbsoluteTime * 10.0;
+
+        float newZ = (lol + 15) * 10.0 + 10.0 * (t0 - smoothstepIntegral(t0, 20.0));
+
+        // iAbsoluteTime * 10.0
+        rayOrigin = path2(-newZ);
+        lookAt = path2(-newZ-10.5);
+    }
+}
+
 float birdDis(in vec3 p) {
     const float since = iTime - transitionStartTime;
     p.y += smoothstep(0.0, 0.5, since) * 0.3;
 
-    p = p - path(-5.5);
+
+    float birdPos = -5.5;
+    if (iTime > 15) {
+        //birdPos -= iTime - 15;
+    }
+    p = p - path(birdPos);
     p.y -= 0.1*sin(iTime);
     p.zy *= rot(-0.15);
-    
+
     p = p.xzy;
-    p.y += 0.5*cos(3*iTime)*sin(iTime);
+    //p.y += 0.5*cos(3*iTime)*sin(iTime);
 
     DistanceInfo b0 = {sdVerticalCapsule(p - vec3(0, 0, -0.035), 0.3, 0.02), sphereType};
 
     p.x = abs(p.x);
-    
+
     float rotFrequency = 7;
     float animationLength = 10;
-    float t = mod(iTime, animationLength);
+    float t = mod(iTime-4.0, animationLength);
     float animation = 0.1 + smoothstep(0, 1, t) - smoothstep(6.0, 7.0, t);
     float rotAmplitude = 0.5 * animation;
     p.xz *= rot(rotAmplitude*sin(rotFrequency*iTime));
 
     DistanceInfo b1 = {sdBox(p, vec3(0.4, 0.2, 0.005)), sphereType};
-    
+
 
     p = p - vec3(0.6, 0, 0);
     p.x+=0.2;
@@ -98,17 +135,17 @@ VolumetricResult evaluateLight(in vec3 p)
 
         //col = mix(col, col2, mod(p.z * 100, 1.0)* mod(p.z * 100, 1.0)* mod(p.z * 100, 1.0));
         col = mix(col, col2, mod(p.z, 1.0));
-        
+
 
         strength = 10 + sin(iTime * 30) * 1;
-    } 
+    }
 
     col *=  smoothstep(2, 3, iTime);
 	vec3 res2 = col * strength / (d * d);
 	return VolumetricResult(d, res2);
 }
 
-float getFogAmount(in vec3 p) 
+float getFogAmount(in vec3 p)
 {
     return 0.0005 + (1.0 - smoothstep(0, 2, iTime));
 }
@@ -126,9 +163,9 @@ float getReflectiveIndex(int type)
     return 0.0;
 }
 
-vec3 getAmbientColor(int type, vec3 pos) 
+vec3 getAmbientColor(int type, vec3 pos)
 {
-    vec3 wall = 0.5*vec3(0.2, 0.2, 0.2); 
+    vec3 wall = 0.5*vec3(0.2, 0.2, 0.2);
     if (type == wallType || type == floorType){
         return wall;
     }
@@ -152,10 +189,10 @@ DistanceInfo map(in vec3 p)
     vec3 p2 = p.xzy - tunnelDelta(p.z);
     DistanceInfo cylinder = {-sdCappedCylinder(p.xzy - tunnelDelta(p.z) - vec3(0, 0, 0.02 * mod(p.z * 6.0, 1.0)), vec2(1 + 0.0*filteredLines(10*atan(p.y), 1.1) + 0.1*filteredLines(5*p2.x, 1.1), 50000)), wallType };
     DistanceInfo floorBox = {-sdBox(p - tunnelDelta(p.z) + vec3(0, -1.2, 0.0), vec3(3, 2.0 + 0.0006*sin(7*p.x + 5*p.y + 5*p.z), 50000)), floorType };
-   
+
 	DistanceInfo res =  cylinder;
 
-    
+
 
     {
        p = planeFlyIn(p);

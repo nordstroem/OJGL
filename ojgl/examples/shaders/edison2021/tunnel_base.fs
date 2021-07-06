@@ -52,7 +52,7 @@ vec3 path(float zDelta) {
     float velocity = 10.0;
 #endif
 
-    vec3 pos = vec3(0.0, 0.0, mod(-iAbsoluteTime * velocity, period) + zDelta);
+    vec3 pos = vec3(0.0, 0.0, mod(-iAbsoluteTime  * velocity, period) + zDelta);
     pos += tunnelDelta(pos.z);
     return pos;
 }
@@ -61,7 +61,7 @@ float filteredLines(float y, float dp)
 {
     float i = 2.0*(abs(fract((y-0.5*dp)*0.5)-0.5)-
                   abs(fract((y+0.5*dp)*0.5)-0.5))/dp;
-    return 0.5 - 0.5*i*i;                  
+    return 0.5 - 0.5*i*i;
 }
 
 float getReflectiveIndex(int type);
@@ -73,14 +73,14 @@ vec3 getColor(in MarchResult result)
     if (result.type != invalidType) {
         vec3 lightPosition = path(-11.5);
         float d = length(lightPosition - result.position);
-        
+
         float lightStrength =  0.0002 / (0.000001 + 0.0005*d*d );
 
         vec3 ambient = getAmbientColor(result.type, result.position);
         vec3 invLight = normalize(lightPosition - result.position);
         vec3 normal = normal(result.position);
         float shadow = 1.0;
-      
+
         float k = max(0.0, dot(rayDirection, reflect(invLight, normal)));
         float spec = 1 * pow(k, 5000.0);
 
@@ -88,7 +88,7 @@ vec3 getColor(in MarchResult result)
 
         if (result.type != wallType && result.type != floorType){
             invLight = normalize(vec3(1, 1, 1));
-        
+
             float frontDiffuse = max(0., dot(invLight, normal));
             diffuse = max(diffuse, frontDiffuse);
         }
@@ -114,9 +114,9 @@ void main()
     updateCamera(rayOrigin, lookAt);
 #endif
     vec3 forward = normalize(lookAt - rayOrigin);
- 	vec3 right = normalize(cross(forward, vec3(0.0, 1.0, 0.0)));   
+ 	vec3 right = normalize(cross(forward, vec3(0.0, 1.0, 0.0)));
     vec3 up = cross(right, forward);
-    
+
     float fov = PI / 4.;
     rayDirection = normalize(u * right + v * up + fov * forward);
 
