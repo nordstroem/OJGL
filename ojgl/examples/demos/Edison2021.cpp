@@ -46,6 +46,15 @@ ojstd::vector<Scene> Edison2021::buildSceneGraph(const Vector2i& sceneSize) cons
         auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "common/fxaa.vs", "common/fxaa.fs");
         fxaa->setInputs(introText);
 
+        auto chrom = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2021/chrom_ab.fs");
+        chrom->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
+            Buffer::UniformVector vector;
+            vector.push_back(ojstd::make_shared<Uniform1f>("drumSince", Music::instance()->syncChannels()[3].getTimeSinceLast(0).toSeconds()));
+            return vector;
+        });
+
+        chrom->setInputs(fxaa);
+
         auto fade = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "common/fade.fs");
         fade->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
             Buffer::UniformVector vector;
@@ -55,7 +64,9 @@ ojstd::vector<Scene> Edison2021::buildSceneGraph(const Vector2i& sceneSize) cons
             return vector;
         });
 
-        fade->setInputs(fxaa);
+        fade->setInputs(chrom);
+
+
         scenes.emplace_back(fade, Duration::seconds(29), "raymarchScene");
 
         introText->setTextureCallback([this]([[maybe_unused]] float relativeSceneTime) {
@@ -72,12 +83,23 @@ ojstd::vector<Scene> Edison2021::buildSceneGraph(const Vector2i& sceneSize) cons
         blob->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
             Buffer::UniformVector vector;
             vector.push_back(ojstd::make_shared<UniformMatrix4fv>("iCameraMatrix", FreeCameraController::instance().getCameraMatrix()));
+            vector.push_back(ojstd::make_shared<Uniform1f>("totalHits", Music::instance()->syncChannels()[3].getTotalHits()));
             return vector;
         });
 
         auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "common/fxaa.vs", "common/fxaa.fs");
         fxaa->setInputs(blob);
-        scenes.emplace_back(fxaa, Duration::seconds(26), "blobScene");
+
+        auto chrom = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2021/chrom_ab.fs");
+        chrom->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
+            Buffer::UniformVector vector;
+            vector.push_back(ojstd::make_shared<Uniform1f>("drumSince", Music::instance()->syncChannels()[3].getTimeSinceLast(0).toSeconds()));
+            return vector;
+        });
+
+        chrom->setInputs(fxaa);
+
+        scenes.emplace_back(chrom, Duration::seconds(26), "blobScene");
     }
 
     {
@@ -91,7 +113,16 @@ ojstd::vector<Scene> Edison2021::buildSceneGraph(const Vector2i& sceneSize) cons
         auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "common/fxaa.vs", "common/fxaa.fs");
         fxaa->setInputs(tunnelTransform);
 
-        scenes.emplace_back(fxaa, Duration::seconds(25), "tunnelTransformScene");
+        auto chrom = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2021/chrom_ab.fs");
+        chrom->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
+            Buffer::UniformVector vector;
+            vector.push_back(ojstd::make_shared<Uniform1f>("drumSince", Music::instance()->syncChannels()[3].getTimeSinceLast(0).toSeconds()));
+            return vector;
+        });
+
+        chrom->setInputs(fxaa);
+
+        scenes.emplace_back(chrom, Duration::seconds(25), "tunnelTransformScene");
     }
 
     {
@@ -99,13 +130,29 @@ ojstd::vector<Scene> Edison2021::buildSceneGraph(const Vector2i& sceneSize) cons
         raymarch->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
             Buffer::UniformVector vector;
             vector.push_back(ojstd::make_shared<UniformMatrix4fv>("iCameraMatrix", FreeCameraController::instance().getCameraMatrix()));
+            ojstd::vector<float> ch1;
+            for (int i = 0; i < 15; i++) {
+                ch1.push_back(Music::instance()->syncChannels()[1].getTimeSinceLast(i).toSeconds());
+            }
+            vector.push_back(ojstd::make_shared<Uniform1fv>("channel1", ch1));
+            //vector.push_back(ojstd::make_shared<Uniform1fv>("channel1", Music::instance()->syncChannels()[1].getTimeSinceLast(0).toSeconds()));
+            vector.push_back(ojstd::make_shared<Uniform1f>("drum", Music::instance()->syncChannels()[3].getTimeSinceLast(0).toSeconds()));
             return vector;
         });
 
         auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "common/fxaa.vs", "common/fxaa.fs");
         fxaa->setInputs(raymarch);
 
-        scenes.emplace_back(fxaa, Duration::seconds(31), "pipesScene");
+        auto chrom = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2021/chrom_ab.fs");
+        chrom->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
+            Buffer::UniformVector vector;
+            vector.push_back(ojstd::make_shared<Uniform1f>("drumSince", Music::instance()->syncChannels()[3].getTimeSinceLast(0).toSeconds()));
+            return vector;
+        });
+
+        chrom->setInputs(fxaa);
+
+        scenes.emplace_back(chrom, Duration::seconds(31), "pipesScene");
     }
 
     {
@@ -119,7 +166,27 @@ ojstd::vector<Scene> Edison2021::buildSceneGraph(const Vector2i& sceneSize) cons
         auto radialBlur = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "common/radial_blur.fs");
         radialBlur->setInputs(raymarch);
 
-        scenes.emplace_back(radialBlur, Duration::seconds(99999), "planeScene");
+        auto chrom = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2021/chrom_ab.fs");
+        chrom->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
+            Buffer::UniformVector vector;
+            vector.push_back(ojstd::make_shared<Uniform1f>("drumSince", Music::instance()->syncChannels()[3].getTimeSinceLast(0).toSeconds()));
+            return vector;
+        });
+
+        chrom->setInputs(radialBlur);
+
+        auto fade = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "common/fade.fs");
+        fade->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
+            Buffer::UniformVector vector;
+            vector.push_back(ojstd::make_shared<Uniform1f>("startFadeTime", 18.f));
+            vector.push_back(ojstd::make_shared<Uniform1f>("endFadeTime", 25.f));
+            vector.push_back(ojstd::make_shared<Uniform1b>("fadeIn", false));
+            return vector;
+        });
+
+        fade->setInputs(chrom);
+
+        scenes.emplace_back(fade, Duration::seconds(99999), "planeScene");
     }
 
     return scenes;
