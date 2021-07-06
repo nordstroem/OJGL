@@ -64,7 +64,7 @@ VolumetricResult evaluateLight(in vec3 p)
     vec3 col = vec3(0);
     if (res.type == starType) {
         strength *= 1;
-    } else {
+    } else if (iTime < 20){
         strength = smoothstep(pipeStartTime, pipeStartTime + 5, iTime);
         // drum sync
     strength *= 1.0 + max(0.0, 1.0 - drum * 3.0) * 50.0;
