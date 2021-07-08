@@ -6,14 +6,18 @@ const int cubeType = lastBaseType + 1;
 
 
 DistanceInfo wireCube(vec3 p) {
+    float f = 2*PI/130.0 * 22;
+
+
     vec3 q = p;
-    q.xz *= rot(sin(3*iAbsoluteTime)*cos(5*iAbsoluteTime));
+    q.xz *= rot(sin(f*3*iAbsoluteTime)*cos(f*5*iAbsoluteTime));
 
     mo(q.xy, vec2(0.1, 0.3));
     q.x-=0.2;
     q.zy *= rot(iAbsoluteTime);
-    mo(q.xy, vec2(0.4 + 0.2*sin(2*iAbsoluteTime), 0.09+ 0.2*cos(5*iAbsoluteTime)));
-    q *= 1.0 + 0.3*sin(15*iAbsoluteTime)*cos(3*iAbsoluteTime);
+
+    mo(q.xy, vec2(0.4 + 0.2*sin(2*f*iAbsoluteTime), 0.09+ 0.2*cos(f*5*iAbsoluteTime)));
+    q *= 1.0 + 0.3*sin(f*15*iAbsoluteTime)*cos(f*3*iAbsoluteTime);
     
     float dFrame = sdBoxFrame(q, vec3(0.3), 0.01);
 

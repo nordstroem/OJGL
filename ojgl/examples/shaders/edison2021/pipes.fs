@@ -20,32 +20,17 @@ VolumetricResult evaluateLight(in vec3 p)
     if (iTime < fadeOutStartTime - 2) {
         // Star
         const float distance = 40.0;
-        vec3 starP = p;
+        vec3 starP = p;// - path(-5.0);
+        //starP = starP.xzy;
         starP.z = mod(starP.z +  (iTime + 0.01) * 20, distance) - distance * 0.5;
         starP = (starP - vec3(tunnelDelta(p.z).x, 0, 0)).xzy;
 
         float r = 1.1 + sin(10*atan(starP.z, starP.x) + iTime * 25.0) * 0.2 + sin(iTime * 10.0) * 0.2;
         r *= 0.5;
 
-        //res = DistanceInfo(sdTorus(starP, vec2(r, 0.0)), starType);
-
-        starP = starP.xzy;
-        //starP.y -= 0.3;
-        vec2 q = starP.xy; //p.xy - starP.xy;
-        float f = pModPolar(q, 15);
-        f += 7;
-        //starP.xy = -p.xy - q;
-
-        //strength *= 1.0 + max(0.0, 1.0 - channel1[int(f)] * 3.0) * 50.0;
-
-        //strength = f;
+        res = DistanceInfo(sdTorus(starP, vec2(r, 0.0)), starType);
 
 
-        float l = 0.3 - channel1[int(f)];
-        l = max(0.1, l);
-        float d = sdCappedCylinder(vec3(q.x - 0.7, q.y, starP.z), vec2(l, 0.0));
-        //float d = length(vec3(q.x - 0.5, q.y, starP.z)) - 0.2;
-        res = DistanceInfo(d, starType);
     }
 
     const int pipeStartTime = 10;
@@ -63,7 +48,7 @@ VolumetricResult evaluateLight(in vec3 p)
 
     vec3 col = vec3(0);
     if (res.type == starType) {
-        strength *= 1;
+        strength *= 50;
     } else if (iTime < 20){
         strength = smoothstep(pipeStartTime, pipeStartTime + 5, iTime);
         // drum sync
