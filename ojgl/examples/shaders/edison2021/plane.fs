@@ -31,7 +31,7 @@ vec3 path2(float zPos) {
 }
 
 void updateCamera(inout vec3 rayOrigin, inout vec3 lookAt) {
-    const float lol = 29 + 26 + 25 + 31;
+    const float lol = 29 + 26 + 26.2 + 31;
     if (iTime > 15.0) {
         float t0 = iTime - 15.0;
         float orgZ = iAbsoluteTime * 10.0;
