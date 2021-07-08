@@ -32,7 +32,7 @@ DistanceInfo moltresText(in vec3 p)
             box.distance = 100;
         }
 	}
-        
+
     return box;
 }
 
@@ -96,17 +96,17 @@ VolumetricResult evaluateLight(in vec3 p)
         p3.xz *= rot(cos(iTime)*0.5);
         wireBox = DistanceInfo(sdBoxFrame(p3 - vec3(0, 0, 0), vec3(0.9, 0.3, 0.02), 0.01), edisonType);
 	}
-    
+
     float d = max(0.001, wireBox.distance);
-    
+
 	float strength = 1.0 / 8000;
     vec3 col = getAmbientColor(wireBox.type, p);
 	vec3 res2 = col * strength / (d * d );
-    
+
 	return VolumetricResult(d, res2);
 }
 
-float getFogAmount(in vec3 p) 
+float getFogAmount(in vec3 p)
 {
     return 0.003;
 }
@@ -121,9 +121,9 @@ float getReflectiveIndex(int type)
     return 0.1;
 }
 
-vec3 getAmbientColor(int type, vec3 pos) 
+vec3 getAmbientColor(int type, vec3 pos)
 {
-    vec3 wall = 0.9*vec3(0.2, 0.2, 0.2); 
+    vec3 wall = 0.9*vec3(0.2, 0.2, 0.2);
     if (type == wallType || type == floorType){
         return wall;
     }
@@ -144,10 +144,10 @@ DistanceInfo map(in vec3 p)
     vec3 p2 = p.xzy - tunnelDelta(p.z);
     DistanceInfo cylinder = {-sdCappedCylinder(p.xzy - tunnelDelta(p.z), vec2(1 + 0.1*filteredLines(10*atan(p.y), 1.1), 50000)), wallType };
     DistanceInfo floorBox = {-sdBox(p - tunnelDelta(p.z) + vec3(0, -0.8, 0.0), vec3(2, 1.4 + 0.0006*sin(7*p.x + 5*p.y + 5*p.z), 50000)), floorType };
-   
-    
+
+
     float z = -6.5 + 40*smoothstep(6.0, 10.0, iTime) + 30*smoothstep(15., 20.0, iTime) + 40*smoothstep(25., 30.0, iTime);
-    
+
     DistanceInfo text = {10000, invalidType};
 
     if (iTime < 7.5) {
@@ -174,7 +174,7 @@ DistanceInfo map(in vec3 p)
         DistanceInfo edison = edisonText(p3);
         text = edison;
 	}
-   
+
     DistanceInfo res = sunk(cylinder, floorBox, 0.3);
     res = sunk(res, text, 0.05);
     return res;

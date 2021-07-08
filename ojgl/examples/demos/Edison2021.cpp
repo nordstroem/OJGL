@@ -122,7 +122,7 @@ ojstd::vector<Scene> Edison2021::buildSceneGraph(const Vector2i& sceneSize) cons
 
         chrom->setInputs(fxaa);
 
-        scenes.emplace_back(chrom, Duration::seconds(25), "tunnelTransformScene");
+        scenes.emplace_back(chrom, Duration::milliseconds(26200), "tunnelTransformScene");
     }
 
     {

@@ -22,7 +22,7 @@ VolumetricResult evaluateLight(in vec3 p)
         const float distance = 40.0;
         vec3 starP = p;// - path(-5.0);
         //starP = starP.xzy;
-        starP.z = mod(starP.z +  (iTime + 0.21) * 20, distance) - distance * 0.5;
+        starP.z = mod(starP.z +  (iTime -1.19) * 20, distance) - distance * 0.5;
         starP = (starP - vec3(tunnelDelta(p.z).x, 0, 0)).xzy;
 
         float r = 1.1 + sin(10*atan(starP.z, starP.x) + iTime * 25.0) * 0.2 + sin(iTime * 10.0) * 0.2;
