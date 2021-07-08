@@ -40,11 +40,11 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
         _ASSERTE(ret == 1);
     }
 #endif
-    popup::Data popupData; //= popup::show();
+    popup::Data popupData = popup::show();
 
-    popupData.width = 1280;
+    /*popupData.width = 1280;
     popupData.height = 720;
-    popupData.full = false;
+    popupData.full = false;*/
 
     const Vector2i windowSize(popupData.width, popupData.height);
     const bool fullScreen = popupData.full;
@@ -132,8 +132,6 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
         debugTitle.append(" ms");
         window.setTitle(debugTitle);
 #endif
-
-        ojstd::sleep(10);
     }
 }
 

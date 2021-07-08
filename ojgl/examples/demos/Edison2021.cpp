@@ -11,7 +11,7 @@ Edison2021::Edison2021()
 
 ojstd::string Edison2021::getTitle() const
 {
-    return "OJ - Edison 2021";
+    return "OJ - Enigma";
 }
 
 static const unsigned char song[] = {
@@ -186,7 +186,7 @@ ojstd::vector<Scene> Edison2021::buildSceneGraph(const Vector2i& sceneSize) cons
 
         fade->setInputs(chrom);
 
-        scenes.emplace_back(fade, Duration::seconds(99999), "planeScene");
+        scenes.emplace_back(fade, Duration::seconds(25), "planeScene");
     }
 
     return scenes;
