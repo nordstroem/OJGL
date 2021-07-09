@@ -226,7 +226,7 @@ public:
 };
 
 mutex::mutex()
-    : _priv(make_shared<details>())
+    : _priv(make_unique<details>())
 {
     _priv->w_mutex = CreateMutex(NULL, FALSE, NULL);
     _ASSERTE(_priv->w_mutex != NULL);
@@ -273,28 +273,28 @@ int ftoi(float value)
         mov  edx,4278190080; //clear reg edx;
         and  eax,edx; //and acc to retrieve the exponent
         shr  eax,24;
-        sub  eax,7fh; //subtract 7fh(127) to get the actual power 
+        sub  eax,7fh; //subtract 7fh(127) to get the actual power
         mov  edx,eax; //save acc val power
         mov  eax,ebx; //retrieve from ebx
         rcl  eax,8; //trim the left 8 bits that contain the power
         mov  ebx,eax; //store
         mov  ecx, 1fh; //subtract 17 h
-        sub  ecx,edx; 
+        sub  ecx,edx;
         mov  edx,00000000h;
         cmp  ecx,0;
         je   loop2;
         shr  eax,1;
-        or   eax,80000000h;        
-loop1:    
+        or   eax,80000000h;
+loop1:
         shr  eax,1; //shift (total bits - power bits);
         sub  ecx,1;
         add  edx,1;
         cmp  ecx,0;
         ja   loop1;
-loop2:  
+loop2:
         mov  i, eax;
 
-        //check sign +/-        
+        //check sign +/-
         mov  eax,value;
         and  eax,80000000h;
         cmp  eax,80000000h;

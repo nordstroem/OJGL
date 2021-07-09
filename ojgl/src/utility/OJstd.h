@@ -90,7 +90,7 @@ public:
     }
 
 
-    unique_ptr(unique_ptr<T>&& other) 
+    unique_ptr(unique_ptr<T>&& other)
     {
         _ptr = other->_ptr;
         other->_ptr = nullptr;
@@ -119,7 +119,7 @@ public:
     T& operator*() const noexcept { return *_ptr; }
     T* get() const { return _ptr; }
 
-    
+
 
 private:
     T* _ptr = nullptr;
@@ -467,7 +467,7 @@ public:
 
 private:
     class details;
-    shared_ptr<details> _priv; // @todo make ojstd::unique_ptr.
+    unique_ptr<details> _priv;
 };
 
 template <typename T>
