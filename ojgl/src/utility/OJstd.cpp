@@ -92,6 +92,11 @@ bool string::operator==(const string& other) const
     return strcmp(this->_content, other._content) == 0;
 }
 
+bool string::operator!=(const string& other) const
+{
+    return !operator==(other);
+}
+
 string& string::operator=(const string& other)
 {
     if (this->_content != nullptr) {
@@ -247,6 +252,7 @@ void sleep(int milliseconds)
     Sleep(milliseconds);
 }
 
+#pragma warning(disable : 4740)
 int ftoi(float value)
 {
     int i;

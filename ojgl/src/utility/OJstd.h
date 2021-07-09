@@ -373,6 +373,7 @@ public:
     string();
     ~string();
     bool operator==(const string& other) const;
+    bool operator!=(const string& other) const;
     string& operator=(const string& other);
     friend string operator+(const string& first, const string& second);
 
@@ -419,6 +420,8 @@ public:
     {
         _v.unlock();
     }
+
+    lock_guard& operator=(lock_guard other) = delete;
 
 private:
     T& _v;
