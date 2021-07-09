@@ -115,6 +115,12 @@ public:
     unique_ptr(const unique_ptr<T>& other) = delete;
     unique_ptr& operator=(const unique_ptr<T>& ptr) = delete;
 
+    T* operator->() const { return _ptr; }
+    T& operator*() const noexcept { return *_ptr; }
+    T* get() const { return _ptr; }
+
+    
+
 private:
     T* _ptr = nullptr;
 };

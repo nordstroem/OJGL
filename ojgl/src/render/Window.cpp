@@ -29,7 +29,7 @@ public:
 };
 
 Window::Window(Vector2i size, ojstd::string title, bool fullScreen, bool showCursor)
-    : _priv(ojstd::make_shared<Details>(size))
+    : _priv(ojstd::make_unique<Details>(size))
 {
     ShowCursor(showCursor);
 
