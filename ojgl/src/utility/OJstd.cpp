@@ -178,7 +178,9 @@ string string::replaceFirst(const string& oldStr, const string& newStr) const
 
     if (startPos != -1) {
         int newLength = _len + newStr.length() - oldStr.length();
+        _ASSERTE(newLength >= 0);
         char* newContent = (char*)malloc(sizeof(char) * (newLength + 1));
+        _ASSERTE(newContent != nullptr);
 
         for (int i = 0; i < newLength; i++) {
             if (i >= startPos) {
