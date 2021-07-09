@@ -70,6 +70,62 @@ ForwardIt find(ForwardIt first, ForwardIt last, const Value& val)
 }
 
 template <typename T>
+class unique_ptr {
+public:
+    unique_ptr(T* ptr)
+        : _ptr(ptr)
+    {
+    }
+
+    unique_ptr()
+        : _ptr(nullptr)
+    {
+    }
+
+    ~unique_ptr()
+    {
+        if (_ptr != nullptr) {
+            delete _ptr;
+        }
+    }
+
+
+    unique_ptr(unique_ptr<T>&& other) 
+    {
+        _ptr = other->_ptr;
+        other->_ptr = nullptr;
+    }
+
+    unique_ptr& operator=(unique_ptr<T>&& other)
+    {
+        if (this == &other) {
+            return;
+        }
+
+        if (_ptr != nullptr) {
+            delete _ptr;
+        }
+
+        _ptr = other->_ptr;
+        other->_ptr = nullptr;
+
+        return *this;
+    }
+
+    unique_ptr(const unique_ptr<T>& other) = delete;
+    unique_ptr& operator=(const unique_ptr<T>& ptr) = delete;
+
+private:
+    T* _ptr = nullptr;
+};
+
+template <typename T, typename... Args>
+unique_ptr<T> make_unique(Args&&... args)
+{
+    return unique_ptr<T>(new T(std::forward<Args>(args)...));
+}
+
+template <typename T>
 class shared_ptr {
 public:
     shared_ptr(T* ptr)

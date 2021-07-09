@@ -5,6 +5,8 @@
 #include <string.h>
 #include <utility>
 
+#pragma warning(disable : 6011 6387)
+
 namespace ojstd {
 
 float pow(float x, int h)
