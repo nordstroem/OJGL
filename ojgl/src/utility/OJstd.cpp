@@ -52,6 +52,7 @@ string::string(const char* str)
     : _len(strlen(str))
 {
     _content = (char*)malloc(sizeof(char) * (_len + 1));
+    _ASSERTE(_content != nullptr);
     strcpy(_content, str);
 }
 
@@ -59,6 +60,7 @@ string::string(const string& str)
     : _len(str.length())
 {
     _content = (char*)malloc(sizeof(char) * (_len + 1));
+    _ASSERTE(_content != nullptr);
     strcpy(_content, str.c_str());
 }
 
@@ -103,6 +105,7 @@ string& string::operator=(const string& other)
         free(this->_content);
     }
     this->_content = (char*)malloc(sizeof(char) * (other.length() + 1));
+    _ASSERTE(_content != nullptr);
     strcpy(_content, other.c_str());
     _len = other.length();
     return *this;
@@ -111,6 +114,7 @@ string& string::operator=(const string& other)
 string operator+(const string& first, const string& second)
 {
     char* str = (char*)malloc(sizeof(char) * (first._len + second._len + 1));
+    _ASSERTE(str != nullptr);
     strcpy(str, first._content);
     strcpy(str + first._len, second._content);
     return string(std::move(str));
@@ -139,6 +143,7 @@ string string::substring(int start, int end) const
     _ASSERTE(end <= _len);
     int length = end - start;
     char* content = (char*)malloc(sizeof(char) * (length + 1));
+    _ASSERTE(_content != nullptr);
     memcpy(content, _content + start, sizeof(char) * length);
     content[length] = '\0';
     return string(std::move(content));
@@ -148,6 +153,7 @@ void string::append(const string& other)
 {
     char* tmp = _content;
     _content = (char*)malloc(sizeof(char) * (_len + other._len + 1));
+    _ASSERTE(_content != nullptr);
     strcpy(_content, tmp);
     strcpy(_content + _len, other._content);
     _len = _len + other._len;

@@ -10,6 +10,8 @@
 #include <string.h>
 #include "libct.h"
 
+#pragma warning(disable : 4302)
+
 BEGIN_EXTERN_C
 
 char *strupr(char *s)
