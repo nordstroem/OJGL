@@ -13,7 +13,11 @@ namespace {
 
 struct CallbackData {
     int reslistindex = 0;
+#ifdef _DEBUG
     bool full = false;
+#else
+    bool full = true;
+#endif
 };
 
 constexpr int PLAY = 1;
@@ -165,7 +169,9 @@ popup::Data popup::show()
         100, 100, 60, 25,
         hwnd, (HMENU)QUIT, NULL, NULL);
 
-    CreateWindow(TEXT("BUTTON"), "Fullscreen", BS_CHECKBOX | WS_VISIBLE | WS_CHILD, 10, 50, 150, 40, hwnd, (HMENU)FULL, NULL, NULL);
+    HWND fullscreenHWND = CreateWindow(TEXT("BUTTON"), "Fullscreen", BS_CHECKBOX | WS_VISIBLE | WS_CHILD, 10, 50, 150, 40, hwnd, (HMENU)FULL, NULL, NULL);
+
+    SendMessage(fullscreenHWND, BM_SETCHECK, callbackData.full ? BST_CHECKED : BST_UNCHECKED, 0);
 
     HWND hWndComboBox = CreateWindow("ComboBox", TEXT(""),
         CBS_DROPDOWN | CBS_HASSTRINGS | WS_CHILD | WS_OVERLAPPED | WS_VISIBLE | WS_VSCROLL,
