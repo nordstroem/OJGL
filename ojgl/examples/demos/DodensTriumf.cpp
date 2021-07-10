@@ -28,12 +28,12 @@ ojstd::vector<Scene> DodensTriumf::buildSceneGraph(const Vector2i& sceneSize) co
 
     {
         auto graveScene = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "dodenstriumf/graveScene.fs");
-        graveScene->setUniformCallback([](float relativeSceneTime) {
+        graveScene->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
           Buffer::UniformVector vector;
 
           auto music = Music::instance();
           vector.push_back(ojstd::make_shared<Uniform1f>("CHANNEL_11_SINCE", music->syncChannels()[11].getTimeSinceLast(0).toSeconds()));
-          vector.push_back(ojstd::make_shared<Uniform1f>("CHANNEL_11_TOTAL", music->syncChannels()[11].getTotalHits()));
+          vector.push_back(ojstd::make_shared<Uniform1f>("CHANNEL_11_TOTAL", static_cast<float>(music->syncChannels()[11].getTotalHits())));
           ojstd::vector<float> since;
           since.push_back(music->syncChannels()[4].getTimeSinceLast(0).toSeconds());
           since.push_back(music->syncChannels()[4].getTimeSinceLast(1).toSeconds());
@@ -45,13 +45,13 @@ ojstd::vector<Scene> DodensTriumf::buildSceneGraph(const Vector2i& sceneSize) co
         graveFxaa->setInputs(graveScene);
         auto graveScenePost = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "dodenstriumf/graveScenePost.fs");
         graveScenePost->setInputs(graveFxaa);
-        graveScenePost->setUniformCallback([](float relativeSceneTime) {
+        graveScenePost->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
             Buffer::UniformVector vector;
 
             auto music = Music::instance();
             float m = ojstd::min(music->syncChannels()[4].getTimeToNext(0).toSeconds(), music->syncChannels()[4].getTimeToNext(1).toSeconds());
             vector.push_back(ojstd::make_shared<Uniform1f>("CHANNEL_4_TO", m));
-            vector.push_back(ojstd::make_shared<Uniform1f>("CHANNEL_4_TOTAL", music->syncChannels()[4].getTotalHitsPerNote(0) + music->syncChannels()[4].getTotalHitsPerNote(1)));
+            vector.push_back(ojstd::make_shared<Uniform1f>("CHANNEL_4_TOTAL", static_cast<float>(music->syncChannels()[4].getTotalHitsPerNote(0) + music->syncChannels()[4].getTotalHitsPerNote(1))));
             vector.push_back(ojstd::make_shared<Uniform1f>("CHANNEL_11_SINCE", music->syncChannels()[11].getTimeSinceLast(0).toSeconds()));
             return vector;
         });

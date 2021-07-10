@@ -37,7 +37,7 @@ struct Vector3 {
 
     void normalize()
     {
-        T len = static_cast<T>(ojstd::sqrt(static_cast<double>(x * x + y * y + z * z)));
+        T len = static_cast<T>(ojstd::sqrt(static_cast<float>(x * x + y * y + z * z)));
         x /= len;
         y /= len;
         z /= len;
