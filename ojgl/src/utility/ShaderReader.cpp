@@ -1,4 +1,4 @@
-#include "ShaderReader.h"
+﻿#include "ShaderReader.h"
 #include "Log.h"
 #include "utility/Macros.h"
 #include "utility/OJstd.h"
@@ -115,7 +115,6 @@ const ojstd::string& ShaderReader::get(const ojstd::string& path)
             ShaderReader::_shaders[path].modifyTime = modifyTime(fullPath);
         } else {
             LOG_INFO("Shader reading failed");
-        
         }
     }
 #endif

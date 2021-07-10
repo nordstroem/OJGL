@@ -324,6 +324,7 @@
     <ClCompile Include="src\utility\Duration.cpp" />
     <ClCompile Include="src\utility\OJstd.cpp" />
     <ClCompile Include="src\utility\ShaderReader.cpp" />
+    <ClCompile Include="src\utility\ShaderString.cpp" />
     <ClCompile Include="src\utility\Timepoint.cpp" />
     <ClCompile Include="src\winapi\gl_loader.cpp" />
   </ItemGroup>
@@ -354,6 +355,7 @@
     <ClInclude Include="src\utility\Macros.h" />
     <ClInclude Include="src\utility\OJstd.h" />
     <ClInclude Include="src\utility\ShaderReader.h" />
+    <ClInclude Include="src\utility\ShaderString.h" />
     <ClInclude Include="src\utility\Timepoint.h" />
     <ClInclude Include="src\utility\Timer.hpp" />
     <ClInclude Include="src\utility\Vector.h" />
