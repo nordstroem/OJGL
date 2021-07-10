@@ -1,4 +1,5 @@
 #include "gl_loader.h"
+#include "utility/OJstd.h"
 #include "Windows.h"
 #include <crtdbg.h>
 
@@ -107,7 +108,10 @@ int load_gl_functions()
         if (ptr == NULL) {
 #ifdef _DEBUG
             // Do not assert on mising AMD specific functions
-            if (name != "glDebugMessageCallbackAMD" && name != "glDebugMessageEnableAMD" && name != "glDebugMessageInsertAMD" && name != "glGetDebugMessageLogAMD") {
+            if (ojstd::string(name) != ojstd::string("glDebugMessageCallbackAMD") &&
+                ojstd::string(name) != ojstd::string("glDebugMessageEnableAMD") &&
+                ojstd::string(name) != ojstd::string("glDebugMessageInsertAMD") &&
+                ojstd::string(name) != ojstd::string("glGetDebugMessageLogAMD")) {
                 _ASSERT_EXPR(false, "Failed to load GL func");
             }
 #endif

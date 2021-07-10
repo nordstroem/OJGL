@@ -17,8 +17,8 @@ void FreeCameraController::update(const Window& window)
     if (window.isLeftMouseButtonDown()) {
         int dx = ojstd::sign(cursorPosition.x - this->_previousCursorPosition.x);
         int dy = ojstd::sign(cursorPosition.y - this->_previousCursorPosition.y);
-        this->heading -= this->_rotationSpeed * dx;
-        this->elevation -= this->_rotationSpeed * dy;
+        this->heading -= this->_rotationSpeed * static_cast<float>(dx);
+        this->elevation -= this->_rotationSpeed * static_cast<float>(dy);
     }
 
     if (downKeys.contains(Window::KEY_W)) {

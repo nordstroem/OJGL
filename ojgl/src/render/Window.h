@@ -41,6 +41,6 @@ public:
 
 private:
     class Details;
-    ojstd::shared_ptr<Details> _priv; // @todo make ojstd::unique_ptr
+    ojstd::unique_ptr<Details> _priv;
 };
 } //namespace ojgl

@@ -6,6 +6,8 @@ class Texture {
 public:
     static ojstd::shared_ptr<Texture> construct(int width, int height, int channels, unsigned char* img);
     ~Texture();
+    Texture& operator=(Texture other) = delete;
+
     unsigned textureID();
 
 private:

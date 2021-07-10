@@ -83,7 +83,7 @@ ojstd::vector<Scene> Edison2021::buildSceneGraph(const Vector2i& sceneSize) cons
         blob->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
             Buffer::UniformVector vector;
             vector.push_back(ojstd::make_shared<UniformMatrix4fv>("iCameraMatrix", FreeCameraController::instance().getCameraMatrix()));
-            vector.push_back(ojstd::make_shared<Uniform1f>("totalHits", Music::instance()->syncChannels()[3].getTotalHits()));
+            vector.push_back(ojstd::make_shared<Uniform1f>("totalHits", static_cast<float>(Music::instance()->syncChannels()[3].getTotalHits())));
             return vector;
         });
 

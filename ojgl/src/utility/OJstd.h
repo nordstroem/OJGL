@@ -70,6 +70,68 @@ ForwardIt find(ForwardIt first, ForwardIt last, const Value& val)
 }
 
 template <typename T>
+class unique_ptr {
+public:
+    unique_ptr(T* ptr)
+        : _ptr(ptr)
+    {
+    }
+
+    unique_ptr()
+        : _ptr(nullptr)
+    {
+    }
+
+    ~unique_ptr()
+    {
+        if (_ptr != nullptr) {
+            delete _ptr;
+        }
+    }
+
+
+    unique_ptr(unique_ptr<T>&& other)
+    {
+        _ptr = other->_ptr;
+        other->_ptr = nullptr;
+    }
+
+    unique_ptr& operator=(unique_ptr<T>&& other)
+    {
+        if (this == &other) {
+            return *this;
+        }
+
+        if (_ptr != nullptr) {
+            delete _ptr;
+        }
+
+        _ptr = other->_ptr;
+        other->_ptr = nullptr;
+
+        return *this;
+    }
+
+    unique_ptr(const unique_ptr<T>& other) = delete;
+    unique_ptr& operator=(const unique_ptr<T>& ptr) = delete;
+
+    T* operator->() const { return _ptr; }
+    T& operator*() const noexcept { return *_ptr; }
+    T* get() const { return _ptr; }
+
+
+
+private:
+    T* _ptr = nullptr;
+};
+
+template <typename T, typename... Args>
+unique_ptr<T> make_unique(Args&&... args)
+{
+    return unique_ptr<T>(new T(std::forward<Args>(args)...));
+}
+
+template <typename T>
 class shared_ptr {
 public:
     shared_ptr(T* ptr)
@@ -373,6 +435,7 @@ public:
     string();
     ~string();
     bool operator==(const string& other) const;
+    bool operator!=(const string& other) const;
     string& operator=(const string& other);
     friend string operator+(const string& first, const string& second);
 
@@ -404,7 +467,7 @@ public:
 
 private:
     class details;
-    shared_ptr<details> _priv; // @todo make ojstd::unique_ptr.
+    unique_ptr<details> _priv;
 };
 
 template <typename T>
@@ -419,6 +482,8 @@ public:
     {
         _v.unlock();
     }
+
+    lock_guard& operator=(const lock_guard other) = delete;
 
 private:
     T& _v;

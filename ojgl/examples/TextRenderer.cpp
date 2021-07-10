@@ -25,7 +25,7 @@ ojstd::shared_ptr<Texture> TextRenderer::get(const ojstd::string& text)
     SelectObject(vhdc, hFont);
 
     int totalWidth = 3;
-    for (size_t i = 0; i < text.length(); i++) {
+    for (size_t i = 0; i < static_cast<size_t>(text.length()); i++) {
         const char* ptr = text.c_str();
         int res[1];
         GetCharWidth32A(vhdc, ptr[i], ptr[i], res);

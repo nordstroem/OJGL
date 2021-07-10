@@ -15,6 +15,8 @@
 #include "thirdparty/libv2.h"
 #include "utility/Macros.h"
 
+#pragma warning(disable : 4244 4245)
+
 #define sTRUE (!0)
 #define sFALSE 0
 
@@ -202,7 +204,7 @@ void V2MPlayer::Tick()
     m_state.time = m_state.nexttime;
     m_state.nexttime = (sU32)-1;
     sU8* mptr = m_midibuf;
-    sU32 laststat = -1;
+    sU32 laststat = (sU32)-1;
     if (m_state.gnr < m_base.gdnum && m_state.time == m_state.gnt) // neues global-event?
     {
         m_state.usecs = (*(sU32*)(m_state.gptr + 3 * m_base.gdnum + 4 * m_state.gnr)) * (m_samplerate / 100);

@@ -5,6 +5,8 @@
 #include <string.h>
 #include <utility>
 
+#pragma warning(disable : 6011 6387)
+
 namespace ojstd {
 
 float pow(float x, int h)
@@ -52,6 +54,7 @@ string::string(const char* str)
     : _len(strlen(str))
 {
     _content = (char*)malloc(sizeof(char) * (_len + 1));
+    _ASSERTE(_content != nullptr);
     strcpy(_content, str);
 }
 
@@ -59,6 +62,7 @@ string::string(const string& str)
     : _len(str.length())
 {
     _content = (char*)malloc(sizeof(char) * (_len + 1));
+    _ASSERTE(_content != nullptr);
     strcpy(_content, str.c_str());
 }
 
@@ -92,12 +96,18 @@ bool string::operator==(const string& other) const
     return strcmp(this->_content, other._content) == 0;
 }
 
+bool string::operator!=(const string& other) const
+{
+    return !(*this == other);
+}
+
 string& string::operator=(const string& other)
 {
     if (this->_content != nullptr) {
         free(this->_content);
     }
     this->_content = (char*)malloc(sizeof(char) * (other.length() + 1));
+    _ASSERTE(_content != nullptr);
     strcpy(_content, other.c_str());
     _len = other.length();
     return *this;
@@ -106,6 +116,7 @@ string& string::operator=(const string& other)
 string operator+(const string& first, const string& second)
 {
     char* str = (char*)malloc(sizeof(char) * (first._len + second._len + 1));
+    _ASSERTE(str != nullptr);
     strcpy(str, first._content);
     strcpy(str + first._len, second._content);
     return string(std::move(str));
@@ -134,6 +145,7 @@ string string::substring(int start, int end) const
     _ASSERTE(end <= _len);
     int length = end - start;
     char* content = (char*)malloc(sizeof(char) * (length + 1));
+    _ASSERTE(_content != nullptr);
     memcpy(content, _content + start, sizeof(char) * length);
     content[length] = '\0';
     return string(std::move(content));
@@ -143,6 +155,7 @@ void string::append(const string& other)
 {
     char* tmp = _content;
     _content = (char*)malloc(sizeof(char) * (_len + other._len + 1));
+    _ASSERTE(_content != nullptr);
     strcpy(_content, tmp);
     strcpy(_content + _len, other._content);
     _len = _len + other._len;
@@ -173,7 +186,9 @@ string string::replaceFirst(const string& oldStr, const string& newStr) const
 
     if (startPos != -1) {
         int newLength = _len + newStr.length() - oldStr.length();
+        _ASSERTE(newLength >= 0);
         char* newContent = (char*)malloc(sizeof(char) * (newLength + 1));
+        _ASSERTE(newContent != nullptr);
 
         for (int i = 0; i < newLength; i++) {
             if (i >= startPos) {
@@ -211,7 +226,7 @@ public:
 };
 
 mutex::mutex()
-    : _priv(make_shared<details>())
+    : _priv(make_unique<details>())
 {
     _priv->w_mutex = CreateMutex(NULL, FALSE, NULL);
     _ASSERTE(_priv->w_mutex != NULL);
@@ -247,6 +262,7 @@ void sleep(int milliseconds)
     Sleep(milliseconds);
 }
 
+#pragma warning(disable : 4740)
 int ftoi(float value)
 {
     int i;
@@ -257,28 +273,28 @@ int ftoi(float value)
         mov  edx,4278190080; //clear reg edx;
         and  eax,edx; //and acc to retrieve the exponent
         shr  eax,24;
-        sub  eax,7fh; //subtract 7fh(127) to get the actual power 
+        sub  eax,7fh; //subtract 7fh(127) to get the actual power
         mov  edx,eax; //save acc val power
         mov  eax,ebx; //retrieve from ebx
         rcl  eax,8; //trim the left 8 bits that contain the power
         mov  ebx,eax; //store
         mov  ecx, 1fh; //subtract 17 h
-        sub  ecx,edx; 
+        sub  ecx,edx;
         mov  edx,00000000h;
         cmp  ecx,0;
         je   loop2;
         shr  eax,1;
-        or   eax,80000000h;        
-loop1:    
+        or   eax,80000000h;
+loop1:
         shr  eax,1; //shift (total bits - power bits);
         sub  ecx,1;
         add  edx,1;
         cmp  ecx,0;
         ja   loop1;
-loop2:  
+loop2:
         mov  i, eax;
 
-        //check sign +/-        
+        //check sign +/-
         mov  eax,value;
         and  eax,80000000h;
         cmp  eax,80000000h;
