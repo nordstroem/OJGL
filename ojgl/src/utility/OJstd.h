@@ -99,7 +99,7 @@ public:
     unique_ptr& operator=(unique_ptr<T>&& other)
     {
         if (this == &other) {
-            return;
+            return *this;
         }
 
         if (_ptr != nullptr) {
@@ -483,7 +483,7 @@ public:
         _v.unlock();
     }
 
-    lock_guard& operator=(lock_guard other) = delete;
+    lock_guard& operator=(const lock_guard other) = delete;
 
 private:
     T& _v;

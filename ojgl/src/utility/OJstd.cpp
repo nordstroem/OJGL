@@ -98,7 +98,7 @@ bool string::operator==(const string& other) const
 
 bool string::operator!=(const string& other) const
 {
-    return !operator==(other);
+    return !(*this == other);
 }
 
 string& string::operator=(const string& other)
