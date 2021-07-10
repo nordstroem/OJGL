@@ -1,6 +1,8 @@
 #include "Window.h"
-#include <utility/Log.h>
 #include "winapi/gl_loader.h"
+#include <iostream>
+#include <sstream>
+#include <utility/Log.h>
 #include <windows.h>
 
 namespace ojgl {
@@ -257,6 +259,11 @@ LONG WINAPI Window::Details::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 Vector2i Window::size() const
 {
     return _priv->_size;
+}
+
+void* Window::hdcBackend() const
+{
+    return _priv->_hDC;
 }
 
 } // namespace ojgl

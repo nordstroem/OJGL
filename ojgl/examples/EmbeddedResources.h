@@ -96,6 +96,14 @@ namespace ojgl::resources {
           },
 
           {
+#include "shaders/common/radial_blur.fs"
+          , "common/radial_blur.fs"
+          },
+          {
+  #include "shaders/common/fade.fs"
+          , "common/fade.fs"
+          },
+          {
 #include "shaders/QED/raymarch_utils.fs"
             , "QED/raymarch_utils.fs"
           },
@@ -193,8 +201,57 @@ namespace ojgl::resources {
           {
 #include "shaders/innersystemlab/hospital.fs"
             , "innersystemlab/hospital.fs"
-          }
+          },
+                          {
+#include "shaders/edison2021/raymarch_settings.fs"
+            , "edison2021/raymarch_settings.fs"
+          },
 
+          {
+#include "shaders/edison2021/main.fs"
+            , "edison2021/main.fs"
+          },
+
+          {
+#include "shaders/edison2021/main2.fs"
+            , "edison2021/main2.fs"
+          },
+          {
+#include "shaders/edison2021/tunnel_base.fs"
+            , "edison2021/tunnel_base.fs"
+          },
+          {
+#include "shaders/edison2021/bird.fs"
+          , "edison2021/bird.fs"
+          },
+          {
+#include "shaders/edison2021/pipes.fs"
+          , "edison2021/pipes.fs"
+          },
+          {
+#include "shaders/edison2021/blob.fs"
+          , "edison2021/blob.fs"
+          },
+          {
+#include "shaders/edison2021/introText.fs"
+          , "edison2021/introText.fs"
+          },
+          {
+#include "shaders/edison2021/wire_cube.fs"
+          , "edison2021/wire_cube.fs"
+          },
+          {
+#include "shaders/edison2021/tunnel_transform.fs"
+          , "edison2021/tunnel_transform.fs"
+          },
+          {
+#include "shaders/edison2021/plane.fs"
+          , "edison2021/plane.fs"
+          },
+          {
+#include "shaders/edison2021/chrom_ab.fs"
+          , "edison2021/chrom_ab.fs"
+          },
   };
 // clang-format on
 }

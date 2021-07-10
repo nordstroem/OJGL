@@ -61,12 +61,13 @@ void GLState::render()
 
     auto t = Duration::milliseconds(0);
     const auto elapsed = elapsedTime();
+    const float elapsedSeconds = elapsed.toSeconds<float>();
     const float sceneTime = relativeSceneTime().toSeconds<float>();
     for (auto& v : _scenes) {
         if (elapsed < v.duration() + t) {
-            v.render(sceneTime);
+            v.render(sceneTime, elapsedSeconds);
             _mainBuffer->setInputs(v.outputBuffer());
-            _mainBuffer->render(sceneTime);
+            _mainBuffer->render(sceneTime, elapsedSeconds);
             break;
         }
         t = t + v.duration();

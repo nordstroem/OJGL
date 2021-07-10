@@ -19,6 +19,7 @@ public:
     Vector2i getCursorPosition() const;
     void setTitle(const ojstd::string& title);
     Vector2i size() const;
+    void* hdcBackend() const;
 
 public:
     static constexpr int KEY_LEFT = 37;

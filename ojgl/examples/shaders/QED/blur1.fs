@@ -1,6 +1,4 @@
 R""(
-#version 430
-
 uniform vec2 blurDir;
 
 in vec2 fragCoord;

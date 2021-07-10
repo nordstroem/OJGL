@@ -1,7 +1,9 @@
 #include "EmbeddedResources.h"
 #include "FreeCameraController.h"
+#include "TextRenderer.hpp"
 #include "demo/Demo.h"
 #include "demos/DodensTriumf.h"
+#include "demos/Edison2021.h"
 #include "demos/Eldur.h"
 #include "demos/InnerSystemLab.h"
 #include "demos/QED.h"
@@ -16,8 +18,8 @@
 #include "utility/ShaderReader.h"
 
 #ifdef RENDERDOC
-#include <windows.h>
 #include "renderdoc_app.h"
+#include <windows.h>
 
 RENDERDOC_API_1_1_2* renderdocApi = nullptr;
 #endif
@@ -29,7 +31,8 @@ enum class DemoType {
     Eldur,
     InnerSystemLab,
     QED,
-    Template
+    Template,
+    Edison2021
 };
 
 ojstd::shared_ptr<Demo> getDemo(DemoType type)
@@ -45,6 +48,8 @@ ojstd::shared_ptr<Demo> getDemo(DemoType type)
         return ojstd::make_shared<InnerSystemLab>();
     case DemoType::Template:
         return ojstd::make_shared<Template>();
+    case DemoType::Edison2021:
+        return ojstd::make_shared<Edison2021>();
     }
 
     _ASSERTE(false);
@@ -55,13 +60,13 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
 {
 
 #ifdef RENDERDOC
-  if (HMODULE mod = GetModuleHandleA("renderdoc.dll")) {
-      pRENDERDOC_GetAPI RENDERDOC_GetAPI = (pRENDERDOC_GetAPI)GetProcAddress(mod, "RENDERDOC_GetAPI");
-      const int ret = RENDERDOC_GetAPI(eRENDERDOC_API_Version_1_1_2, (void**)&renderdocApi);
-      _ASSERTE(ret == 1);
-  }
+    if (HMODULE mod = GetModuleHandleA("renderdoc.dll")) {
+        pRENDERDOC_GetAPI RENDERDOC_GetAPI = (pRENDERDOC_GetAPI)GetProcAddress(mod, "RENDERDOC_GetAPI");
+        const int ret = RENDERDOC_GetAPI(eRENDERDOC_API_Version_1_1_2, (void**)&renderdocApi);
+        _ASSERTE(ret == 1);
+    }
 #endif
-    const auto popupData = popup::show();
+    popup::Data popupData = popup::show();
 
     const Vector2i windowSize(popupData.width, popupData.height);
     const bool fullScreen = popupData.full;
@@ -71,8 +76,10 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
     for (const auto& [content, path] : resources::shaders)
         ShaderReader::preLoad(path, content);
 
-    const auto demo = getDemo(DemoType::QED);
+    const auto demo = getDemo(DemoType::Edison2021);
     Window window(windowSize, demo->getTitle(), fullScreen, showCursor);
+    TextRenderer::instance().setHDC(window.hdcBackend());
+
     GLState glState(window, *demo);
 
     while (!glState.end() && !window.isClosePressed()) {
@@ -114,8 +121,8 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
                 break;
 
             case Window::KEY_P:
-              captureFrame = true;
-              break;
+                captureFrame = true;
+                break;
 
             case Window::KEY_C:
                 const FreeCameraController& c = FreeCameraController::instance();
@@ -126,10 +133,9 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
             }
         }
 
-
 #ifdef RENDERDOC
         if (renderdocApi && captureFrame) {
-          renderdocApi->StartFrameCapture(nullptr, nullptr);
+            renderdocApi->StartFrameCapture(nullptr, nullptr);
         }
 #endif
 
@@ -137,7 +143,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
 
 #ifdef RENDERDOC
         if (renderdocApi && captureFrame) {
-          renderdocApi->EndFrameCapture(nullptr, nullptr);
+            renderdocApi->EndFrameCapture(nullptr, nullptr);
         }
 #endif
         timer.end();

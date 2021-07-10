@@ -147,12 +147,40 @@ Buffer& Buffer::setMeshCallback(const ojstd::function<ojstd::vector<ojstd::Pair<
     return *this;
 }
 
+Buffer& Buffer::setTextureCallback(const ojstd::function<ojstd::vector<ojstd::shared_ptr<Uniform1t>>(float)>& textureCallback)
+{
+    _textureCallback = textureCallback;
+    return *this;
+}
+
 ojstd::string Buffer::name() const
 {
     return _name;
 }
 
-void Buffer::render(float relativeSceneTime)
+#define GL_CHECK_ERROR(functionCall)          \
+    functionCall;                             \
+    {                                         \
+        GLenum error = glGetError();          \
+        if (error != GL_NO_ERROR) {           \
+            _ASSERTE(false);                  \
+            LOG_ERROR("GL Error: " << error); \
+        }                                     \
+    }
+
+#define GL_CHECK_LOG(functionCall, id, logFunction, errorStr)                       \
+    functionCall;                                                                   \
+    if (param == GL_FALSE) {                                                        \
+        LOG_ERROR(errorStr);                                                        \
+        int len;                                                                    \
+        constexpr int logSize = 200;                                                \
+        char log[logSize];                                                          \
+        logFunction(id, logSize, &len, log);                                        \
+        _ASSERT_EXPR(len <= logSize, "Could not fit entire log, increase logSize"); \
+        LOG_ERROR(log);                                                             \
+    }
+
+void Buffer::render(float relativeSceneTime, float absoluteTime)
 {
     if (ShaderReader::modified(_vertexPath) || ShaderReader::modified(_fragmentPath)) {
         loadShader();
@@ -162,46 +190,59 @@ void Buffer::render(float relativeSceneTime)
     if (_hasRendered && _renderOnce)
         return;
 
-    // Render to the next buffer.
-    auto& currentFBO = pushNextFBO();
-    glBindFramebuffer(GL_FRAMEBUFFER, currentFBO.fboID());
-    glViewport(_viewportOffset.x, _viewportOffset.y, _width, _height);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    if (_depthTestEnabled) {
-        glEnable(GL_DEPTH_TEST);
-    } else {
-        glDisable(GL_DEPTH_TEST);
+    {
+        GLint validationStatus;
+        glValidateProgram(_programID);
+        glGetProgramiv(_programID, GL_VALIDATE_STATUS, &validationStatus);
+        if (validationStatus == GL_FALSE) {
+            // If e.g. a shader fails to compile, the program won't be valid.
+            // So break early to avoid errors further down in this function.
+            return;
+        }
     }
 
-    glUseProgram(_programID);
+    // Render to the next buffer.
+    auto& currentFBO = pushNextFBO();
+    GL_CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, currentFBO.fboID()));
+    GL_CHECK_ERROR(glViewport(_viewportOffset.x, _viewportOffset.y, _width, _height));
+    GL_CHECK_ERROR(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
+    if (_depthTestEnabled) {
+        GL_CHECK_ERROR(glEnable(GL_DEPTH_TEST));
+    } else {
+        GL_CHECK_ERROR(glDisable(GL_DEPTH_TEST));
+    }
+
+    GL_CHECK_ERROR(glUseProgram(_programID));
 
     int currentTextureID = 0;
     for (int i = 0, textureUniformID = 0; i < _inputs.size(); i++) {
         auto textureIDs = _inputs[i]->currentFBO().fboTextureIDs();
         for (int j = 0; j < textureIDs.size(); j++) {
             auto uniform = "inTexture" + ojstd::to_string(textureUniformID);
-            glUniform1i(glGetUniformLocation(_programID, uniform.c_str()), currentTextureID);
-            glActiveTexture(GL_TEXTURE0 + currentTextureID);
-            glBindTexture(GL_TEXTURE_2D, textureIDs[j]);
+            GL_CHECK_ERROR(glUniform1i(glGetUniformLocation(_programID, uniform.c_str()), currentTextureID));
+            GL_CHECK_ERROR(glActiveTexture(GL_TEXTURE0 + currentTextureID));
+            GL_CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, textureIDs[j]));
             currentTextureID++;
             textureUniformID++;
         }
     }
 
-    for (auto [location, texture] : _textures) {
-        glUniform1i(glGetUniformLocation(_programID, location.c_str()), currentTextureID);
-        glActiveTexture(GL_TEXTURE0 + currentTextureID);
-        glBindTexture(GL_TEXTURE_2D, texture->textureID());
-        currentTextureID++;
+    if (_textureCallback) {
+        for (const auto& texture : _textureCallback(relativeSceneTime)) {
+            GL_CHECK_ERROR(glUniform1i(glGetUniformLocation(_programID, texture->location().c_str()), currentTextureID));
+            GL_CHECK_ERROR(glActiveTexture(GL_TEXTURE0 + currentTextureID));
+            GL_CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, texture->textureID()));
+            currentTextureID++;
+        }
     }
 
     for (int i = 0, textureUniformID = 0; i < _feedbackInputs.size(); i++) {
         auto textureIDs = _feedbackInputs[i]->previousFBO().fboTextureIDs();
         for (int j = 0; j < textureIDs.size(); j++) {
             auto uniform = "feedbackTexture" + ojstd::to_string(textureUniformID);
-            glUniform1i(glGetUniformLocation(_programID, uniform.c_str()), currentTextureID);
-            glActiveTexture(GL_TEXTURE0 + currentTextureID);
-            glBindTexture(GL_TEXTURE_2D, textureIDs[j]);
+            GL_CHECK_ERROR(glUniform1i(glGetUniformLocation(_programID, uniform.c_str()), currentTextureID));
+            GL_CHECK_ERROR(glActiveTexture(GL_TEXTURE0 + currentTextureID));
+            GL_CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, textureIDs[j]));
             currentTextureID++;
             textureUniformID++;
         }
@@ -218,22 +259,25 @@ void Buffer::render(float relativeSceneTime)
             uniform->setUniform(_programID);
         }
     }
-    glUniform1f(glGetUniformLocation(_programID, "iTime"), relativeSceneTime);
-    glUniform2f(glGetUniformLocation(_programID, "iResolution"), static_cast<GLfloat>(_width), static_cast<GLfloat>(_height));
+
+    GL_CHECK_ERROR(glUniform1f(glGetUniformLocation(_programID, "iTime"), relativeSceneTime));
+    GL_CHECK_ERROR(glUniform1f(glGetUniformLocation(_programID, "iAbsoluteTime"), absoluteTime));
+    GL_CHECK_ERROR(glUniform2f(glGetUniformLocation(_programID, "iResolution"), static_cast<GLfloat>(_width), static_cast<GLfloat>(_height)));
 
     for (const auto& mesh : _meshes) {
-        glBindVertexArray(mesh.first->vaoID());
-        glUniformMatrix4fv(glGetUniformLocation(_programID, "M"), 1, false, mesh.second.data());
-        if (mesh.first->usesIndices())
-            glDrawElements(GL_TRIANGLES, mesh.first->verticesCount(), GL_UNSIGNED_INT, nullptr);
-        else
-            glDrawArrays(GL_TRIANGLES, 0, mesh.first->verticesCount());
+        GL_CHECK_ERROR(glBindVertexArray(mesh.first->vaoID()));
+        GL_CHECK_ERROR(glUniformMatrix4fv(glGetUniformLocation(_programID, "M"), 1, false, mesh.second.data()));
+        if (mesh.first->usesIndices()) {
+            GL_CHECK_ERROR(glDrawElements(GL_TRIANGLES, mesh.first->verticesCount(), GL_UNSIGNED_INT, nullptr));
+        } else {
+            GL_CHECK_ERROR(glDrawArrays(GL_TRIANGLES, 0, mesh.first->verticesCount()));
+        }
     }
 
-    glBindVertexArray(0);
+    GL_CHECK_ERROR(glBindVertexArray(0));
 
-    glUseProgram(0);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    GL_CHECK_ERROR(glUseProgram(0));
+    GL_CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 
     _hasRendered = true;
 }
@@ -263,70 +307,60 @@ void Buffer::generateFBO(bool isOutputBuffer)
 
 void Buffer::loadShader()
 {
-    if (_programID != 0)
-        glDeleteProgram(_programID);
+    _ASSERTE(glGetError() == GL_NO_ERROR);
+    if (glIsProgram(_programID)) {
+        GL_CHECK_ERROR(glDeleteProgram(_programID));
+    }
 
     _programID = glCreateProgram();
+    _ASSERTE(_programID != 0);
+
     int vertID = glCreateShader(GL_VERTEX_SHADER);
     int fragID = glCreateShader(GL_FRAGMENT_SHADER);
-    int vertexShaderLength = ShaderReader::get(_vertexPath).length();
-    auto vertexChar = ShaderReader::get(_vertexPath).c_str();
-    glShaderSource(vertID, 1, &vertexChar, &vertexShaderLength);
 
-    int fragmentShaderLength = ShaderReader::get(_fragmentPath).length();
-    auto fragmentChar = ShaderReader::get(_fragmentPath).c_str();
-    glShaderSource(fragID, 1, &fragmentChar, &fragmentShaderLength);
-    glCompileShader(vertID);
     GLint param;
-    glGetShaderiv(vertID, GL_COMPILE_STATUS, &param);
-    if (param == GL_FALSE) {
-        LOG_ERROR("Failed to compile vertex shader!");
-        int len;
-        char log[200];
-        glGetShaderInfoLog(fragID, 200, &len, log);
-        LOG_ERROR(log);
-    }
 
-    glCompileShader(fragID);
-    glGetShaderiv(fragID, GL_COMPILE_STATUS, &param);
-    if (param == GL_FALSE) {
-        LOG_ERROR("Failed to compile fragment shader!");
-        int len;
-        char log[200];
-        glGetShaderInfoLog(fragID, 200, &len, log);
-        LOG_ERROR(log);
-    }
+    // Vertex shader
+    ojstd::string vertexShader = "#version 430\n" + ShaderReader::get(_vertexPath);
+    int vertexShaderLength = vertexShader.length();
+    auto vertexChar = vertexShader.c_str();
+    GL_CHECK_ERROR(glShaderSource(vertID, 1, &vertexChar, &vertexShaderLength));
+    GL_CHECK_ERROR(glCompileShader(vertID));
+    GL_CHECK_LOG(glGetShaderiv(vertID, GL_COMPILE_STATUS, &param), vertID, glGetShaderInfoLog, "Failed to compile vertex shader!");
 
+    // Fragment shader
+    ojstd::string fragmentShader = "#version 430\n" + ShaderReader::get(_fragmentPath);
+    int fragmentShaderLength = fragmentShader.length();
+    auto fragmentChar = fragmentShader.c_str();
+    GL_CHECK_ERROR(glShaderSource(fragID, 1, &fragmentChar, &fragmentShaderLength));
+    GL_CHECK_ERROR(glCompileShader(fragID));
+    GL_CHECK_LOG(glGetShaderiv(fragID, GL_COMPILE_STATUS, &param), fragID, glGetShaderInfoLog, "Failed to compile fragment shader!");
+
+    // Attach shaders
     glAttachShader(_programID, vertID);
     glAttachShader(_programID, fragID);
-    glLinkProgram(_programID);
-    glValidateProgram(_programID);
-    glGetProgramiv(_programID, GL_VALIDATE_STATUS, &param);
 
-    if (param == GL_FALSE) {
-        LOG_ERROR("Shader program is not valid!");
-        int len;
-        char log[200];
-        glGetShaderInfoLog(fragID, 200, &len, log);
-        LOG_ERROR(log);
-    }
+    // Link program
+    GL_CHECK_ERROR(glLinkProgram(_programID));
+    GL_CHECK_LOG(glGetProgramiv(_programID, GL_LINK_STATUS, &param), _programID, glGetProgramInfoLog, "Shader program linking did not succeed.");
+
+    // Validate program
+    GL_CHECK_ERROR(glValidateProgram(_programID));
+    GL_CHECK_LOG(glGetProgramiv(_programID, GL_VALIDATE_STATUS, &param), _programID, glGetProgramInfoLog, "Shader program is not valid!");
 
     //Delete the shaders
-    glDetachShader(_programID, vertID);
-    glDetachShader(_programID, fragID);
-    glDeleteShader(vertID);
-    glDeleteShader(fragID);
+    GL_CHECK_ERROR(glDetachShader(_programID, vertID));
+    GL_CHECK_ERROR(glDetachShader(_programID, fragID));
+    GL_CHECK_ERROR(glDeleteShader(vertID));
+    GL_CHECK_ERROR(glDeleteShader(fragID));
 }
+
+#undef GL_CHECK_ERROR
+#undef GL_CHECK_LOG
 
 int inline Buffer::numOutTextures()
 {
     return _numOutTextures;
-}
-
-Buffer& Buffer::operator<<(const Uniform1t& b)
-{
-    _textures[b.location()] = ojstd::make_shared<Uniform1t>(b);
-    return *this;
 }
 
 void Buffer::insertMesh(const ojstd::shared_ptr<Mesh>& mesh, const Matrix& modelMatrix)

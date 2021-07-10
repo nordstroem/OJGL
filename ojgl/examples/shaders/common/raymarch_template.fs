@@ -1,5 +1,4 @@
 R""(
-#version 430
 #include "common/noise.fs"
 #include "common/primitives.fs"
 #include "common/raymarch_settings.fs"

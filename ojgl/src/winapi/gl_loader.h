@@ -75,6 +75,8 @@ int load_gl_functions();
 #define glValidateProgram ((PFNGLVALIDATEPROGRAMPROC)gl_function_pointers[60])
 #define glUniform1fv ((PFNGLUNIFORM1FVPROC)gl_function_pointers[61])
 #define glUniform2f ((PFNGLUNIFORM2FPROC)gl_function_pointers[62])
+#define glGetProgramInfoLog ((PFNGLGETPROGRAMINFOLOGPROC)gl_function_pointers[63])
+#define glIsProgram ((PFNGLISPROGRAMPROC)gl_function_pointers[64])
 
 #ifdef DEBUG
 extern void* gl_debug_function_pointers[];

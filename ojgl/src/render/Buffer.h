@@ -28,6 +28,7 @@ public:
     Buffer& setViewportOffset(const Vector2i& viewportOffset);
     Buffer& setUniformCallback(const ojstd::function<UniformVector(float)>& uniformCallback);
     Buffer& setMeshCallback(const ojstd::function<ojstd::vector<ojstd::Pair<ojstd::shared_ptr<Mesh>, Matrix>>(float)>& meshCallback);
+    Buffer& setTextureCallback(const ojstd::function<ojstd::vector<ojstd::shared_ptr<Uniform1t>>(float)>& textureCallback);
 
     template <typename... T>
     Buffer& setInputs(T... inputs)
@@ -43,7 +44,7 @@ public:
     }
     ojstd::string name() const;
     void generateFBO(bool isOutputBuffer = false);
-    void render(float relativeSceneTime);
+    void render(float relativeSceneTime, float absoluteTime);
     void insertMesh(const ojstd::shared_ptr<Mesh>& mesh, const Matrix& modelMatrix);
     void clearMeshes();
 
@@ -53,8 +54,6 @@ public:
     auto end() { return _inputs.end(); }
     auto end() const { return _inputs.cend(); }
     auto cend() const { return _inputs.cend(); }
-
-    Buffer& operator<<(const Uniform1t& b);
 
     static BufferPtr construct(unsigned width, unsigned height, const ojstd::string& vertexPath, const ojstd::string& fragmentPath);
 
@@ -105,8 +104,8 @@ private:
 
     ojstd::function<UniformVector(float)> _uniformCallback;
     ojstd::function<ojstd::vector<ojstd::Pair<ojstd::shared_ptr<Mesh>, Matrix>>(float)> _meshCallback;
+    ojstd::function<ojstd::vector<ojstd::shared_ptr<Uniform1t>>(float)> _textureCallback;
 
-    ojstd::unordered_map<ojstd::string, ojstd::shared_ptr<Uniform1t>> _textures;
     ojstd::vector<ojstd::Pair<ojstd::shared_ptr<Mesh>, Matrix>> _meshes;
 };
 

@@ -197,7 +197,7 @@ string to_string(int i)
     _ASSERTE(i >= 0);
     string s;
     do {
-        char c[2] = { '0' + static_cast<char>(i % 10), '\0' };
+        const char c[2] = { '0' + static_cast<char>(i % 10), '\0' };
         s = string(c) + s;
         i /= 10;
     } while (i != 0);

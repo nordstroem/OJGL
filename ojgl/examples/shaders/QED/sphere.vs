@@ -1,5 +1,4 @@
 R""(
-#version 430
 #include "common/noise.fs"
 
 layout (location = 0) in vec3 position;

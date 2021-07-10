@@ -1,5 +1,6 @@
 #include "gl_loader.h"
 #include "Windows.h"
+#include <crtdbg.h>
 
 void* GetAnyGLFuncAddress(const char* name)
 {
@@ -75,12 +76,14 @@ const char* gl_function_names[] = {
     "glDetachShader",
     "glValidateProgram",
     "glUniform1fv",
-    "glUniform2f"
+    "glUniform2f",
+    "glGetProgramInfoLog",
+    "glIsProgram"
 };
 
 void* gl_function_pointers[sizeof(gl_function_names) / sizeof(const char*)];
 
-#ifdef DEBUG
+#ifdef _DEBUG
 const char* gl_debug_function_names[] = {
     "glGetTextureParameteriv",
     "glDetachShader",
@@ -102,20 +105,23 @@ int load_gl_functions()
         void* ptr = GetAnyGLFuncAddress(name);
         gl_function_pointers[i] = ptr;
         if (ptr == NULL) {
-#ifdef DEBUG
-            trace("Failed to load GL func '%s'", name);
+#ifdef _DEBUG
+            // Do not assert on mising AMD specific functions
+            if (name != "glDebugMessageCallbackAMD" && name != "glDebugMessageEnableAMD" && name != "glDebugMessageInsertAMD" && name != "glGetDebugMessageLogAMD") {
+                _ASSERT_EXPR(false, "Failed to load GL func");
+            }
 #endif
             failed++;
         }
     }
 
-#ifdef DEBUG
+#ifdef _DEBUG
     for (int i = 0; i < sizeof(gl_debug_function_names) / sizeof(const char*); i++) {
         const char* name = gl_debug_function_names[i];
         void* ptr = GetAnyGLFuncAddress(name);
         gl_debug_function_pointers[i] = ptr;
         if (ptr == NULL) {
-            trace("Failed to load debug GL func '%s'", name);
+            _ASSERT_EXPR(false, "Failed to load debug GL func");
             failed++;
         }
     }
