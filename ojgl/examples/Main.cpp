@@ -68,10 +68,6 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
 #endif
     popup::Data popupData = popup::show();
 
-    /*popupData.width = 1280;
-    popupData.height = 720;
-    popupData.full = false;*/
-
     const Vector2i windowSize(popupData.width, popupData.height);
     const bool fullScreen = popupData.full;
     const bool showCursor = !fullScreen;
