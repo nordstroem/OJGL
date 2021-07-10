@@ -1,7 +1,7 @@
-#pragma once
+﻿#pragma once
+#include <crtdbg.h>
 #include <cstring>
 #include <utility>
-#include <crtdbg.h>
 
 namespace ojstd {
 

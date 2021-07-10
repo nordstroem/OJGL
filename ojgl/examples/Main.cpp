@@ -1,4 +1,4 @@
-#include "EmbeddedResources.h"
+﻿#include "EmbeddedResources.h"
 #include "FreeCameraController.h"
 #include "TextRenderer.hpp"
 #include "demo/Demo.h"
@@ -11,6 +11,7 @@
 #include "utility/Macros.h"
 #include "utility/OJstd.h"
 #include "utility/ShaderReader.h"
+#include "utility/ShaderString.h"
 
 #ifdef RENDERDOC
 #include "renderdoc_app.h"
@@ -32,7 +33,7 @@ enum class DemoType {
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
 {
-
+    /*
 #ifdef RENDERDOC
     if (HMODULE mod = GetModuleHandleA("renderdoc.dll")) {
         pRENDERDOC_GetAPI RENDERDOC_GetAPI = (pRENDERDOC_GetAPI)GetProcAddress(mod, "RENDERDOC_GetAPI");
@@ -42,9 +43,6 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
 #endif
     popup::Data popupData = popup::show();
 
-    /*popupData.width = 1280;
-    popupData.height = 720;
-    popupData.full = false;*/
 
     const Vector2i windowSize(popupData.width, popupData.height);
     const bool fullScreen = popupData.full;
@@ -133,6 +131,10 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
         window.setTitle(debugTitle);
 #endif
     }
+    */
+
+    ShaderString s("kek");
+    auto k = s.parse("examples/test.fs");
 }
 
 extern "C" int _tmain(int argc, char** argv)
