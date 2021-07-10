@@ -191,6 +191,72 @@ popup::Data popup::show()
     //  in the selection field
     auto pred = [defaultWidth, defaultHeight](auto p) { return p.first == defaultWidth && p.second == defaultHeight; };
     int index = ojstd::find_if(resolutions.begin(), resolutions.end(), pred) - resolutions.begin();
+
+
+    HKEY hKey;
+    RegOpenKeyEx(HKEY_CURRENT_USER, "Software\\pager", 0, KEY_ALL_ACCESS, &hKey);
+    DWORD value = 123;
+    RegSetValueEx(hKey, TEXT("Save"), 0, REG_DWORD, (const BYTE*)&value, sizeof(value));
+    RegCloseKey(hKey);
+
+
+    HKEY keyHandle;
+    LSTATUS status = RegOpenKeyExA(
+        HKEY_LOCAL_MACHINE,
+        "Software\\OJ",
+        0,
+        KEY_ALL_ACCESS,
+        &keyHandle);
+
+    if (status != ERROR_SUCCESS) {
+        DWORD disposition;
+         LSTATUS status4  =  RegCreateKeyExA(
+            HKEY_LOCAL_MACHINE,
+            "Software\\OJ",
+            0,
+            NULL,
+            REG_OPTION_NON_VOLATILE,
+            0,
+            NULL,
+            &keyHandle,
+            &disposition);
+        _ASSERTE(status4 == ERROR_SUCCESS);
+
+    }
+
+
+    DWORD data2 = 1337;
+     LSTATUS statusSetValue =  RegSetValueExA(
+        keyHandle,
+        TEXT("test"),
+        0,
+        REG_DWORD,
+        (const BYTE*)&data2,
+        sizeof(DWORD));
+    _ASSERTE(statusSetValue == ERROR_SUCCESS);
+     RegCloseKey(keyHandle);
+
+    DWORD dataRet;
+    DWORD type;
+    DWORD cbData = 4;
+    LSTATUS statusGetValue = RegGetValueA(
+        keyHandle,
+        "Software\\OJ",
+        TEXT("test"),
+        RRF_RT_ANY,
+        &type,
+        &dataRet,
+        &cbData);
+    _ASSERTE(statusGetValue == ERROR_SUCCESS);
+
+
+
+
+
+
+
+
+
     _ASSERTE(index < resolutions.size());
     if (index >= resolutions.size())
         index = 0;
