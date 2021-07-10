@@ -305,9 +305,14 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="examples\demos\DodensTriumf.cpp" />
     <ClCompile Include="examples\demos\Edison2021.cpp" />
+    <ClCompile Include="examples\demos\Eldur.cpp" />
+    <ClCompile Include="examples\demos\QED.cpp" />
+    <ClCompile Include="examples\demos\Template.cpp" />
     <ClCompile Include="examples\FreeCameraController.cpp" />
     <ClCompile Include="examples\Main.cpp" />
+    <ClCompile Include="examples\demos\InnerSystemLab.cpp" />
     <ClCompile Include="examples\TextRenderer.cpp" />
     <ClCompile Include="src\music\Music.cpp" />
     <ClCompile Include="src\music\SyncChannel.cpp" />
@@ -328,7 +333,12 @@
     <ClCompile Include="src\winapi\gl_loader.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="examples\demos\DodensTriumf.h" />
     <ClInclude Include="examples\demos\Edison2021.h" />
+    <ClInclude Include="examples\demos\Eldur.h" />
+    <ClInclude Include="examples\demos\QED.h" />
+    <ClInclude Include="examples\demos\Template.h" />
+    <ClInclude Include="examples\demos\InnerSystemLab.h" />
     <ClInclude Include="examples\renderdoc_app.h" />
     <ClInclude Include="examples\TextRenderer.hpp" />
     <ClInclude Include="src\demo\Demo.h" />
@@ -363,26 +373,64 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\edison_shaders\wire_cube.fs" />
-    <None Include="..\..\..\song.inc" />
     <None Include="examples\shaders\common\fade.fs" />
     <None Include="examples\shaders\common\radial_blur.fs" />
+    <None Include="examples\shaders\dodenstriumf\graveScene.fs" />
+    <None Include="examples\shaders\dodenstriumf\graveScenePost.fs" />
+    <None Include="examples\shaders\dodenstriumf\introScene.fs" />
+    <None Include="examples\shaders\dodenstriumf\post.fs" />
+    <None Include="examples\shaders\dodenstriumf\roomScene.fs" />
+    <None Include="examples\shaders\dodenstriumf\roomScenePost.fs" />
+    <None Include="examples\shaders\edison2021\bird.fs" />
     <None Include="examples\shaders\edison2021\blob.fs" />
     <None Include="examples\shaders\edison2021\plane.fs" />
     <None Include="examples\shaders\edison2021\introText.fs" />
+    <None Include="examples\shaders\edison2021\main.fs" />
+    <None Include="examples\shaders\edison2021\main2.fs" />
     <None Include="examples\shaders\edison2021\pipes.fs" />
     <None Include="examples\shaders\edison2021\chrom_ab.fs" />
     <None Include="examples\shaders\edison2021\raymarch_settings.fs" />
     <None Include="examples\shaders\edison2021\tunnel_transform.fs" />
+    <None Include="examples\shaders\edison2021\wire_cube.fs" />
     <None Include="examples\shaders\edison2021\tunnel_base.fs" />
+    <None Include="examples\shaders\experiments\cachedGeometry.fs" />
     <None Include="examples\shaders\common\noise.fs" />
     <None Include="examples\shaders\common\primitives.fs" />
     <None Include="examples\shaders\common\quad.vs" />
     <None Include="examples\shaders\common\raymarch_settings.fs" />
+    <None Include="examples\shaders\common\raymarch_template.fs" />
     <None Include="examples\shaders\common\raymarch_utils.fs" />
     <None Include="examples\shaders\common\utils.fs" />
     <None Include="examples\shaders\common\fxaa.fs" />
     <None Include="examples\shaders\common\fxaa.vs" />
-    <None Include="examples\songs\edison_2021_song.inc" />
+    <None Include="examples\shaders\eldur\lavaIntro.fs" />
+    <None Include="examples\shaders\eldur\lavaScene2.fs" />
+    <None Include="examples\shaders\experiments\lightning.fs" />
+    <None Include="examples\shaders\eldur\mountain.fs" />
+    <None Include="examples\shaders\eldur\mountainNoise.fs" />
+    <None Include="examples\shaders\eldur\mountainPost.fs" />
+    <None Include="examples\shaders\eldur\outro.fs" />
+    <None Include="examples\shaders\eldur\post.fs" />
+    <None Include="examples\shaders\innersystemlab\edison_1.fs" />
+    <None Include="examples\shaders\innersystemlab\edison_1_post.fs" />
+    <None Include="examples\shaders\innersystemlab\edison_2.fs" />
+    <None Include="examples\shaders\innersystemlab\edison_planets.fs" />
+    <None Include="examples\shaders\innersystemlab\hospital.fs" />
+    <None Include="examples\shaders\QED\blur1.fs" />
+    <None Include="examples\shaders\QED\post.fs" />
+    <None Include="examples\shaders\QED\rayMarch.fs" />
+    <None Include="examples\shaders\QED\rayMarch.vs" />
+    <None Include="examples\shaders\QED\raymarch_utils.fs" />
+    <None Include="examples\shaders\QED\raymarch_utils_tower.fs" />
+    <None Include="examples\shaders\experiments\smoke.fs" />
+    <None Include="examples\shaders\experiments\smoke.vs" />
+    <None Include="examples\shaders\QED\sphere.fs" />
+    <None Include="examples\shaders\QED\sphere.vs" />
+    <None Include="examples\shaders\QED\tower.fs" />
+    <None Include="examples\songs\dodenstriumf_song.inc" />
+    <None Include="examples\songs\eldur_song.inc" />
+    <None Include="examples\songs\innersystemlab_song.inc" />
+    <None Include="examples\songs\qed_song.inc" />
     <None Include="src\render\shaders\passThrough.fs" />
     <None Include="src\render\shaders\passThrough.vs" />
   </ItemGroup>
