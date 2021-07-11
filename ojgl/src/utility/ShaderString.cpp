@@ -75,7 +75,7 @@ ojstd::string ShaderString::parse(const ojstd::string& path) const
         while (rawFile[nameEnd] != '"')
             nameEnd++;
 
-        cutOffs.push_back(nameStart + 1);
+        cutOffs.push_back(includePos);
         cutOffs.push_back(nameEnd);
 
         int includeStringLength = includeKeyword.length() + nameEnd - nameStart + 2;
@@ -88,25 +88,27 @@ ojstd::string ShaderString::parse(const ojstd::string& path) const
         includes.push_back(std::move(include));
 
         offset += includeStringLength;
+        searchPos = nameEnd - 1;
     }
     cutOffs.push_back(totalLength);
 
-    /* _ASSERTE(cutOffs.size() % 2 == 0);
+    for (int i = 0; i < cutOffs.size(); i++) {
+        LOG_INFO(cutOffs[i]);
+    }
+    _ASSERTE(cutOffs.size() % 2 == 0);
 
     char* strippedBaseFile = (char*)malloc(sizeof(char) * (totalLength - offset + 1));
     _ASSERTE(strippedBaseFile != nullptr);
     strippedBaseFile[totalLength - offset] = '\0';
 
-    int currentPosition = 0;
     int charsWritten = 0;
     for (int i = 0; i < cutOffs.size(); i += 2) {
         int startPosition = cutOffs[i];
         int endPosition = cutOffs[i + 1];
-        memcpy(&strippedBaseFile[charsWritten], &rawFile.c_str()[currentPosition], startPosition - currentPosition);
-        currentPosition = endPosition;
+        memcpy(&strippedBaseFile[charsWritten], &rawFile.c_str()[startPosition], endPosition - startPosition);
+        charsWritten += endPosition - startPosition;
     }
 
     LOG_INFO(strippedBaseFile);
     return ojstd::string(std::move(strippedBaseFile));
-    */
 }
