@@ -1,4 +1,4 @@
-#include "GLState.h"
+﻿#include "GLState.h"
 #include "Uniform.hpp"
 #include "music/Music.h"
 #include "utility/Log.h"
@@ -6,40 +6,41 @@
 #include "utility/Timepoint.h"
 #include "winapi/gl_loader.h"
 
+#ifdef _DEBUG
+#include "thirdparty/stb_image_write.h"
+#endif
+
 namespace ojgl {
 
-static ojstd::shared_ptr<Buffer> buildPassthroughBuffer(const Vector2i& windowSize, const Vector2i& sceneSize)
+static ojstd::shared_ptr<Buffer> buildPassthroughBuffer(const Vector2i& windowSize, const Vector2i& sceneSize, bool isOutputBuffer)
 {
-    ojstd::string fragment {
-#include "shaders/passThrough.fs"
-    };
-    ojstd::string vertex {
-#include "shaders/passThrough.vs"
-    };
-    ShaderReader::preLoad("render/shaders/passThrough.fs", fragment);
-    ShaderReader::preLoad("render/shaders/passThrough.vs", vertex);
-
-    auto buffer = Buffer::construct(sceneSize.x, sceneSize.y, "render/shaders/passThrough.vs", "render/shaders/passThrough.fs");
+    auto buffer = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "common/passThrough.fs");
     buffer->setViewportOffset((windowSize - sceneSize) / 2);
-    buffer->generateFBO(true); //@todo: make it possible to remove this line.
+    buffer->generateFBO(isOutputBuffer); //@todo: make it possible to remove this line.
     return buffer;
 }
 
-GLState::GLState(const Window& window, const ojstd::shared_ptr<Demo>& demo)
+GLState::GLState(const Window& window, const ojstd::shared_ptr<Demo>& demo, bool saveFrames)
     : _demo(demo)
+    , _saveFrames(saveFrames)
 {
     const Vector2i sceneSize = window.size().cropToAspectRatio(demo->getAspectRatio());
-    _mainBuffer = buildPassthroughBuffer(window.size(), sceneSize);
+    _mainBuffer = buildPassthroughBuffer(window.size(), sceneSize, true);
     _scenes = demo->buildSceneGraph(sceneSize);
 
     if (const auto* song = demo->getSong()) {
-        Music::createInstance(song);
+        Music::createInstance(song, saveFrames);
         Music::instance()->play();
         _clock = Clock::Music;
     }
 
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     _systemClockStartTime = Timepoint::now();
+
+    if (saveFrames) {
+        _outputImageData = static_cast<unsigned char*>(malloc(3 * _mainBuffer->size().x * _mainBuffer->size().y)); // RGB
+        _saveBuffer = buildPassthroughBuffer(window.size(), sceneSize, false);
+    }
 }
 
 bool GLState::end() const
@@ -76,6 +77,56 @@ void GLState::render()
 
     glFlush();
     glFinish();
+
+    if (_saveFrames) {
+        this->saveFrame();
+    }
+}
+
+void GLState::saveFrame() const
+{
+#ifdef _DEBUG
+    auto t = Duration::milliseconds(0);
+    for (auto& v : _scenes) {
+        if (elapsedTime() < v.duration() + t) {
+            _saveBuffer->setInputs(v.outputBuffer());
+            _saveBuffer->render(relativeSceneTime().toSeconds(), elapsedTime().toSeconds());
+            break;
+        }
+        t = t + v.duration();
+    }
+
+    const int w = _saveBuffer->size().x;
+    const int h = _saveBuffer->size().y;
+    glBindFramebuffer(GL_FRAMEBUFFER, _saveBuffer->currentFBO().fboID());
+    glReadPixels(0, 0, w, h, GL_RGB, GL_UNSIGNED_BYTE, _outputImageData);
+    for (int y = 0; y < h / 2; y++) {
+        for (int x = 0; x < w; x++) {
+            const unsigned char r = _outputImageData[y * w * 3 + 3 * x];
+            const unsigned char g = _outputImageData[y * w * 3 + 3 * x + 1];
+            const unsigned char b = _outputImageData[y * w * 3 + 3 * x + 2];
+
+            _outputImageData[y * w * 3 + 3 * x] = _outputImageData[(h - y - 1) * w * 3 + 3 * x];
+            _outputImageData[y * w * 3 + 3 * x + 1] = _outputImageData[(h - y - 1) * w * 3 + 3 * x + 1];
+            _outputImageData[y * w * 3 + 3 * x + 2] = _outputImageData[(h - y - 1) * w * 3 + 3 * x + 2];
+
+            _outputImageData[(h - y - 1) * w * 3 + 3 * x] = r;
+            _outputImageData[(h - y - 1) * w * 3 + 3 * x + 1] = g;
+            _outputImageData[(h - y - 1) * w * 3 + 3 * x + 2] = b;
+        }
+    }
+    const int padding = 4 - (_currentFrame == 0 ? 0 : static_cast<int>(std::log10(_currentFrame)));
+
+    ojstd::string padString = "";
+    for (int i = 0; i < padding; i++) {
+        padString = padString + "0";
+    }
+    const ojstd::string fileName = ojstd::string("output_images/img") + padString + ojstd::to_string(_currentFrame) + ojstd::string(".tga");
+    const int ret = stbi_write_tga(fileName.c_str(), w, h, 3, _outputImageData);
+    _ASSERTE(ret);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+#endif
 }
 
 Scene& GLState::operator[](size_t i) const
@@ -94,10 +145,11 @@ void GLState::update()
 {
     this->_demo->update(this->relativeSceneTime(), this->elapsedTime(), currentScene());
     this->render();
-    if (!this->isPaused())
+    if (!this->isPaused()) {
         if (Music::instance() != nullptr)
             Music::instance()->updateSync();
-
+        _currentFrame++;
+    }
     // Clear meshes
     for (auto& v : _scenes) {
         auto buffers = v.buffers();
@@ -210,4 +262,4 @@ ojstd::string GLState::currentScene() const
     return "";
 }
 
-} //namespace ojgl
+} // namespace ojgl

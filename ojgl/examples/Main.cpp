@@ -73,6 +73,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
 #endif
     popup::Data popupData = popup::show();
 
+    bool saveFrames = false;
     const Vector2i windowSize(popupData.width, popupData.height);
     const bool fullScreen = popupData.full;
     const bool showCursor = !fullScreen;
@@ -85,7 +86,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
     Window window(windowSize, demo->getTitle(), fullScreen, showCursor);
     TextRenderer::instance().setHDC(window.hdcBackend());
 
-    GLState glState(window, demo);
+    GLState glState(window, demo, saveFrames);
 
     while (!glState.end() && !window.isClosePressed()) {
         Timer timer;
