@@ -313,6 +313,7 @@
     <ClCompile Include="examples\FreeCameraController.cpp" />
     <ClCompile Include="examples\Main.cpp" />
     <ClCompile Include="examples\TextRenderer.cpp" />
+    <ClCompile Include="src\thirdparty\StbImage.cpp" />
     <ClCompile Include="src\utility\Spline3.cpp" />
     <ClCompile Include="src\music\Music.cpp" />
     <ClCompile Include="src\music\SyncChannel.cpp" />
@@ -337,6 +338,7 @@
     <ClInclude Include="examples\demos\Template.h" />
     <ClInclude Include="examples\renderdoc_app.h" />
     <ClInclude Include="examples\TextRenderer.hpp" />
+    <ClInclude Include="src\thirdparty\stb_image_write.h" />
     <ClInclude Include="src\utility\Spline3.h" />
     <ClInclude Include="src\demo\Demo.h" />
     <ClInclude Include="examples\EmbeddedResources.h" />

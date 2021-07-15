@@ -4,6 +4,11 @@
 namespace ojgl::resources {
 // clang-format off
   ojstd::vector<ojstd::Pair<ojstd::string, ojstd::string>> shaders = {
+      
+          {
+  #include "shaders/common/passThrough.fs"
+          , "common/passThrough.fs"
+          },
 
           {
   #include "shaders/common/noise.fs"

@@ -47,6 +47,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
     }
 #endif
 
+    bool saveFrames = true;
 #ifdef _DEBUG
     const Vector2i windowSize(1920, 1080);
     const bool fullScreen = false;
@@ -65,7 +66,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
     Window window(windowSize, demo->getTitle(), fullScreen, showCursor);
     TextRenderer::instance().setHDC(window.hdcBackend());
 
-    GLState glState(window, demo);
+    GLState glState(window, demo, saveFrames);
 
     while (!glState.end() && !window.isClosePressed()) {
         Timer timer;
