@@ -16,7 +16,7 @@ public:
     ~Music();
 
     static ojstd::shared_ptr<Music> instance();
-    static void createInstance(const unsigned char* song);
+    static void createInstance(const unsigned char* song, bool fixedTimestep);
 
     void play();
     void updateSync();
@@ -26,7 +26,7 @@ public:
     ojstd::unordered_map<int, SyncChannel>& syncChannels();
 
 private:
-    explicit Music(const unsigned char* song);
+    explicit Music(const unsigned char* song, bool fixedTimestep);
 
 private:
     ojstd::shared_ptr<V2MPlayer> _player;
@@ -34,6 +34,8 @@ private:
     const unsigned char* _song;
     Duration _syncOffset;
     ojstd::unordered_map<int, SyncChannel> _syncChannels;
+    int _currentFrame = 0;
+    bool _fixedTimestep = false;
 };
 
 } //namespace ojgl

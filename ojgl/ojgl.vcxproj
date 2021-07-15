@@ -113,7 +113,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SAVE_FRAMES;WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>false</MinimalRebuild>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -329,6 +329,7 @@
     <ClCompile Include="src\utility\Duration.cpp" />
     <ClCompile Include="src\utility\OJstd.cpp" />
     <ClCompile Include="src\utility\ShaderReader.cpp" />
+    <ClCompile Include="src\thirdparty\StbImage.cpp" />
     <ClCompile Include="src\utility\Timepoint.cpp" />
     <ClCompile Include="src\winapi\gl_loader.cpp" />
   </ItemGroup>
@@ -364,6 +365,7 @@
     <ClInclude Include="src\utility\Macros.h" />
     <ClInclude Include="src\utility\OJstd.h" />
     <ClInclude Include="src\utility\ShaderReader.h" />
+    <ClInclude Include="src\thirdparty\stb_image_write.h" />
     <ClInclude Include="src\utility\Timepoint.h" />
     <ClInclude Include="src\utility\Timer.hpp" />
     <ClInclude Include="src\utility\Vector.h" />
@@ -431,8 +433,7 @@
     <None Include="examples\songs\eldur_song.inc" />
     <None Include="examples\songs\innersystemlab_song.inc" />
     <None Include="examples\songs\qed_song.inc" />
-    <None Include="src\render\shaders\passThrough.fs" />
-    <None Include="src\render\shaders\passThrough.vs" />
+    <None Include="examples\shaders\common\passThrough.fs" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="src\thirdparty\libv2.lib" />

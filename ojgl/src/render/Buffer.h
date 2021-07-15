@@ -74,13 +74,16 @@ private:
         ojstd::vector<unsigned int> _fboTextureIDs;
     };
 
+public:
+    const FBO& currentFBO() const;
+    Vector2i size() const { return Vector2i(_width, _height); }
+
 private:
     Buffer(unsigned width, unsigned height, const ojstd::string& vertexPath, const ojstd::string& fragmentPath);
     void loadShader();
     int numOutTextures();
     static int getNumberOfInputs(const ojstd::vector<BufferPtr>& inputs);
     const FBO& pushNextFBO();
-    const FBO& currentFBO() const;
     const FBO& previousFBO() const;
 
 private:

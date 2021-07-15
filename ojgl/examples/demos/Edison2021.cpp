@@ -1,4 +1,4 @@
-#include "Edison2021.h"
+﻿#include "Edison2021.h"
 #include "FreeCameraController.h"
 #include "TextRenderer.hpp"
 #include "music/Music.h"
@@ -65,7 +65,6 @@ ojstd::vector<Scene> Edison2021::buildSceneGraph(const Vector2i& sceneSize) cons
         });
 
         fade->setInputs(chrom);
-
 
         scenes.emplace_back(fade, Duration::seconds(29), "raymarchScene");
 

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Scene.h"
 #include "Window.h"
@@ -16,7 +16,7 @@ enum class Clock {
 
 class GLState {
 public:
-    GLState(const Window& window, const Demo& demo);
+    GLState(const Window& window, const Demo& demo, bool saveFrames);
     GLState(const GLState& other) = delete;
     GLState& operator=(const GLState& other) = delete;
 
@@ -46,6 +46,11 @@ private:
     bool _paused = false;
     Clock _clock = Clock::System;
     ojstd::shared_ptr<Buffer> _mainBuffer;
+    int _currentFrame = 0;
+    bool _saveFrames;
+
+    mutable unsigned char* _outputImageData;
+    ojstd::shared_ptr<Buffer> _saveBuffer;
 };
 
 } // namespace ojgl
