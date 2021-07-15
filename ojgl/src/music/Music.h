@@ -34,6 +34,7 @@ private:
     const unsigned char* _song;
     Duration _syncOffset;
     ojstd::unordered_map<int, SyncChannel> _syncChannels;
+    int _currentFrame = 0;
 };
 
 } //namespace ojgl

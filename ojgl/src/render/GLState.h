@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Scene.h"
 #include "Window.h"
@@ -11,7 +11,8 @@ namespace ojgl {
 
 enum class Clock {
     System,
-    Music
+    Music,
+    FixedTimestep // 1/60 s per frame for now
 };
 
 class GLState {
@@ -46,6 +47,9 @@ private:
     bool _paused = false;
     Clock _clock = Clock::System;
     ojstd::shared_ptr<Buffer> _mainBuffer;
+    int _currentFrame = 0;
+    mutable uint8_t* _outputImageData;
+    mutable uint8_t* _outputImageData2;
 };
 
 } // namespace ojgl

@@ -1,4 +1,4 @@
-#include "Music.h"
+﻿#include "Music.h"
 #include "V2MPlayer.h"
 #include "utility/Log.h"
 #include "utility/OJstd.h"
@@ -29,7 +29,7 @@ ojstd::shared_ptr<Music> Music::instance()
 void Music::createInstance(const unsigned char* song)
 {
     if (music != nullptr) {
-      _ASSERT_EXPR(false, "Music already created");
+        _ASSERT_EXPR(false, "Music already created");
     }
     music = ojstd::shared_ptr<Music>(new Music(song));
 }
@@ -81,13 +81,17 @@ void Music::updateSync()
     for (auto& kv : _syncChannels) {
         kv.second.tick(time);
     }
+    _currentFrame++;
 }
 
 Duration Music::elapsedTime() const
 {
+
     // @todo verify this formula.
-    long ms = ojstd::ftoi(dsGetCurSmp() * 1000.f / (44100.f * 4.f));
+    /* long ms = ojstd::ftoi(dsGetCurSmp() * 1000.f / (44100.f * 4.f));
     return Duration::milliseconds(ms) + _syncOffset;
+    */
+    return Duration(1000 * _currentFrame / 60);
 }
 
 void Music::stop()

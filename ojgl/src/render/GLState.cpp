@@ -1,9 +1,10 @@
-#include "GLState.h"
+﻿#include "GLState.h"
 #include "Uniform.hpp"
 #include "music/Music.h"
 #include "utility/Log.h"
 #include "utility/ShaderReader.h"
 #include "utility/Timepoint.h"
+#include "utility/stb_image_write.h"
 #include "winapi/gl_loader.h"
 
 namespace ojgl {
@@ -37,8 +38,12 @@ GLState::GLState(const Window& window, const Demo& demo)
         _clock = Clock::Music;
     }
 
+    _clock = Clock::FixedTimestep;
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     _systemClockStartTime = Timepoint::now();
+
+    _outputImageData = (uint8_t*)malloc(3 * window.size().x * window.size().y); // RGB
+    _outputImageData2 = (uint8_t*)malloc(3 * window.size().x * window.size().y); // RGB
 }
 
 bool GLState::end() const
@@ -57,8 +62,8 @@ bool GLState::end() const
 
 void GLState::render()
 {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     auto t = Duration::milliseconds(0);
     const auto elapsed = elapsedTime();
     const float elapsedSeconds = elapsed.toSeconds<float>();
@@ -75,6 +80,26 @@ void GLState::render()
 
     glFlush();
     glFinish();
+
+    if (true || _currentFrame == 0) {
+        auto w1 = Timepoint::now();
+        constexpr int w = 1920;
+        constexpr int h = 1080;
+        glReadPixels(0, 0, 1920, 1080, GL_RGB, GL_UNSIGNED_BYTE, _outputImageData);
+        auto w2 = Timepoint::now();
+        for (int y = 0; y < h; y++) {
+            for (int x = 0; x < w; x++) {
+                _outputImageData2[y * w * 3 + 3 * x] = _outputImageData[(h - y - 1) * w * 3 + 3 * x];
+                _outputImageData2[y * w * 3 + 3 * x + 1] = _outputImageData[(h - y - 1) * w * 3 + 3 * x + 1];
+                _outputImageData2[y * w * 3 + 3 * x + 2] = _outputImageData[(h - y - 1) * w * 3 + 3 * x + 2];
+            }
+        }
+        auto w3 = Timepoint::now();
+
+        ojstd::string x = ojstd::string("output_images/i_") + ojstd::to_string(_currentFrame) + ojstd::string(".tga");
+        stbi_write_tga(x.c_str(), 1920, 1080, 3, _outputImageData2);
+        auto w4 = Timepoint::now();
+    }
 }
 
 Scene& GLState::operator[](size_t i) const
@@ -92,10 +117,11 @@ Scene& GLState::operator[](const ojstd::string& name) const
 void GLState::update()
 {
     this->render();
-    if (!this->isPaused())
+    if (!this->isPaused()) {
         if (Music::instance() != nullptr)
             Music::instance()->updateSync();
-
+        _currentFrame++;
+    }
     // Clear meshes
     for (auto& v : _scenes) {
         auto buffers = v.buffers();
@@ -110,9 +136,11 @@ Duration GLState::elapsedTime() const
         return _pauseTime;
     if (_clock == Clock::System) {
         return Timepoint::now() - _systemClockStartTime;
-    } else {
+    } else if (_clock == Clock::Music) {
         // @todo assert that the DirectSound is active.
         return Music::instance()->elapsedTime();
+    } else {
+        return Duration(1000 * _currentFrame / 60);
     }
 }
 
