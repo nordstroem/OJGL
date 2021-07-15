@@ -110,8 +110,8 @@ void GLState::render()
         for (int i = 0; i < padding; i++) {
             padString = padString + "0";
         }
-        ojstd::string x = ojstd::string("output_images/img") + padString + ojstd::to_string(_currentFrame) + ojstd::string(".png");
-        stbi_write_png(x.c_str(), 1920, 1080, 3, _outputImageData2, 1920 * 3);
+        ojstd::string x = ojstd::string("output_images/img") + padString + ojstd::to_string(_currentFrame) + ojstd::string(".tga");
+        stbi_write_tga(x.c_str(), 1920, 1080, 3, _outputImageData2);
         auto w4 = Timepoint::now();
     }
 }
