@@ -48,8 +48,8 @@ private:
     Clock _clock = Clock::System;
     ojstd::shared_ptr<Buffer> _mainBuffer;
     int _currentFrame = 0;
-    mutable uint8_t* _outputImageData;
-    mutable uint8_t* _outputImageData2;
+    mutable unsigned char* _outputImageData;
+    mutable unsigned char* _outputImageData2;
 };
 
 } // namespace ojgl

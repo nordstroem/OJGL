@@ -96,8 +96,22 @@ void GLState::render()
         }
         auto w3 = Timepoint::now();
 
-        ojstd::string x = ojstd::string("output_images/i_") + ojstd::to_string(_currentFrame) + ojstd::string(".tga");
-        stbi_write_tga(x.c_str(), 1920, 1080, 3, _outputImageData2);
+        int padding = 0;
+        if (_currentFrame < 10)
+            padding = 4;
+        else if (_currentFrame < 100)
+            padding = 3;
+        else if (_currentFrame < 1000)
+            padding = 2;
+        else if (_currentFrame < 10000)
+            padding = 1;
+
+        ojstd::string padString = "";
+        for (int i = 0; i < padding; i++) {
+            padString = padString + "0";
+        }
+        ojstd::string x = ojstd::string("output_images/img") + padString + ojstd::to_string(_currentFrame) + ojstd::string(".png");
+        stbi_write_png(x.c_str(), 1920, 1080, 3, _outputImageData2, 1920 * 3);
         auto w4 = Timepoint::now();
     }
 }
