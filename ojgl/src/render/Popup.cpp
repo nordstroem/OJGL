@@ -202,7 +202,7 @@ popup::Data popup::show()
 
     HKEY keyHandle;
     LSTATUS status = RegOpenKeyExA(
-        HKEY_LOCAL_MACHINE,
+        HKEY_CURRENT_USER,
         "Software\\OJ",
         0,
         KEY_ALL_ACCESS,
@@ -211,7 +211,7 @@ popup::Data popup::show()
     if (status != ERROR_SUCCESS) {
         DWORD disposition;
          LSTATUS status4  =  RegCreateKeyExA(
-            HKEY_LOCAL_MACHINE,
+            HKEY_CURRENT_USER,
             "Software\\OJ",
             0,
             NULL,
@@ -234,13 +234,13 @@ popup::Data popup::show()
         (const BYTE*)&data2,
         sizeof(DWORD));
     _ASSERTE(statusSetValue == ERROR_SUCCESS);
-     RegCloseKey(keyHandle);
+     //RegCloseKey(keyHandle);
 
     DWORD dataRet;
     DWORD type;
     DWORD cbData = 4;
     LSTATUS statusGetValue = RegGetValueA(
-        keyHandle,
+        HKEY_CURRENT_USER,//keyHandle,
         "Software\\OJ",
         TEXT("test"),
         RRF_RT_ANY,
