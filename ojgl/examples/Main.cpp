@@ -66,7 +66,21 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
         _ASSERTE(ret == 1);
     }
 #endif
-    popup::Data popupData = popup::show();
+
+#ifdef SAVE_FRAMES
+    const bool saveFrames = true;
+#else
+    const bool saveFrames = false;
+#endif
+
+    popup::Data popupData;
+    if (saveFrames) {
+        popupData.width = 1920;
+        popupData.height = 1080;
+        popupData.full = false;
+    } else {
+        popupData = popup::show();
+    }
 
     const Vector2i windowSize(popupData.width, popupData.height);
     const bool fullScreen = popupData.full;
@@ -80,7 +94,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
     Window window(windowSize, demo->getTitle(), fullScreen, showCursor);
     TextRenderer::instance().setHDC(window.hdcBackend());
 
-    GLState glState(window, *demo);
+    GLState glState(window, *demo, saveFrames);
 
     while (!glState.end() && !window.isClosePressed()) {
         Timer timer;

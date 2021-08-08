@@ -11,13 +11,12 @@ namespace ojgl {
 
 enum class Clock {
     System,
-    Music,
-    FixedTimestep // 1/60 s per frame for now
+    Music
 };
 
 class GLState {
 public:
-    GLState(const Window& window, const Demo& demo);
+    GLState(const Window& window, const Demo& demo, bool saveFrames);
     GLState(const GLState& other) = delete;
     GLState& operator=(const GLState& other) = delete;
 
@@ -48,8 +47,10 @@ private:
     Clock _clock = Clock::System;
     ojstd::shared_ptr<Buffer> _mainBuffer;
     int _currentFrame = 0;
+    bool _saveFrames;
+
     mutable unsigned char* _outputImageData;
-    mutable unsigned char* _outputImageData2;
+    ojstd::shared_ptr<Buffer> _saveBuffer;
 };
 
 } // namespace ojgl

@@ -7,7 +7,7 @@
 
 namespace ojgl {
 
-Music::Music(const unsigned char* song)
+Music::Music(const unsigned char* song, bool fixedTimestep)
     : _song(song)
     , _player(ojstd::make_shared<V2MPlayer>())
 {
@@ -26,12 +26,12 @@ ojstd::shared_ptr<Music> Music::instance()
     return music;
 }
 
-void Music::createInstance(const unsigned char* song)
+void Music::createInstance(const unsigned char* song, bool fixedTimestep)
 {
     if (music != nullptr) {
         _ASSERT_EXPR(false, "Music already created");
     }
-    music = ojstd::shared_ptr<Music>(new Music(song));
+    music = ojstd::shared_ptr<Music>(new Music(song, fixedTimestep));
 }
 
 void Music::play()
@@ -86,12 +86,13 @@ void Music::updateSync()
 
 Duration Music::elapsedTime() const
 {
-
-    // @todo verify this formula.
-    /* long ms = ojstd::ftoi(dsGetCurSmp() * 1000.f / (44100.f * 4.f));
-    return Duration::milliseconds(ms) + _syncOffset;
-    */
-    return Duration(1000 * _currentFrame / 60);
+    if (_fixedTimestep) {
+        return Duration(1000 * _currentFrame / 60);
+    } else {
+        // @todo verify this formula.
+        long ms = ojstd::ftoi(dsGetCurSmp() * 1000.f / (44100.f * 4.f));
+        return Duration::milliseconds(ms) + _syncOffset;
+    }
 }
 
 void Music::stop()
