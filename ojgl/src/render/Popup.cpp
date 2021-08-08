@@ -191,6 +191,35 @@ popup::Data popup::show()
     //  in the selection field
     auto pred = [defaultWidth, defaultHeight](auto p) { return p.first == defaultWidth && p.second == defaultHeight; };
     int index = ojstd::find_if(resolutions.begin(), resolutions.end(), pred) - resolutions.begin();
+
+#ifdef  _DEBUG
+    const ojstd::string registrySubkey = "Software\\OJ";
+    const ojstd::string registryKey = "resolution_index";
+
+    // Try to read the last used resolution index from the registry
+    {
+        DWORD savedIndex;
+        DWORD type;
+        DWORD cbData = sizeof(savedIndex);
+        const LSTATUS status = RegGetValueA(
+            HKEY_CURRENT_USER,
+            registrySubkey.c_str(),
+            registryKey.c_str(),
+            RRF_RT_ANY,
+            &type,
+            &savedIndex,
+            &cbData);
+
+        if (status == ERROR_SUCCESS) {
+            _ASSERTE(type == REG_DWORD);
+            index = static_cast<int>(savedIndex);
+        }
+        else {
+            _ASSERTE(status == ERROR_FILE_NOT_FOUND);
+        }
+    }
+#endif //  _DEBUG
+
     _ASSERTE(index < resolutions.size());
     if (index >= resolutions.size())
         index = 0;
@@ -210,6 +239,43 @@ popup::Data popup::show()
     data.full = callbackData.full;
     data.width = resolutions[callbackData.reslistindex].first;
     data.height = resolutions[callbackData.reslistindex].second;
+
+#ifdef  _DEBUG
+    {
+        HKEY keyHandle;
+
+        // Create key if it doesn't exist, otherwise open it
+        {
+            DWORD disposition;
+            const LSTATUS status  =  RegCreateKeyExA(
+                HKEY_CURRENT_USER,
+                registrySubkey.c_str(),
+                0,
+                NULL,
+                REG_OPTION_NON_VOLATILE,
+                KEY_ALL_ACCESS,
+                NULL,
+                &keyHandle,
+                &disposition);
+            _ASSERTE(status == ERROR_SUCCESS || disposition == REG_OPENED_EXISTING_KEY);
+        }
+
+         // Save the selected resolution index into the registry
+        {
+            const DWORD resolutionIndex = static_cast<DWORD>(callbackData.reslistindex);
+            const LSTATUS status =  RegSetValueExA(
+                keyHandle,
+                registryKey.c_str(),
+                0,
+                REG_DWORD,
+                (const BYTE*)&resolutionIndex,
+                sizeof(DWORD));
+            _ASSERTE(status == ERROR_SUCCESS);
+        }
+
+        RegCloseKey(keyHandle);
+    }
+#endif //  _DEBUG
 
     return data;
 }
