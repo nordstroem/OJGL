@@ -252,6 +252,14 @@ namespace ojgl::resources {
 #include "shaders/edison2021/chrom_ab.fs"
           , "edison2021/chrom_ab.fs"
           },
+          {
+#include "shaders/edison2022/raymarch_settings.fs"
+          , "edison2022/raymarch_settings.fs"
+          },
+          {
+#include "shaders/edison2022/experiment.fs"
+          , "edison2022/experiment.fs"
+          },
   };
 // clang-format on
 }

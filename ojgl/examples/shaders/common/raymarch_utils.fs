@@ -62,9 +62,9 @@ vec3 march(in vec3 rayOrigin, in vec3 rayDirection)
     float transmittance = 1.0;
     float reflectionModifier = 1.0;
     vec3 resultColor = vec3(0.0);
-
+    int jump = 0;
 #if S_REFLECTIONS
-    for (int jump = 0; jump < S_reflectionJumps; jump++) {
+    for (; jump < S_reflectionJumps; jump++) {
 #endif
         for (int steps = 0; steps < S_maxSteps; ++steps) {
             vec3 p = rayOrigin + t * rayDirection;
