@@ -308,6 +308,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="examples\demos\Edison2022.cpp" />
     <ClCompile Include="examples\demos\DodensTriumf.cpp" />
     <ClCompile Include="examples\demos\Edison2021.cpp" />
     <ClCompile Include="examples\demos\Eldur.cpp" />
@@ -336,6 +337,7 @@
     <ClCompile Include="src\winapi\gl_loader.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="examples\demos\Edison2022.h" />
     <ClInclude Include="examples\demos\DodensTriumf.h" />
     <ClInclude Include="examples\demos\Edison2021.h" />
     <ClInclude Include="examples\demos\Eldur.h" />
@@ -375,7 +377,6 @@
     <ClInclude Include="src\winapi\wglext.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\edison_shaders\wire_cube.fs" />
     <None Include="examples\shaders\common\fade.fs" />
     <None Include="examples\shaders\common\radial_blur.fs" />
     <None Include="examples\shaders\dodenstriumf\graveScene.fs" />
