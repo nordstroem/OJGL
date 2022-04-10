@@ -4,6 +4,7 @@
 #include "demo/Demo.h"
 #include "demos/DodensTriumf.h"
 #include "demos/Edison2021.h"
+#include "demos/Edison2022.h"
 #include "demos/Eldur.h"
 #include "demos/InnerSystemLab.h"
 #include "demos/QED.h"
@@ -32,7 +33,8 @@ enum class DemoType {
     InnerSystemLab,
     QED,
     Template,
-    Edison2021
+    Edison2021,
+    Edison2022
 };
 
 ojstd::shared_ptr<Demo> getDemo(DemoType type)
@@ -50,9 +52,12 @@ ojstd::shared_ptr<Demo> getDemo(DemoType type)
         return ojstd::make_shared<Template>();
     case DemoType::Edison2021:
         return ojstd::make_shared<Edison2021>();
+    case DemoType::Edison2022:
+        return ojstd::make_shared<Edison2022>();
     }
 
     _ASSERTE(false);
+
     return nullptr;
 }
 
@@ -76,7 +81,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
     for (const auto& [content, path] : resources::shaders)
         ShaderReader::preLoad(path, content);
 
-    const auto demo = getDemo(DemoType::Edison2021);
+    const auto demo = getDemo(DemoType::Edison2022);
     Window window(windowSize, demo->getTitle(), fullScreen, showCursor);
     TextRenderer::instance().setHDC(window.hdcBackend());
 
