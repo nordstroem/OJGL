@@ -154,6 +154,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
         timer.end();
 
 #ifdef _DEBUG
+        // ojstd::sleep(10);
         ojstd::string debugTitle("Frame time: ");
         debugTitle.append(ojstd::to_string(timer.elapsed().toMilliseconds<long>()));
         debugTitle.append(" ms");
