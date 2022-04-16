@@ -14,7 +14,9 @@ ojstd::vector<Scene> Edison2022::buildSceneGraph(const Vector2i& sceneSize) cons
             return vector;
         });
 
-        scenes.emplace_back(raymarch, Duration::seconds(9999), "raymarchScene");
+        auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "common/fxaa.vs", "common/fxaa.fs");
+        fxaa->setInputs(raymarch);
+        scenes.emplace_back(fxaa, Duration::seconds(9999), "fxaa");
     }
 
     return scenes;

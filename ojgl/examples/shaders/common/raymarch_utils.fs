@@ -55,6 +55,13 @@ float shadowFunction(in vec3 hitPosition, in vec3 lightPosition, float k)
 }
 
 DistanceInfo un(DistanceInfo a, DistanceInfo b) { return a.distance < b.distance ? a : b; }
+float smink( float a, float b, float k);
+
+DistanceInfo sunk(DistanceInfo a, DistanceInfo b, float k) {
+    DistanceInfo res = a.distance < b.distance ? a : b;
+    res.distance = smink(a.distance, b.distance, k);
+    return res;
+}
 
 vec3 march(in vec3 rayOrigin, in vec3 rayDirection)
 {
