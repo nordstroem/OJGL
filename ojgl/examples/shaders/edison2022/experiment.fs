@@ -56,7 +56,7 @@ DistanceInfo map(in vec3 p, bool isMarch)
     p.y -= 4.1;
     
     vec3 headColor = 20.0*vec3(0.2, 0.3, 1.0);
-    ep = 4*t;
+    ep = 4*(t+0.25);
     ep = exp(-ep*ep);
     d = sdCutHollowSphere(vec3(p.x, -p.y-3.75*ep, p.z), 5+2*ep, -1-3*ep, 0.1);
     DistanceInfo head = {d, sphereType, headColor};
