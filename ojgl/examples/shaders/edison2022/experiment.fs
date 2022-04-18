@@ -15,36 +15,63 @@ uniform mat4 iCameraMatrix;
 const int sphereType = 1;
 const int wallType = 2;
 
-DistanceInfo map(in vec3 p)
+float at = 0.0;
+float at2 = 0.0;
+
+const float pi = 3.14159256;
+
+DistanceInfo map(in vec3 p, bool isMarch)
 {
+
+    p.y += 0.5*sin(iTime);
+    p.xz *= rot(0.2*sin(iTime));
     vec3 orgPos = p;
-    p.z += 2.0;
+
     float s = 0.6;
     float px = floor((p.y-s/2)/s);
     pMod1(p.y, s);
     
     float a = pModPolar(p.xz, 6);
-    p.x-=2.5;
-    p.x -= 0.6*sin(0.3*px + 3*iTime + 2*a);
+    p.x -= 2.5;
 
-    float d2 = sdBox(orgPos - vec3(0, -3.0, 0.0), vec3(5, 8, 5));
-    float d = sdBoxFrame(p.xyz, vec3(0.3, s/2-0.01, 0.3), 0.06);
+    float t = mod(iTime, 5)-2.5;
+    float ep = 0.12*px + 4*t;
+    p.x -= 0.3*sin(0.3*px + 3*iTime + 2*a) + 2*exp(-ep*ep);
+
+
+
+    float d2 = sdBox(orgPos - vec3(0, -3.0, 0.0), vec3(8, 8, 8));
+    float r = 0.3;
+    float d = sdBoxFrame(p.xyz, vec3(r, s/2-0.01, r), 0.06);
     d = max(d2, d);
-    DistanceInfo legs = {0.5*d, sphereType};
+    vec3 legColor = 1.0*vec3(0.5, 0.5, 1.0);
+    legColor *= 0.2 + 2*psin(px*10);
+    DistanceInfo legs = {0.5*d, sphereType, legColor };
+
+    if (isMarch)
+        at += 0.015/(1.2+d*d*d);
 
     p = orgPos;
     p.x -= 0.3*sin(0.3*p.y + 3*iTime);
-    p.z += 2.0;
     p.y -= 4.1;
     
-    d = sdCutHollowSphere(vec3(p.x, -p.y, p.z), 5, -1, 0.1);
-    DistanceInfo head = {d, sphereType};
+    vec3 headColor = 20.0*vec3(0.2, 0.3, 1.0);
+    ep = 4*t;
+    ep = exp(-ep*ep);
+    d = sdCutHollowSphere(vec3(p.x, -p.y-3.75*ep, p.z), 5+2*ep, -1-3*ep, 0.1);
+    DistanceInfo head = {d, sphereType, headColor};
+    if (isMarch)
+        at += 0.5/(1.2+d*d*d);
+
     p = orgPos;
-    p.z += 2.0;
     
+
     d = sdPlane(p, vec4(0, 1, 0, 13));
-    DistanceInfo floor = {d, wallType};
+    DistanceInfo floor = {d, wallType, vec3(0)};
     DistanceInfo blob = un(head, legs);
+
+    p = orgPos;
+
     return un(floor, blob);
 }
 
@@ -57,11 +84,11 @@ vec3 eye = vec3(0);
 
 vec3 getColor(in MarchResult result)
 {
-    vec3 lightPosition = vec3(-5, 9, 7);
+    vec3 lightPosition = vec3(-5, 9, 8);
     if (result.type != invalidType) {
-        vec3 ambient = 2.0*vec3(0.5, 0.5, 1.0);
+        vec3 ambient = result.color;
         if (result.type == wallType) {
-            ambient = 1.3*vec3(0.1, 0.1, 0.3);
+            ambient = 0.3*vec3(0.1, 0.1, 0.4);
         }
         
         vec3 invLight = normalize(lightPosition - result.position);
@@ -69,10 +96,16 @@ vec3 getColor(in MarchResult result)
         float k = max(0.0, dot(result.rayDirection, reflect(invLight, normal)));
         float spec = 1 * pow(k, 50.0);
 
+        float l = length(result.position);
+        float ll = abs(result.position.y +5);
         float shadow = shadowFunction(result.position, lightPosition, 32);
-        float diffuse = max(0., dot(invLight, normal)) * (0.1 + 0.9*shadow);
+        float diffuse = max(0., dot(invLight, normal));
+        vec3 color = vec3(ambient * (0.1 + 0.96*diffuse) + 0.5*spec);
+        color += at * 1.2*vec3(0.1, 0.1, 0.3);
+        float fog = exp(-0.00015*l*l) * exp(-0.01 * ll * ll);
 
-        return vec3(ambient * (0.06 + 0.96*diffuse) + 0.1*spec);
+        color *= (0.2 + 0.8*shadow) * fog;
+        return color;
     } else {
         return vec3(0.0);
     }
@@ -92,7 +125,7 @@ void main()
     // Tone mapping
     color /= (color + vec3(1.0));
 
-    fragColor = vec4(pow(color, vec3(1.0)), 1.0);
+    fragColor = vec4(pow(color, vec3(0.5)), 1.0);
 
 }
 

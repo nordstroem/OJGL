@@ -260,6 +260,11 @@ namespace ojgl::resources {
 #include "shaders/edison2022/experiment.fs"
           , "edison2022/experiment.fs"
           },
+          {
+#include "shaders/edison2022/chrom_ab.fs"
+          , "edison2022/chrom_ab.fs"
+          },
+
   };
 // clang-format on
 }

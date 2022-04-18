@@ -16,7 +16,10 @@ ojstd::vector<Scene> Edison2022::buildSceneGraph(const Vector2i& sceneSize) cons
 
         auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "common/fxaa.vs", "common/fxaa.fs");
         fxaa->setInputs(raymarch);
-        scenes.emplace_back(fxaa, Duration::seconds(9999), "fxaa");
+
+        auto chrom = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2022/chrom_ab.fs");
+        chrom->setInputs(fxaa);
+        scenes.emplace_back(fxaa, Duration::seconds(9999), "scene0");
     }
 
     return scenes;

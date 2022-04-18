@@ -397,6 +397,7 @@
     <None Include="examples\shaders\edison2021\tunnel_transform.fs" />
     <None Include="examples\shaders\edison2021\wire_cube.fs" />
     <None Include="examples\shaders\edison2021\tunnel_base.fs" />
+    <None Include="examples\shaders\edison2022\chrom_ab.fs" />
     <None Include="examples\shaders\edison2022\experiment.fs" />
     <None Include="examples\shaders\edison2022\raymarch_settings.fs" />
     <None Include="examples\shaders\experiments\cachedGeometry.fs" />
