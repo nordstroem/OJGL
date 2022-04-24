@@ -264,6 +264,10 @@ namespace ojgl::resources {
 #include "shaders/edison2022/chrom_ab.fs"
           , "edison2022/chrom_ab.fs"
           },
+                        {
+#include "shaders/edison2022/blocks.fs"
+          , "edison2022/blocks.fs"
+          },
 
   };
 // clang-format on
