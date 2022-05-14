@@ -1,4 +1,5 @@
 #include "FreeCameraController.h"
+#include "utility/Log.h"
 
 using namespace ojgl;
 
@@ -41,6 +42,10 @@ void FreeCameraController::update(const Window& window)
         this->position.y += this->_translationSpeed;
     if (downKeys.contains(Window::KEY_X))
         this->position.y -= this->_translationSpeed;
+
+    if (downKeys.contains(Window::KEY_K)) {
+        LOG_INFO("Position: {" << this->position.x << ", " << this->position.y << ", " << this->position.z << "}, Heading: " << this->heading << ", Elevation: " << this->elevation);
+    }
 
     this->_previousCursorPosition = cursorPosition;
 }

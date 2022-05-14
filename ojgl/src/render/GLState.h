@@ -16,7 +16,7 @@ enum class Clock {
 
 class GLState {
 public:
-    GLState(const Window& window, const Demo& demo);
+    GLState(const Window& window, const ojstd::shared_ptr<Demo>& demo);
     GLState(const GLState& other) = delete;
     GLState& operator=(const GLState& other) = delete;
 
@@ -46,6 +46,7 @@ private:
     bool _paused = false;
     Clock _clock = Clock::System;
     ojstd::shared_ptr<Buffer> _mainBuffer;
+    ojstd::shared_ptr<Demo> _demo;
 };
 
 } // namespace ojgl

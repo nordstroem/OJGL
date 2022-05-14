@@ -25,10 +25,16 @@ DistanceInfo map(in vec3 p, bool isMarch)
     vec3 orgP = p;
 
 
+    float k = 0.3;
+    p.x += 10*cos(k*p.y);
+    p.z += 10*sin(k*p.y);
+    float d = length(p.xz) - 5.5;
+    float containerD = d;//= sdBoxFrame(p - vec3(0, dy, 0), vec3(10, 1+dy, 10), 1.0);
+    
+    p = orgP;
     float dy = 1.5*5;
-    float containerD = sdBoxFrame(p - vec3(0, dy, 0), vec3(10, 1+dy, 10), 1.0);
     pMod3(p, vec3(3));
-    float d = sdBoxFrame(p, vec3(1), 1);
+    d = sdBoxFrame(p, vec3(1), 1.0);
     d = max(containerD, d);
     DistanceInfo box = {d, sphereType, vec3(0.5, 0.5, 1.0)};
     if (isMarch)
@@ -36,7 +42,9 @@ DistanceInfo map(in vec3 p, bool isMarch)
 
     p = orgP;
     d = sdPlane(p, vec4(0, 1, 0, 13));
-    DistanceInfo floor = {d, wallType, vec3(0)};
+    float d2 = sdBox(p - vec3(0, -120, 0), vec3(100, 200, 100));
+    DistanceInfo walls = {-d2, sphereType, vec3(0.1, 0.1, 0.5)};
+    DistanceInfo floor = {d, wallType, vec3(0.1, 0.1, 0.5)};
 
     return un(floor, box);
 }
@@ -62,19 +70,24 @@ vec3 getColor(in MarchResult result)
         float k = max(0.0, dot(result.rayDirection, reflect(invLight, normal)));
         float spec = 1 * pow(k, 50.0);
 
-        float l = length(result.position);
-        float ll = abs(result.position.y +5);
+        float l = length(result.position.xz);
         float shadow = shadowFunction(result.position, lightPosition, 32);
         float diffuse = max(0., dot(invLight, normal));
         vec3 color = vec3(ambient * (0.1 + 0.96*diffuse) + 0.5*spec);
         color += at * 1.2*vec3(0.1, 0.1, 0.3);
-        float fog = exp(-0.00015*l*l) * exp(-0.01 * ll * ll);
+        float fog = exp(-0.00035*l*l);
 
         color *= (0.2 + 0.8*shadow) * fog;
         return color;
     } else {
-        return vec3(0.0);
+        vec3 color = vec3(0);
+        color += at * 1.2*vec3(0.1, 0.1, 0.3);
+        float l = length(result.position.xz);
+        float fog = exp(-0.00035*l*l);
+
+        return color;
     }
+
 }
 
 
