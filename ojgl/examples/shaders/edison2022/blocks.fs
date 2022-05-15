@@ -24,21 +24,20 @@ DistanceInfo map(in vec3 p, bool isMarch)
 {
     vec3 orgP = p;
 
+    p.xz *= rot(iTime);
+    pModPolar(p.xz, 15);
+    pModPolar(p.xy, 10);
+    p.x -= 3.5;
+    mo(p.xz, vec2(1.9, 0.3));
+    p.x -= 0.7;
+    mo(p.xy, vec2(1.9, 0.3));
 
-    float k = 0.3;
-    p.x += 10*cos(k*p.y);
-    p.z += 10*sin(k*p.y);
-    float d = length(p.xz) - 5.5;
-    float containerD = d;//= sdBoxFrame(p - vec3(0, dy, 0), vec3(10, 1+dy, 10), 1.0);
-    
-    p = orgP;
-    float dy = 1.5*5;
-    pMod3(p, vec3(3));
-    d = sdBoxFrame(p, vec3(1), 1.0);
-    d = max(containerD, d);
+    float d = sdBoxFrame(p, vec3(0.5), 0.13);
+
     DistanceInfo box = {d, sphereType, vec3(0.5, 0.5, 1.0)};
+
     if (isMarch)
-        at += 0.5/(1.2+d*d*d);
+        at += 0.1/(1.2+d*d*d);
 
     p = orgP;
     d = sdPlane(p, vec4(0, 1, 0, 13));
