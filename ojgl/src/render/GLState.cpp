@@ -92,6 +92,7 @@ Scene& GLState::operator[](const ojstd::string& name) const
 
 void GLState::update()
 {
+
     this->_demo->update(this->relativeSceneTime(), this->elapsedTime());
     this->render();
     if (!this->isPaused())
