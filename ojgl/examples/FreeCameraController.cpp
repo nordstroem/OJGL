@@ -5,6 +5,11 @@ using namespace ojgl;
 
 static FreeCameraController controller;
 
+FreeCameraController::FreeCameraController()
+    : _previousUpdateTime(Timepoint::now())
+{
+}
+
 FreeCameraController& FreeCameraController::instance()
 {
     return controller;
@@ -15,33 +20,36 @@ void FreeCameraController::update(const Window& window)
     Vector2i cursorPosition = { window.getCursorPosition().x, window.getCursorPosition().y };
     auto downKeys = window.getDownKeys();
 
+    float dt = (Timepoint::now() - this->_previousUpdateTime).toMilliseconds();
+    this->_previousUpdateTime = Timepoint::now();
+
     if (window.isLeftMouseButtonDown()) {
         int dx = ojstd::sign(cursorPosition.x - this->_previousCursorPosition.x);
         int dy = ojstd::sign(cursorPosition.y - this->_previousCursorPosition.y);
-        this->heading -= this->_rotationSpeed * static_cast<float>(dx);
-        this->elevation -= this->_rotationSpeed * static_cast<float>(dy);
+        this->heading -= this->_rotationSpeed * dt * static_cast<float>(dx);
+        this->elevation -= this->_rotationSpeed * dt * static_cast<float>(dy);
     }
 
     if (downKeys.contains(Window::KEY_W)) {
-        this->position.z -= this->_translationSpeed * ojstd::cos(this->heading);
-        this->position.x -= this->_translationSpeed * ojstd::sin(this->heading);
+        this->position.z -= this->_translationSpeed * dt * ojstd::cos(this->heading);
+        this->position.x -= this->_translationSpeed * dt * ojstd::sin(this->heading);
     }
     if (downKeys.contains(Window::KEY_S)) {
-        this->position.z += this->_translationSpeed * ojstd::cos(this->heading);
-        this->position.x += this->_translationSpeed * ojstd::sin(this->heading);
+        this->position.z += this->_translationSpeed * dt * ojstd::cos(this->heading);
+        this->position.x += this->_translationSpeed * dt * ojstd::sin(this->heading);
     }
     if (downKeys.contains(Window::KEY_D)) {
-        this->position.z += this->_translationSpeed * ojstd::cos(this->heading + ojstd::pi / 2.f);
-        this->position.x += this->_translationSpeed * ojstd::sin(this->heading + ojstd::pi / 2.f);
+        this->position.z += this->_translationSpeed * dt * ojstd::cos(this->heading + ojstd::pi / 2.f);
+        this->position.x += this->_translationSpeed * dt * ojstd::sin(this->heading + ojstd::pi / 2.f);
     }
     if (downKeys.contains(Window::KEY_A)) {
-        this->position.z -= this->_translationSpeed * ojstd::cos(this->heading + ojstd::pi / 2.f);
-        this->position.x -= this->_translationSpeed * ojstd::sin(this->heading + ojstd::pi / 2.f);
+        this->position.z -= this->_translationSpeed * dt * ojstd::cos(this->heading + ojstd::pi / 2.f);
+        this->position.x -= this->_translationSpeed * dt * ojstd::sin(this->heading + ojstd::pi / 2.f);
     }
     if (downKeys.contains(Window::KEY_Z))
-        this->position.y += this->_translationSpeed;
+        this->position.y += this->_translationSpeed * dt;
     if (downKeys.contains(Window::KEY_X))
-        this->position.y -= this->_translationSpeed;
+        this->position.y -= this->_translationSpeed * dt;
 
     if (downKeys.contains(Window::KEY_K)) {
         LOG_INFO("Position: {" << this->position.x << ", " << this->position.y << ", " << this->position.z << "}, Heading: " << this->heading << ", Elevation: " << this->elevation);

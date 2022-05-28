@@ -29,63 +29,24 @@ float pcurve( float x, float a, float b )
     return k*pow(x,a)*pow(1.0-x,b);
 }
 
-float grassDistance(vec3 p, float h, float w, float d) 
-{
-    float a = pModPolar(p.xz, 4);
-    p.x-=d;
-    p.x-= psin(iTime)*0.8*pow(0.15*(p.y+h), 2);
-    float x = clamp((p.y + h)/(2*h), 0, 1);
-    float r = w*max(0, pcurve(x, 0.2, 1.5));
-    return sdBox(p.zyx, vec3(r, h, 0.2));
+DistanceInfo seedDistance(vec3 p) {
+    p.y -= 5 * sin(iTime);
+    float h = 5;
+    float r = 2*clamp(pcurve((p.y + h)/(2*h), 0.0, 0.6), 0, 1);
+    float seedD = sdVerticalCapsule(p, h, r);
+    vec3 seedColor = 0.2*vec3(0.5, 0.22, 0.1);
+    DistanceInfo seed = {seedD, grassType, seedColor};
+    return seed;
 }
-
-mat2 r05 = rot(0.5);
 
 DistanceInfo map(in vec3 p, bool isMarch)
 {
     vec3 orgP = p;
-    p.y+=4;
-    float d = grassDistance(p, 10, 2, 2);
-    p.y -= 3.0;
-    p.xz *= r05;
-    float d2 = grassDistance(p, 10, 2, 1);
-    p.y -= 3.0;
-    p.xz *= r05;
-    float d3 = grassDistance(p, 10, 1, 0.6);
-    d = min(d3, min(d, d2));
-    vec3 grassColor = vec3(0.1, 0.5, 0.2);
-    
     p = orgP;
-    float d5 = sdCappedCylinder(p, vec2(0.2,10));
-    d = min(d, d5);
-
-    if (isMarch)
-        fogColor += 0.07/(1.2+d*d*d) * grassColor;
-
-
-    DistanceInfo grass = {d, grassType, grassColor};
-    
-
-    p = orgP;
-    p.y -= 10;
-    p.zy *= rot(0.5*iTime);
-    p.xy *= rot(0.6*iTime);
-    pModPolar(p.xz, 8);
-    p.x-=0.75;
-    mo(p.xy, vec2(0.1, 0.1));
-    p.y-=0.45;
-
-    vec3 flowerColor = vec3(0.8, 0.0, 0.8);
-    float d4 = sdOctahedron(p, 1.5  );
-    DistanceInfo flower = {d4, flowerType, flowerColor};
-    if (isMarch)
-        fogColor += 0.3/(1.2+d4*d4*d4) * flowerColor;
-
-    p = orgP;
-    d = sdPlane(p, vec4(0, 1, 0, 13));
-    DistanceInfo floor = {d + 0.05*noise_2(p.xz + vec2(iTime, iTime*0.2)), wallType, 0.3*vec3(0.0, 0.02, 0.05)};
-
-    return un(floor, un(grass, flower));
+    float n = fbm3_high(0.1*p, 2.0, 1.5);
+    float floorD = sdPlane(p, vec4(0, 1, 0, 13));
+    DistanceInfo floor = {floorD + n, wallType, 1.0*vec3(0.0, 0.05, 0.2)};
+    return floor;
 }
 
 float getReflectiveIndex(int type)
@@ -113,15 +74,13 @@ vec3 getColor(in MarchResult result)
         float spec = 1 * pow(k, 50.0);
 
         float l = length(result.position.xz);
-        float shadow = 1.0;
-        if (result.type == wallType)
-            shadow = shadowFunction(result.position, lightPosition, 32);
+        float shadow = 1.0;//shadowFunction(result.position, lightPosition, 32);
         float diffuse = max(0., dot(invLight, normal));
         vec3 color = vec3(ambient * (0.1 + 0.96*diffuse));
         color += fogColor;
         float fog = exp(-0.00035*l*l);
 
-        color *= (0.2 + 0.8*shadow) * fog;
+        color *= (0.2 + 0.8*shadow);
         return color;
     } else {
         vec3 color = vec3(0);
@@ -149,7 +108,7 @@ void main()
     color /= (color + vec3(1.0));
 
     fragColor = vec4(pow(color, vec3(0.5)), 1.0);
-    //fragColor = vec4(vec3(fragColor.z), 1.0);
+    //fragColor = vec4(vec3(fragColor.x), 1.0);
 
 }
 

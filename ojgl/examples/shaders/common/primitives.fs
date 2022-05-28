@@ -86,4 +86,9 @@ float sdCutHollowSphere( vec3 p, float r, float h, float t )
     return ((h*q.x<w*q.y) ? length(q-vec2(w,h)) : 
                             abs(length(q)-r) ) - t;
 }
+float sdOctahedron( vec3 p, float s)
+{
+  p = abs(p);
+  return (p.x+p.y+p.z-s)*0.57735027;
+}
 )""

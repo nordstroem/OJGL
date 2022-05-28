@@ -42,7 +42,7 @@ DistanceInfo map(in vec3 p, bool isMarch)
 
     float d2 = sdBox(orgPos - vec3(0, -3.0, 0.0), vec3(8, 8, 8));
     float r = 0.3;
-    float d = sdBoxFrame(p.xyz, vec3(r, s/2-0.01, r), 0.06);
+    float d = sdBox(p.xyz, vec3(r, s/2-0.01, r));
     d = max(d2, d);
     vec3 legColor = 1.0*vec3(0.5, 0.5, 1.0);
     legColor *= 0.2 + 2*psin(px*10);

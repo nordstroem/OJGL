@@ -272,6 +272,10 @@ namespace ojgl::resources {
 #include "shaders/edison2022/grass.fs"
           , "edison2022/grass.fs"
           },
+          {
+#include "shaders/edison2022/seed.fs"
+          , "edison2022/seed.fs"
+          },
   };
 // clang-format on
 }

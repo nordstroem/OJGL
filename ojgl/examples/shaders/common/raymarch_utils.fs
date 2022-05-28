@@ -49,7 +49,7 @@ float shadowFunction(in vec3 hitPosition, in vec3 lightPosition, float k)
         if(h < S_distanceEpsilon)
             return 0.0;
         
-        res = min( res, k*h/t );
+        res = min(res, k*h/t );
 
         t += h;
     }
