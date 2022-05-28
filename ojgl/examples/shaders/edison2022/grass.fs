@@ -26,39 +26,58 @@ float pcurve( float x, float a, float b )
     return k*pow(x,a)*pow(1.0-x,b);
 }
 
+float grassDistance(vec3 p, float h, float w, float d) 
+{
+    float a = pModPolar(p.xz, 4);
+    p.x-=d;
+    p.x-= psin(iTime)*0.8*pow(0.15*(p.y+h), 2);
+    float x = clamp((p.y + h)/(2*h), 0, 1);
+    float r = w*max(0, pcurve(x, 0.2, 1.5));
+    return sdBox(p.zyx, vec3(r, h, 0.2));
+}
+
+mat2 r05 = rot(0.5);
+
 DistanceInfo map(in vec3 p, bool isMarch)
 {
     vec3 orgP = p;
-    pModPolar(p.xz, 10);
-    p.x-=6;
-    p.x-= pow(0.15*(p.y+10), 2);
-    float x = clamp((p.y + 10)/20, 0, 1);
-    float r = 2*max(0, pcurve(x, 0.2, 1.5));
-    float d = sdBox(p.zyx, vec3(r, 10, 0.2));
-    DistanceInfo grass = {d, sphereType, vec3(1.0)};
+    p.y+=4;
+    float d = grassDistance(p, 10, 2, 2);
+    p.y -= 3.0;
+    p.xz *= r05;
+    float d2 = grassDistance(p, 10, 2, 1);
+    p.y -= 3.0;
+    p.xz *= r05;
+    float d3 = grassDistance(p, 10, 1, 0.6);
+
+    d = min(d3, min(d, d2));
+
+    
+    if (isMarch)
+        at += 0.08/(1.2+d*d*d);
+    
+    DistanceInfo grass = {d, sphereType, 0.3*vec3(0.1, 0.3, 0.2)};
+
 
     p = orgP;
     d = sdPlane(p, vec4(0, 1, 0, 13));
-    DistanceInfo floor = {d, wallType, vec3(0.1, 0.1, 0.5)};
+    DistanceInfo floor = {d + 0.03*sin(0.5*p.x) + 0.03*cos(0.9*p.z), wallType, 0.5*vec3(0.0, 0.05, 0.2)};
 
     return un(floor, grass);
 }
 
 float getReflectiveIndex(int type)
 {
-    return type == wallType ? 0.5 : 0.0;
+    return type == wallType ? 0.3 : 0.2;
 }
 
 vec3 eye = vec3(0);
 
 vec3 getColor(in MarchResult result)
 {
-    vec3 lightPosition = vec3(-8, 35, 130);
+    vec3 lightPosition = vec3(-8, 15, 20);
     if (result.type != invalidType) {
         vec3 ambient = result.color;
-        if (result.type == wallType) {
-            ambient = 0.3*vec3(0.1, 0.1, 0.4);
-        }
         
         vec3 invLight = normalize(lightPosition - result.position);
         vec3 normal = normal(result.position);
@@ -68,15 +87,15 @@ vec3 getColor(in MarchResult result)
         float l = length(result.position.xz);
         float shadow = shadowFunction(result.position, lightPosition, 32);
         float diffuse = max(0., dot(invLight, normal));
-        vec3 color = vec3(ambient * (0.1 + 0.96*diffuse) + 0.5*spec);
-        color += at * 1.2*vec3(0.1, 0.1, 0.3);
+        vec3 color = vec3(ambient * (0.1 + 0.96*diffuse));
+        color += at * vec3(0.1, 0.3, 0.2);
         float fog = exp(-0.00035*l*l);
 
         color *= (0.2 + 0.8*shadow) * fog;
         return color;
     } else {
         vec3 color = vec3(0);
-        color += at * 1.2*vec3(0.1, 0.1, 0.3);
+        //color += at * 1.2*vec3(0.1, 0.1, 0.3);
         float l = length(result.position.xz);
         float fog = exp(-0.00035*l*l);
 
