@@ -24,9 +24,11 @@ const float pi = 3.14159256;
 DistanceInfo map(in vec3 p, bool isMarch)
 {
 
-    float t = mod(iTime, 6);
-    
+    vec3 kr = pMod3(p.xyz, vec3(50,80,50));
+    float t = mod(iTime + 6*psin(noise_3(kr)), 6);
     vec3 orgPos = p;
+    p.x -= 10*noise_3(kr);
+    p.z -= 10*noise_3(kr);
     p.y += 0.5*sin(iTime);
     p.y -= 2*t + 3*floor(t / 2) + 3*smoothstep(0, 1, mod(t, 2));
     p.xz *= rot(0.2*sin(iTime));
@@ -59,6 +61,10 @@ DistanceInfo map(in vec3 p, bool isMarch)
     p.y -= 4.1;
     
     vec3 headColor = 20.0*vec3(0.2, 0.3, 1.0);
+    headColor.x *= 0.2 + 0.8*psin(10*kr.x + kr.z);
+    headColor.y *= 0.2 + 0.8*psin(3*kr.z + 10);
+    headColor.z *= 0.2 + 0.8*psin(2*kr.y + 20);
+
     ep = 4*(mod(t-1.2, 2)-1);
     ep = exp(-ep*ep);
     d = sdCutHollowSphere(vec3(p.x, -p.y-3.75*ep, p.z), 5+2*ep, -1-3*ep, 0.1);
@@ -75,12 +81,12 @@ DistanceInfo map(in vec3 p, bool isMarch)
 
     p = orgPos;
 
-    return un(floor, blob);
+    return blob;
 }
 
 float getReflectiveIndex(int type)
 {
-    return type == wallType ? 0.2 : 0.0;
+    return type == wallType ? 0.0 : 0.0;
 }
 
 vec3 eye = vec3(0);
@@ -88,6 +94,10 @@ vec3 eye = vec3(0);
 vec3 getColor(in MarchResult result)
 {
     vec3 lightPosition = vec3(-35, 30, 38);
+    float l = length(result.position);
+    float ll = abs(result.position.y +5);
+    float fog = exp(-0.00015*l*l);
+
     if (result.type != invalidType) {
         vec3 ambient = result.color;
         
@@ -96,20 +106,20 @@ vec3 getColor(in MarchResult result)
         float k = max(0.0, dot(result.rayDirection, reflect(invLight, normal)));
         float spec = 1 * pow(k, 50.0);
 
-        float l = length(result.position);
-        float ll = abs(result.position.y +5);
+
         float shadow = 1.0;
         if (result.type == wallType)
             shadow = shadowFunction(result.position, lightPosition, 32);
         float diffuse = max(0., dot(invLight, normal));
-        vec3 color = vec3(ambient * (0.03 + 0.97*diffuse));
+        vec3 color = vec3(ambient * (0.01 + 0.99*diffuse));
         color += at * 1.2*vec3(0.1, 0.1, 0.3);
-        float fog = exp(-0.00015*l*l) * exp(-0.01 * ll * ll);
 
-        color *= (0.2 + 0.8*shadow) * 1;
+        color *= (0.2 + 0.8*shadow);
         return color;
     } else {
-        return vec3(0.0);
+        vec3 color = 0.03*vec3(0.0, 0.02, 0.1);
+        color += at * 1.2*vec3(0.1, 0.1, 0.3);
+        return color;
     }
 }
 
