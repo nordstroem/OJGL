@@ -43,10 +43,8 @@ DistanceInfo map(in vec3 p, bool isMarch)
 {
     vec3 orgP = p;
     p = orgP;
-    float n = fbm3_high(0.1*p, 2.0, 1.5);
-    float floorD = sdPlane(p, vec4(0, 1, 0, 13));
-    DistanceInfo floor = {floorD + n, wallType, 1.0*vec3(0.0, 0.05, 0.2)};
-    return floor;
+    DistanceInfo seed = seedDistance(p);
+    return seed;
 }
 
 float getReflectiveIndex(int type)

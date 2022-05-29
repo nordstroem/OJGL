@@ -51,6 +51,9 @@ DistanceInfo map(in vec3 p, bool isMarch)
     float t = smoothstep(2, 15, t0);
     float r = 0.5 + 1.5*t;
     vec3 orgP = p;
+    float ns = 1 - smoothstep(2, 15, t0);
+    p.x -= ns*0.05*sin(20*iTime);
+    p.y -= ns*0.05*sin(20*iTime + 30);
     p.y+=10;
     p.y+=4 - 10*t;
     float d = grassDistance(p, 10*t, r, 2);

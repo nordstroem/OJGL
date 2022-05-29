@@ -5,17 +5,17 @@ using namespace ojgl;
 
 Edison2022::Edison2022()
 {
-    //FreeCameraController::instance().set({ 9.7f, 19.5f, 28.6f }, 0.32f, -0.5f);
+    FreeCameraController::instance().set({ 9.7f, 19.5f, 28.6f }, 0.32f, -0.5f);
 
     // experiment.fs
-    FreeCameraController::instance().set({ 30.17f, 23.19f, 34.3f }, 2.548f, -0.374f);
+    //FreeCameraController::instance().set({ 30.17f, 23.19f, 34.3f }, 2.548f, -0.374f);
 }
 
 ojstd::vector<Scene> Edison2022::buildSceneGraph(const Vector2i& sceneSize) const
 {
     ojstd::vector<Scene> scenes;
     {
-        auto raymarch = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2022/experiment.fs");
+        auto raymarch = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2022/grass.fs");
         raymarch->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
             Buffer::UniformVector vector;
             vector.push_back(ojstd::make_shared<UniformMatrix4fv>("iCameraMatrix", FreeCameraController::instance().getCameraMatrix()));
