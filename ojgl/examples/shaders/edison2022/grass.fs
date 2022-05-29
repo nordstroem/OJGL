@@ -32,8 +32,12 @@ float pcurve( float x, float a, float b )
 float grassDistance(vec3 p, float h, float w, float d) 
 {
     float a = pModPolar(p.xz, 4);
+    //p.y+= 20 - t*20;
     p.x-=d;
-    p.x-= psin(iTime)*0.8*pow(0.15*(p.y+h), 2);
+    //float t2 = smoothstep(0.5, 1.0, t);
+    //float k = -0.2 * (1-t2) + (0.8+0.2) * t2; 
+    //p.x += 0.3*pow(0.15*(p.y+h), 2);
+    p.x-= 0.8 * pow(0.15*(p.y+h), 2);
     float x = clamp((p.y + h)/(2*h), 0, 1);
     float r = w*max(0, pcurve(x, 0.2, 1.5));
     return sdBox(p.zyx, vec3(r, h, 0.2));
@@ -43,21 +47,25 @@ mat2 r05 = rot(0.5);
 
 DistanceInfo map(in vec3 p, bool isMarch)
 {
+    float t0 = mod(iTime, 20);
+    float t = smoothstep(2, 15, t0);
+    float r = 0.5 + 1.5*t;
     vec3 orgP = p;
-    p.y+=4;
-    float d = grassDistance(p, 10, 2, 2);
-    p.y -= 3.0;
+    p.y+=10;
+    p.y+=4 - 10*t;
+    float d = grassDistance(p, 10*t, r, 2);
+    p.y -= 3.0 * t;
     p.xz *= r05;
-    float d2 = grassDistance(p, 10, 2, 1);
-    p.y -= 3.0;
+    float d2 = grassDistance(p, 10*t, r, 1);
+    p.y -= 3.0 * t;
     p.xz *= r05;
-    float d3 = grassDistance(p, 10, 1, 0.6);
+    float d3 = grassDistance(p, 10*t, 1, 0.6);
     d = min(d3, min(d, d2));
     vec3 grassColor = vec3(0.1, 0.5, 0.2);
     
-    p = orgP;
-    float d5 = sdCappedCylinder(p, vec2(0.2,10));
-    d = min(d, d5);
+    //p = orgP;
+    //float d5 = sdCappedCylinder(p, vec2(0.2,10));
+    //d = min(d, d5);
 
     if (isMarch)
         fogColor += 0.07/(1.2+d*d*d) * grassColor;
@@ -65,18 +73,18 @@ DistanceInfo map(in vec3 p, bool isMarch)
 
     DistanceInfo grass = {d, grassType, grassColor};
     
-
+    t = smoothstep(8, 15, t0);
     p = orgP;
-    p.y -= 10;
+    p.y -= -15 + 25*t;
     p.zy *= rot(0.5*iTime);
     p.xy *= rot(0.6*iTime);
     pModPolar(p.xz, 8);
     p.x-=0.75;
     mo(p.xy, vec2(0.1, 0.1));
     p.y-=0.45;
-
-    vec3 flowerColor = vec3(0.8, 0.0, 0.8);
-    float d4 = sdOctahedron(p, 1.5  );
+    
+    vec3 flowerColor = vec3(0.8, 0.8, 0.1);
+    float d4 = sdOctahedron(p, 1.3 * t);
     DistanceInfo flower = {d4, flowerType, flowerColor};
     if (isMarch)
         fogColor += 0.3/(1.2+d4*d4*d4) * flowerColor;
@@ -85,7 +93,7 @@ DistanceInfo map(in vec3 p, bool isMarch)
     d = sdPlane(p, vec4(0, 1, 0, 13));
     DistanceInfo floor = {d + 0.05*noise_2(p.xz + vec2(iTime, iTime*0.2)), wallType, 0.3*vec3(0.0, 0.02, 0.05)};
 
-    return un(floor, un(grass, flower));
+    return un(floor, un(flower, grass));
 }
 
 float getReflectiveIndex(int type)
