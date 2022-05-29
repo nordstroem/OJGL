@@ -20,12 +20,17 @@ float at2 = 0.0;
 
 const float pi = 3.14159256;
 
+
 DistanceInfo map(in vec3 p, bool isMarch)
 {
 
-    p.y += 0.5*sin(iTime);
-    p.xz *= rot(0.2*sin(iTime));
+    float t = mod(iTime, 6);
+    
     vec3 orgPos = p;
+    p.y += 0.5*sin(iTime);
+    p.y -= 2*t + 3*floor(t / 2) + 3*smoothstep(0, 1, mod(t, 2));
+    p.xz *= rot(0.2*sin(iTime));
+    vec3 orgOctoP = p;
 
     float s = 0.6;
     float px = floor((p.y-s/2)/s);
@@ -34,40 +39,38 @@ DistanceInfo map(in vec3 p, bool isMarch)
     float a = pModPolar(p.xz, 6);
     p.x -= 2.5;
 
-    float t = mod(iTime, 5)-2.5;
-    float ep = 0.12*px + 4*t;
+    float ep = 0.12*px + 4*(mod(t-1.2, 2) - 1);
     p.x -= 0.3*sin(0.3*px + 3*iTime + 2*a) + 2*exp(-ep*ep);
 
 
-
-    float d2 = sdBox(orgPos - vec3(0, -3.0, 0.0), vec3(8, 8, 8));
-    float r = 0.3;
+    float d2 = sdBox(orgOctoP - vec3(0, -3.0, 0.0), vec3(8, 8, 8));
+    float r = 0.2;
     float d = sdBox(p.xyz, vec3(r, s/2-0.01, r));
     d = max(d2, d);
     vec3 legColor = 1.0*vec3(0.5, 0.5, 1.0);
-    legColor *= 0.2 + 2*psin(px*10);
+    legColor *= 0.2 + 0.5*psin(px*5);
     DistanceInfo legs = {0.5*d, sphereType, legColor };
 
     if (isMarch)
-        at += 0.015/(1.2+d*d*d);
+        at += 0.008/(1.2+d*d*d);
 
-    p = orgPos;
+    p = orgOctoP;
     p.x -= 0.3*sin(0.3*p.y + 3*iTime);
     p.y -= 4.1;
     
     vec3 headColor = 20.0*vec3(0.2, 0.3, 1.0);
-    ep = 4*(t+0.25);
+    ep = 4*(mod(t-1.2, 2)-1);
     ep = exp(-ep*ep);
     d = sdCutHollowSphere(vec3(p.x, -p.y-3.75*ep, p.z), 5+2*ep, -1-3*ep, 0.1);
     DistanceInfo head = {d, sphereType, headColor};
     if (isMarch)
-        at += 0.5/(1.2+d*d*d);
+        at += 0.1/(1.2+d*d*d);
 
     p = orgPos;
     
 
-    d = sdPlane(p, vec4(0, 1, 0, 13));
-    DistanceInfo floor = {d, wallType, vec3(0)};
+    d = sdPlane(p, vec4(0, 1, 0, 13)) + 0.05*noise_2(p.xz + vec2(iTime, iTime*0.2));
+    DistanceInfo floor = {d, wallType, 0.3*vec3(0.0, 0.02, 0.1)};
     DistanceInfo blob = un(head, legs);
 
     p = orgPos;
@@ -77,19 +80,16 @@ DistanceInfo map(in vec3 p, bool isMarch)
 
 float getReflectiveIndex(int type)
 {
-    return type == wallType ? 0.5 : 0.0;
+    return type == wallType ? 0.2 : 0.0;
 }
 
 vec3 eye = vec3(0);
 
 vec3 getColor(in MarchResult result)
 {
-    vec3 lightPosition = vec3(-5, 9, 8);
+    vec3 lightPosition = vec3(-35, 30, 38);
     if (result.type != invalidType) {
         vec3 ambient = result.color;
-        if (result.type == wallType) {
-            ambient = 0.3*vec3(0.1, 0.1, 0.4);
-        }
         
         vec3 invLight = normalize(lightPosition - result.position);
         vec3 normal = normal(result.position);
@@ -98,13 +98,15 @@ vec3 getColor(in MarchResult result)
 
         float l = length(result.position);
         float ll = abs(result.position.y +5);
-        float shadow = shadowFunction(result.position, lightPosition, 32);
+        float shadow = 1.0;
+        if (result.type == wallType)
+            shadow = shadowFunction(result.position, lightPosition, 32);
         float diffuse = max(0., dot(invLight, normal));
-        vec3 color = vec3(ambient * (0.1 + 0.96*diffuse) + 0.5*spec);
+        vec3 color = vec3(ambient * (0.03 + 0.97*diffuse));
         color += at * 1.2*vec3(0.1, 0.1, 0.3);
         float fog = exp(-0.00015*l*l) * exp(-0.01 * ll * ll);
 
-        color *= (0.2 + 0.8*shadow) * fog;
+        color *= (0.2 + 0.8*shadow) * 1;
         return color;
     } else {
         return vec3(0.0);
