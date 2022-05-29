@@ -276,6 +276,10 @@ namespace ojgl::resources {
 #include "shaders/edison2022/seed.fs"
           , "edison2022/seed.fs"
           },
+          {
+#include "shaders/edison2022/jellyfish.fs"
+          , "edison2022/jellyfish.fs"
+          },
   };
 // clang-format on
 }
