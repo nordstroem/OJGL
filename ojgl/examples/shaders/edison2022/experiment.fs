@@ -25,12 +25,16 @@ DistanceInfo map(in vec3 p, bool isMarch)
 {
 
     vec3 kr = pMod3(p.xyz, vec3(50,80,50));
-    float t = mod(iTime + 6*psin(noise_3(kr)), 6);
+    float o = 2*noise_3(3*kr);
+    float t = mod(iTime, 13);
+    t += o;
     vec3 orgPos = p;
-    p.x -= 10*noise_3(kr);
-    p.z -= 10*noise_3(kr);
+    p.x -= 10*noise_3(50*kr);
+    p.z -= 10*noise_3(50*kr);
+    p.y += 30*noise_3(50*kr);
     p.y += 0.5*sin(iTime);
-    p.y -= 2*t + 3*floor(t / 2) + 3*smoothstep(0, 1, mod(t, 2));
+
+    p.y -= 0.5 * (2*t + 3*floor(t / 2) + 3*smoothstep(0, 1, mod(t, 2)));
     p.xz *= rot(0.2*sin(iTime));
     vec3 orgOctoP = p;
 
@@ -93,8 +97,8 @@ vec3 eye = vec3(0);
 
 vec3 getColor(in MarchResult result)
 {
-    vec3 lightPosition = vec3(-35, 30, 38);
-    float l = length(result.position);
+    vec3 lightPosition = vec3(-35, 30, 238);
+    float l = length(result.position - eye);
     float ll = abs(result.position.y +5);
     float fog = exp(-0.00015*l*l);
 
