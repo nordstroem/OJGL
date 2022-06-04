@@ -91,4 +91,12 @@ float sdOctahedron( vec3 p, float s)
   p = abs(p);
   return (p.x+p.y+p.z-s)*0.57735027;
 }
+float sdSolidAngle(vec3 p, vec2 c, float ra)
+{
+  // c is the sin/cos of the angle
+  vec2 q = vec2( length(p.xz), p.y );
+  float l = length(q) - ra;
+  float m = length(q - c*clamp(dot(q,c),0.0,ra) );
+  return max(l,m*sign(c.y*q.x-c.x*q.y));
+}
 )""
