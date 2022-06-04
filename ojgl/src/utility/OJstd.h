@@ -1,7 +1,7 @@
 #pragma once
+#include <crtdbg.h>
 #include <cstring>
 #include <utility>
-#include <crtdbg.h>
 
 namespace ojstd {
 
@@ -10,6 +10,9 @@ constexpr float pi = 3.14159265f;
 float sin(float angle);
 float cos(float angle);
 float tan(float angle);
+float atan2(float y, float x);
+float acos(float angle);
+
 int ftoi(float value);
 
 template <typename T>
@@ -89,7 +92,6 @@ public:
         }
     }
 
-
     unique_ptr(unique_ptr<T>&& other)
     {
         _ptr = other->_ptr;
@@ -118,8 +120,6 @@ public:
     T* operator->() const { return _ptr; }
     T& operator*() const noexcept { return *_ptr; }
     T* get() const { return _ptr; }
-
-
 
 private:
     T* _ptr = nullptr;

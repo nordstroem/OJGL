@@ -27,6 +27,42 @@ double inline __declspec(naked) __fastcall sin_asm(double)
     }
 }
 
+double inline __declspec(naked) __fastcall atan_asm(double)
+{
+    _asm {
+		push ebp
+        mov ebp, esp
+        fld qword ptr[ebp+8]
+        fld1
+        fpatan
+        pop ebp
+		ret
+    }
+}
+
+float atan2(float y, float x)
+{
+    if (x > 0) {
+        return static_cast<float>(atan_asm(y / x));
+    } else if (x < 0 && y >= 0) {
+        return static_cast<float>(atan_asm(y / x)) + ojstd::pi;
+    } else if (x < 0 && y < 0) {
+        return static_cast<float>(atan_asm(y / x)) - ojstd::pi;
+    } else if (x == 0 && y > 0) {
+        return ojstd::pi / 2;
+    } else if (x == 0 && y < 0) {
+        return -ojstd::pi / 2;
+    } else {
+        return 0.f; // undefined
+    }
+}
+
+float acos(float a)
+{
+    double ap = a / ojstd::sqrt(1 - a * a);
+    return static_cast<float>(atan_asm(ap));
+}
+
 Pair<float, float> modf(float value)
 {
     float base = static_cast<float>(ftoi(value));

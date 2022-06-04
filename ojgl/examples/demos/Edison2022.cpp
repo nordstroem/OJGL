@@ -5,7 +5,9 @@ using namespace ojgl;
 
 Edison2022::Edison2022()
 {
-    FreeCameraController::instance().set({ 9.7f, 19.5f, 28.6f }, 0.32f, -0.5f);
+    //FreeCameraController::instance().set({ 9.7f, 19.5f, 28.6f }, 0.32f, -0.5f);
+
+    FreeCameraController::instance().set({ 0, 0, 30 }, { 0.f, 0.f, 0.f });
 
     // experiment.fs
     //FreeCameraController::instance().set({ 30.17f, 23.19f, 34.3f }, 2.548f, -0.374f);

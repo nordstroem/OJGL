@@ -55,6 +55,7 @@ void FreeCameraController::update(const Window& window)
         LOG_INFO("Position: {" << this->position.x << ", " << this->position.y << ", " << this->position.z << "}, Heading: " << this->heading << ", Elevation: " << this->elevation);
     }
 
+    //set(this->position, this->_target);
     this->_previousCursorPosition = cursorPosition;
 }
 
@@ -76,4 +77,13 @@ void FreeCameraController::set(const Vector3f& newPosition, float newHeading, fl
     this->position = newPosition;
     this->heading = newHeading;
     this->elevation = newElevation;
+}
+
+void FreeCameraController::set(const Vector3f& newPosition, const Vector3f& lookAt)
+{
+    const auto delta = (lookAt - newPosition).normalized();
+    this->heading = ojstd::atan2(-delta.x, -delta.z);
+    this->elevation = ojstd::acos(delta.y);
+    this->position = newPosition;
+    this->_target = lookAt;
 }

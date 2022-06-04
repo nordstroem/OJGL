@@ -94,9 +94,9 @@ DistanceInfo map(in vec3 p, bool isMarch)
 
     p = orgP;
     d = sdPlane(p, vec4(0, 1, 0, 13));
-    DistanceInfo floor = {d + 0.05*noise_2(p.xz + vec2(iTime, iTime*0.2)), wallType, 0.3*vec3(0.0, 0.02, 0.05)};
+    DistanceInfo floor = {d + 0.05*noise_2(p.xz + vec2(iTime, iTime*0.2)), wallType, 0.6*vec3(0.0, 0.02, 0.05)};
 
-    return un(floor, un(flower, grass));
+    return un(floor, grass);
 }
 
 float getReflectiveIndex(int type)
