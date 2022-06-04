@@ -386,18 +386,9 @@ float rand()
     return hash1(randState);
 }
 
-float clamp(float x, float lower, float upper)
-{
-    if (x < lower)
-        x = lower;
-    if (x > upper)
-        x = upper;
-    return x;
-}
-
 float smoothstep(float edge0, float edge1, float x)
 {
-    x = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0);
+    x = clamp((x - edge0) / (edge1 - edge0), 0.f, 1.f);
     return x * x * (3 - 2 * x);
 }
 

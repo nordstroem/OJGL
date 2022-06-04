@@ -55,7 +55,7 @@ void FreeCameraController::update(const Window& window)
         LOG_INFO("Position: {" << this->position.x << ", " << this->position.y << ", " << this->position.z << "}, Heading: " << this->heading << ", Elevation: " << this->elevation);
     }
 
-    //set(this->position, this->_target);
+  //  set(this->position, this->_target);
     this->_previousCursorPosition = cursorPosition;
 }
 

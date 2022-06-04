@@ -73,6 +73,26 @@ ForwardIt find(ForwardIt first, ForwardIt last, const Value& val)
 }
 
 template <typename T>
+T clamp(T x, T lower, T upper)
+{
+    if (x < lower)
+        x = lower;
+    if (x > upper)
+        x = upper;
+    return x;
+}
+
+template <typename Container>
+int bisect_left(const Container& container, typename Container::value_type value)
+{
+    for (int i = 0; i < container.size(); i++) {
+        if (value < container[i])
+            return i;
+    }
+    return container.size();
+}
+
+template <typename T>
 class unique_ptr {
 public:
     unique_ptr(T* ptr)
@@ -224,6 +244,8 @@ shared_ptr<T> make_shared(Args&&... args)
 template <typename T>
 class vector {
 public:
+    using value_type = T;
+
     vector()
     {
         this->values = (T*)calloc(this->capacity, sizeof(T));
@@ -516,7 +538,6 @@ float floor(float value);
 float fract(float value);
 float hash1(float value);
 float rand();
-float clamp(float x, float lower, float upper);
 float smoothstep(float edge0, float edge1, float x);
 float lerp(float left, float right, float amount);
 
