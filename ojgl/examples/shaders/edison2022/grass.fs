@@ -15,6 +15,7 @@ uniform mat4 iCameraMatrix;
 const int grassType = 1;
 const int wallType = 2;
 const int flowerType = 3;
+const int lilyType = 4;
 
 float at = 0.0;
 float at2 = 0.0;
@@ -50,23 +51,23 @@ DistanceInfo map(in vec3 p, bool isMarch)
     vec3 orgP = p;
     vec2 am = pMod2(p.xz, vec2(20, 20));
     p.x -= 5*noise_2(25*am);
+    p.x += 1*sin(3*noise_2(am) + 0.2*iTime);
+    p.z += 1*cos(2*noise_2(am) + 0.3*iTime);
     p.xz *= rot(am.x + am.y + 0.4*(noise_2(3*am)-0.5)*iTime);
     vec3 orgP2 = p;
     p.y += 12.7;
     float d = sdCappedCylinder(p, vec2(4 + 0.9*noise_2(0.3*p.xz + 5*am), 0.01 + 0.1*noise_2(0.7*p.xz)));
 
-    bool includeLily = noise_2(125*am) < 0.3;
+    bool includeLily = noise_2(125*am + 15.0) < 0.3 && length(am) < 4;
     if (!includeLily) {
         d = 999.0;
     }
 
-
-
     vec3 p2 = p;
     p2.z += 5.6;
     float d2 = sdRoundCone(p2.yzx, 0.8, 0.1, 5.0);
-    vec3 grassColor = vec3(0.12, 0.5, 0.1)  * (0.3 + 0.7*noise_2(5*am));;
-    DistanceInfo lily = {max(d, -d2), grassType, grassColor};
+    vec3 lilyColor = vec3(0.12, 0.5, 0.1)  * (0.3 + 0.7*noise_2(5*am));;
+    DistanceInfo lily = {max(d, -d2), lilyType, lilyColor};
 
 
     p = orgP2;
@@ -89,10 +90,39 @@ DistanceInfo map(in vec3 p, bool isMarch)
         fogColor += 0.001/(0.05+0.9*d4*d4*d4) * flowerColor;
 
     p = orgP;
-    d = sdPlane(p, vec4(0, 1, 0, 13));
-    DistanceInfo floor = {d + 0.05*noise_2(p.xz + vec2(iTime, iTime*0.2)), wallType, 0.5*vec3(0.0, 0.02, 0.05)};
+    float t0 = mod(iTime, 20);
+    float t = smoothstep(2, 15, t0);
+    float r = 0.5 + 1.5*t;
+    float ns = 1 - smoothstep(2, 15, t0);
+    p.x -= ns*0.05*sin(20*iTime);
+    p.y -= ns*0.05*sin(20*iTime + 30);
+    p.y+=10;
+    p.y+=4 - 10*t;
+    d = grassDistance(p, 10*t, r, 2);
+    p.y -= 3.0 * t;
+    p.xz *= r05;
+    d2 = grassDistance(p, 10*t, r, 1);
+    p.y -= 3.0 * t;
+    p.xz *= r05;
+    float d3 = grassDistance(p, 10*t, 1, 0.6);
+    d = min(d3, min(d, d2));
+    vec3 grassColor = vec3(0.1, 0.5, 0.2);
+        
+    //p = orgP;
+    //float d5 = sdCappedCylinder(p, vec2(0.2,10));
+    //d = min(d, d5);
 
-    return un(un(flower, lily), floor);
+    if (isMarch)
+        fogColor += 0.07/(1.2+d*d*d) * grassColor;
+
+
+    DistanceInfo grass = {d, grassType, grassColor};
+
+    p = orgP;
+    d = sdPlane(p, vec4(0, 1, 0, 13));
+    DistanceInfo floor = {d + 0.05*noise_2(p.xz + vec2(iTime, iTime*0.2)), wallType, 0.2*vec3(0.0, 0.02, 0.05)};
+
+    return un(un(flower, un(grass, lily)), floor);
 }
 
 float getReflectiveIndex(int type)
@@ -110,7 +140,7 @@ vec3 eye = vec3(0);
 
 vec3 getColor(in MarchResult result)
 {
-    vec3 lightPosition = vec3(-8, 15, 20);
+    vec3 lightPosition = vec3(5, 15, 30);
     if (result.type != invalidType) {
         vec3 ambient = result.color;
         
@@ -121,8 +151,9 @@ vec3 getColor(in MarchResult result)
 
         float l = length(result.position.xz);
         float shadow = 1.0;
-        if (result.type == wallType)
-            shadow = shadowFunction(result.position, lightPosition, 32);
+        //if (result.type == wallType)
+        //    shadow = shadowFunction(result.position, lightPosition, 32);
+        
         float diffuse = max(0., dot(invLight, normal));
         vec3 color = vec3(ambient * (0.1 + 0.96*diffuse));
         color += fogColor;
