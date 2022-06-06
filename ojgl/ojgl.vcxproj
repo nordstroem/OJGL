@@ -129,7 +129,7 @@
       <AdditionalOptions>/Zc:sizedDealloc-  /std:c++17 /EHsc /DVC_EXTRALEAN /DWIN32_LEAN_AND_MEAN /DWIN32_EXTRA_LEAN /DNOMINMAX /w4 4062 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)examples;$(IncludePath)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <TreatWarningAsError>true</TreatWarningAsError>
+      <TreatWarningAsError>false</TreatWarningAsError>
     </ClCompile>
     <Link>
       <OutputFile>$(OutDir)ojgl.exe</OutputFile>
@@ -172,7 +172,7 @@
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
-      <TreatWarningAsError>true</TreatWarningAsError>
+      <TreatWarningAsError>false</TreatWarningAsError>
     </ClCompile>
     <Link>
       <OutputFile>$(OutDir)ojgl.exe</OutputFile>
@@ -219,7 +219,7 @@
       <AdditionalOptions>/Zc:sizedDealloc-  /std:c++17 /arch:IA32 /DVC_EXTRALEAN /DWIN32_LEAN_AND_MEAN /DWIN32_EXTRA_LEAN /DNOMINMAX %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)examples;$(IncludePath)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <TreatWarningAsError>true</TreatWarningAsError>
+      <TreatWarningAsError>false</TreatWarningAsError>
     </ClCompile>
     <Link>
       <OutputFile>$(OutDir)ojgl.exe</OutputFile>

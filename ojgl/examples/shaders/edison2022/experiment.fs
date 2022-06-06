@@ -112,8 +112,8 @@ vec3 getColor(in MarchResult result)
 
 
         float shadow = 1.0;
-        if (result.type == wallType)
-            shadow = shadowFunction(result.position, lightPosition, 32);
+       // if (result.type == wallType)
+       //     shadow = shadowFunction(result.position, lightPosition, 32);
         float diffuse = max(0., dot(invLight, normal));
         vec3 color = vec3(ambient * (0.01 + 0.99*diffuse));
         color += at * 1.2*vec3(0.1, 0.1, 0.3);

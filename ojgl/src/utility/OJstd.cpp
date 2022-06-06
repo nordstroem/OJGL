@@ -36,7 +36,7 @@ double inline __declspec(naked) __fastcall atan_asm(double)
         fld1
         fpatan
         pop ebp
-		ret
+		ret 8
     }
 }
 

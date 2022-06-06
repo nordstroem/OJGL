@@ -90,7 +90,7 @@ DistanceInfo map(in vec3 p, bool isMarch)
         fogColor += 0.001/(0.05+0.9*d4*d4*d4) * flowerColor;
 
     p = orgP;
-    float t0 = mod(iTime, 20);
+    float t0 = mod(iTime, 25);
     float t = smoothstep(2, 15, t0);
     float r = 0.5 + 1.5*t;
     float ns = 1 - smoothstep(2, 15, t0);

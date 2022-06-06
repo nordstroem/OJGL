@@ -44,11 +44,14 @@ public:
 private:
     float apply(float t, const ojstd::vector<Polynomial3>& params) const
     {
+        (void)t;
+        (void)params;
         float tr = ojstd::clamp(t, _ts[0], _ts[_ts.size() - 1]);
         int indx = ojstd::clamp(ojstd::bisect_left(_ts, tr) - 1, 0, _ts.size() - 2);
         float t0 = _ts[indx];
         const Polynomial3& p = params[indx];
         float to = tr - t0;
+
         return p.a0 + p.a1 * to + p.a2 * to * to + p.a3 * to * to * to;
     }
 
