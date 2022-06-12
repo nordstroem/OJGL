@@ -1,9 +1,18 @@
 #include "Edison2022.h"
 #include "FreeCameraController.h"
+#include "TextRenderer.hpp"
 #include "utility/Log.h"
 #include "utility/Spline3.h"
 
 using namespace ojgl;
+
+ojstd::shared_ptr<Texture> Edison2022::getText(const ojstd::string& text) const
+{
+    if (!this->_textures.contains(text))
+        this->_textures[text] = TextRenderer::instance().get(text);
+
+    return this->_textures[text];
+}
 
 Edison2022::Edison2022()
 {
@@ -32,10 +41,16 @@ ojstd::vector<Scene> Edison2022::buildSceneGraph(const Vector2i& sceneSize) cons
 {
     ojstd::vector<Scene> scenes;
     {
-        auto raymarch = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2022/grass.fs");
+        auto raymarch = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2022/intro.fs");
         raymarch->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
             Buffer::UniformVector vector;
             vector.push_back(ojstd::make_shared<UniformMatrix4fv>("iCameraMatrix", FreeCameraController::instance().getCameraMatrix()));
+            return vector;
+        });
+
+        raymarch->setTextureCallback([this]([[maybe_unused]] float relativeSceneTime) {
+            ojstd::vector<ojstd::shared_ptr<Uniform1t>> vector;
+            vector.push_back(ojstd::make_shared<Uniform1t>("ojText", this->getText("O J")));
             return vector;
         });
 
@@ -54,9 +69,9 @@ void Edison2022::update(const Duration& relativeSceneTime, const Duration& elaps
 {
     OJ_UNUSED(elapsedTime);
     OJ_UNUSED(relativeSceneTime);
-    auto& camera = FreeCameraController::instance();
+    /*auto& camera = FreeCameraController::instance();
     Vector3f newPosition = spline(relativeSceneTime.toSeconds());
-    camera.set(newPosition, { 0.f, 0.f, 0.f });
+    camera.set(newPosition, { 0.f, 0.f, 0.f });*/
 }
 
 ojstd::string Edison2022::getTitle() const

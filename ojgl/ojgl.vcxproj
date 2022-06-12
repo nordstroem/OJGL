@@ -403,6 +403,7 @@
     <None Include="examples\shaders\edison2022\chrom_ab.fs" />
     <None Include="examples\shaders\edison2022\experiment.fs" />
     <None Include="examples\shaders\edison2022\grass.fs" />
+    <None Include="examples\shaders\edison2022\intro.fs" />
     <None Include="examples\shaders\edison2022\jellyfish.fs" />
     <None Include="examples\shaders\edison2022\raymarch_settings.fs" />
     <None Include="examples\shaders\edison2022\seed.fs" />

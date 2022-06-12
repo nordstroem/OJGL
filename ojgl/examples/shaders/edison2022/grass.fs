@@ -46,6 +46,10 @@ float grassDistance(vec3 p, float h, float w, float d)
 
 mat2 r05 = rot(0.5);
 
+vec3 colorPalette(float t, vec3 a , vec3 b, vec3 c, vec3 d) {
+    return a + b * cos(2 * pi * (c * t + d));
+}
+
 DistanceInfo map(in vec3 p, bool isMarch)
 {
     vec3 orgP = p;
@@ -121,7 +125,8 @@ DistanceInfo map(in vec3 p, bool isMarch)
     p = orgP;
     d = sdPlane(p, vec4(0, 1, 0, 13));
     float wn = noise_2(p.xz + vec2(iTime, iTime*0.2));
-    DistanceInfo floor = {d + 0.05 * wn, wallType, 0.2*vec3(0.0, 0.02, 0.05)};
+    vec3 floorColor = colorPalette(1-p.x / 200-0.15, vec3(0.5, 0.5, 0.5), vec3(0.5, 0.5, 0.5), vec3(1.0, 1.0, 1.0), vec3(0.00, 0.10, 0.20));
+    DistanceInfo floor = {d + 0.05 * wn, wallType, 0.04*floorColor};
 
     return un(un(flower, lily), sunk(floor, grass, 0.5));
 }
