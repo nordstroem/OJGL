@@ -52,17 +52,19 @@ vec3 colorPalette(float t, vec3 a , vec3 b, vec3 c, vec3 d) {
 
 DistanceInfo map(in vec3 p, bool isMarch)
 {
+    vec3 grassColor = vec3(0.1, 0.5, 0.2);
+
     vec3 orgP = p;
     vec2 am = pMod2(p.xz, vec2(20, 20));
-    p.x -= 5*noise_2(25*am);
-    p.x += 1*sin(3*noise_2(am) + 0.2*iTime);
-    p.z += 1*cos(2*noise_2(am) + 0.3*iTime);
+    //p.x -= 5*noise_2(25*am);
+  //  p.x += 1*sin(3*noise_2(am) + 0.2*iTime);
+  //  p.z += 1*cos(2*noise_2(am) + 0.3*iTime);
     p.xz *= rot(am.x + am.y + 0.4*(noise_2(3*am)-0.5)*iTime);
     vec3 orgP2 = p;
     p.y += 12.7;
     float d = sdCappedCylinder(p, vec2(4 + 0.9*noise_2(0.3*p.xz + 5*am), 0.01 + 0.1*noise_2(0.7*p.xz)));
 
-    bool includeLily = noise_2(125*am + 15.0) < 0.3 && length(am) < 4;
+    bool includeLily = noise_2(125*am + 15.0) < 0.2 && length(am) < 4;
     if (!includeLily) {
         d = 999.0;
     }
@@ -71,8 +73,9 @@ DistanceInfo map(in vec3 p, bool isMarch)
     p2.z += 5.6;
     float d2 = sdRoundCone(p2.yzx, 0.8, 0.1, 5.0);
     vec3 lilyColor = vec3(0.12, 0.5, 0.1)  * (0.3 + 0.7*noise_2(5*am));;
-    DistanceInfo lily = {max(d, -d2), lilyType, lilyColor};
-
+    DistanceInfo lily = {max(d, -d2), lilyType, 0.2*grassColor};
+    if (isMarch)
+        fogColor += 0.04/(1.2+d*d*d) * 0.2*grassColor;
 
     p = orgP2;
     p.y -= -13.2;
@@ -94,23 +97,31 @@ DistanceInfo map(in vec3 p, bool isMarch)
         fogColor += 0.001/(0.05+0.9*d4*d4*d4) * flowerColor;
 
     p = orgP;
-    float t0 = mod(iTime, 25);
-    float t = smoothstep(2, 15, t0);
+    p.xz *= rot(0.5*iTime);
+   // p.xy *= rot(0.6*iTime);
+
+    float t0 = mod(iTime, 40);
+    float t = smoothstep(2, 20, t0) - smoothstep(30, 40, t0);
     float r = 0.5 + 1.5*t;
-    float ns = 1 - smoothstep(2, 15, t0);
+    float ns = 1 - smoothstep(2, 20, t0);
     p.x -= ns*0.05*sin(20*iTime);
     p.y -= ns*0.05*sin(20*iTime + 30);
     p.y+=10;
     p.y+=4 - 10*t;
-    d = grassDistance(p, 10*t, r, 2);
+    d = grassDistance(p, 20*t, r, 2);
     p.y -= 3.0 * t;
     p.xz *= r05;
-    d2 = grassDistance(p, 10*t, r, 1);
+    d2 = grassDistance(p, 20*t, r, 1);
+    if (d2 < d)
+        grassColor *= 0.2;
+
     p.y -= 3.0 * t;
     p.xz *= r05;
-    float d3 = grassDistance(p, 10*t, 1, 0.6);
+    float d3 = grassDistance(p, 20*t, 1, 0.6);
+    if (d3 < d2)
+        grassColor *= 0.5;
+
     d = min(d3, min(d, d2));
-    vec3 grassColor = vec3(0.1, 0.5, 0.2);
         
     //p = orgP;
     //float d5 = sdCappedCylinder(p, vec2(0.2,10));
@@ -193,8 +204,7 @@ void main()
     color /= (color + vec3(1.0));
 
     fragColor = vec4(pow(color, vec3(0.5)), 1.0);
-    //fragColor = vec4(vec3(fragColor.z), 1.0);
-
+    //fragColor = vec4(vec3(fragColor.y), 1.0);
 }
 
 )""
