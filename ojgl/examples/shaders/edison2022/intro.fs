@@ -113,15 +113,6 @@ DistanceInfo map(in vec3 p, bool isMarch)
     float wn = noise_2(p.xz + vec2(iTime, iTime*0.2));
 
     float t = mod(iTime, 15);
-    /*float of =  0.5 * (2*t + 3*floor(t / 2) + 3*smoothstep(0, 1, mod(t, 2)));
-    float ld = p.x - (0.12 * p.z + -of +25);
-    float fg = clamp(1.f / (4 - min(0, ld)), 0.0, 1.0);
-    //vec3 jp = jellyfishPosition();
-    //jp = vec3(jp.y, -jp.x, -jp.z);
-    //float ld = length(jp.xz - orgP.xz);
-    //floorColor *= 1.f / (0.01 + 0.003*ld*ld*ld*ld);
-    */
-
     floorColor *= smoothstep(0, 10, t);
     DistanceInfo floor = {d, wallType, floorColor};
 
