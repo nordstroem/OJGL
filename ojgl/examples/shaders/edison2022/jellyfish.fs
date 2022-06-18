@@ -74,7 +74,7 @@ DistanceInfo map(in vec3 p, bool isMarch)
     d = sdCutHollowSphere(vec3(p.x, -p.y-3.75*ep, p.z), 5+2*ep, -1-3*ep, 0.1);
     DistanceInfo head = {d, sphereType, headColor};
     if (isMarch)
-        at += 0.07/(1.2+d*d*d);
+        at += 0.02/(1.2+d*d*d);
 
     p = orgPos;
     
