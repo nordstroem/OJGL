@@ -41,6 +41,50 @@ ojstd::vector<Scene> Edison2022::buildSceneGraph(const Vector2i& sceneSize) cons
 {
     ojstd::vector<Scene> scenes;
     {
+        auto raymarch = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2022/intro.fs");
+        raymarch->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
+            Buffer::UniformVector vector;
+            vector.push_back(ojstd::make_shared<UniformMatrix4fv>("iCameraMatrix", FreeCameraController::instance().getCameraMatrix()));
+            return vector;
+        });
+
+        raymarch->setTextureCallback([this]([[maybe_unused]] float relativeSceneTime) {
+            ojstd::vector<ojstd::shared_ptr<Uniform1t>> vector;
+            vector.push_back(ojstd::make_shared<Uniform1t>("ojText", this->getText("O J")));
+            return vector;
+        });
+
+        auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "common/fxaa.vs", "common/fxaa.fs");
+        fxaa->setInputs(raymarch);
+
+        auto chrom = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2022/chrom_ab.fs");
+        chrom->setInputs(fxaa);
+        scenes.emplace_back(fxaa, Duration::seconds(15), "scene0");
+    }
+
+    {
+        auto raymarch = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2022/jellyfish.fs");
+        raymarch->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
+            Buffer::UniformVector vector;
+            vector.push_back(ojstd::make_shared<UniformMatrix4fv>("iCameraMatrix", FreeCameraController::instance().getCameraMatrix()));
+            return vector;
+        });
+
+        raymarch->setTextureCallback([this]([[maybe_unused]] float relativeSceneTime) {
+            ojstd::vector<ojstd::shared_ptr<Uniform1t>> vector;
+            vector.push_back(ojstd::make_shared<Uniform1t>("ojText", this->getText("O J")));
+            return vector;
+        });
+
+        auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "common/fxaa.vs", "common/fxaa.fs");
+        fxaa->setInputs(raymarch);
+
+        auto chrom = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2022/chrom_ab.fs");
+        chrom->setInputs(fxaa);
+        scenes.emplace_back(fxaa, Duration::seconds(20), "scene1");
+    }
+
+    {
         auto raymarch = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2022/grass.fs");
         raymarch->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
             Buffer::UniformVector vector;
@@ -59,19 +103,25 @@ ojstd::vector<Scene> Edison2022::buildSceneGraph(const Vector2i& sceneSize) cons
 
         auto chrom = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2022/chrom_ab.fs");
         chrom->setInputs(fxaa);
-        scenes.emplace_back(fxaa, Duration::seconds(9999), "scene0");
+        scenes.emplace_back(fxaa, Duration::seconds(30), "scene2");
     }
-
     return scenes;
 }
 
-void Edison2022::update(const Duration& relativeSceneTime, const Duration& elapsedTime) const
+void Edison2022::update(const Duration& relativeSceneTime, const Duration& elapsedTime, const ojstd::string& currentScene) const
 {
     OJ_UNUSED(elapsedTime);
     OJ_UNUSED(relativeSceneTime);
     /*auto& camera = FreeCameraController::instance();
     Vector3f newPosition = spline(relativeSceneTime.toSeconds());
     camera.set(newPosition, { 0.f, 0.f, 0.f });*/
+    if (currentScene == "scene0") {
+        FreeCameraController::instance().set({ 10, 80, 10 }, { 10 - 0.5f, 70, 10 });
+    } else if (currentScene == "scene1") {
+        FreeCameraController::instance().set({ 30.17f, 23.19f, 34.3f }, 2.548f, -0.374f);
+    } else if (currentScene == "scene2") {
+        FreeCameraController::instance().set({ 39.0531f, 50.1299f, 20.5951f }, 1.114f, -0.846f);
+    }
 }
 
 ojstd::string Edison2022::getTitle() const

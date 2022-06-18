@@ -14,10 +14,11 @@ public:
     virtual ojstd::string getTitle() const { return ""; }
     virtual const unsigned char* getSong() const { return nullptr; }
     virtual float getAspectRatio() const { return 16.f / 9.f; }
-    virtual void update(const Duration& relativeSceneTime, const Duration& elapsedTime) const
+    virtual void update(const Duration& relativeSceneTime, const Duration& elapsedTime, const ojstd::string& currentScene) const
     {
         OJ_UNUSED(relativeSceneTime);
         OJ_UNUSED(elapsedTime);
+        OJ_UNUSED(currentScene);
     }
 };
 
