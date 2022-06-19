@@ -29,10 +29,23 @@ float getFogAmount(in vec3 p);
 vec3 getColor(in MarchResult result);
 float getReflectiveIndex(int type);
 
+uniform int dummyVariable;
+#define ZERO (min(dummyVariable,0))
+
 vec3 normal(in vec3 p)
 {
-    vec3 n = vec3(map(vec3(p.x + S_normalEpsilon, p.y, p.z), false).distance, map(vec3(p.x, p.y + S_normalEpsilon, p.z), false).distance, map(vec3(p.x, p.y, p.z + S_normalEpsilon), false).distance);
-    return normalize(n - map(p, false).distance);
+    //vec3 n = vec3(map(vec3(p.x + S_normalEpsilon, p.y, p.z), false).distance, map(vec3(p.x, p.y + S_normalEpsilon, p.z), false).distance, map(vec3(p.x, p.y, p.z + S_normalEpsilon), false).distance);
+    //return normalize(n - map(p, false).distance);
+
+    vec3 n = vec3(0.0);
+    for( int i=ZERO; i<4; i++ )
+    {
+        vec3 e = 0.5773*(2.0*vec3((((i+3)>>1)&1),((i>>1)&1),(i&1))-1.0);
+        n += e*map(p+0.0005*e, false).distance;
+      //if( n.x+n.y+n.z>100.0 ) break;
+    }
+    return normalize(n);
+
 }
 
 float shadowFunction(in vec3 hitPosition, in vec3 lightPosition, float k)

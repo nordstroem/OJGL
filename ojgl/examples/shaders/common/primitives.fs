@@ -22,6 +22,11 @@ float sdRoundBox(vec3 p, vec3 b, float r)
     vec3 q = abs(p) - b;
     return length(max(q, 0.0)) + min(max(q.x, max(q.y, q.z)), 0.0) - r;
 }
+float sdTriPrism( vec3 p, vec2 h )
+{
+  vec3 q = abs(p);
+  return max(q.z-h.y,max(q.x*0.866025+p.y*0.5,-p.y)-h.x*0.5);
+}
 float sdRoundCone( vec3 p, float r1, float r2, float h )
 {
   vec2 q = vec2( length(p.xz), p.y );

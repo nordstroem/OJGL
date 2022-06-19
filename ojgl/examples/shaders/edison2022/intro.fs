@@ -15,6 +15,7 @@ uniform mat4 iCameraMatrix;
 
 const int sphereType = 1;
 const int wallType = 2;
+const int stoneType = 3;
 
 float at = 0.0;
 float at2 = 0.0;
@@ -44,9 +45,11 @@ vec3 jellyfishPosition() {
     return p;
 }
 
-DistanceInfo jellyfish(in vec3 p, bool isMarch)
+DistanceInfo jellyfish(in vec3 p, bool issMarch)
 {
-
+    p.x += 13;
+    p.z += 40;
+    p.y += -20;
     p.xz *= rot(-0.2);
     p = vec3(p.y, -p.x, p.z);//
     float t = mod(iTime, 15);
@@ -93,35 +96,100 @@ DistanceInfo jellyfish(in vec3 p, bool isMarch)
     return blob;
 
 }
+
+
+float ojDistance(in vec3 p, bool isMarch) {
+    p.x-=9.9;
+    p.z-=1.9;
+    p.y -= 4.3;
+    p = vec3(p.y, -p.x, p.z);
+    p.xy *= rot(-1.047);
+    vec3 orgP = p;
+
+    p.y *= 0.6;
+    float d = sdTorus(p.yxz, vec2(2, 0.10));
+
+    p = orgP;
+    d = min(d, sdBox(p, vec3(0.1, 4.5, 0.1)));
+    d = min(d, sdBox(p, vec3(0.1, 0.1, 3)));
+
+    p.z -= -5;
+    vec3 jp = p;
+    p.y -= 3.4;
+    d = min(d, sdBox(p, vec3(0.1, 0.1, 1)));
+
+    p = jp;
+    p.z-= -1;
+    d = min(d, sdBox(p, vec3(0.1, 3.5, 0.1)));
+    p = jp;
+    p.z-= 0;
+    p.y-=-2.5;
+    p.zy *= rot(-0.8);
+    d = min(d, sdBox(p, vec3(0.1, 1.5, 0.1)));
+
+
+    if (isMarch)
+        at += 0.02/(0.01+d*d);
+    return d;
+}
+
+DistanceInfo stone(in vec3 p, bool isMarch) {
+    p.y += 6;
+    p.xz *= rot(-1.2);
+    vec3 orgP = p;
+    //float d = sdBox(p, vec3(2.0, 2.0, 2.0));
+    //DistanceInfo stone = {d + fbm3_high(orgP*4.0,0.4,2.96 ) * 0.1, stoneType, vec3(0.1)};
+
+    float ojd = ojDistance(p, isMarch);
+    pModPolar(p.xz, 2.7);
+    mo(p.xy, vec2(0.0, 1.5));
+    float d = sdTriPrism(p, vec2(20.0, 10.0));// + fbm3_high(orgP*4.0,0.4,2.96 ) * 0.1 + 0.8*noise_3(p*0.5);
+
+   // d = min(d, ojd);
+    DistanceInfo stone = {d , stoneType,  vec3(0.1)};
+    return stone;
+}
+
+
+
+
+
+
 DistanceInfo map(in vec3 p, bool isMarch)
 {
     vec3 orgP = p;
     p = orgP;
     vec2 ojUV = clamp(vec2(-p.z / 20 + 1, -p.x / 20 + 1), vec2(0.0), vec2(1.0));
-    bool onOJ = texture(ojText, ojUV).x < 0.5;
-    vec3 floorColor = 0.67*vec3(0.0, 0.02, 0.05);
+   // bool onOJ = texture(ojText, ojUV).x < 0.5;
+    vec3 floorColor = 1.67*vec3(0.0, 0.02, 0.05);
 
-    if (onOJ) {
-        floorColor = 0.05*vec3(1.0);
-       //floorColor *= 0.5;
-       p.y-=0.5 +  0.1*noise_2(3*p.xz);
-       //float d = sdPlane(p, vec4(0, 1, 0, 13));
-     //  floorColor += 0.01/(0.05+0.9*d*d*d) * vec3(3.0, 3.0, 0.4);
-    }
+    //if (onOJ) {
+    //    floorColor = 0.05*vec3(1.0);
+    //   //floorColor *= 0.5;
+    //   p.y-=0.5 +  0.1*noise_2(3*p.xz);
+    //   //float d = sdPlane(p, vec4(0, 1, 0, 13));
+    // //  floorColor += 0.01/(0.05+0.9*d*d*d) * vec3(3.0, 3.0, 0.4);
+    //}
 
     float d = sdPlane(p, vec4(0, 1, 0, 13));
     float wn = noise_2(p.xz + vec2(iTime, iTime*0.2));
 
     float t = mod(iTime, 15);
-    floorColor *= smoothstep(0, 10, t);
-    DistanceInfo floor = {d, wallType, floorColor};
+    //floorColor *= smoothstep(0, 10, t);
+    DistanceInfo floor = {d - 0.08*sin(p.x), wallType, floorColor};
 
     p = orgP;
     DistanceInfo jf = jellyfish(p, isMarch);
 
-    if (isMarch)
-        return floor;
-    return sunk(floor, jf, 0.5);
+    DistanceInfo ojD = stone(p, isMarch);
+  
+    DistanceInfo res = sunk(floor, ojD, 1);
+
+
+    if (!isMarch)
+          return un(res, jf);
+
+    return res;
 }
 
 float getReflectiveIndex(int type)
@@ -129,7 +197,14 @@ float getReflectiveIndex(int type)
     if(type == wallType)
         return 0.0;
     if (type == sphereType)
-        return 0.6;
+        return 0.0;
+    return 0.0;
+}
+
+float getSpecularIndex(int type)
+{
+    if(type == stoneType)
+        return 0.0;
     return 0.0;
 }
 
@@ -139,26 +214,26 @@ vec3 getColor(in MarchResult result)
 {
     vec3 jp = jellyfishPosition();
     jp = vec3(jp.y, -jp.x+10, -jp.z);
-    vec3 lightPosition = jp;//vec3(6, -3, -5);
+    vec3 lightPosition = vec3(-15, 30, -10);
     if (result.type != invalidType) {
         vec3 ambient = result.color;
         
         vec3 invLight = normalize(lightPosition - result.position);
         vec3 normal = normal(result.position);
         float k = max(0.0, dot(result.rayDirection, reflect(invLight, normal)));
-        float spec = 1 * pow(k, 50.0);
+        float spec = getSpecularIndex(result.type) * pow(k, 50.0);
 
         float l = length(result.position.xz);
         float shadow = 1.0;
-        if (result.type == wallType)
+       //z if (result.type == wallType)
             shadow = shadowFunction(result.position, lightPosition, 32);
         
         float diffuse = max(0., dot(invLight, normal));
-        vec3 color = vec3(ambient * (0.1 + 0.96*diffuse));
+        vec3 color = vec3(ambient * (0.04 + 0.96*diffuse));
         float fog = exp(-0.00035*l*l);
         color += at;
         color *= (0.2 + 0.8*shadow) * fog;
-        return color;
+        return color + spec;
     } else {
         vec3 color = vec3(0);
         //color += at * 1.2*vec3(0.1, 0.1, 0.3);
@@ -187,6 +262,7 @@ void main()
     color /= (color + vec3(1.0));
 
     fragColor = vec4(pow(color, vec3(0.5)), 1.0);
+    fragColor *= length(vec2(u+0.5, v+0.5));
     //fragColor = vec4(vec3(fragColor.y), 1.0);
 }
 

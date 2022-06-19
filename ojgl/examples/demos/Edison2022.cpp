@@ -16,9 +16,10 @@ ojstd::shared_ptr<Texture> Edison2022::getText(const ojstd::string& text) const
 
 Edison2022::Edison2022()
 {
-    FreeCameraController::instance().set({ 39.0531f, 50.1299f, 20.5951f }, 1.114f, -0.846f);
+    // FreeCameraController::instance().set({ 39.0531f, 50.1299f, 20.5951f }, 1.114f, -0.846f);
 
     //FreeCameraController::instance().set({ 0, 0, 30 }, { 0.f, 0.f, 0.f });
+    FreeCameraController::instance().set({ 85.5, 81.9, -63 }, -4.0f, -0.674f);
 
     // experiment.fs
     //FreeCameraController::instance().set({ 30.17f, 23.19f, 34.3f }, 2.548f, -0.374f);
@@ -59,9 +60,9 @@ ojstd::vector<Scene> Edison2022::buildSceneGraph(const Vector2i& sceneSize) cons
 
         auto chrom = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2022/chrom_ab.fs");
         chrom->setInputs(fxaa);
-        scenes.emplace_back(fxaa, Duration::seconds(15), "scene0");
+        scenes.emplace_back(fxaa, Duration::seconds(9999), "scene0");
     }
-
+    /*
     {
         auto raymarch = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2022/jellyfish.fs");
         raymarch->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
@@ -104,7 +105,7 @@ ojstd::vector<Scene> Edison2022::buildSceneGraph(const Vector2i& sceneSize) cons
         auto chrom = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2022/chrom_ab.fs");
         chrom->setInputs(fxaa);
         scenes.emplace_back(fxaa, Duration::seconds(25), "scene2");
-    }
+    }*/
     return scenes;
 }
 
@@ -114,14 +115,14 @@ void Edison2022::update(const Duration& relativeSceneTime, const Duration& elaps
     OJ_UNUSED(relativeSceneTime);
     /*auto& camera = FreeCameraController::instance();
     Vector3f newPosition = spline(relativeSceneTime.toSeconds());
-    camera.set(newPosition, { 0.f, 0.f, 0.f });*/
+    camera.set(newPosition, { 0.f, 0.f, 0.f });
     if (currentScene == "scene0") {
         FreeCameraController::instance().set({ 10, 80, 10 }, { 10 - 0.5f, 70, 10 });
     } else if (currentScene == "scene1") {
         FreeCameraController::instance().set({ 30.17f, 23.19f, 34.3f }, 2.548f, -0.374f);
     } else if (currentScene == "scene2") {
         FreeCameraController::instance().set({ 39.0531f, 50.1299f, 20.5951f }, 1.114f, -0.846f);
-    }
+    }*/
 }
 
 ojstd::string Edison2022::getTitle() const
