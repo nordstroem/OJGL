@@ -296,6 +296,10 @@ namespace ojgl::resources {
 #include "shaders/edison2022/ascent.fs"
           , "edison2022/ascent.fs"
           },
+          {
+#include "shaders/edison2022/ship.fs"
+          , "edison2022/ship.fs"
+          },
   };
 // clang-format on
 }
