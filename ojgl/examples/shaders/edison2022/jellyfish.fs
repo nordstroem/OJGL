@@ -58,7 +58,7 @@ DistanceInfo map(in vec3 p, bool isMarch)
     DistanceInfo legs = {0.5*d, sphereType, legColor };
 
     if (isMarch)
-        at += 0.003/(1.2+d*d*d);
+        at += 0.006/(1.2+d*d*d);
 
     p = orgOctoP;
     p.x -= 0.3*sin(0.3*p.y + 3*iTime);
@@ -72,9 +72,9 @@ DistanceInfo map(in vec3 p, bool isMarch)
     ep = 4*(mod(t-1.2, 2)-1);
     ep = exp(-ep*ep);
     d = sdCutHollowSphere(vec3(p.x, -p.y-3.75*ep, p.z), 5+2*ep, -1-3*ep, 0.1);
-    DistanceInfo head = {d, sphereType, headColor};
+    DistanceInfo head = {d, sphereType, 2*headColor};
     if (isMarch)
-        at += 0.02/(1.2+d*d*d);
+        at += 0.1/(1.2+d*d*d);
 
     p = orgPos;
     
@@ -139,6 +139,7 @@ void main()
     vec3 color = march(rayOrigin, rayDirection);
 
     // Tone mapping
+    color = mix(color, fragCoord.y*vec3(0.01, 0.1, 0.3), 0.2);
     color /= (color + vec3(1.0));
 
     fragColor = vec4(pow(color, vec3(0.5)), 1.0);

@@ -284,6 +284,10 @@ namespace ojgl::resources {
 #include "shaders/edison2022/intro.fs"
           , "edison2022/intro.fs"
           },
+          {
+#include "shaders/edison2022/intro.fs"
+          , "edison2022/post.fs"
+          },
   };
 // clang-format on
 }
