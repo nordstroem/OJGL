@@ -30,6 +30,26 @@ float pcurve( float x, float a, float b )
     return k*pow(x,a)*pow(1.0-x,b);
 }
 
+VolumetricResult evaluateLight(in vec3 p)
+{
+    p.y += 10;
+    pModPolar(p.xz, 8);
+    float d = sdBox(p, vec3(19.0,  1*pow(psin(p.x + 5*iTime + 2*p.z),2), 0.1));
+	d = max(0.01, d);
+
+	float strength = 14;
+	vec3 col = vec3(0.1, 0.8, 0.2);
+	vec3 res = col * strength / (d * d);
+	return VolumetricResult(d, res);
+}
+
+
+float getFogAmount(in vec3 p) {
+    return 0.001;
+
+}
+
+
 float grassDistance(vec3 p, float h, float w, float d) 
 {
     float a = pModPolar(p.xz, 4);
@@ -48,6 +68,54 @@ mat2 r05 = rot(0.5);
 
 vec3 colorPalette(float t, vec3 a , vec3 b, vec3 c, vec3 d) {
     return a + b * cos(2 * pi * (c * t + d));
+}
+
+
+DistanceInfo jellyfish(in vec3 p, bool isMarch)
+{
+    p.xz *= rot(-0.2);
+    float t = mod(iTime, 15);
+    p.xz *= rot(0.2*sin(iTime));
+    vec3 orgOctoP = p;
+
+    float s = 0.6;
+    float px = floor((p.y-s/2)/s);
+    pMod1(p.y, s);
+    
+    float a = pModPolar(p.xz, 6);
+    p.x -= 1.9;
+
+    float ep = 0.12*px + 4*(mod(t-1.2, 2) - 1);
+    p.x -= 0.3*sin(0.3*px + 3*iTime + 2*a) + 2*exp(-ep*ep);
+
+
+    float d2 = sdBox(orgOctoP - vec3(0, -3.0, 0.0), vec3(8, 8, 8));
+    float r = 0.2;
+    float d = sdBox(p.xyz, vec3(r, s/2-0.01, r));
+    d = max(d2, d);
+    vec3 legColor = 1.0*vec3(0.5, 0.5, 1.0);
+    legColor *= 0.2 + 0.5*psin(px*5);
+    DistanceInfo legs = {0.5*d, flowerType, legColor };
+    //if (isMarch)
+    //    at += 0.0008/(1.2+d*d*d);
+
+    p = orgOctoP;
+    p.x -= 0.3*sin(0.3*p.y + 3*iTime);
+    p.y -= 4.1;
+    
+    vec3 headColor = 20.0*vec3(0.2, 0.3, 1.0);
+
+    ep = 4*(mod(t-1.2, 2)-1);
+    ep = exp(-ep*ep);
+    d = sdCutHollowSphere(vec3(p.x, -p.y-3.75*ep, p.z), 4+2*ep, -1-3*ep, 0.1);
+    DistanceInfo head = {d, flowerType, headColor};
+    if (isMarch)
+        at += 0.3/(1.2+d*d*d);
+
+    DistanceInfo blob = un(head, legs);
+
+    return blob;
+
 }
 
 DistanceInfo map(in vec3 p, bool isMarch)
@@ -86,8 +154,8 @@ DistanceInfo map(in vec3 p, bool isMarch)
     //float d5 = sdCappedCylinder(p, vec2(0.2,10));
     //d = min(d, d5);
 
-    if (isMarch)
-        fogColor += 0.07/(1.2+d*d*d) * grassColor;
+    //if (isMarch)
+    //    fogColor += 0.07/(1.2+d*d*d) * grassColor;
 
 
     DistanceInfo grass = {d, grassType, grassColor};
@@ -98,8 +166,17 @@ DistanceInfo map(in vec3 p, bool isMarch)
     vec3 floorColor = 14.67*vec3(0.0, 0.02, 0.05);
 
     DistanceInfo floor = {d + 0.03 * wn, wallType, 0.04*floorColor};
+    
+   // p.xz *= rot(0.1*sin(iTime));
+    pModPolar(p.xz, 8);
+    p.x -= 20;
+    DistanceInfo jf = jellyfish(p, isMarch);
 
-    return sunk(floor, grass, 0.5);
+    p = orgP;
+
+
+
+    return sunk(floor, jf, 0.5);
 }
 
 float getReflectiveIndex(int type)
@@ -135,9 +212,9 @@ vec3 getColor(in MarchResult result)
         vec3 color = vec3(ambient * (0.1 + 0.96*diffuse));
         color += fogColor;
         float fog = exp(-0.00035*l*l);
-
-        color *= (0.2 + 0.8*shadow) * fog;
-        return color;
+        color += at * 1.2*vec3(0.1, 0.1, 0.3);
+        color *= (0.2 + 0.8*shadow) * fog ;
+        return color * result.transmittance + result.scatteredLight;
     } else {
         vec3 color = vec3(0);
         //color += at * 1.2*vec3(0.1, 0.1, 0.3);
@@ -161,7 +238,8 @@ void main()
     vec3 color = march(rayOrigin, rayDirection);
 
     // Tone mapping
-    color = mix(color, 0.2*vec3(0.01, 0.3, 0.1), 0.06);
+    color = mix(color, 0.2*vec3(0.01, 0.1, 0.3), 0.25);
+  //  color = mix(color, 0.2*vec3(0.01, 0.3, 0.1), 0.06);
     color /= (color + vec3(1.0));
 
     fragColor = vec4(pow(color, vec3(0.5)), 1.0);

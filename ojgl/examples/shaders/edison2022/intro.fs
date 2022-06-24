@@ -259,7 +259,7 @@ void main()
     vec3 color = march(rayOrigin, rayDirection);
 
     // Tone mapping
-    color = mix(color, 0.2*vec3(0.01, 0.1, 0.3), 0.25);
+    color = mix(color, 0.2*vec3(0.01, 0.1, 0.3), 0.2);
     color /= (color + vec3(1.0));
 
     fragColor = vec4(pow(color, vec3(0.5)), 1.0);
