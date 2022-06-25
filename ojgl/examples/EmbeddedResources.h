@@ -256,6 +256,10 @@ namespace ojgl::resources {
 #include "shaders/edison2022/raymarch_settings.fs"
           , "edison2022/raymarch_settings.fs"
           },
+         {
+ #include "shaders/edison2022/raymarch_settings_refract.fs"
+          , "edison2022/raymarch_settings_refract.fs"
+          },
           {
 #include "shaders/edison2022/experiment.fs"
           , "edison2022/experiment.fs"
@@ -287,6 +291,10 @@ namespace ojgl::resources {
           {
 #include "shaders/edison2022/intro.fs"
           , "edison2022/post.fs"
+          },
+          {
+#include "shaders/edison2022/ascent.fs"
+          , "edison2022/ascent.fs"
           },
   };
 // clang-format on

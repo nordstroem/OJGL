@@ -112,9 +112,14 @@ vec3 march(in vec3 rayOrigin, in vec3 rayDirection)
                 return color;
 #else
                 t = 0.0;
+#if S_REFRACTIONS
+                rayDirection = refract(rayDirection, normal(p), 0.6);
+                rayOrigin = p + 0.5 * rayDirection;
+#else
                 rayDirection = reflect(rayDirection, normal(p));
                 rayOrigin = p + 0.1 * rayDirection;
 
+#endif
                 resultColor = mix(resultColor, color, reflectionModifier);
                 reflectionModifier *= getReflectiveIndex(info.type);
                 break;

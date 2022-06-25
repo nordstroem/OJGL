@@ -1,7 +1,7 @@
 R""(
 #include "common/noise.fs"
 #include "common/primitives.fs"
-#include "edison2022/raymarch_settings.fs"
+#include "edison2022/raymarch_settings_refract.fs"
 #include "common/raymarch_utils.fs"
 #include "common/utils.fs"
 
@@ -30,13 +30,17 @@ float pcurve( float x, float a, float b )
     return k*pow(x,a)*pow(1.0-x,b);
 }
 
+int primes[8] = int[8](2, 3, 5, 7, 11, 13, 17, 19);
+
 VolumetricResult evaluateLight(in vec3 p)
 {
     p.y += 10;
-    pModPolar(p.xz, 8);
+    int a = int(pModPolar(p.xz, 8)) + 4;
     float d = sdBox(p, vec3(19.0,  1*pow(psin(p.x + 5*iTime + 2*p.z),2), 0.1));
+
 	d = max(0.01, d);
 
+    // 2, 3, 5, 7, 11, 13, 17, 19
 	float strength = 14;
 	vec3 col = vec3(0.1, 0.8, 0.2);
 	vec3 res = col * strength / (d * d);
@@ -47,21 +51,6 @@ VolumetricResult evaluateLight(in vec3 p)
 float getFogAmount(in vec3 p) {
     return 0.001;
 
-}
-
-
-float grassDistance(vec3 p, float h, float w, float d) 
-{
-    float a = pModPolar(p.xz, 4);
-    //p.y+= 20 - t*20;
-    p.x-=d;
-    //float t2 = smoothstep(0.5, 1.0, t);
-    //float k = -0.2 * (1-t2) + (0.8+0.2) * t2; 
-    //p.x += 0.3*pow(0.15*(p.y+h), 2);
-    p.x-= 0.8 * pow(0.15*(p.y+h), 2);
-    float x = clamp((p.y + h)/(2*h), 0, 1);
-    float r = w*max(0, pcurve(x, 0.2, 1.5));
-    return sdBox(p.zyx, vec3(r, h, 0.2));
 }
 
 mat2 r05 = rot(0.5);
@@ -125,45 +114,8 @@ DistanceInfo map(in vec3 p, bool isMarch)
 
     vec3 orgP = p;
     p = orgP;
-    p.xz *= rot(0.5*iTime);
-   // p.xy *= rot(0.6*iTime);
-
-    float t0 = mod(iTime, 40);
-    float t = smoothstep(2, 20, t0) - smoothstep(30, 40, t0);
-    float r = 0.5 + 1.5*t;
-    float ns = 1 - smoothstep(2, 20, t0);
-    p.x -= ns*0.05*sin(20*iTime);
-    p.y -= ns*0.05*sin(20*iTime + 30);
-    p.y+= 10;
-    p.y+= 4 - 10*t;
-    float d = grassDistance(p, 20*t, r, 2);
-    p.y -= 3.0 * t;
-    p.xz *= r05;
-    float d2 = grassDistance(p, 20*t, r, 1);
-    if (d2 < d)
-        grassColor *= 0.2;
-
-    p.y -= 3.0 * t;
-    p.xz *= r05;
-    float d3 = grassDistance(p, 20*t, 1, 0.6);
-    if (d3 < d2)
-        grassColor *= 0.5;
-
-    d = min(d, min(d2, d3));
-        
-    //p = orgP;
-    //float d5 = sdCappedCylinder(p, vec2(0.2,10));
-    //d = min(d, d5);
-
-    //if (isMarch)
-    //    fogColor += 0.07/(1.2+d*d*d) * grassColor;
-
-
-    DistanceInfo grass = {d, grassType, grassColor};
-
-    p = orgP;
     p.y += 12.5;
-    d = sdBox(p, vec3(100, 0.1, 100));
+    float d = sdBox(p, vec3(100, 0.1, 100));
     float wn = noise_2(p.xz + vec2(iTime, iTime*0.2));
     vec3 floorColor = 14.67*vec3(0.0, 0.02, 0.05);
 
@@ -175,8 +127,6 @@ DistanceInfo map(in vec3 p, bool isMarch)
     DistanceInfo jf = jellyfish(p, isMarch);
 
     p = orgP;
-
-
 
     return sunk(floor, jf, 0.5);
 }
@@ -215,8 +165,8 @@ vec3 getColor(in MarchResult result)
         color += fogColor;
         float fog = exp(-0.00035*l*l);
         color += at * 1.2*vec3(0.1, 0.1, 0.3);
-        color *= (0.2 + 0.8*shadow) * fog ;
-        return color;
+        color *= (0.2 + 0.8*shadow) * fog;
+        return color * result.transmittance + result.scatteredLight;
     } else {
         vec3 color = vec3(0);
         //color += at * 1.2*vec3(0.1, 0.1, 0.3);
