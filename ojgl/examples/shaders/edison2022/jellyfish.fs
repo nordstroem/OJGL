@@ -26,7 +26,7 @@ bool isSecondScene() {
 DistanceInfo map(in vec3 p, bool isMarch)
 {
     bool isSecond = isSecondScene();
-    p.y-= isSecond ? 1.5 * (iTime - 20) : 3.2 * iTime;
+    p.y-= isSecond ? 1.5 * (iTime - 24) : 3.2 * iTime;
     p.y += 0.5*sin(iTime);
     vec3 absOrgPos = p;
     float k = isSecond ? 5 : 1;

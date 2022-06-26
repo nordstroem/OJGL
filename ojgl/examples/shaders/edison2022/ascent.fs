@@ -36,14 +36,17 @@ VolumetricResult evaluateLight(in vec3 p)
 {
     p.y += 10;
     int a = int(pModPolar(p.xz, 8)) + 4;
-    float d = sdBox(p, vec3(19.0,  1*pow(psin(p.x + 5*iTime + 2*p.z),2), 0.1));
+    float d = sdBox(p, vec3(19.0,  1*pow(0.7*psin(p.x + 5*iTime + 2*p.z),1), 0.1));
 
 	d = max(0.01, d);
+    if (iTime < 14)
+    d = 99999.f;
 
     // 2, 3, 5, 7, 11, 13, 17, 19
-	float strength = 14;
+	float strength = 5;
 	vec3 col = vec3(0.1, 0.8, 0.2);
 	vec3 res = col * strength / (d * d);
+
 	return VolumetricResult(d, res);
 }
 
@@ -63,7 +66,7 @@ vec3 colorPalette(float t, vec3 a , vec3 b, vec3 c, vec3 d) {
 DistanceInfo jellyfish(in vec3 p, bool isMarch)
 {
     p.xz *= rot(-0.2);
-    float t = mod(iTime, 15);
+    float t = mod(iTime, 60);
     p.xz *= rot(0.2*sin(iTime));
     p.y += 90.0 - 90*smoothstep(0, 10, t) + 15;
     vec3 orgOctoP = p;
@@ -123,7 +126,7 @@ DistanceInfo map(in vec3 p, bool isMarch)
     p = orgP;
    // p.xz *= rot(0.1*sin(iTime));
     pModPolar(p.xz, 8);
-    p.x -= 30 - 10*smoothstep(0, 15, mod(iTime, 15));
+    p.x -= 30 - 7*smoothstep(0, 15, iTime);
     DistanceInfo jf = jellyfish(p, isMarch);
 
     p = orgP;
