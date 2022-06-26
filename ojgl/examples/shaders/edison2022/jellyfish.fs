@@ -20,21 +20,28 @@ float at2 = 0.0;
 
 const float pi = 3.14159256;
 
-
+bool isSecondScene() {
+    return iTime > 15;
+}
 DistanceInfo map(in vec3 p, bool isMarch)
 {
-
+    bool isSecond = isSecondScene();
+    p.y-= isSecond ? 1.5 * (iTime - 20) : 3.2 * iTime;
+    p.y += 0.5*sin(iTime);
+    vec3 absOrgPos = p;
+    float k = isSecond ? 5 : 1;
+    vec3 bBoxSize = vec3(25+k*50, 40 + (k-1)*80, 25 + k*50);
+    float bBoxD = sdBox(absOrgPos + vec3(0, 0, 0), bBoxSize);
     vec3 kr = pMod3(p.xyz, vec3(50,80,50));
     float o = 2*noise_3(3*kr);
-    float t = mod(iTime, 13);
+    float t = mod(iTime, 28);
     t += o;
     vec3 orgPos = p;
     p.x -= 10*noise_3(50*kr);
     p.z -= 10*noise_3(50*kr);
     p.y += 30*noise_3(50*kr);
-    p.y += 0.5*sin(iTime);
 
-    p.y -= 0.5 * (2*t + 3*floor(t / 2) + 3*smoothstep(0, 1, mod(t, 2)));
+    p.y -= 0.5 * (0 + 3*floor(t / 2) + 3*smoothstep(0, 1, mod(t, 2)));
     p.xz *= rot(0.2*sin(iTime));
     vec3 orgOctoP = p;
 
@@ -53,6 +60,7 @@ DistanceInfo map(in vec3 p, bool isMarch)
     float r = 0.2;
     float d = sdBox(p.xyz, vec3(r, s/2-0.01, r));
     d = max(d2, d);
+    d = max(bBoxD, d);
     vec3 legColor = 1.0*vec3(0.5, 0.5, 1.0);
     legColor *= 0.2 + 0.5*psin(px*5);
     DistanceInfo legs = {0.5*d, sphereType, legColor };
@@ -72,6 +80,8 @@ DistanceInfo map(in vec3 p, bool isMarch)
     ep = 4*(mod(t-1.2, 2)-1);
     ep = exp(-ep*ep);
     d = sdCutHollowSphere(vec3(p.x, -p.y-3.75*ep, p.z), 5+2*ep, -1-3*ep, 0.1);
+    
+    d = max(bBoxD, d);
     DistanceInfo head = {d, sphereType, 2*headColor};
     if (isMarch)
         at += 0.1/(1.2+d*d*d);
@@ -82,7 +92,6 @@ DistanceInfo map(in vec3 p, bool isMarch)
     d = sdPlane(p, vec4(0, 1, 0, 13)) + 0.05*noise_2(p.xz + vec2(iTime, iTime*0.2));
     DistanceInfo floor = {d, wallType, 0.3*vec3(0.0, 0.02, 0.1)};
     DistanceInfo blob = un(head, legs);
-
     p = orgPos;
 
     return blob;

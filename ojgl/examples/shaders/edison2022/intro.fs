@@ -110,8 +110,8 @@ float ojDistance(in vec3 p, bool isMarch) {
     float d = sdTorus(p.yxz, vec2(2, 0.10));
 
     p = orgP;
-    d = min(d, sdBox(p, vec3(0.1, 4.5, 0.1)));
-    d = min(d, sdBox(p, vec3(0.1, 0.1, 3)));
+   // d = min(d, sdBox(p, vec3(0.1, 4.5, 0.1)));
+   // d = min(d, sdBox(p, vec3(0.1, 0.1, 3)));
 
     p.z -= -5;
     vec3 jp = p;

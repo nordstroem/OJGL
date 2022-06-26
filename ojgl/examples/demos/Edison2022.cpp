@@ -22,10 +22,10 @@ Edison2022::Edison2022()
     //FreeCameraController::instance().set({ 85.5, 81.9, -63 }, -4.0f, -0.674f);
 
     // experiment.fs
-    //FreeCameraController::instance().set({ 30.17f, 23.19f, 34.3f }, 2.548f, -0.374f);
+    FreeCameraController::instance().set({ 30.17f, 23.19f, 34.3f }, 2.548f, -0.374f);
 
     // ascent.fs
-    FreeCameraController::instance().set({ 0.f, 85.5f, 90.74f }, 0.f, -0.77f);
+    //FreeCameraController::instance().set({ 0.f, 85.5f, 90.74f }, 0.f, -0.77f);
 }
 
 // clang-format off
@@ -85,7 +85,7 @@ ojstd::vector<Scene> Edison2022::buildSceneGraph(const Vector2i& sceneSize) cons
 
         auto post = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2022/post.fs");
         post->setInputs(fxaa);
-        scenes.emplace_back(fxaa, Duration::seconds(15), "scene1");
+        scenes.emplace_back(fxaa, Duration::seconds(28), "scene1");
     }
 
     {
@@ -117,7 +117,11 @@ void Edison2022::update(const Duration& relativeSceneTime, const Duration& elaps
         FreeCameraController::instance().set({ 85.5, 81.9, -63 }, -4.0f, -0.674f);
         //        FreeCameraController::instance().set({ 10, 80, 10 }, { 10 - 0.5f, 70, 10 });
     } else if (currentScene == "scene1") {
-        FreeCameraController::instance().set({ 30.17f, 23.19f, 34.3f }, 2.548f, -0.374f);
+        if (relativeSceneTime.toSeconds() > 15) {
+            FreeCameraController::instance().set({ 30.17f, 23.19f, 34.3f }, 2.548f, -0.374f);
+        } else {
+            FreeCameraController::instance().set({ 77.832f, 90.95f, -63.8f }, 2.35f, -0.054f);
+        }
     } else if (currentScene == "scene2") {
         //FreeCameraController::instance().set({ 39.0531f, 50.1299f, 20.5951f }, 1.114f, -0.846f);
         FreeCameraController::instance().set({ 0.f, 85.5f, 90.74f }, 0.f, -0.77f);
