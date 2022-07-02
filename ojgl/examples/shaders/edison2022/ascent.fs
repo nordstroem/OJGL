@@ -31,20 +31,44 @@ float pcurve( float x, float a, float b )
 }
 
 int primes[8] = int[8](2, 3, 5, 7, 11, 13, 17, 19);
+int order[5] = int[5](23, 2*11, 2*11*3*13, 2*11*3*13*5*17, 2*11*3*13*5*17*7*19);
+
+float powFunc(float left, float right, float value) {
+    float t = (value - left) / (right - left);
+    return pow(clamp(t, 0, 1), 5);
+}
 
 VolumetricResult evaluateLight(in vec3 p)
 {
     p.y += 10;
-    int a = int(pModPolar(p.xz, 8)) + 4;
-    float d = sdBox(p, vec3(19.0,  1*pow(0.7*psin(p.x + 5*iTime + 2*p.z),1), 0.1));
+    int a = int(pModPolar(p.xz, 8));
+    float d = sdBox(p, vec3(19.0,  0.6*pow(0.7*psin(p.x + 5*iTime + 2*p.z),1), 0.1));
+    d = max(0.01, d);
 
-	d = max(0.01, d);
-    if (iTime < 14)
-    d = 99999.f;
+    float timeInterval = 4;
+    float maxTime = 5 * timeInterval ;
+    int tk = iTime < 9 ? 0 : int(mod(iTime-9, maxTime)/timeInterval);
+
+    //if (a != 0 && a != 4)
+    //    d = 999.f;
+    //if (iTime < 14)
+    //    d = 99999.f;
 
     // 2, 3, 5, 7, 11, 13, 17, 19
-	float strength = 5;
+	float strength = 0;
 	vec3 col = vec3(0.1, 0.8, 0.2);
+
+
+    if (order[tk] % primes[a] == 0) {
+        if (tk > 0 && order[tk - 1] % primes[a] != 0) {
+            strength = 50*powFunc(3,timeInterval, mod(iTime-9, timeInterval));
+            //strength *= clamp(19*mod(iTime, 2)-p.x, 0.f, 1.f);
+        }
+        else {
+            strength = 50.f;
+        }
+    } 
+
 	vec3 res = col * strength / (d * d);
 
 	return VolumetricResult(d, res);
