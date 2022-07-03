@@ -41,7 +41,7 @@ float powFunc(float left, float right, float value) {
 VolumetricResult evaluateLight(in vec3 p)
 {
     vec3 orgP = p;
-    p.y += 10;
+    p.y += 12.;
     //float ep = 4*(mod(iTime-1.2, 2) - 1);
     //p.y += 1*exp(-ep*ep);
 
@@ -51,7 +51,7 @@ VolumetricResult evaluateLight(in vec3 p)
     d = min(d, d2);
 
     if (iTime > 30) {
-        float d3 = sdTorus(orgP + vec3(0, 10, 0), vec2(19.f, 0.2f));
+        float d3 = sdTorus(orgP + vec3(0, 12, 0), vec2(19.f, 0.2f));
         d3 = max(6 * (1-smoothstep(29, 33, iTime)), d3);
         d = min(d, d3);
     }
@@ -74,7 +74,7 @@ VolumetricResult evaluateLight(in vec3 p)
         }
     } 
 
-    strength *= (1 - smoothstep(35,40, iTime));
+    strength *= (1 - smoothstep(33,39.5, iTime));
 	vec3 res = col * strength / (d * d);
 
 	return VolumetricResult(d, res);
@@ -206,7 +206,7 @@ vec3 getColor(in MarchResult result)
         color *= (0.2 + 0.8*shadow) * fog;
         return color * result.transmittance + result.scatteredLight;
     } else {
-        vec3 color = 0.04*14.67*vec3(0.0, 0.02, 0.05);
+        vec3 color = 0.04*14.67*vec3(0.0, 0.02, 0.05) * (1-smoothstep(25,41, iTime));
         //color += at * 1.2*vec3(0.1, 0.1, 0.3);
         float l = length(result.position.xz);
         float fog = exp(-0.00035*l*l);
