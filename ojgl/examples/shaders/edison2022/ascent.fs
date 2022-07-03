@@ -31,7 +31,7 @@ float pcurve( float x, float a, float b )
 }
 
 int primes[8] = int[8](2, 3, 5, 7, 11, 13, 17, 19);
-int order[5] = int[5](23, 2*11, 2*11*3*13, 2*11*3*13*5*17, 2*11*3*13*5*17*7*19);
+int order[6] = int[6](23, 2*11, 2*11*3*13, 2*11*3*13*5*17, 2*11*3*13*5*17*7*19, 2*11*3*13*5*17*7*19);
 
 float powFunc(float left, float right, float value) {
     float t = (value - left) / (right - left);
@@ -40,35 +40,41 @@ float powFunc(float left, float right, float value) {
 
 VolumetricResult evaluateLight(in vec3 p)
 {
+    vec3 orgP = p;
     p.y += 10;
-    int a = int(pModPolar(p.xz, 8));
+    //float ep = 4*(mod(iTime-1.2, 2) - 1);
+    //p.y += 1*exp(-ep*ep);
+
+    int a = int(pModPolar(p.xz, 8)) + 3;
     float d = sdBox(p, vec3(19.0,  0.6*pow(0.7*psin(p.x + 5*iTime + 2*p.z),1), 0.1));
+    float d2 = sdTorus(p, vec2(4.f, 0.2f));
+    d = min(d, d2);
+
+    if (iTime > 30) {
+        float d3 = sdTorus(orgP + vec3(0, 10, 0), vec2(19.f, 0.2f));
+        d3 = max(6 * (1-smoothstep(29, 33, iTime)), d3);
+        d = min(d, d3);
+    }
     d = max(0.01, d);
 
     float timeInterval = 4;
-    float maxTime = 5 * timeInterval ;
-    int tk = iTime < 9 ? 0 : int(mod(iTime-9, maxTime)/timeInterval);
+    int tk = iTime < 8 ? 0 : min(int((iTime-8)/timeInterval), 5);
 
-    //if (a != 0 && a != 4)
-    //    d = 999.f;
-    //if (iTime < 14)
-    //    d = 99999.f;
-
-    // 2, 3, 5, 7, 11, 13, 17, 19
 	float strength = 0;
 	vec3 col = vec3(0.1, 0.8, 0.2);
 
 
     if (order[tk] % primes[a] == 0) {
         if (tk > 0 && order[tk - 1] % primes[a] != 0) {
-            strength = 50*powFunc(3,timeInterval, mod(iTime-9, timeInterval));
+            strength = 10*powFunc(3,timeInterval, mod(iTime-8, timeInterval));
             //strength *= clamp(19*mod(iTime, 2)-p.x, 0.f, 1.f);
         }
         else {
-            strength = 50.f;
+            strength = 10.f;
         }
     } 
 
+    strength *= (1 - smoothstep(35,40, iTime));
 	vec3 res = col * strength / (d * d);
 
 	return VolumetricResult(d, res);
@@ -90,9 +96,14 @@ vec3 colorPalette(float t, vec3 a , vec3 b, vec3 c, vec3 d) {
 DistanceInfo jellyfish(in vec3 p, bool isMarch)
 {
     p.xz *= rot(-0.2);
-    float t = mod(iTime, 60);
+    float t = iTime;
     p.xz *= rot(0.2*sin(iTime));
     p.y += 90.0 - 90*smoothstep(0, 10, t) + 15;
+
+    if (iTime > 30) {
+        p.y += 20*smoothstep(30, 36, iTime);
+        p.x -= 100*smoothstep(30, 36, iTime);
+    }
     vec3 orgOctoP = p;
 
     float s = 0.6;
@@ -127,7 +138,7 @@ DistanceInfo jellyfish(in vec3 p, bool isMarch)
     d = sdCutHollowSphere(vec3(p.x, -p.y-3.75*ep, p.z), 4+2*ep, -1-3*ep, 0.1);
     DistanceInfo head = {d, flowerType, headColor};
     if (isMarch)
-        at += 0.3/(1.2+d*d*d);
+        at += 0.05/(1.2+d*d*d) * (1 - smoothstep(36,37, iTime));
 
     DistanceInfo blob = un(head, legs);
 
@@ -146,13 +157,13 @@ DistanceInfo map(in vec3 p, bool isMarch)
     float wn = noise_2(p.xz + vec2(iTime, iTime*0.2));
     vec3 floorColor = 14.67*vec3(0.0, 0.02, 0.05);
 
-    DistanceInfo floor = {d + 0.03 * wn, wallType, 0.04*floorColor};
+    DistanceInfo floor = {d + 0.03 * wn, wallType, 0.00*floorColor};
     p = orgP;
    // p.xz *= rot(0.1*sin(iTime));
     pModPolar(p.xz, 8);
     p.x -= 30 - 7*smoothstep(0, 15, iTime);
     DistanceInfo jf = jellyfish(p, isMarch);
-
+    jf.color = 0.04*floorColor;
     p = orgP;
 
     return sunk(floor, jf, 0.5);
@@ -195,7 +206,7 @@ vec3 getColor(in MarchResult result)
         color *= (0.2 + 0.8*shadow) * fog;
         return color * result.transmittance + result.scatteredLight;
     } else {
-        vec3 color = vec3(0);
+        vec3 color = 0.04*14.67*vec3(0.0, 0.02, 0.05);
         //color += at * 1.2*vec3(0.1, 0.1, 0.3);
         float l = length(result.position.xz);
         float fog = exp(-0.00035*l*l);
@@ -217,11 +228,14 @@ void main()
     vec3 color = march(rayOrigin, rayDirection);
 
     // Tone mapping
-    color = mix(color, 0.2*vec3(0.01, 0.1, 0.3), 0.25);
+   // color = mix(color, 0.2*vec3(0.01, 0.1, 0.3), 0.25);
   //  color = mix(color, 0.2*vec3(0.01, 0.3, 0.1), 0.06);
     color /= (color + vec3(1.0));
 
     fragColor = vec4(pow(color, vec3(0.5)), 1.0);
+
+    //fragColor.xyz *= 1.0 - smoothstep(34., 35., iTime);
+    
     //fragColor = vec4(vec3(fragColor.y), 1.0);
 }
 

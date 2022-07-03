@@ -35,7 +35,7 @@ mat2 r05 = rot(0.5);
 
 vec3 jellyfishPosition() {
     vec3 p = vec3(0.f);
-    float t = mod(iTime, 15);
+    float t = iTime;
     p.y+=20;
     p.z-=30;
     p.x-=-5;
@@ -52,7 +52,7 @@ DistanceInfo jellyfish(in vec3 p, bool issMarch)
     p.y += -20;
     p.xz *= rot(-0.2);
     p = vec3(p.y, -p.x, p.z);//
-    float t = mod(iTime, 15);
+    float t = iTime;
     p += jellyfishPosition();
     p.xz *= rot(0.2*sin(iTime));
     vec3 orgOctoP = p;
@@ -129,7 +129,7 @@ float ojDistance(in vec3 p, bool isMarch) {
 
 
     if (isMarch)
-        at += 0.02/(0.01+d*d);
+        at += 0.02/(0.01+d*d) * smoothstep(7,13, iTime);
     return d;
 }
 
@@ -264,6 +264,8 @@ void main()
 
     fragColor = vec4(pow(color, vec3(0.5)), 1.0);
     //fragColor = vec4(vec3(fragColor.y), 1.0);
+
+    fragColor.xyz *= smoothstep(0, 6, iTime);
 }
 
 )""
