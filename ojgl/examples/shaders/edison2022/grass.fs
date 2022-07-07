@@ -1,7 +1,20 @@
 R""(
+
+const float S_distanceEpsilon = 1e-3;
+const float S_normalEpsilon = 1e-3;
+const int S_maxSteps = 150;
+const float S_maxDistance = 220.0;
+const float S_distanceMultiplier = 0.7;
+const float S_minVolumetricJumpDistance = 0.03;
+const float S_volumetricDistanceMultiplier = 0.75;
+const int S_reflectionJumps = 2;
+
+#define S_VOLUMETRIC 1
+#define S_REFLECTIONS 1
+#define S_REFRACTIONS 0
+
 #include "common/noise.fs"
 #include "common/primitives.fs"
-#include "edison2022/raymarch_settings.fs"
 #include "common/raymarch_utils.fs"
 #include "common/utils.fs"
 
@@ -55,26 +68,23 @@ vec3 colorPalette(float t, vec3 a , vec3 b, vec3 c, vec3 d) {
 VolumetricResult evaluateLight(in vec3 p)
 {
     vec3 orgP = p;
-    p.y += 12;
-    //float ep = 4*(mod(iTime-1.2, 2) - 1);
-    //p.y += 1*exp(-ep*ep);
-
+    p.y += 12.;
+    
     int a = int(pModPolar(p.xz, 8)) + 3;
-    float d = sdBox(p, vec3(19.0,  0.6*pow(0.7*psin(p.x + 5*iTime + 2*p.z),1), 0.1));
+    float d = sdBox(p, vec3(19.0,  0.6*pow(0.7*psin(p.x + 5*(iTime +41)+ 2*p.z),1), 0.1));
     float d2 = sdTorus(p, vec2(4.f, 0.2f));
     d = min(d, d2);
 
-    if (iTime > 30) {
-        float d3 = sdTorus(orgP + vec3(0, 10, 0), vec2(19.f, 0.2f));
-        d3 = max(6 * (1-smoothstep(29, 33, iTime)), d3);
-        d = min(d, d3);
-    }
+    float d3 = sdTorus(orgP + vec3(0, 12, 0), vec2(19.f, 0.2f));
+    d = min(d, d3);
     d = max(0.01, d);
 
-    float timeInterval = 4;
-    int tk = iTime < 8 ? 0 : min(int((iTime-8)/timeInterval), 5);
+    p.y += 20 - 40*smoothstep(5, 20, iTime);
+       
+    float d4 = sdCappedCylinder(p, vec2(0.3, 6));
 
-	float strength = 10;
+    d = min(d, d4);
+	float strength = 10 * (1 - smoothstep(0, 6, iTime));
 	vec3 col = vec3(0.1, 0.8, 0.2);
 
 	vec3 res = col * strength / (d * d);
@@ -94,27 +104,27 @@ DistanceInfo map(in vec3 p, bool isMarch)
 
     vec3 orgP = p;
     p = orgP;
-    p.xz *= rot(0.6*iTime);
+    p.xz *= rot(3.6*smoothstep(0, 20, iTime)  + 0.07*iTime);
    // p.xy *= rot(0.6*iTime);
 
     float t0 = mod(iTime, 40);
-    float t = smoothstep(2, 20, t0) - smoothstep(30, 40, t0);
+    float t = smoothstep(5, 20, t0) - smoothstep(30, 40, t0);
     float r = 0.5 + 1.5*t;
     float ns = 1 - smoothstep(2, 20, t0);
     p.x -= ns*0.05*sin(20*iTime);
     p.y -= ns*0.05*sin(20*iTime + 30);
     p.y+= 10;
     p.y+= 4 - 10*t;
-    float d = grassDistance(p, 18*t, r, 2);
+    float d = grassDistance(p, 16*t, r, 2);
     p.y -= 3.0 * t;
     p.xz *= r05;
-    float d2 = grassDistance(p, 18*t, r, 1);
+    float d2 = grassDistance(p, 16*t, r, 1);
     if (d2 < d)
         grassColor *= 0.2;
 
     p.y -= 3.0 * t;
     p.xz *= r05;
-    float d3 = grassDistance(p, 18*t, 1, 0.6);
+    float d3 = grassDistance(p, 16*t, 1, 0.6);
     if (d3 < d2)
         grassColor *= 0.5;
 

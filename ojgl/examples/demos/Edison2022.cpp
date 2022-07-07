@@ -127,25 +127,26 @@ void Edison2022::update(const Duration& relativeSceneTime, const Duration& elaps
 {
     OJ_UNUSED(elapsedTime);
     OJ_UNUSED(relativeSceneTime);
-    //auto& camera = FreeCameraController::instance();
-    //Vector3f newPosition = spline(relativeSceneTime.toSeconds());
-    //camera.set(newPosition, { 0.f, 0.f, 0.f });
-    //if (currentScene == "scene0") {
-    //    FreeCameraController::instance().set({ 85.5, 81.9, -63 }, -4.0f, -0.674f);
-    //    //        FreeCameraController::instance().set({ 10, 80, 10 }, { 10 - 0.5f, 70, 10 });
-    //} else if (currentScene == "scene1") {
-    //    if (relativeSceneTime.toSeconds() > 15) {
-    //        FreeCameraController::instance().set({ 30.17f, 23.19f, 34.3f }, 2.548f, -0.374f);
-    //    } else {
-    //        FreeCameraController::instance().set({ 77.832f, 90.95f, -63.8f }, 2.35f, -0.054f);
-    //    }
-    //} else if (currentScene == "scene2") {
-    //    //FreeCameraController::instance().set({ 39.0531f, 50.1299f, 20.5951f }, 1.114f, -0.846f);
-    //    // FreeCameraController::instance().set({ 0.f, 55.5f, 90.74f }, 0.f, -0.77f);
-    //    FreeCameraController::instance().set({ 31.64f, 62.6f, -23.58f }, 2.272f, -1.066f);
-    //} else if (currentScene == "scene3") {
-    //    FreeCameraController::instance().set({ 30.17f, 23.19f, 34.3f }, 2.548f, -0.374f);
-    //}
+    auto& camera = FreeCameraController::instance();
+    Vector3f newPosition = spline(relativeSceneTime.toSeconds());
+    camera.set(newPosition, { 0.f, 0.f, 0.f });
+    if (currentScene == "scene0") {
+        FreeCameraController::instance().set({ 85.5, 81.9, -63 }, -4.0f, -0.674f);
+        //        FreeCameraController::instance().set({ 10, 80, 10 }, { 10 - 0.5f, 70, 10 });
+    } else if (currentScene == "scene1") {
+        if (relativeSceneTime.toSeconds() > 15) {
+            FreeCameraController::instance().set({ 30.17f, 23.19f, 34.3f }, 2.548f, -0.374f);
+        } else {
+            FreeCameraController::instance().set({ 77.832f, 90.95f, -63.8f }, 2.35f, -0.054f);
+        }
+    } else if (currentScene == "scene2") {
+        //FreeCameraController::instance().set({ 39.0531f, 50.1299f, 20.5951f }, 1.114f, -0.846f);
+        // FreeCameraController::instance().set({ 0.f, 55.5f, 90.74f }, 0.f, -0.77f);
+        FreeCameraController::instance().set({ 31.64f, 62.6f, -23.58f }, 2.272f, -1.066f);
+    } else if (currentScene == "scene3") {
+        //FreeCameraController::instance().set({ 41.64f, 72.6f, -33.58f }, 2.272f, -0.866f);
+        FreeCameraController::instance().set({ 31.64f, 62.6f, -23.58f }, 2.272f, -1.066f);
+    }
 }
 
 ojstd::string Edison2022::getTitle() const

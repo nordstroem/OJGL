@@ -41,6 +41,7 @@ float powFunc(float left, float right, float value) {
 VolumetricResult evaluateLight(in vec3 p)
 {
     vec3 orgP = p;
+   
     p.y += 12.;
     //float ep = 4*(mod(iTime-1.2, 2) - 1);
     //p.y += 1*exp(-ep*ep);
@@ -52,7 +53,7 @@ VolumetricResult evaluateLight(in vec3 p)
 
     if (iTime > 30) {
         float d3 = sdTorus(orgP + vec3(0, 12, 0), vec2(19.f, 0.2f));
-        d3 = max(6 * (1-smoothstep(29, 33, iTime)), d3);
+        d3 = max(6 * (1-smoothstep(29.0, 33.0, iTime)), d3);
         d = min(d, d3);
     }
     d = max(0.01, d);
@@ -74,7 +75,7 @@ VolumetricResult evaluateLight(in vec3 p)
         }
     } 
 
-    strength *= (1 - smoothstep(33,39.5, iTime));
+    //strength *= (1 - smoothstep(33.0,39.5, iTime));
 	vec3 res = col * strength / (d * d);
 
 	return VolumetricResult(d, res);
