@@ -18,7 +18,7 @@ struct Vector3 {
     {
     }
 
-    Vector3 operator*(T a)
+    Vector3 operator*(const T& a) const
     {
         return Vector3(x * a, y * a, z * a);
     }
@@ -28,6 +28,11 @@ struct Vector3 {
         x += v.x;
         y += v.y;
         z += v.z;
+    }
+
+    Vector3 operator+(const Vector3& v) const
+    {
+        return Vector3(x + v.x, y + v.y, z + v.z);
     }
 
     Vector3 operator-(const Vector3& v) const

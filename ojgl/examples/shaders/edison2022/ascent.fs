@@ -207,7 +207,7 @@ vec3 getColor(in MarchResult result)
         color *= (0.2 + 0.8*shadow) * fog;
         return color * result.transmittance + result.scatteredLight;
     } else {
-        vec3 color = 0.04*14.67*vec3(0.0, 0.02, 0.05) * (1-smoothstep(25,41, iTime));
+        vec3 color = 0.04*14.67*vec3(0.0, 0.02, 0.05) * (1-smoothstep(20,34, iTime));
         //color += at * 1.2*vec3(0.1, 0.1, 0.3);
         float l = length(result.position.xz);
         float fog = exp(-0.00035*l*l);

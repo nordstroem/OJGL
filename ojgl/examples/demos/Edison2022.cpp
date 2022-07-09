@@ -24,6 +24,7 @@ Edison2022::Edison2022()
     // experiment.fs
     FreeCameraController::instance().set({ 30.17f, 23.19f, 34.3f }, 2.548f, -0.374f);
     FreeCameraController::instance().set({ 31.64f, 62.6f, -23.58f }, 2.272f, -1.066f);
+    FreeCameraController::instance().set({ 31.64f, 62.6f, -23.58f }, 2.272f, -1.066f);
 
     // ascent.fs
     //FreeCameraController::instance().set({ 0.f, 85.5f, 90.74f }, 0.f, -0.77f);
@@ -102,7 +103,7 @@ ojstd::vector<Scene> Edison2022::buildSceneGraph(const Vector2i& sceneSize) cons
 
         auto chrom = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2022/chrom_ab.fs");
         chrom->setInputs(fxaa);
-        scenes.emplace_back(fxaa, Duration::seconds(41), "scene2");
+        scenes.emplace_back(fxaa, Duration::seconds(34), "scene2");
     }
 
     {
@@ -132,7 +133,6 @@ void Edison2022::update(const Duration& relativeSceneTime, const Duration& elaps
     camera.set(newPosition, { 0.f, 0.f, 0.f });
     if (currentScene == "scene0") {
         FreeCameraController::instance().set({ 85.5, 81.9, -63 }, -4.0f, -0.674f);
-        //        FreeCameraController::instance().set({ 10, 80, 10 }, { 10 - 0.5f, 70, 10 });
     } else if (currentScene == "scene1") {
         if (relativeSceneTime.toSeconds() > 15) {
             FreeCameraController::instance().set({ 30.17f, 23.19f, 34.3f }, 2.548f, -0.374f);
@@ -140,12 +140,19 @@ void Edison2022::update(const Duration& relativeSceneTime, const Duration& elaps
             FreeCameraController::instance().set({ 77.832f, 90.95f, -63.8f }, 2.35f, -0.054f);
         }
     } else if (currentScene == "scene2") {
-        //FreeCameraController::instance().set({ 39.0531f, 50.1299f, 20.5951f }, 1.114f, -0.846f);
-        // FreeCameraController::instance().set({ 0.f, 55.5f, 90.74f }, 0.f, -0.77f);
-        FreeCameraController::instance().set({ 31.64f, 62.6f, -23.58f }, 2.272f, -1.066f);
+        FreeCameraController::instance().set({ 31.64f, 72.6f, -23.58f }, { 0.f, 0.f, 0.f });
     } else if (currentScene == "scene3") {
-        //FreeCameraController::instance().set({ 41.64f, 72.6f, -33.58f }, 2.272f, -0.866f);
-        FreeCameraController::instance().set({ 31.64f, 62.6f, -23.58f }, 2.272f, -1.066f);
+        const float t = ojstd::smoothstep(5, 20, relativeSceneTime.toSeconds());
+        /*const Vector3f start = { 31.64f, 62.6f, -23.58f };
+        const Vector3f end = { 51.94f, 61.16f, -46.8f };
+        FreeCameraController::instance().set(ojstd::lerp(start, end, t), ojstd::lerp(2.272f, 2.38f, t), ojstd::lerp(-1.066f, -0.646f, t));*/
+
+        const Vector3f start = { 31.64f, 72.6f, -23.58f };
+        const Vector3f end = { 101.64f, 102.f, -23.58f };
+        const Vector3f startTarget = { 0.f, 0.f, 0.f };
+        const Vector3f endTarget = { 0.f, 20.f, 0.f };
+
+        FreeCameraController::instance().set(ojstd::lerp(start, end, t), ojstd::lerp(startTarget, endTarget, t));
     }
 }
 

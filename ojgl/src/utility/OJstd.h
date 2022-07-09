@@ -539,7 +539,11 @@ float fract(float value);
 float hash1(float value);
 float rand();
 float smoothstep(float edge0, float edge1, float x);
-float lerp(float left, float right, float amount);
+template <typename T>
+T lerp(const T& left, const T& right, float amount)
+{
+    return left * (1.f - amount) + right * amount;
+}
 
 template <typename ReturnType, typename... Args>
 class callable_base {

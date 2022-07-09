@@ -110,8 +110,8 @@ public:
 
                     if (i >= numForCircle) {
                         float st = 1.f * (i - numForCircle) / (numForLine - 1);
-                        qY = ojstd::lerp(7, 5, st);
-                        qZ = ojstd::lerp(1, 3, st);
+                        qY = ojstd::lerp(7.f, 5.f, st);
+                        qZ = ojstd::lerp(1.f, 3.f, st);
                     }
                     qZ -= 6.5;
                 } else if (i < (numForQ + numForE)) {
@@ -157,11 +157,11 @@ public:
                     } else if (j >= numForCircle && j < numForCircle + numForLine1 + numForLine2) {
                         float st = 1.f * (j - numForCircle - numForLine1) / (numForLine2 - 1);
                         qY = 11;
-                        qZ = ojstd::lerp(0, 1.5, st);
+                        qZ = ojstd::lerp(0.f, 1.5f, st);
                     } else if (j >= numForCircle && j < numForCircle + numForLine1 + numForLine2 + numForLine3) {
                         float st = 1.f * (j - numForCircle - numForLine1 - numForLine2) / (numForLine3 - 1);
                         qY = 5;
-                        qZ = ojstd::lerp(0, 1.5, st);
+                        qZ = ojstd::lerp(0.f, 1.5f, st);
                     }
                     qZ += 5.3f;
                 } else {
@@ -348,6 +348,7 @@ static const unsigned char song[] = {
 #include "songs/qed_song.inc"
 };
 
-const unsigned char* QED::getSong() const {
-  return song;
+const unsigned char* QED::getSong() const
+{
+    return song;
 }

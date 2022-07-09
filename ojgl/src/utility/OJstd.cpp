@@ -392,9 +392,4 @@ float smoothstep(float edge0, float edge1, float x)
     return x * x * (3 - 2 * x);
 }
 
-float lerp(float left, float right, float amount)
-{
-    return (1 - amount) * left + amount * right;
-}
-
 }
