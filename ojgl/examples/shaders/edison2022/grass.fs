@@ -101,17 +101,41 @@ vec3 ballPositionCalc() {
 vec3 ballPosition = ballPositionCalc();
 
 VolumetricResult missile(in vec3 p) {
+    float t = iTime;//4*mod(iTime, 10);
+    const float speed = 40;
+    const float perimeter = 2 * pi * 25;
+    const float endAngle = 2*pi - 2.2;
+    const float circleAngleLength =  (1  + ((2*pi - 2.2) / (2 * pi)));
+    float t0 = 20;
+    float t1 = t0 + 47 / speed;
+    float t2 = t1 + 25 / speed;
+    float t3 = t2 + circleAngleLength * perimeter / speed;
+
+
+
+
     vec3 orgP = p;
 	vec3 col = vec3(0.1, 0.8, 0.2);
     float strength = 20;
     float l = 25;
     float verticalD = sdCappedCylinder(p - vec3(0, 0, 0), vec2(0.5, l));
     float horizontalD = sdCappedCylinder(p.xzy - vec3(0, +l/2, l), vec2(0.5, l/2));
+    if (t > t2 + 2) {
+        horizontalD = 99999.0;
+    }
 
     float torusD = sdTorus(p - vec3(0, l, 0), vec2(l, 0.5));
+    if (t > t2 - 1.0 && t < t2 + 1.0) {
+        torusD = max(torusD, -p.x);
+    }
+
 
     p.xz *= rot(2.2);
-    float escapeD = sdCappedCylinder(p.xzy - vec3(0, l+150, l), vec2(0.5, 150));
+    float escapeD = 999999.0;
+    if (t > t3 - 1.0) {
+        escapeD = sdCappedCylinder(p.xzy - vec3(0, l+150, l), vec2(0.5, 150));
+        torusD = max(torusD, p.x);
+    }
 
     //torusD = max(0.05, torusD);
 
@@ -125,8 +149,8 @@ VolumetricResult missile(in vec3 p) {
     float ball = length(orgP - ballPosition) - 10.0;
 
     //d = min(ball, horizontalD);
-    //d = max(d, ball);
-    d = min(d, ball);
+    d = max(d, ball);
+    //d = min(d, ball);
 
     vec3 res = col * strength / (d * d);
     VolumetricResult bullet = {d, res};
