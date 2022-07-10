@@ -3,7 +3,7 @@ R""(
 const float S_distanceEpsilon = 1e-3;
 const float S_normalEpsilon = 1e-3;
 const int S_maxSteps = 150;
-const float S_maxDistance = 220.0;
+const float S_maxDistance = 400.0;
 const float S_distanceMultiplier = 0.5;
 const float S_minVolumetricJumpDistance = 0.03;
 const float S_volumetricDistanceMultiplier = 0.75;
@@ -44,13 +44,13 @@ float pcurve( float x, float a, float b )
 }
 
 
-float grassDistance(vec3 p, float h, float w, float d) 
+float grassDistance(vec3 p, float h, float w, float d)
 {
     float a = pModPolar(p.xz, 4);
     //p.y+= 20 - t*20;
     p.x-=d;
     //float t2 = smoothstep(0.5, 1.0, t);
-    //float k = -0.2 * (1-t2) + (0.8+0.2) * t2; 
+    //float k = -0.2 * (1-t2) + (0.8+0.2) * t2;
     //p.x += 0.3*pow(0.15*(p.y+h), 2);
     p.x-= 0.8 * pow(0.15*(p.y+h), 2);
     float x = clamp((p.y + h)/(2*h), 0, 1);
@@ -70,11 +70,74 @@ VolumetricResult volUn(VolumetricResult a, VolumetricResult b)
     return VolumetricResult(min(a.distance, b.distance), a.color + b.color);
 }
 
+vec3 ballPositionCalc() {
+    float t = iTime;//4*mod(iTime, 10);
+    const float speed = 40;
+    const float perimeter = 2 * pi * 25;
+    const float endAngle = 2*pi - 2.2;
+    const float circleAngleLength =  (1  + ((2*pi - 2.2) / (2 * pi)));
+    float t0 = 20;
+    float t1 = t0 + 47 / speed;
+    float t2 = t1 + 25 / speed;
+    float t3 = t2 + circleAngleLength * perimeter / speed;
+
+
+    if (t < t0) { // hidden
+        return vec3(0, -12 - 10, 0);
+    } else  if (t < t1){ // up
+        return vec3(0, -22 + (t-20) * speed, 0);
+    } else if (t < t2) { // out to torus
+         return vec3(0, 25, speed*(t-t1));
+    } else if (t < t3) {
+        float angle = (t-t2) / (t3-t2) *  2 * pi * circleAngleLength;
+        return vec3(25*sin(angle), 25, 25 * cos(angle));
+    } else { // escape
+        return vec3(25*sin(endAngle) + (t - t3) * speed * sin(endAngle), 25, 25 * cos(endAngle)  + (t - t3) * speed * cos(endAngle));
+    }
+
+    return vec3(0, 0, 0);
+}
+
+vec3 ballPosition = ballPositionCalc();
+
+VolumetricResult missile(in vec3 p) {
+    vec3 orgP = p;
+	vec3 col = vec3(0.1, 0.8, 0.2);
+    float strength = 20;
+    float l = 25;
+    float verticalD = sdCappedCylinder(p - vec3(0, 0, 0), vec2(0.5, l));
+    float horizontalD = sdCappedCylinder(p.xzy - vec3(0, +l/2, l), vec2(0.5, l/2));
+
+    float torusD = sdTorus(p - vec3(0, l, 0), vec2(l, 0.5));
+
+    p.xz *= rot(2.2);
+    float escapeD = sdCappedCylinder(p.xzy - vec3(0, l+150, l), vec2(0.5, 150));
+
+    //torusD = max(0.05, torusD);
+
+
+
+    p = orgP;
+    float d = min(verticalD, horizontalD);//min(verticalD, torusD);
+    d = min(d, torusD);
+    d = min(d, escapeD);
+    d = max(0.01, d);
+    float ball = length(orgP - ballPosition) - 10.0;
+
+    //d = min(ball, horizontalD);
+    //d = max(d, ball);
+    d = min(d, ball);
+
+    vec3 res = col * strength / (d * d);
+    VolumetricResult bullet = {d, res};
+    return bullet;
+}
+
 VolumetricResult evaluateLight(in vec3 p)
 {
     vec3 orgP = p;
     p.y += 12.;
-    
+
     int a = int(pModPolar(p.xz, 8)) + 3;
     float d = sdBox(p, vec3(19.0,  0.6*pow(0.7*psin(p.x + 5*(iTime +34)+ 2*p.z),1), 0.1));
     float d2 = sdTorus(p, vec2(4.f, 0.2f));
@@ -90,14 +153,7 @@ VolumetricResult evaluateLight(in vec3 p)
 	vec3 res = col * strength / (d * d);
     VolumetricResult symbols = {d, res};
 
-
-    p = orgP;
-    float d4 = sdCappedCylinder(p - vec3(0, -30 + iTime, 0), vec2(0.5, 8));
-    res = col * 20 * smoothstep(0, 5, iTime)/ (d4 * d4);
-    VolumetricResult bullet = {d4, res};
-
-
-	return volUn(symbols, bullet);
+	return volUn(symbols, missile(orgP));
 }
 
 
@@ -136,7 +192,7 @@ DistanceInfo map(in vec3 p, bool isMarch)
         grassColor *= 0.5;
 
     d = min(d, min(d2, d3));
-        
+
     //p = orgP;
     //float d5 = sdCappedCylinder(p, vec2(0.2,10));
     //d = min(d, d5);
@@ -177,7 +233,7 @@ vec3 getColor(in MarchResult result)
     vec3 lightPosition = vec3(5, 15, 30);
     if (result.type != invalidType) {
         vec3 ambient = result.color;
-        
+
         vec3 invLight = normalize(lightPosition - result.position);
         vec3 normal = normal(result.position);
         float k = max(0.0, dot(result.rayDirection, reflect(invLight, normal)));
@@ -187,7 +243,7 @@ vec3 getColor(in MarchResult result)
         float shadow = 1.0;
         //if (result.type == wallType)
         //    shadow = shadowFunction(result.position, lightPosition, 32);
-        
+
         float diffuse = max(0., dot(invLight, normal));
         vec3 color = vec3(ambient * (0.1 + 0.96*diffuse));
         color += fogColor;
