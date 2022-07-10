@@ -104,7 +104,7 @@ ojstd::vector<Scene> Edison2022::buildSceneGraph(const Vector2i& sceneSize) cons
             return vector;
     });
 
-        scenes.emplace_back(chrom, Duration::seconds(999999), "sceneShip");
+        scenes.emplace_back(chrom, Duration::seconds(12 + 10 + 15 + 10 + 16), "sceneShip");
     }
 
     {

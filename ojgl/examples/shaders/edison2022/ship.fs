@@ -41,7 +41,7 @@ uniform float C_6_TOTAL;
 
 const float PART_4_speed = 3.0;
 const float PART_4_travelEndPoint = 13.5;
-const float PART_4_SPIN_START = 1.0 + (PART_4_travelEndPoint / PART_4_speed);
+const float PART_4_SPIN_START = (PART_4_travelEndPoint / PART_4_speed);
 
 const float PART_4_SINK_START = PART_4_MISSILE + 5.0;
 
@@ -51,7 +51,7 @@ bool isGhost() {
     } else if (iTime < PART_5_SINKING) {
         const float time = iTime - PART_3_OIL;
 
-        if (time > PART_4_SPIN_START) {
+        if (time > PART_4_SPIN_START + 1.0) {
             return hash11(floor(time * 8.0)) > 0.5;
         } else {
             return true;
@@ -184,14 +184,15 @@ VolumetricResult missile(in vec3 p) {
         headOffset = vec3(sin(p.z * 10.0) * 0.1, 0, 0);
     } else if (time > PART_3_flyAwayStartTime) {
         // second cylinder + other half of the torus
-        pd = sdCappedCylinder((p - vec3(0.5 + sin(p.z * 10.0) * 0.1, 0.6, 10 + 3.5)).xzy, vec2(r, 10));
+        pd = sdCappedCylinder((p - vec3(0.5 + sin(p.z * 10.0) * 0.1, 0.6, 100 + 3.5)).xzy, vec2(r, 100));
         td = max(p.z - 3.5, td);
         headOffset = vec3(sin(p.z * 10.0) * 0.1, 0, 0);
     }
 
     d = max(d, min(td, pd));
     d = min(d, length(p - missilePos(0.17) - headOffset) - 0.05);
-    strength = 0 + 30.0 - pow(C_6_SINCE, 0.8) * 30.0;
+
+    strength = 0 + 30.0 - pow(C_6_SINCE, 0.8) * 25.0;
     strength = max(0.0, strength);
     res = vec3(0.4, 1.0, 0.4) * strength / (d * d);
 
