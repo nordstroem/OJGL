@@ -190,7 +190,7 @@ VolumetricResult missile(in vec3 p) {
     }
 
     d = max(d, min(td, pd));
-    d = min(d, length(p - missilePos(0.17) - headOffset) - 0.05);
+    //d = min(d, length(p - missilePos(0.17) - headOffset) - 0.05); // head
 
     strength = 0 + 30.0 - pow(C_6_SINCE, 0.8) * 25.0;
     strength = max(0.0, strength);

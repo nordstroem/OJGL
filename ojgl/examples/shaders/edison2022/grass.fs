@@ -85,7 +85,7 @@ vec3 ballPositionCalc() {
     if (t < t0) { // hidden
         return vec3(0, -12 - 10, 0);
     } else  if (t < t1){ // up
-        return vec3(0, -22 + (t-20) * speed, 0);
+        return vec3(0, -22 + (t-t0) * speed, 0);
     } else if (t < t2) { // out to torus
          return vec3(0, 25, speed*(t-t1));
     } else if (t < t3) {
@@ -118,13 +118,17 @@ VolumetricResult missile(in vec3 p) {
 	vec3 col = vec3(0.1, 0.8, 0.2);
     float strength = 20;
     float l = 25;
-    float verticalD = sdCappedCylinder(p - vec3(0, 0, 0), vec2(0.5, l));
-    float horizontalD = sdCappedCylinder(p.xzy - vec3(0, +l/2, l), vec2(0.5, l/2));
+    float distortionStrength = 0.5;
+    float distortionFrequency = 1.0;
+
+    float verticalD = sdCappedCylinder(p - vec3(0, 0, distortionStrength*sin(distortionFrequency*p.y)), vec2(0.5, l));
+    float horizontalD = sdCappedCylinder(p.xzy - vec3(distortionStrength*sin(distortionFrequency*p.z), +l/2, l), vec2(0.5, l/2));
     if (t > t2 + 2) {
         horizontalD = 99999.0;
     }
 
-    float torusD = sdTorus(p - vec3(0, l, 0), vec2(l, 0.5));
+    float angle = atan(p.x, p.z);
+    float torusD = sdTorus(p - vec3(0, l, 0), vec2(l + distortionStrength*sin(distortionFrequency*angle * 25.0) * 2.0, 0.5));
     if (t > t2 - 1.0 && t < t2 + 1.0) {
         torusD = max(torusD, -p.x);
     }
@@ -133,7 +137,7 @@ VolumetricResult missile(in vec3 p) {
     p.xz *= rot(2.2);
     float escapeD = 999999.0;
     if (t > t3 - 1.0) {
-        escapeD = sdCappedCylinder(p.xzy - vec3(0, l+150, l), vec2(0.5, 150));
+        escapeD = sdCappedCylinder(p.xzy - vec3(distortionStrength*sin(distortionFrequency*p.z), l+150 + 1.5, l), vec2(0.5, 150));
         torusD = max(torusD, p.x);
     }
 
@@ -281,7 +285,7 @@ vec3 getColor(in MarchResult result)
         float l = length(result.position.xz);
         float fog = exp(-0.00035*l*l);
 
-        if (result.position.y < 100)
+        //if (result.position.y < 100)
              color = color * fog * result.transmittance + result.scatteredLight;
         return color;
     }
