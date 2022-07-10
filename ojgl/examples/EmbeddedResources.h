@@ -304,6 +304,10 @@ namespace ojgl::resources {
 #include "shaders/edison2022/ship_chrom_ab.fs"
           , "edison2022/ship_chrom_ab.fs"
           },
+          {
+#include "shaders/edison2022/blur1.fs"
+          , "edison2022/blur1.fs"
+          },
   };
 // clang-format on
 }

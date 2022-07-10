@@ -400,6 +400,7 @@
     <None Include="examples\shaders\edison2021\wire_cube.fs" />
     <None Include="examples\shaders\edison2021\tunnel_base.fs" />
     <None Include="examples\shaders\edison2022\blocks.fs" />
+    <None Include="examples\shaders\edison2022\blur1.fs" />
     <None Include="examples\shaders\edison2022\chrom_ab.fs" />
     <None Include="examples\shaders\edison2022\experiment.fs" />
     <None Include="examples\shaders\edison2022\grass.fs" />
