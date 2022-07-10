@@ -142,7 +142,7 @@ void Edison2022::update(const Duration& relativeSceneTime, const Duration& elaps
     } else if (currentScene == "scene2") {
         FreeCameraController::instance().set({ 31.64f, 72.6f, -23.58f }, { 0.f, 0.f, 0.f });
     } else if (currentScene == "scene3") {
-        const float t = ojstd::smoothstep(5, 20, relativeSceneTime.toSeconds());
+        const float t = ojstd::smoothstep(5, 25, relativeSceneTime.toSeconds());
         /*const Vector3f start = { 31.64f, 62.6f, -23.58f };
         const Vector3f end = { 51.94f, 61.16f, -46.8f };
         FreeCameraController::instance().set(ojstd::lerp(start, end, t), ojstd::lerp(2.272f, 2.38f, t), ojstd::lerp(-1.066f, -0.646f, t));*/
