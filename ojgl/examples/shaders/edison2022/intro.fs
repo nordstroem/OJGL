@@ -60,7 +60,7 @@ DistanceInfo jellyfish(in vec3 p, bool issMarch)
     float s = 0.6;
     float px = floor((p.y-s/2)/s);
     pMod1(p.y, s);
-    
+
     float a = pModPolar(p.xz, 6);
     p.x -= 2.5;
 
@@ -81,7 +81,7 @@ DistanceInfo jellyfish(in vec3 p, bool issMarch)
     p = orgOctoP;
     p.x -= 0.3*sin(0.3*p.y + 3*iTime);
     p.y -= 4.1;
-    
+
     vec3 headColor = 20.0*vec3(0.2, 0.3, 1.0);
 
     ep = 4*(mod(t-1.2, 2)-1);
@@ -134,19 +134,57 @@ float ojDistance(in vec3 p, bool isMarch) {
 }
 
 DistanceInfo stone(in vec3 p, bool isMarch) {
-    p.y += 6;
-    p.xz *= rot(-1.2);
-    vec3 orgP = p;
-    //float d = sdBox(p, vec3(2.0, 2.0, 2.0));
-    //DistanceInfo stone = {d + fbm3_high(orgP*4.0,0.4,2.96 ) * 0.1, stoneType, vec3(0.1)};
+    //p.y += 6;
+    //p.xz *= rot(-1.2);
+    //vec3 orgP = p;
+    ////float d = sdBox(p, vec3(2.0, 2.0, 2.0));
+    ////DistanceInfo stone = {d + fbm3_high(orgP*4.0,0.4,2.96 ) * 0.1, stoneType, vec3(0.1)};
 
-    float ojd = ojDistance(p, isMarch);
-    pModPolar(p.xz, 2.7);
-    mo(p.xy, vec2(0.0, 1.5));
-    float d = sdTriPrism(p, vec2(20.0, 10.0));// + fbm3_high(orgP*4.0,0.4,2.96 ) * 0.1 + 0.8*noise_3(p*0.5);
 
-   // d = min(d, ojd);
-    DistanceInfo stone = {d , stoneType,  vec3(0.1)};
+    //pModPolar(p.xz, 2.7);
+    //mo(p.xy, vec2(0.0, 1.5));
+    //float d = sdTriPrism(p, vec2(20.0, 10.0));// + fbm3_high(orgP*4.0,0.4,2.96 ) * 0.1 + 0.8*noise_3(p*0.5);
+
+    //// d = min(d, ojd);
+
+    // Ship
+    const float scale = 40.0;
+
+    vec3 rp = p / scale;
+    rp.xz *= rot(-1.5);
+    rp.zy *= rot(-1.0);
+    const float len = 0.7;
+    const float height = 0.1;
+    float width = 0.2 + rp.y * 0.5;
+    if (rp.x < -0.1) {
+        width += rp.x + 0.1;
+    }
+    float d = sdRoundBox(rp , vec3(len, height, width), 0.0);
+    d = max(-sdRoundBox(rp - vec3(0.55, 0.1, 0) , vec3(0.1, 0.1, 0.15), 0.0), d);
+
+    // top
+    if (rp.y > 0.2) {
+        width -= rp.y - 0.2;
+    }
+
+    const float d2 = sdRoundBox(rp - vec3(0.1, height, 0), vec3(0.3, 0.2, width), 0.0);
+
+    d = min(d, d2);
+
+    // antenna
+    const float w = 0.02 + 0.5 - rp.y * 0.2 - 0.4;
+    const float d3 = sdRoundBox(rp - vec3(0, 0.22, 0), vec3(w, 0.3, w), 0.0);
+
+    d = smink(d, d3, 0.05);
+
+    d *= scale;
+    // End ship
+
+
+    float ojd = ojDistance(p - vec3(3, 3.5, -9), isMarch);
+    d = min(d, ojd);
+
+     DistanceInfo stone = {d, stoneType,  vec3(0.1)};
     return stone;
 }
 
@@ -182,7 +220,7 @@ DistanceInfo map(in vec3 p, bool isMarch)
     DistanceInfo jf = jellyfish(p, isMarch);
 
     DistanceInfo ojD = stone(p, isMarch);
-  
+
     DistanceInfo res = sunk(floor, ojD, 1);
 
 
@@ -217,7 +255,7 @@ vec3 getColor(in MarchResult result)
     vec3 lightPosition = vec3(-15, 30, -10);
     if (result.type != invalidType) {
         vec3 ambient = result.color;
-        
+
         vec3 invLight = normalize(lightPosition - result.position);
         vec3 normal = normal(result.position);
         float k = max(0.0, dot(result.rayDirection, reflect(invLight, normal)));
@@ -227,7 +265,7 @@ vec3 getColor(in MarchResult result)
         float shadow = 1.0;
        //z if (result.type == wallType)
             shadow = shadowFunction(result.position, lightPosition, 32);
-        
+
         float diffuse = max(0., dot(invLight, normal));
         vec3 color = vec3(ambient * (0.04 + 0.96*diffuse));
         float fog = exp(-0.00035*l*l);
@@ -251,7 +289,7 @@ void main()
     float u = (fragCoord.x - 0.5);
     float v = (fragCoord.y - 0.5) * iResolution.y / iResolution.x;
 
-     
+
     vec3 rayOrigin = (iCameraMatrix * vec4(u, v, -0.7, 1.0)).xyz;
     eye = (iCameraMatrix * vec4(0.0, 0.0, 0.0, 1)).xyz;
     vec3 rayDirection = normalize(rayOrigin - eye);
