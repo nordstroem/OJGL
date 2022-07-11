@@ -70,29 +70,32 @@ VolumetricResult volUn(VolumetricResult a, VolumetricResult b)
     return VolumetricResult(min(a.distance, b.distance), a.color + b.color);
 }
 
+const float missileHeight = 25;
+const float missileRadius = 25;
+
 vec3 ballPositionCalc() {
     float t = iTime;//4*mod(iTime, 10);
     const float speed = 40;
-    const float perimeter = 2 * pi * 25;
+    const float perimeter = 2 * pi * missileHeight;
     const float endAngle = 2*pi - 2.2;
     const float circleAngleLength =  (1  + ((2*pi - 2.2) / (2 * pi)));
     float t0 = 20;
-    float t1 = t0 + 47 / speed;
-    float t2 = t1 + 25 / speed;
+    float t1 = t0 + (22 + missileHeight) / speed;
+    float t2 = t1 + missileRadius / speed;
     float t3 = t2 + circleAngleLength * perimeter / speed;
 
 
     if (t < t0) { // hidden
-        return vec3(0, -12 - 10, 0);
+        return vec3(0, -12 - 10 -10*smoothstep(0, t0, t), 0);
     } else  if (t < t1){ // up
         return vec3(0, -22 + (t-t0) * speed, 0);
     } else if (t < t2) { // out to torus
-         return vec3(0, 25, speed*(t-t1));
+         return vec3(0, missileHeight, speed*(t-t1));
     } else if (t < t3) {
         float angle = (t-t2) / (t3-t2) *  2 * pi * circleAngleLength;
-        return vec3(25*sin(angle), 25, 25 * cos(angle));
+        return vec3(missileRadius*sin(angle), 25, missileRadius * cos(angle));
     } else { // escape
-        return vec3(25*sin(endAngle) + (t - t3) * speed * sin(endAngle), 25, 25 * cos(endAngle)  + (t - t3) * speed * cos(endAngle));
+        return vec3(missileRadius*sin(endAngle) + (t - t3) * speed * sin(endAngle), missileHeight, missileRadius * cos(endAngle)  + (t - t3) * speed * cos(endAngle));
     }
 
     return vec3(0, 0, 0);
@@ -103,11 +106,11 @@ vec3 ballPosition = ballPositionCalc();
 VolumetricResult missile(in vec3 p) {
     float t = iTime;//4*mod(iTime, 10);
     const float speed = 40;
-    const float perimeter = 2 * pi * 25;
+    const float perimeter = 2 * pi * missileRadius;
     const float endAngle = 2*pi - 2.2;
     const float circleAngleLength =  (1  + ((2*pi - 2.2) / (2 * pi)));
     float t0 = 20;
-    float t1 = t0 + 47 / speed;
+    float t1 = t0 + (22 + missileHeight) / speed;
     float t2 = t1 + 25 / speed;
     float t3 = t2 + circleAngleLength * perimeter / speed;
 
@@ -117,18 +120,18 @@ VolumetricResult missile(in vec3 p) {
     vec3 orgP = p;
 	vec3 col = vec3(0.1, 0.8, 0.2);
     float strength = 20;
-    float l = 25;
+
     float distortionStrength = 0.5;
     float distortionFrequency = 1.0;
 
-    float verticalD = sdCappedCylinder(p - vec3(0, 0, distortionStrength*sin(distortionFrequency*p.y)), vec2(0.5, l));
-    float horizontalD = sdCappedCylinder(p.xzy - vec3(distortionStrength*sin(distortionFrequency*p.z), +l/2, l), vec2(0.5, l/2));
+    float verticalD = sdCappedCylinder(p - vec3(0, 0, distortionStrength*sin(distortionFrequency*p.y)), vec2(0.5, missileHeight));
+    float horizontalD = sdCappedCylinder(p.xzy - vec3(distortionStrength*sin(distortionFrequency*p.z), +missileRadius/2, missileHeight), vec2(0.5, missileRadius/2));
     if (t > t2 + 2) {
         horizontalD = 99999.0;
     }
 
     float angle = atan(p.x, p.z);
-    float torusD = sdTorus(p - vec3(0, l, 0), vec2(l + distortionStrength*sin(distortionFrequency*angle * 25.0) * 2.0, 0.5));
+    float torusD = sdTorus(p - vec3(0, missileHeight, 0), vec2(missileRadius + distortionStrength*sin(distortionFrequency*angle * 25.0) * 2.0, 0.5));
     if (t > t2 - 1.0 && t < t2 + 1.0) {
         torusD = max(torusD, -p.x);
     }
@@ -137,7 +140,7 @@ VolumetricResult missile(in vec3 p) {
     p.xz *= rot(2.2);
     float escapeD = 999999.0;
     if (t > t3 - 1.0) {
-        escapeD = sdCappedCylinder(p.xzy - vec3(distortionStrength*sin(distortionFrequency*p.z), l+150 + 1.5, l), vec2(0.5, 150));
+        escapeD = sdCappedCylinder(p.xzy - vec3(distortionStrength*sin(distortionFrequency*p.z), missileRadius+150 + 1.5, missileHeight), vec2(0.5, 150));
         torusD = max(torusD, p.x);
     }
 
@@ -156,7 +159,7 @@ VolumetricResult missile(in vec3 p) {
     d = max(d, ball);
     //d = min(d, ball);
 
-    vec3 res = col * strength / (d * d);
+    vec3 res = col * strength * smoothstep(0, 3, iTime) / (d * d);
     VolumetricResult bullet = {d, res};
     return bullet;
 }
@@ -246,7 +249,7 @@ DistanceInfo map(in vec3 p, bool isMarch)
 float getReflectiveIndex(int type)
 {
     if(type == wallType)
-        return 0.3;
+        return 0.3 * smoothstep(0, 3, iTime);
     if (type == grassType)
         return 0.2;
     if (type == flowerType)
