@@ -139,7 +139,7 @@ DistanceInfo jellyfish(in vec3 p, bool isMarch)
     d = sdCutHollowSphere(vec3(p.x, -p.y-3.75*ep, p.z), 4+2*ep, -1-3*ep, 0.1);
     DistanceInfo head = {d, flowerType, headColor};
     if (isMarch)
-        at += 0.05/(1.2+d*d*d) * (1 - smoothstep(36,37, iTime));
+        at += 0.2/(1.2+d*d*d) * (1 - smoothstep(36,37, iTime));
 
     DistanceInfo blob = un(head, legs);
 
@@ -164,7 +164,7 @@ DistanceInfo map(in vec3 p, bool isMarch)
     pModPolar(p.xz, 8);
     p.x -= 30 - 7*smoothstep(0, 15, iTime);
     DistanceInfo jf = jellyfish(p, isMarch);
-    jf.color = 0.04*floorColor;
+   // jf.color = 0.04*floorColor;
     p = orgP;
 
     return sunk(floor, jf, 0.5);

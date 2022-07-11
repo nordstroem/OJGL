@@ -114,9 +114,6 @@ VolumetricResult missile(in vec3 p) {
     float t2 = t1 + 25 / speed;
     float t3 = t2 + circleAngleLength * perimeter / speed;
 
-
-
-
     vec3 orgP = p;
 	vec3 col = vec3(0.1, 0.8, 0.2);
     float strength = 20;

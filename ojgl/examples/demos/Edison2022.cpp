@@ -1,9 +1,9 @@
 #include "Edison2022.h"
 #include "FreeCameraController.h"
 #include "TextRenderer.hpp"
+#include "music/Music.h"
 #include "utility/Log.h"
 #include "utility/Spline3.h"
-#include "music/Music.h"
 
 using namespace ojgl;
 
@@ -71,7 +71,7 @@ ojstd::vector<Scene> Edison2022::buildSceneGraph(const Vector2i& sceneSize) cons
             vector.push_back(ojstd::make_shared<Uniform1f>("C_8_SINCE", music->syncChannels()[8].getTimeSinceAnyNote().toSeconds()));
             vector.push_back(ojstd::make_shared<Uniform1f>("C_9_SINCE", music->syncChannels()[9].getTimeSinceAnyNote().toSeconds()));
             vector.push_back(ojstd::make_shared<Uniform1f>("C_6_SINCE", music->syncChannels()[6].getTimeSinceAnyNote().toSeconds()));
-             vector.push_back(ojstd::make_shared<Uniform1f>("C_6_TOTAL", music->syncChannels()[6].getTotalHits()));
+            vector.push_back(ojstd::make_shared<Uniform1f>("C_6_TOTAL", music->syncChannels()[6].getTotalHits()));
 
             return vector;
         });
@@ -93,7 +93,7 @@ ojstd::vector<Scene> Edison2022::buildSceneGraph(const Vector2i& sceneSize) cons
 
         auto chrom = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2022/ship_chrom_ab.fs");
         chrom->setInputs(blur2);
-            chrom->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
+        chrom->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
             Buffer::UniformVector vector;
             vector.push_back(ojstd::make_shared<UniformMatrix4fv>("iCameraMatrix", FreeCameraController::instance().getCameraMatrix()));
 
@@ -102,7 +102,7 @@ ojstd::vector<Scene> Edison2022::buildSceneGraph(const Vector2i& sceneSize) cons
             vector.push_back(ojstd::make_shared<Uniform1f>("CHANNEL_4_SINCE", music->syncChannels()[4].getTimeSinceAnyNote().toSeconds()));
 
             return vector;
-    });
+        });
 
         scenes.emplace_back(chrom, Duration::seconds(12 + 10 + 15 + 10 + 16), "sceneShip");
     }
@@ -124,9 +124,20 @@ ojstd::vector<Scene> Edison2022::buildSceneGraph(const Vector2i& sceneSize) cons
         auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "common/fxaa.vs", "common/fxaa.fs");
         fxaa->setInputs(raymarch);
 
-        auto post = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2022/post.fs");
-        post->setInputs(fxaa);
-        scenes.emplace_back(fxaa, Duration::seconds(18), "scene0");
+        auto chrom = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2022/ship_chrom_ab.fs");
+        chrom->setInputs(fxaa);
+        chrom->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
+            Buffer::UniformVector vector;
+            vector.push_back(ojstd::make_shared<UniformMatrix4fv>("iCameraMatrix", FreeCameraController::instance().getCameraMatrix()));
+
+            auto music = Music::instance();
+
+            vector.push_back(ojstd::make_shared<Uniform1f>("CHANNEL_4_SINCE", music->syncChannels()[4].getTimeSinceAnyNote().toSeconds()));
+
+            return vector;
+        });
+
+        scenes.emplace_back(chrom, Duration::seconds(18), "scene0");
     }
 
     {
@@ -143,12 +154,38 @@ ojstd::vector<Scene> Edison2022::buildSceneGraph(const Vector2i& sceneSize) cons
             return vector;
         });
 
-        auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "common/fxaa.vs", "common/fxaa.fs");
-        fxaa->setInputs(raymarch);
+        //auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "common/fxaa.vs", "common/fxaa.fs");
+        //fxaa->setInputs(raymarch);
 
-        auto post = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2022/post.fs");
-        post->setInputs(fxaa);
-        scenes.emplace_back(fxaa, Duration::seconds(28), "scene1");
+        auto blur1 = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2022/blur1.fs");
+        blur1->setInputs(raymarch);
+        blur1->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) -> Buffer::UniformVector {
+            return { ojstd::make_shared<Uniform2f>("blurDir", 1.f, 0.f) };
+        });
+
+        auto blur2 = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2022/blur1.fs");
+        blur2->setInputs(blur1);
+        blur2->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) -> Buffer::UniformVector {
+            return { ojstd::make_shared<Uniform2f>("blurDir", 0.f, 1.f) };
+        });
+
+        //auto post = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2022/post.fs");
+        //post->setInputs(fxaa);
+
+        auto chrom = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2022/ship_chrom_ab.fs");
+        chrom->setInputs(blur2);
+        chrom->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
+            Buffer::UniformVector vector;
+            vector.push_back(ojstd::make_shared<UniformMatrix4fv>("iCameraMatrix", FreeCameraController::instance().getCameraMatrix()));
+
+            auto music = Music::instance();
+
+            vector.push_back(ojstd::make_shared<Uniform1f>("CHANNEL_4_SINCE", music->syncChannels()[4].getTimeSinceAnyNote().toSeconds()));
+
+            return vector;
+        });
+
+        scenes.emplace_back(chrom, Duration::seconds(28), "scene1");
     }
 
     {
@@ -162,9 +199,20 @@ ojstd::vector<Scene> Edison2022::buildSceneGraph(const Vector2i& sceneSize) cons
         auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "common/fxaa.vs", "common/fxaa.fs");
         fxaa->setInputs(raymarch);
 
-        auto chrom = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2022/chrom_ab.fs");
+        auto chrom = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2022/ship_chrom_ab.fs");
         chrom->setInputs(fxaa);
-        scenes.emplace_back(fxaa, Duration::seconds(34), "scene2");
+        chrom->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
+            Buffer::UniformVector vector;
+            vector.push_back(ojstd::make_shared<UniformMatrix4fv>("iCameraMatrix", FreeCameraController::instance().getCameraMatrix()));
+
+            auto music = Music::instance();
+
+            vector.push_back(ojstd::make_shared<Uniform1f>("CHANNEL_4_SINCE", music->syncChannels()[4].getTimeSinceAnyNote().toSeconds()));
+
+            return vector;
+        });
+
+        scenes.emplace_back(chrom, Duration::seconds(34), "scene2");
     }
 
     {
@@ -178,9 +226,20 @@ ojstd::vector<Scene> Edison2022::buildSceneGraph(const Vector2i& sceneSize) cons
         auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "common/fxaa.vs", "common/fxaa.fs");
         fxaa->setInputs(raymarch);
 
-        auto chrom = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2022/chrom_ab.fs");
+        auto chrom = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2022/ship_chrom_ab.fs");
         chrom->setInputs(fxaa);
-        scenes.emplace_back(fxaa, Duration::seconds(999999), "scene3");
+        chrom->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
+            Buffer::UniformVector vector;
+            vector.push_back(ojstd::make_shared<UniformMatrix4fv>("iCameraMatrix", FreeCameraController::instance().getCameraMatrix()));
+
+            auto music = Music::instance();
+
+            vector.push_back(ojstd::make_shared<Uniform1f>("CHANNEL_4_SINCE", music->syncChannels()[4].getTimeSinceAnyNote().toSeconds()));
+
+            return vector;
+        });
+
+        scenes.emplace_back(chrom, Duration::seconds(999999), "scene3");
     }
     return scenes;
 }

@@ -103,6 +103,7 @@ float getReflectiveIndex(int type)
 }
 
 vec3 eye = vec3(0);
+vec3 marchPosition = vec3(0);
 
 vec3 getColor(in MarchResult result)
 {
@@ -110,6 +111,7 @@ vec3 getColor(in MarchResult result)
     float l = length(result.position - eye);
     float ll = abs(result.position.y +5);
     float fog = exp(-0.00015*l*l);
+    marchPosition = result.position;
 
     if (result.type != invalidType) {
         vec3 ambient = result.color;
@@ -151,8 +153,15 @@ void main()
     color = mix(color, fragCoord.y*vec3(0.01, 0.1, 0.3), 0.2);
     color /= (color + vec3(1.0));
 
-    fragColor = vec4(pow(color, vec3(0.5)), 1.0);
+    float focus = 0.0;//abs(length(marchPosition - eye) - 5) * 0.001;;
 
+    if (isSecondScene()) {
+        const vec3 focusPos = eye + vec3(-30, -20, 20);//vec3(35., 20, 35);
+        float l = length(firstJumpPosition - focusPos) - 20;
+        focus = min(1.0, abs( max(0, l) * 0.0025));
+    }
+    fragColor = vec4(pow(color, vec3(0.5)), focus);
+    //fragColor.xyz = vec3(focus);
 }
 
 )""

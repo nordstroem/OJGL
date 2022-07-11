@@ -23,6 +23,7 @@ struct VolumetricResult {
     vec3 color;
 };
 
+vec3 firstJumpPosition = vec3(0);
 DistanceInfo map(in vec3 p, bool isMarch);
 VolumetricResult evaluateLight(in vec3 p);
 float getFogAmount(in vec3 p);
@@ -91,6 +92,9 @@ vec3 march(in vec3 rayOrigin, in vec3 rayDirection)
 #endif
         for (int steps = 0; steps < S_maxSteps; ++steps) {
             vec3 p = rayOrigin + t * rayDirection;
+            if (jump == 0) {
+                firstJumpPosition = p;
+            }
             DistanceInfo info = map(p, true);
             float jumpDistance = info.distance * S_distanceMultiplier;
 
@@ -108,6 +112,7 @@ vec3 march(in vec3 rayOrigin, in vec3 rayDirection)
             t += jumpDistance;
             if (info.distance < S_distanceEpsilon) {
                 vec3 color = getColor(MarchResult(info.type, p, steps, transmittance, scatteredLight, jump, rayDirection, info.color));
+
 #if !S_REFLECTIONS
                 return color;
 #else
