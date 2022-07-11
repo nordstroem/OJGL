@@ -150,7 +150,7 @@ void main()
     vec3 color = march(rayOrigin, rayDirection);
 
     // Tone mapping
-    color = mix(color, fragCoord.y*vec3(0.01, 0.1, 0.3), 0.2);
+    color = mix(color, fragCoord.y*0.6*vec3(0.01, 0.1, 0.3), 0.2);
     color /= (color + vec3(1.0));
 
     float focus = 0.0;//abs(length(marchPosition - eye) - 5) * 0.001;;

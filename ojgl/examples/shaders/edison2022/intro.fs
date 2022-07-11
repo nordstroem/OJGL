@@ -37,8 +37,8 @@ vec3 jellyfishPosition() {
     vec3 p = vec3(0.f);
     float t = iTime;
     p.y+=20;
-    p.z-=30;
-    p.x-=-5;
+    p.z-=25;
+    p.x-=-1;
     vec3 orgPos = p;
     p.y += 0.5*sin(iTime);
     p.y -= 0.5 * (2*t + 3*floor(t / 2) + 3*smoothstep(0, 1, mod(t, 2)));
@@ -199,7 +199,7 @@ DistanceInfo map(in vec3 p, bool isMarch)
     p = orgP;
     vec2 ojUV = clamp(vec2(-p.z / 20 + 1, -p.x / 20 + 1), vec2(0.0), vec2(1.0));
    // bool onOJ = texture(ojText, ojUV).x < 0.5;
-    vec3 floorColor = 1.67*vec3(0.0, 0.02, 0.05);
+    vec3 floorColor = 0.967*vec3(0.0, 0.02, 0.05);
 
     //if (onOJ) {
     //    floorColor = 0.05*vec3(1.0);
@@ -219,8 +219,9 @@ DistanceInfo map(in vec3 p, bool isMarch)
     p = orgP;
     DistanceInfo jf = jellyfish(p, isMarch);
 
+    p.y+=3;
     DistanceInfo ojD = stone(p, isMarch);
-
+    ojD.distance -= 0.05*noise_3(2.0*p);
     DistanceInfo res = sunk(floor, ojD, 1);
 
 
@@ -252,7 +253,7 @@ vec3 getColor(in MarchResult result)
 {
     vec3 jp = jellyfishPosition();
     jp = vec3(jp.y, -jp.x+10, -jp.z);
-    vec3 lightPosition = vec3(-15, 30, -10);
+    vec3 lightPosition = vec3(-15, 35, -10);
     if (result.type != invalidType) {
         vec3 ambient = result.color;
 
@@ -297,7 +298,7 @@ void main()
     vec3 color = march(rayOrigin, rayDirection);
 
     // Tone mapping
-    color = mix(color, 0.2*vec3(0.01, 0.1, 0.3), 0.2);
+    color = mix(color, 0.1*vec3(0.01, 0.1, 0.3), 0.2);
     color /= (color + vec3(1.0));
 
     fragColor = vec4(pow(color, vec3(0.5)), 1.0);
