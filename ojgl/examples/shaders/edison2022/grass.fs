@@ -25,6 +25,9 @@ uniform float iTime;
 uniform vec2 iResolution;
 uniform mat4 iCameraMatrix;
 
+uniform float C_6_SINCE; // 6 melody synth
+uniform float C_6_TOTAL;
+
 const int grassType = 1;
 const int wallType = 2;
 const int flowerType = 3;
@@ -70,16 +73,18 @@ VolumetricResult volUn(VolumetricResult a, VolumetricResult b)
     return VolumetricResult(min(a.distance, b.distance), a.color + b.color);
 }
 
-const float missileHeight = 25;
-const float missileRadius = 25;
+const float missileHeight = 20;//15 + 10 * smoothstep(15, 20, iTime);
+const float missileRadius = 20;
+#define MISSILE_TIME iTime
+//(0.75 * (C_6_TOTAL * 0.5  + 0.5 * pow(C_6_SINCE, 0.3)))
 
 vec3 ballPositionCalc() {
-    float t = iTime;//4*mod(iTime, 10);
-    const float speed = 40;
-    const float perimeter = 2 * pi * missileHeight;
-    const float endAngle = 2*pi - 2.2;
-    const float circleAngleLength =  (1  + ((2*pi - 2.2) / (2 * pi)));
-    float t0 = 20;
+    float t = MISSILE_TIME;//4*mod(iTime, 10);
+    const float speed = 25;
+    const float perimeter = 2 * pi * missileRadius;
+    const float endAngle = 4*pi - 2.2;
+    const float circleAngleLength =  (2  + ((2*pi - 2.2) / (2 * pi)));
+    float t0 = 5;
     float t1 = t0 + (22 + missileHeight) / speed;
     float t2 = t1 + missileRadius / speed;
     float t3 = t2 + circleAngleLength * perimeter / speed;
@@ -93,7 +98,7 @@ vec3 ballPositionCalc() {
          return vec3(0, missileHeight, speed*(t-t1));
     } else if (t < t3) {
         float angle = (t-t2) / (t3-t2) *  2 * pi * circleAngleLength;
-        return vec3(missileRadius*sin(angle), 25, missileRadius * cos(angle));
+        return vec3(missileRadius*sin(angle), missileHeight, missileRadius * cos(angle));
     } else { // escape
         return vec3(missileRadius*sin(endAngle) + (t - t3) * speed * sin(endAngle), missileHeight, missileRadius * cos(endAngle)  + (t - t3) * speed * cos(endAngle));
     }
@@ -104,14 +109,14 @@ vec3 ballPositionCalc() {
 vec3 ballPosition = ballPositionCalc();
 
 VolumetricResult missile(in vec3 p) {
-    float t = iTime;//4*mod(iTime, 10);
-    const float speed = 40;
+    float t = MISSILE_TIME;//4*mod(iTime, 10);
+    const float speed = 25;
     const float perimeter = 2 * pi * missileRadius;
-    const float endAngle = 2*pi - 2.2;
-    const float circleAngleLength =  (1  + ((2*pi - 2.2) / (2 * pi)));
-    float t0 = 20;
+    const float endAngle = 4*pi - 2.2;
+    const float circleAngleLength =  (2  + ((2*pi - 2.2) / (2 * pi)));
+    float t0 = 5;
     float t1 = t0 + (22 + missileHeight) / speed;
-    float t2 = t1 + 25 / speed;
+    float t2 = t1 + missileRadius / speed;
     float t3 = t2 + circleAngleLength * perimeter / speed;
 
     vec3 orgP = p;
@@ -121,14 +126,15 @@ VolumetricResult missile(in vec3 p) {
     float distortionStrength = 0.5;
     float distortionFrequency = 1.0;
 
-    float verticalD = sdCappedCylinder(p - vec3(0, 0, distortionStrength*sin(distortionFrequency*p.y)), vec2(0.5, missileHeight));
-    float horizontalD = sdCappedCylinder(p.xzy - vec3(distortionStrength*sin(distortionFrequency*p.z), +missileRadius/2, missileHeight), vec2(0.5, missileRadius/2));
+    float snakeRadius = 0.2;
+    float verticalD = sdCappedCylinder(p - vec3(0, 0, distortionStrength*sin(distortionFrequency*p.y)), vec2(snakeRadius, missileHeight));
+    float horizontalD = sdCappedCylinder(p.xzy - vec3(distortionStrength*sin(distortionFrequency*p.z), +missileRadius/2, missileHeight), vec2(snakeRadius, missileRadius/2));
     if (t > t2 + 2) {
         horizontalD = 99999.0;
     }
 
     float angle = atan(p.x, p.z);
-    float torusD = sdTorus(p - vec3(0, missileHeight, 0), vec2(missileRadius + distortionStrength*sin(distortionFrequency*angle * 25.0) * 2.0, 0.5));
+    float torusD = sdTorus(p - vec3(0, missileHeight, 0), vec2(missileRadius + distortionStrength*sin(distortionFrequency*angle * 25.0) * 2.0, snakeRadius));
     if (t > t2 - 1.0 && t < t2 + 1.0) {
         torusD = max(torusD, -p.x);
     }
@@ -137,7 +143,7 @@ VolumetricResult missile(in vec3 p) {
     p.xz *= rot(2.2);
     float escapeD = 999999.0;
     if (t > t3 - 1.0) {
-        escapeD = sdCappedCylinder(p.xzy - vec3(distortionStrength*sin(distortionFrequency*p.z), missileRadius+150 + 1.5, missileHeight), vec2(0.5, 150));
+        escapeD = sdCappedCylinder(p.xzy - vec3(distortionStrength*sin(distortionFrequency*p.z), missileRadius+150 + 1.5, missileHeight), vec2(snakeRadius, 150));
         torusD = max(torusD, p.x);
     }
 
@@ -150,7 +156,7 @@ VolumetricResult missile(in vec3 p) {
     d = min(d, torusD);
     d = min(d, escapeD);
     d = max(0.01, d);
-    float ball = length(orgP - ballPosition) - 10.0;
+    float ball = length(orgP - ballPosition) - 7.0;
 
     //d = min(ball, horizontalD);
     d = max(d, ball);
@@ -179,7 +185,7 @@ VolumetricResult evaluateLight(in vec3 p)
 	vec3 col = vec3(0.1, 0.8, 0.2);
 
 	vec3 res = col * strength / (d * d);
-    VolumetricResult symbols = {d, res};
+    VolumetricResult symbols = {d , res};
 
 	return volUn(symbols, missile(orgP));
 }
@@ -199,7 +205,7 @@ DistanceInfo map(in vec3 p, bool isMarch)
    // p.xz *= rot(3.6*smoothstep(0, 20, iTime)  + 0.07*iTime);
     p.xz *= rot(0.4 * iTime);
     float t0 = iTime;
-    float t = smoothstep(5, 20, t0);
+    float t = smoothstep(5, 20, t0) - smoothstep(30, 40, t0);
     float r = 0.5 + 1.5*t;
     float ns = 1 - smoothstep(2, 20, t0);
     p.x -= ns*0.05*sin(20*iTime);

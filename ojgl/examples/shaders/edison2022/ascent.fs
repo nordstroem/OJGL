@@ -11,6 +11,7 @@ out vec4 fragColor;
 uniform float iTime;
 uniform vec2 iResolution;
 uniform mat4 iCameraMatrix;
+uniform float C_4_TOTAL;
 
 const int grassType = 1;
 const int wallType = 2;
@@ -94,7 +95,7 @@ vec3 colorPalette(float t, vec3 a , vec3 b, vec3 c, vec3 d) {
 }
 
 
-DistanceInfo jellyfish(in vec3 p, bool isMarch)
+DistanceInfo jellyfish(in vec3 p, bool isMarch, bool light)
 {
     p.xz *= rot(-0.2);
     float t = iTime;
@@ -138,9 +139,10 @@ DistanceInfo jellyfish(in vec3 p, bool isMarch)
     ep = exp(-ep*ep);
     d = sdCutHollowSphere(vec3(p.x, -p.y-3.75*ep, p.z), 4+2*ep, -1-3*ep, 0.1);
     DistanceInfo head = {d, flowerType, headColor};
-    if (isMarch)
-        at += 0.2/(1.2+d*d*d) * (1 - smoothstep(36,37, iTime));
-
+    if (isMarch) {
+        float ls = 0.2;//light ? 0.2 : 0.02;
+        at += ls/(1.2+d*d*d) * (1 - smoothstep(36,37, iTime));
+    }
     DistanceInfo blob = un(head, legs);
 
     return blob;
@@ -161,10 +163,13 @@ DistanceInfo map(in vec3 p, bool isMarch)
     DistanceInfo floor = {d + 0.03 * wn, wallType, 0.00*floorColor};
     p = orgP;
    // p.xz *= rot(0.1*sin(iTime));
-    pModPolar(p.xz, 8);
+    int a = int(pModPolar(p.xz, 8)) + 3;
+
     p.x -= 30 - 7*smoothstep(0, 15, iTime);
-    DistanceInfo jf = jellyfish(p, isMarch);
-   // jf.color = 0.04*floorColor;
+    DistanceInfo jf = jellyfish(p, isMarch, int(C_4_TOTAL) % 8 == a);
+    if (int(C_4_TOTAL) % 8 == a) {
+        jf.color = vec3(1, 15, 1);//vec3(10*psin(10*a), 10*psin(2*a + 10), 10*psin(5*a));
+    }
     p = orgP;
 
     return sunk(floor, jf, 0.5);
@@ -177,7 +182,7 @@ float getReflectiveIndex(int type)
     if (type == grassType)
         return 0.2;
     if (type == flowerType)
-        return 0.8;
+        return 0.0;
     return 0.0;
 }
 

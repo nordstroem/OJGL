@@ -181,7 +181,7 @@ DistanceInfo stone(in vec3 p, bool isMarch) {
     // End ship
 
 
-    float ojd = ojDistance(p - vec3(3, 3.5, -9), isMarch);
+    float ojd = ojDistance(p - vec3(1.0, 2.5, -8), isMarch);
     d = min(d, ojd);
 
      DistanceInfo stone = {d, stoneType,  vec3(0.1)};

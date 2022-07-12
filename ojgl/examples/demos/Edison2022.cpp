@@ -190,6 +190,9 @@ ojstd::vector<Scene> Edison2022::buildSceneGraph(const Vector2i& sceneSize) cons
         raymarch->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
             Buffer::UniformVector vector;
             vector.push_back(ojstd::make_shared<UniformMatrix4fv>("iCameraMatrix", FreeCameraController::instance().getCameraMatrix()));
+            auto music = Music::instance();
+            vector.push_back(ojstd::make_shared<Uniform1f>("C_4_TOTAL", music->syncChannels()[4].getTotalHits()));
+
             return vector;
         });
 
@@ -215,8 +218,11 @@ ojstd::vector<Scene> Edison2022::buildSceneGraph(const Vector2i& sceneSize) cons
     {
         auto raymarch = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2022/grass.fs");
         raymarch->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
+            auto music = Music::instance();
             Buffer::UniformVector vector;
             vector.push_back(ojstd::make_shared<UniformMatrix4fv>("iCameraMatrix", FreeCameraController::instance().getCameraMatrix()));
+            vector.push_back(ojstd::make_shared<Uniform1f>("C_6_SINCE", music->syncChannels()[6].getTimeSinceAnyNote().toSeconds()));
+            vector.push_back(ojstd::make_shared<Uniform1f>("C_6_TOTAL", music->syncChannels()[6].getTotalHits()));
             return vector;
         });
 
@@ -265,9 +271,9 @@ void Edison2022::update(const Duration& relativeSceneTime, const Duration& elaps
         FreeCameraController::instance().set(ojstd::lerp(start, end, t), ojstd::lerp(2.272f, 2.38f, t), ojstd::lerp(-1.066f, -0.646f, t));*/
 
         const Vector3f start = { 31.64f, 72.6f, -23.58f };
-        const Vector3f end = { 101.64f, 102.f, -23.58f };
+        const Vector3f end = { 81.64f, 82.f, -23.58f };
         const Vector3f startTarget = { 0.f, 0.f, 0.f };
-        const Vector3f endTarget = { 0.f, 20.f, 0.f };
+        const Vector3f endTarget = { 0.f, 10.f, 0.f };
 
         FreeCameraController::instance().set(ojstd::lerp(start, end, t), ojstd::lerp(startTarget, endTarget, t));
     }
