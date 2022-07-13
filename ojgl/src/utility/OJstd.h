@@ -539,8 +539,8 @@ float fract(float value);
 float hash1(float value);
 float rand();
 float smoothstep(float edge0, float edge1, float x);
-template <typename T>
-T lerp(const T& left, const T& right, float amount)
+
+inline float lerp(const float& left, const float& right, float amount)
 {
     return left * (1.f - amount) + right * amount;
 }

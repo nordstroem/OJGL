@@ -7,6 +7,13 @@
 
 using namespace ojgl;
 
+namespace {
+inline Vector3f lerp3f(const Vector3f& left, const Vector3f& right, float amount)
+{
+    return left * (1.f - amount) + right * amount;
+}
+}
+
 static const unsigned char song[] = {
 #include "songs/edison_2022_song.inc"
 };
@@ -279,16 +286,16 @@ void Edison2022::update(const Duration& relativeSceneTime, const Duration& elaps
         const Vector3f startTarget = { 0.f, 0.f, 0.f };
         const Vector3f endTarget = { 0.f, 10.f, 0.f };
 
-        const Vector3f split1 = ojstd::lerp(start, end, t);
-        const Vector3f split1Target = ojstd::lerp(startTarget, endTarget, t);
+        const Vector3f split1 = lerp3f(start, end, t);
+        const Vector3f split1Target = lerp3f(startTarget, endTarget, t);
 
         if (relativeSceneTime.toSeconds() <= 20) {
             FreeCameraController::instance().set(split1, split1Target);
         } else {
             const Vector3f split2Target = { -193.074f, 28.91f, -133.955f };
-            const Vector3f split2 = ojstd::lerp(split1, end, t);
+            const Vector3f split2 = lerp3f(split1, end, t);
             float t2 = ojstd::smoothstep(20, 35, relativeSceneTime.toSeconds());
-            FreeCameraController::instance().set(split1, ojstd::lerp(split1Target, split2Target, t2));
+            FreeCameraController::instance().set(split1, lerp3f(split1Target, split2Target, t2));
         }
     }
 }
