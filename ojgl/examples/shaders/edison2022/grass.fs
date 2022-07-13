@@ -75,7 +75,7 @@ VolumetricResult volUn(VolumetricResult a, VolumetricResult b)
 
 const float missileHeight = 20;//15 + 10 * smoothstep(15, 20, iTime);
 const float missileRadius = 20;
-#define MISSILE_TIME iTime
+#define MISSILE_TIME (C_6_TOTAL * 0.5 + 5 + 0.5 * pow(C_6_SINCE, 0.3))
 //(0.75 * (C_6_TOTAL * 0.5  + 0.5 * pow(C_6_SINCE, 0.3)))
 
 vec3 ballPositionCalc() {
@@ -171,7 +171,6 @@ VolumetricResult evaluateLight(in vec3 p)
 {
     vec3 orgP = p;
     p.y += 12.;
-
     int a = int(pModPolar(p.xz, 8)) + 3;
     float d = sdBox(p, vec3(19.0,  0.6*pow(0.7*psin(p.x + 5*(iTime +34)+ 2*p.z),1), 0.1));
     float d2 = sdTorus(p, vec2(4.f, 0.2f));
@@ -185,7 +184,7 @@ VolumetricResult evaluateLight(in vec3 p)
 	vec3 col = vec3(0.1, 0.8, 0.2);
 
 	vec3 res = col * strength / (d * d);
-    VolumetricResult symbols = {d , res};
+    VolumetricResult symbols = {d, res};
 
 	return volUn(symbols, missile(orgP));
 }
@@ -203,7 +202,7 @@ DistanceInfo map(in vec3 p, bool isMarch)
     vec3 orgP = p;
     p = orgP;
    // p.xz *= rot(3.6*smoothstep(0, 20, iTime)  + 0.07*iTime);
-    p.xz *= rot(0.4 * iTime);
+    p.xz *= rot(0.6 * iTime);
     float t0 = iTime;
     float t = smoothstep(5, 20, t0) - smoothstep(30, 40, t0);
     float r = 0.5 + 1.5*t;

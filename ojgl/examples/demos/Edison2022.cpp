@@ -34,7 +34,7 @@ Edison2022::Edison2022()
     // experiment.fs
     FreeCameraController::instance().set({ 30.17f, 23.19f, 34.3f }, 2.548f, -0.374f);
     FreeCameraController::instance().set({ 31.64f, 62.6f, -23.58f }, 2.272f, -1.066f);
-    FreeCameraController::instance().set({ 31.64f, 62.6f, -23.58f }, 2.272f, -1.066f);
+    FreeCameraController::instance().set({ 81.64f, 82.f, -23.58f }, { 0.f, 10.f, 0.f });
 
     // ascent.fs
     //FreeCameraController::instance().set({ 0.f, 85.5f, 90.74f }, 0.f, -0.77f);
@@ -201,7 +201,7 @@ ojstd::vector<Scene> Edison2022::buildSceneGraph(const Vector2i& sceneSize) cons
 
         auto chrom = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2022/ship_chrom_ab.fs");
         chrom->setInputs(fxaa);
-        chrom->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
+        chrom->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) mutable {
             Buffer::UniformVector vector;
             vector.push_back(ojstd::make_shared<UniformMatrix4fv>("iCameraMatrix", FreeCameraController::instance().getCameraMatrix()));
 
@@ -217,12 +217,17 @@ ojstd::vector<Scene> Edison2022::buildSceneGraph(const Vector2i& sceneSize) cons
 
     {
         auto raymarch = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2022/grass.fs");
-        raymarch->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
+        raymarch->setUniformCallback([counter = 0.f, timeSince = 0.f]([[maybe_unused]] float relativeSceneTime) mutable {
             auto music = Music::instance();
+            if (relativeSceneTime < 1)
+                counter = music->syncChannels()[6].getTotalHits();
+
+            timeSince = music->syncChannels()[6].getTimeSinceAnyNote().toSeconds();
+            timeSince = timeSince > 1 ? 0.f : timeSince;
             Buffer::UniformVector vector;
             vector.push_back(ojstd::make_shared<UniformMatrix4fv>("iCameraMatrix", FreeCameraController::instance().getCameraMatrix()));
-            vector.push_back(ojstd::make_shared<Uniform1f>("C_6_SINCE", music->syncChannels()[6].getTimeSinceAnyNote().toSeconds()));
-            vector.push_back(ojstd::make_shared<Uniform1f>("C_6_TOTAL", music->syncChannels()[6].getTotalHits()));
+            vector.push_back(ojstd::make_shared<Uniform1f>("C_6_SINCE", timeSince));
+            vector.push_back(ojstd::make_shared<Uniform1f>("C_6_TOTAL", ojstd::max(0.f, music->syncChannels()[6].getTotalHits() - counter)));
             return vector;
         });
 
@@ -265,19 +270,30 @@ void Edison2022::update(const Duration& relativeSceneTime, const Duration& elaps
     } else if (currentScene == "scene2") {
         FreeCameraController::instance().set({ 31.64f, 72.6f, -23.58f }, { 0.f, 0.f, 0.f });
     } else if (currentScene == "scene3") {
-        const float t = ojstd::smoothstep(5, 25, relativeSceneTime.toSeconds());
+        const float t = ojstd::smoothstep(5, 20, relativeSceneTime.toSeconds());
         /*const Vector3f start = { 31.64f, 62.6f, -23.58f };
         const Vector3f end = { 51.94f, 61.16f, -46.8f };
         FreeCameraController::instance().set(ojstd::lerp(start, end, t), ojstd::lerp(2.272f, 2.38f, t), ojstd::lerp(-1.066f, -0.646f, t));*/
-
         const Vector3f start = { 31.64f, 72.6f, -23.58f };
         const Vector3f end = { 81.64f, 82.f, -23.58f };
         const Vector3f startTarget = { 0.f, 0.f, 0.f };
         const Vector3f endTarget = { 0.f, 10.f, 0.f };
 
-        FreeCameraController::instance().set(ojstd::lerp(start, end, t), ojstd::lerp(startTarget, endTarget, t));
+        const Vector3f split1 = ojstd::lerp(start, end, t);
+        const Vector3f split1Target = ojstd::lerp(startTarget, endTarget, t);
+
+        if (relativeSceneTime.toSeconds() <= 20) {
+            FreeCameraController::instance().set(split1, split1Target);
+        } else {
+            const Vector3f split2Target = { -193.074f, 28.91f, -133.955f };
+            const Vector3f split2 = ojstd::lerp(split1, end, t);
+            float t2 = ojstd::smoothstep(20, 35, relativeSceneTime.toSeconds());
+            FreeCameraController::instance().set(split1, ojstd::lerp(split1Target, split2Target, t2));
+        }
     }
 }
+
+//(42.3825, 62.6, -30.457), [ 1.172, -0.166 ]
 
 ojstd::string Edison2022::getTitle() const
 {
