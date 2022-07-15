@@ -2,15 +2,15 @@ R""(
 
 const float S_distanceEpsilon = 1e-3;
 const float S_normalEpsilon = 1e-3;
-const int S_maxSteps = 150;
-const float S_maxDistance = 220.0;
+const int S_maxSteps = 100;
+const float S_maxDistance = 250.0;
 const float S_distanceMultiplier = 0.7;
 const float S_minVolumetricJumpDistance = 0.02;
 const float S_volumetricDistanceMultiplier = 0.75;
 const int S_reflectionJumps = 2;
 
 #define S_VOLUMETRIC 0
-#define S_REFLECTIONS 1
+#define S_REFLECTIONS 0
 #define S_REFRACTIONS 0
 
 #include "common/noise.fs"
@@ -47,27 +47,29 @@ float pcurve( float x, float a, float b )
 mat2 r05 = rot(0.5);
 
 
-vec3 jellyfishPosition() {
+vec3 jellyfishPosition_func() {
     vec3 p = vec3(0.f);
     float t = iTime;
     p.y+=20;
-    p.z-=25;
-    p.x-=5;
+    p.z-=60;
+    p.x-=-10;
     vec3 orgPos = p;
     p.y += 0.5*sin(iTime);
     p.y -= 0.5 * (2*t + 3*floor(t / 2) + 3*smoothstep(0, 1, mod(t, 2)));
     return p;
 }
 
+const vec3 jellyfishPosition = jellyfishPosition_func();
+
 DistanceInfo jellyfish(in vec3 p, bool issMarch)
 {
     p.x += 13;
     p.z += 40;
-    p.y += -20;
+    p.y += -30;
     p.xz *= rot(-0.2);
     p = vec3(p.y, -p.x, p.z);//
     float t = iTime;
-    p += jellyfishPosition();
+    p += jellyfishPosition;
     p.xz *= rot(0.2*sin(iTime));
     vec3 orgOctoP = p;
 
@@ -113,8 +115,8 @@ DistanceInfo jellyfish(in vec3 p, bool issMarch)
 
 
 float ojDistance(in vec3 p, bool isMarch) {
-    p.x-=9.9;
-    p.z-=1.9;
+    p.x-=12.9;
+    p.z-=0.9;
     p.y -= 4.3;
     p = vec3(p.y, -p.x, p.z);
     p.xy *= rot(-1.047);
@@ -130,20 +132,20 @@ float ojDistance(in vec3 p, bool isMarch) {
     p.z -= -5;
     vec3 jp = p;
     p.y -= 3.4;
-    d = min(d, sdBox(p, vec3(0.1, 0.1, 1)));
+    d = min(d, sdBox(p, vec3(0.0, 0.1, 1)));
 
     p = jp;
     p.z-= -1;
-    d = min(d, sdBox(p, vec3(0.1, 3.5, 0.1)));
+    d = min(d, sdBox(p, vec3(0.0, 3.5, 0.1)));
     p = jp;
     p.z-= 0;
     p.y-=-2.5;
     p.zy *= rot(-0.8);
-    d = min(d, sdBox(p, vec3(0.1, 1.5, 0.1)));
+    d = min(d, sdBox(p, vec3(0.0, 1.5, 0.0)));
 
 
     if (isMarch)
-        at += 0.02/(0.01+d*d) * smoothstep(7,13, iTime);
+        at += 0.02/(0.0+d*d*d*d) * smoothstep(7,13, iTime);
     return d;
 }
 
@@ -199,7 +201,7 @@ DistanceInfo stone(in vec3 p, bool isMarch) {
 
     //d = min(d, ojd);
 
-        d -= 0.05*noise_3(2.0*p);
+     //d -= 0.05*noise_3(2.0*p);
      DistanceInfo stone = {d, shipType,  vec3(0.1)};
      DistanceInfo oj = {ojd, ojType,  vec3(0.1)};
     return un(stone, oj);
@@ -228,7 +230,8 @@ DistanceInfo map(in vec3 p, bool isMarch)
 
     float d = sdPlane(p, vec4(0, 1, 0, 13));
     //float wn = noise_2(p.xz + vec2(iTime, iTime*0.2));
-    float wn = noise_2(p.xz)*noise_2(p.xz) + noise_2(p.xz * 0.3) * 2.0;
+    const float n = noise_2(p.xz);
+    float wn = n*n + noise_2(p.xz * 0.3) * 2.0;
 
     //float t = mod(iTime, 15);
     //floorColor *= smoothstep(0, 10, t);
@@ -236,7 +239,7 @@ DistanceInfo map(in vec3 p, bool isMarch)
     DistanceInfo floor = {d - wn * 2.0 - sin((p.x - 40.0) * 0.05)*20.0 - 20, wallType, floorColor};
 
     p = orgP;
-    DistanceInfo jf = jellyfish(p, isMarch);
+
 
     p.y+=3;
     DistanceInfo ojD = stone(p, isMarch);
@@ -252,8 +255,10 @@ DistanceInfo map(in vec3 p, bool isMarch)
 
     //res = un(res, DistanceInfo(90-p.y, wallType, vec3(0)));
 
-    if (!isMarch)
-          return un(res, jf);
+    if (!isMarch) {
+        DistanceInfo jf = jellyfish(orgP, isMarch);
+        return un(res, jf);
+    }
 
     return res;
 }
@@ -261,11 +266,11 @@ DistanceInfo map(in vec3 p, bool isMarch)
 float getReflectiveIndex(int type)
 {
     if(type == wallType)
-        return 0.1;
+        return 0.0;
     if (type == sphereType)
         return 0.0;
     if (type == shipType)
-        return 0.3;
+        return 0.0;
     if (type == ojType)
         return 0.0;
     return 0.0;
@@ -284,7 +289,7 @@ vec3 getColor(in MarchResult result)
 {
     //vec3 jp = jellyfishPosition();
     //jp = vec3(jp.y, -jp.x+10, -jp.z);
-    vec3 lightPosition = vec3(0, 35, -20); //vec3(-15, 35, -10);
+    vec3 lightPosition = vec3(0, 30, 20 - 5.0 * max(0, iTime - 9)); //vec3(-15, 35, -10);
     if (result.type != invalidType) {
         vec3 ambient = result.color;
         vec3 normal = normal(result.position);
@@ -304,7 +309,7 @@ vec3 getColor(in MarchResult result)
         float diffuse = max(0., dot(invLight, normal));
         vec3 color = vec3(ambient * (0.00 + 0.96*diffuse)) * 1.0;
         float fog = exp(-0.00035*l*l);
-        color += at*at*20.0;
+        color += at;//*at*200.0;
         color *= ((0.0 + 0.9*shadow)  + 30.0*spec*shadow) * fog;
         return color;
     } else {
@@ -324,6 +329,10 @@ void main()
     float u = (fragCoord.x - 0.5);
     float v = (fragCoord.y - 0.5) * iResolution.y / iResolution.x;
 
+    const float zoom = 1.0 - smoothstep(8, 11, iTime) * 0.3;
+    u *= zoom;
+    v *= zoom;
+
 
     vec3 rayOrigin = (iCameraMatrix * vec4(u, v, -0.7, 1.0)).xyz;
     eye = (iCameraMatrix * vec4(0.0, 0.0, 0.0, 1)).xyz;
@@ -335,7 +344,7 @@ void main()
     color = mix(color, 0.1*vec3(0.01, 0.1, 0.3), 0.2);
     color /= (color + vec3(1.0));
 
-    fragColor = vec4(pow(color, vec3(0.5)), 1.0);
+    fragColor = vec4(pow(color, vec3(0.5)), 0.3 + 0.5 * noise_2(vec2(u, v + iTime * 0.1) * 50.0));
     //fragColor = vec4(vec3(fragColor.y), 1.0);
 
     fragColor.xyz *= smoothstep(0, 6, iTime);
