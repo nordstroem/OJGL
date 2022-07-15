@@ -45,7 +45,7 @@ const float PART_4_SPIN_START = (PART_4_travelEndPoint / PART_4_speed);
 
 const float PART_4_SINK_START = PART_4_MISSILE + 5.0;
 
-bool isGhost() {
+bool isGhost_func() {
     if (iTime < PART_2_CHANNEL) {
         return true;
     } else if (iTime < PART_5_SINKING) {
@@ -60,10 +60,12 @@ bool isGhost() {
     return false;
 }
 
-float shipLightStrengthModifier() {
+const bool isGhost = isGhost_func();
+
+float shipLightStrengthModifier_func() {
         const float time = iTime - PART_3_OIL;
         if (time > PART_4_SPIN_START) {
-            if (!isGhost()) {
+            if (!isGhost) {
                 return 0.0;
             } else {
                 return 1.0 - smoothstep(PART_4_SPIN_START, PART_4_SPIN_START + 5.0, time);
@@ -73,12 +75,12 @@ float shipLightStrengthModifier() {
         }
 }
 
-bool isSinking() {
-    return iTime > PART_4_SINK_START;
-}
+const float shipLightStrengthModifier = shipLightStrengthModifier_func();
+
+const bool isSinking = iTime > PART_4_SINK_START;
 
 vec3 shipPos(in vec3 p) {
-    return p - vec3(0, 0, 3) + (isSinking() ? vec3(0, 0.1 * (iTime - PART_4_SINK_START), 0) : vec3(0));
+    return p - vec3(0, 0, 3) + (isSinking ? vec3(0, 0.1 * (iTime - PART_4_SINK_START), 0) : vec3(0));
 }
 
 float shipDistance(in vec3 p) {
@@ -211,7 +213,7 @@ VolumetricResult lightHouseLight(in vec3 p) {
     boundCylPos.xz *= rot(-iTime);
     float boundD = sdCappedCylinder(boundCylPos.xzy - vec3(0, 5.0, 0), vec2(0.0, 5.0));
     float ds = length(rp - vec3(0, 0.5, 0));
-    float strength = 25000 * shipLightStrengthModifier();
+    float strength = 25000 * shipLightStrengthModifier;
 
     vec3 lightDir = normalize(vec3(sin(iTime), 0, cos(iTime)));
     vec3 posDir = normalize(p - vec3(0, 0.55, 3));
@@ -227,7 +229,7 @@ VolumetricResult lightHouseLight(in vec3 p) {
 
 VolumetricResult topLight(in vec3 p) {
     float d = length(p - vec3(0, 0.55, 3)) - 0.03;
-    float strength = 50 * shipLightStrengthModifier();
+    float strength = 50 * shipLightStrengthModifier;
     //vec3 col = vec3(0.05, 1.0, 0.05);
     vec3 res = lightHouseColor * strength / (d * d);
 
@@ -286,7 +288,7 @@ VolumetricResult evaluateLight(in vec3 p)
 
         float d = shipDistance(p);
         d = max(d, 0.02);
-        float strength = 20 * shipLightStrengthModifier();
+        float strength = 20 * shipLightStrengthModifier;
 
         vec3 col = lightHouseColor * strength / (d * d);
         res = volumetricUn(res, VolumetricResult(d, col));
@@ -320,7 +322,7 @@ DistanceInfo map(in vec3 p, bool isMarch)
 
     DistanceInfo res = waterDI;
 
-    if (isSinking()) {
+    if (isSinking) {
         res = sunk(shipDI, waterDI, 0.1);
     } else {
         res = un(shipDI, waterDI);
@@ -352,14 +354,14 @@ vec3 getColor(in MarchResult result, vec3 eye)
     //float diffuse = max(0., dot(invLight, normal));
 
     float specTotal = 0.0;
-    if (isGhost()) {
+    if (isGhost) {
         vec3 lightPos = vec3(0, 2, 3);
         vec3 invLight = normalize(lightPos - result.position);
 
         float spec = specular(normal, -invLight, normalize(eye - result.position), 2000.0);
         const float dis = length(lightPos - result.position);
         const float specStr = 30.0 / (dis * dis);
-        specTotal += spec * specStr * shipLightStrengthModifier();
+        specTotal += spec * specStr * shipLightStrengthModifier;
     }
 
 
