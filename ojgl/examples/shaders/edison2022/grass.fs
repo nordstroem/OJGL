@@ -184,7 +184,7 @@ VolumetricResult evaluateLight(in vec3 p)
 	vec3 col = vec3(0.1, 0.8, 0.2);
 
 	vec3 res = col * strength / (d * d);
-    VolumetricResult symbols = {d, res};
+    VolumetricResult symbols = {d + 0.5*smoothstep(0, 6, iTime), res};
 
 	return volUn(symbols, missile(orgP));
 }
@@ -302,6 +302,9 @@ void main()
 {
     float u = (fragCoord.x - 0.5);
     float v = (fragCoord.y - 0.5) * iResolution.y / iResolution.x;
+    float zoom = 1.0 - 0.3*smoothstep(0, 10, iTime);;
+    u *= zoom;
+    v *= zoom;
     vec3 rayOrigin = (iCameraMatrix * vec4(u, v, -0.7, 1.0)).xyz;
     eye = (iCameraMatrix * vec4(0.0, 0.0, 0.0, 1)).xyz;
     vec3 rayDirection = normalize(rayOrigin - eye);
