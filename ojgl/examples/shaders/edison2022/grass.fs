@@ -314,7 +314,7 @@ void main()
     color /= (color + vec3(1.0));
 
     fragColor = vec4(pow(color, vec3(0.5)), 1.0);
-    fragColor.xyz *= (1 - smoothstep(28, 32, iTime));
+    fragColor.xyz *= (1 - smoothstep(25, 32, iTime));
     //fragColor = vec4(vec3(fragColor.y), 1.0);
 
 

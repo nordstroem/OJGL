@@ -51,7 +51,7 @@ vec3 jellyfishPosition_func() {
     vec3 p = vec3(0.f);
     float t = iTime;
     p.y+=20;
-    p.z-=60;
+    p.z-=25;
     p.x-=-10;
     vec3 orgPos = p;
     p.y += 0.5*sin(iTime);
@@ -119,7 +119,7 @@ float ojDistance(in vec3 p, bool isMarch) {
     p.z-=0.9;
     p.y -= 4.3;
     p = vec3(p.y, -p.x, p.z);
-    p.xy *= rot(-1.047);
+    p.xy *= rot(-0.93);
     vec3 orgP = p;
 
     p.y *= 0.6;
@@ -145,7 +145,7 @@ float ojDistance(in vec3 p, bool isMarch) {
 
 
     if (isMarch)
-        at += 0.02/(0.0+d*d*d*d) * smoothstep(7,13, iTime);
+        at += 0.005/(0.0+d*d*d*d) * smoothstep(7,13, iTime);
     return d;
 }
 
@@ -197,7 +197,7 @@ DistanceInfo stone(in vec3 p, bool isMarch) {
     // End ship
 
 
-    float ojd = ojDistance(p - vec3(0.2, 2.5, -8), isMarch);
+    float ojd = ojDistance(p - vec3(0.1, 3.5, -9), isMarch);
 
     //d = min(d, ojd);
 
@@ -218,7 +218,7 @@ DistanceInfo map(in vec3 p, bool isMarch)
     p = orgP;
     vec2 ojUV = clamp(vec2(-p.z / 20 + 1, -p.x / 20 + 1), vec2(0.0), vec2(1.0));
    // bool onOJ = texture(ojText, ojUV).x < 0.5;
-    vec3 floorColor = 0.967*vec3(0.0, 0.02, 0.05);
+    vec3 floorColor = 0.467*vec3(0.0, 0.02, 0.05);
 
     //if (onOJ) {
     //    floorColor = 0.05*vec3(1.0);
@@ -289,12 +289,12 @@ vec3 getColor(in MarchResult result)
 {
     //vec3 jp = jellyfishPosition();
     //jp = vec3(jp.y, -jp.x+10, -jp.z);
-    vec3 lightPosition = vec3(0, 30, 20 - 5.0 * max(0, iTime - 9)); //vec3(-15, 35, -10);
+    vec3 lightPosition = vec3(0, 30, -10); //vec3(-15, 35, -10);
     if (result.type != invalidType) {
         vec3 ambient = result.color;
         vec3 normal = normal(result.position);
         if (result.type == wallType) {
-            ambient = mix(vec3(0,0.05,0), 0.967*vec3(0.0, 0.02, 0.05), normal.y);
+            //ambient = mix(vec3(0,0.05,0), 0.00*vec3(0.01, 0.01, 0.2), normal.y);
         }
 
         vec3 invLight = normalize(lightPosition - result.position);
@@ -344,7 +344,8 @@ void main()
     color = mix(color, 0.1*vec3(0.01, 0.1, 0.3), 0.2);
     color /= (color + vec3(1.0));
 
-    fragColor = vec4(pow(color, vec3(0.5)), 0.3 + 0.5 * noise_2(vec2(u, v + iTime * 0.1) * 50.0));
+    float ns = length(vec2(u-0.05,v));
+    fragColor = vec4(pow(color, vec3(0.5)), 0.05+ns*1.2 + ns*2.2 * noise_2(vec2(u, v + iTime * 0.1) * 50.0));
     //fragColor = vec4(vec3(fragColor.y), 1.0);
 
     fragColor.xyz *= smoothstep(0, 6, iTime);
