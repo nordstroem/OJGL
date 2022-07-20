@@ -55,7 +55,7 @@ float grassDistance(vec3 p, float h, float w, float d)
     //float t2 = smoothstep(0.5, 1.0, t);
     //float k = -0.2 * (1-t2) + (0.8+0.2) * t2;
     //p.x += 0.3*pow(0.15*(p.y+h), 2);
-    p.x-= 0.8 * pow(0.15*(p.y+h), 2);
+    p.x-= 0.8 * pow(0.13*(p.y+h), 2);
     float x = clamp((p.y + h)/(2*h), 0, 1);
     float r = w*max(0, pcurve(x, 0.2, 1.5));
     return sdBox(p.zyx, vec3(r, h, 0.2));
@@ -76,6 +76,8 @@ VolumetricResult volUn(VolumetricResult a, VolumetricResult b)
 const float missileHeight = 20;//15 + 10 * smoothstep(15, 20, iTime);
 const float missileRadius = 20;
 #define MISSILE_TIME (C_6_TOTAL * 0.5 + 5 + 0.5 * pow(C_6_SINCE, 0.3))
+#define GRASS_TIME (0.4*iTime + C_6_TOTAL * 0.4 + 0.4 * pow(C_6_SINCE, 0.3))
+#define GRASS_TIME_2 (C_6_TOTAL * 0.7 + 5 + 0.7 * pow(C_6_SINCE, 0.3))
 //(0.75 * (C_6_TOTAL * 0.5  + 0.5 * pow(C_6_SINCE, 0.3)))
 
 vec3 ballPositionCalc() {
@@ -202,8 +204,8 @@ DistanceInfo map(in vec3 p, bool isMarch)
     vec3 orgP = p;
     p = orgP;
    // p.xz *= rot(3.6*smoothstep(0, 20, iTime)  + 0.07*iTime);
-    p.xz *= rot(0.6 * iTime);
-    float t0 = iTime;
+    p.xz *= rot(0.5* GRASS_TIME_2);
+    float t0 = GRASS_TIME_2;
     float t = smoothstep(5, 20, t0) - smoothstep(30, 40, t0);
     float r = 0.5 + 1.5*t;
     float ns = 1 - smoothstep(2, 20, t0);
@@ -230,8 +232,9 @@ DistanceInfo map(in vec3 p, bool isMarch)
     //float d5 = sdCappedCylinder(p, vec2(0.2,10));
     //d = min(d, d5);
 
+    float fogStrength = 0.3 * pow(C_6_SINCE, 0.8);
     if (isMarch)
-        fogColor += 0.07/(1.2+d*d*d) * grassColor * smoothstep(0, 5, iTime);
+        fogColor += (0.07 + fogStrength)/(1.2+d*d*d) * grassColor * smoothstep(0, 5, iTime);
 
 
     DistanceInfo grass = {d, grassType, grassColor};
@@ -272,7 +275,7 @@ vec3 getColor(in MarchResult result)
         float k = max(0.0, dot(result.rayDirection, reflect(invLight, normal)));
         float spec = 1 * pow(k, 50.0);
 
-        float l = length(result.position.xz);
+        float l = length(result.position.xyz);
         float shadow = 1.0;
         //if (result.type == wallType)
         //    shadow = shadowFunction(result.position, lightPosition, 32);
@@ -280,7 +283,7 @@ vec3 getColor(in MarchResult result)
         float diffuse = max(0., dot(invLight, normal));
         vec3 color = vec3(ambient * (0.1 + 0.96*diffuse));
         color += fogColor;
-        float fog = exp(-0.00035*l*l);
+        float fog = exp(-0.001*l*l);
         color += at * 1.2*vec3(0.1, 0.1, 0.3);
         color *= (0.2 + 0.8*shadow) * fog ;
         return color  * result.transmittance + result.scatteredLight;
