@@ -118,7 +118,7 @@ vec3 march(in vec3 rayOrigin, in vec3 rayDirection)
 #else
                 t = 0.0;
 #if S_REFRACTIONS
-                rayDirection = refract(rayDirection, normal(p), 0.6);
+                rayDirection = refract(rayDirection, normal(p), 0.7);
                 rayOrigin = p + 0.5 * rayDirection;
 #else
                 rayDirection = reflect(rayDirection, normal(p));

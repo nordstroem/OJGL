@@ -49,12 +49,14 @@ VolumetricResult evaluateLight(in vec3 p)
 
     int a = int(pModPolar(p.xz, 8)) + 3;
     float d = sdBox(p, vec3(19.0,  0.6*pow(0.7*psin(p.x + 5*iTime + 2*p.z),1), 0.1));
-    float d2 = sdTorus(p, vec2(4.f, 0.2f));
-    d = min(d, d2);
+
 
     if (iTime > 30) {
         float d3 = sdTorus(orgP + vec3(0, 12, 0), vec2(19.f, 0.2f));
         d3 = max(6 * (1-smoothstep(29.0, 33.0, iTime)), d3);
+        float d2 = sdTorus(p, vec2(4.f, 0.2f));
+        d2 = max(6 * (1-smoothstep(29.0, 33.0, iTime)), d2);
+        d = min(d, d2);
         d = min(d, d3);
     }
     d = max(0.01, d);
@@ -95,12 +97,12 @@ vec3 colorPalette(float t, vec3 a , vec3 b, vec3 c, vec3 d) {
 }
 
 
-DistanceInfo jellyfish(in vec3 p, bool isMarch, bool light)
+DistanceInfo jellyfish(in vec3 p, bool isMarch, bool light, int id)
 {
     p.xz *= rot(-0.2);
     float t = iTime;
     p.xz *= rot(0.2*sin(iTime));
-    p.y += 90.0 - 90*smoothstep(0, 10, t) + 15;
+    p.y += 120.0 - 120*smoothstep(0, 10, t + 3*hash11(23*id)) + 15;
 
     if (iTime > 30) {
         p.y += 20*smoothstep(30, 36, iTime);
@@ -126,8 +128,8 @@ DistanceInfo jellyfish(in vec3 p, bool isMarch, bool light)
     vec3 legColor = 1.0*vec3(0.5, 0.5, 1.0);
     legColor *= 0.2 + 0.5*psin(px*5);
     DistanceInfo legs = {0.5*d, flowerType, legColor };
-    //if (isMarch)
-    //    at += 0.0008/(1.2+d*d*d);
+    if (isMarch)
+        at += 0.02/(1.2+d*d*d);
 
     p = orgOctoP;
     p.x -= 0.3*sin(0.3*p.y + 3*iTime);
@@ -140,8 +142,8 @@ DistanceInfo jellyfish(in vec3 p, bool isMarch, bool light)
     d = sdCutHollowSphere(vec3(p.x, -p.y-3.75*ep, p.z), 4+2*ep, -1-3*ep, 0.1);
     DistanceInfo head = {d, flowerType, headColor};
     if (isMarch) {
-        float ls = 0.2;//light ? 0.2 : 0.02;
-        at += ls/(1.2+d*d*d) * (1 - smoothstep(36,37, iTime));
+        float ls = light ? 2.2 : 0.2;
+        at += ls/(3.2+d*d*d*d*d) * (1 - smoothstep(36,37, iTime));
     }
     DistanceInfo blob = un(head, legs);
 
@@ -166,10 +168,10 @@ DistanceInfo map(in vec3 p, bool isMarch)
     int a = int(pModPolar(p.xz, 8)) + 3;
 
     p.x -= 30 - 7*smoothstep(0, 15, iTime);
-    DistanceInfo jf = jellyfish(p, isMarch, int(C_4_TOTAL) % 8 == a);
-    if (int(C_4_TOTAL) % 8 == a) {
-        jf.color = vec3(1, 15, 1);//vec3(10*psin(10*a), 10*psin(2*a + 10), 10*psin(5*a));
-    }
+    DistanceInfo jf = jellyfish(p, isMarch, int(C_4_TOTAL) % 8 == a, a);
+    //if (int(C_4_TOTAL) % 8 == a) {
+    //    jf.color = vec3(1, 15, 1);//vec3(10*psin(10*a), 10*psin(2*a + 10), 10*psin(5*a));
+    //}
     p = orgP;
 
     return sunk(floor, jf, 0.5);
@@ -191,6 +193,8 @@ vec3 eye = vec3(0);
 vec3 getColor(in MarchResult result)
 {
     vec3 lightPosition = vec3(5, 15, 30);
+    vec3 lightColor = vec3(0.1, 0.3, 1.3);
+
     if (result.type != invalidType) {
         vec3 ambient = result.color;
         
@@ -208,14 +212,15 @@ vec3 getColor(in MarchResult result)
         vec3 color = vec3(ambient * (0.1 + 0.96*diffuse));
         color += fogColor;
         float fog = exp(-0.00035*l*l);
-        color += at * 1.2*vec3(0.1, 0.1, 0.3);
+        color += at * 1.2*lightColor;
         color *= (0.2 + 0.8*shadow) * fog;
         return color * result.transmittance + result.scatteredLight;
     } else {
-        vec3 color = 0.04*14.67*vec3(0.0, 0.02, 0.05) * (1-smoothstep(20,34, iTime));
+        vec3 color = vec3(0);//0.04*14.67*vec3(0.0, 0.02, 0.05) * (1-smoothstep(20,34, iTime));
         //color += at * 1.2*vec3(0.1, 0.1, 0.3);
         float l = length(result.position.xz);
         float fog = exp(-0.00035*l*l);
+        color += at * 1.2*lightColor;
 
         return color;
     }

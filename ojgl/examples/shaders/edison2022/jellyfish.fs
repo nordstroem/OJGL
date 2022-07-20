@@ -134,7 +134,7 @@ vec3 getColor(in MarchResult result)
         return color  * fog;
     } else {
         vec3 color = 0.03*vec3(0.0, 0.02, 0.1);
-        color += at * 65.2*lightColor;
+        color += at * 105.2*lightColor;
         return color  * fog;
     }
 }
