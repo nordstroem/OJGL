@@ -98,11 +98,10 @@ vec3 ballPositionCalc() {
         return vec3(0, -22 + (t-t0) * speed, 0);
     } else if (t < t2) { // out to torus
          return vec3(0, missileHeight, speed*(t-t1));
-    } else if (t < t3) {
+    } else {
+        t = min(t3, t);
         float angle = (t-t2) / (t3-t2) *  2 * pi * circleAngleLength;
         return vec3(missileRadius*sin(angle), missileHeight, missileRadius * cos(angle));
-    } else { // escape
-        return vec3(missileRadius*sin(endAngle) + (t - t3) * speed * sin(endAngle), missileHeight, missileRadius * cos(endAngle)  + (t - t3) * speed * cos(endAngle));
     }
 
     return vec3(0, 0, 0);
@@ -156,9 +155,9 @@ VolumetricResult missile(in vec3 p) {
     p = orgP;
     float d = min(verticalD, horizontalD);//min(verticalD, torusD);
     d = min(d, torusD);
-    d = min(d, escapeD);
+   // d = min(d, escapeD);
     d = max(0.01, d);
-    float ball = length(orgP - ballPosition) - 7.0;
+    float ball = length(orgP - ballPosition) - 7.0 * (1 - smoothstep(t3-2, t3, MISSILE_TIME)) + 3*smoothstep(t3-0.5, t3, MISSILE_TIME);
 
     //d = min(ball, horizontalD);
     d = max(d, ball);
