@@ -113,6 +113,7 @@ vec3 getColor(in MarchResult result)
     float fog = exp(-0.00015*l*l);
     marchPosition = result.position;
 
+    vec3 lightColor = vec3(0.1, 0.3, 1.3);
     if (result.type != invalidType) {
         vec3 ambient = result.color;
         
@@ -127,14 +128,14 @@ vec3 getColor(in MarchResult result)
             shadow = shadowFunction(result.position, lightPosition, 32);
         float diffuse = max(0., dot(invLight, normal));
         vec3 color = vec3(ambient * (0.01 + 0.99*diffuse));
-        color += at * 1.2*vec3(0.1, 0.1, 0.3);
+        color += at * 15.2*lightColor;
 
         color *= (0.2 + 0.8*shadow);
-        return color;
+        return color  * fog;
     } else {
         vec3 color = 0.03*vec3(0.0, 0.02, 0.1);
-        color += at * 1.2*vec3(0.1, 0.1, 0.3);
-        return color;
+        color += at * 65.2*lightColor;
+        return color  * fog;
     }
 }
 
@@ -150,7 +151,7 @@ void main()
     vec3 color = march(rayOrigin, rayDirection);
 
     // Tone mapping
-    color = mix(color, fragCoord.y*0.6*vec3(0.01, 0.1, 0.3), 0.2);
+   // color = mix(color, fragCoord.y*0.6*vec3(0.01, 0.1, 0.3), 0.2);
     color /= (color + vec3(1.0));
 
     float focus = 0.0;//abs(length(marchPosition - eye) - 5) * 0.001;;
