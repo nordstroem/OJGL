@@ -206,7 +206,7 @@ DistanceInfo map(in vec3 p, bool isMarch)
    // p.xz *= rot(3.6*smoothstep(0, 20, iTime)  + 0.07*iTime);
     p.xz *= rot(0.5* GRASS_TIME_2);
     float t0 = GRASS_TIME_2;
-    float t = smoothstep(5, 20, t0) - smoothstep(30, 40, t0);
+    float t = smoothstep(5, 20, t0);
     float r = 0.5 + 1.5*t;
     float ns = 1 - smoothstep(2, 20, t0);
     p.x -= ns*0.05*sin(20*iTime);

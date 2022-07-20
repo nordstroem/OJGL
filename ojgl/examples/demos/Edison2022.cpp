@@ -298,7 +298,7 @@ void Edison2022::update(const Duration& relativeSceneTime, const Duration& elaps
     } else if (currentScene == "scene2") {
         FreeCameraController::instance().set({ 31.64f, 72.6f, -23.58f }, { 0.f, 0.f, 0.f });
     } else if (currentScene == "scene3") {
-        const float t = ojstd::smoothstep(5, 20, relativeSceneTime.toSeconds());
+        const float t = ojstd::smoothstep(5, 15, relativeSceneTime.toSeconds());
         /*const Vector3f start = { 31.64f, 62.6f, -23.58f };
         const Vector3f end = { 51.94f, 61.16f, -46.8f };
         FreeCameraController::instance().set(ojstd::lerp(start, end, t), ojstd::lerp(2.272f, 2.38f, t), ojstd::lerp(-1.066f, -0.646f, t));*/
@@ -310,13 +310,14 @@ void Edison2022::update(const Duration& relativeSceneTime, const Duration& elaps
         const Vector3f split1 = lerp3f(start, end, t);
         const Vector3f split1Target = lerp3f(startTarget, endTarget, t);
 
-        if (relativeSceneTime.toSeconds() <= 20) {
+        if (relativeSceneTime.toSeconds() <= 15) {
             FreeCameraController::instance().set(split1, split1Target);
         } else {
-            const Vector3f split2Target = { -193.074f, 28.91f, -133.955f };
-            const Vector3f split2 = lerp3f(split1, end, t);
-            float t2 = ojstd::smoothstep(20, 35, relativeSceneTime.toSeconds());
-            FreeCameraController::instance().set(split1, lerp3f(split1Target, split2Target, t2));
+            float t2 = ojstd::smoothstep(15.f, 25.f, relativeSceneTime.toSeconds());
+            const Vector3f split2Target = { 0.f, 10.f, 0.0f };
+            Vector3f split2 = { 0.2f, 100.1f, -0.2f };
+            split2 = lerp3f(end, split2, t2 * 0.9);
+            FreeCameraController::instance().set(split2, split1Target);
         }
     }
 }
