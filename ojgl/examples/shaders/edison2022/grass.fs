@@ -237,7 +237,7 @@ DistanceInfo map(in vec3 p, bool isMarch)
         fogColor += (0.07 + fogStrength)/(1.2+d*d*d) * grassColor * smoothstep(0, 5, iTime);
 
 
-    DistanceInfo grass = {d, grassType, grassColor};
+    DistanceInfo grass = {d, grassType, fogStrength*grassColor};
 
     p = orgP;
     p.y += 12.5;

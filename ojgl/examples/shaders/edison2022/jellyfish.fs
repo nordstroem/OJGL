@@ -11,6 +11,8 @@ out vec4 fragColor;
 uniform float iTime;
 uniform vec2 iResolution;
 uniform mat4 iCameraMatrix;
+uniform float C_2_SINCE; 
+uniform float C_2_TOTAL;
 
 const int sphereType = 1;
 const int wallType = 2;
@@ -113,7 +115,7 @@ vec3 getColor(in MarchResult result)
     float fog = exp(-0.00015*l*l);
     marchPosition = result.position;
 
-    vec3 lightColor = vec3(0.1, 0.3, 1.3);
+    vec3 lightColor = vec3(0.1, 0.3, 1.3) * 1 / (0.2+ pow(C_2_SINCE, 0.7));
     if (result.type != invalidType) {
         vec3 ambient = result.color;
         

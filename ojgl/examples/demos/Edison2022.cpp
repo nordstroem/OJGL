@@ -161,9 +161,17 @@ ojstd::vector<Scene> Edison2022::buildSceneGraph(const Vector2i& sceneSize) cons
 
     {
         auto raymarch = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2022/jellyfish.fs");
-        raymarch->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
+        raymarch->setUniformCallback([counter = 0.f, timeSince = 0.f]([[maybe_unused]] float relativeSceneTime) mutable {
+            auto music = Music::instance();
+            if (relativeSceneTime < 0.2)
+                counter = music->syncChannels()[2].getTotalHits();
+
+            timeSince = music->syncChannels()[2].getTimeSinceAnyNote().toSeconds();
+            timeSince = timeSince > 5 ? 0.f : timeSince;
             Buffer::UniformVector vector;
             vector.push_back(ojstd::make_shared<UniformMatrix4fv>("iCameraMatrix", FreeCameraController::instance().getCameraMatrix()));
+            vector.push_back(ojstd::make_shared<Uniform1f>("C_2_SINCE", timeSince));
+            vector.push_back(ojstd::make_shared<Uniform1f>("C_2_TOTAL", ojstd::max(0.f, music->syncChannels()[2].getTotalHits() - counter)));
             return vector;
         });
 
@@ -243,6 +251,7 @@ ojstd::vector<Scene> Edison2022::buildSceneGraph(const Vector2i& sceneSize) cons
 
             timeSince = music->syncChannels()[6].getTimeSinceAnyNote().toSeconds();
             timeSince = timeSince > 1 ? 0.f : timeSince;
+
             Buffer::UniformVector vector;
             vector.push_back(ojstd::make_shared<UniformMatrix4fv>("iCameraMatrix", FreeCameraController::instance().getCameraMatrix()));
             vector.push_back(ojstd::make_shared<Uniform1f>("C_6_SINCE", timeSince));
@@ -261,7 +270,7 @@ ojstd::vector<Scene> Edison2022::buildSceneGraph(const Vector2i& sceneSize) cons
 
             auto music = Music::instance();
 
-            vector.push_back(ojstd::make_shared<Uniform1f>("CHANNEL_4_SINCE", music->syncChannels()[4].getTimeSinceAnyNote().toSeconds()));
+            vector.push_back(ojstd::make_shared<Uniform1f>("CHANNEL_4_SINCE", music->syncChannels()[2].getTimeSinceAnyNote().toSeconds()));
 
             return vector;
         });
