@@ -43,20 +43,20 @@ VolumetricResult evaluateLight(in vec3 p)
 {
     vec3 orgP = p;
    
-    p.y += 12.;
+    p.y += 12.3;
     //float ep = 4*(mod(iTime-1.2, 2) - 1);
     //p.y += 1*exp(-ep*ep);
 
     int a = int(pModPolar(p.xz, 8)) + 3;
-    float d = sdBox(p, vec3(19.0,  0.6*pow(0.7*psin(p.x + 5*iTime + 2*p.z),1), 0.1));
+    float d = sdBox(p, vec3(19.0,  0.6*pow(0.7*psin(p.x + 5*iTime + 2*p.z),1), 0.001));
 
 
     if (iTime > 30) {
-        float d3 = sdTorus(orgP + vec3(0, 12, 0), vec2(19.f, 0.2f));
+        float d3 = sdTorus(orgP + vec3(0, 12.3, 0), vec2(19.f, 0.001f));
         d3 = max(6 * (1-smoothstep(29.0, 33.0, iTime)), d3);
         float d2 = sdTorus(p, vec2(4.f, 0.2f));
         d2 = max(6 * (1-smoothstep(29.0, 33.0, iTime)), d2);
-        d = min(d, d2);
+       // d = min(d, d2);
         d = min(d, d3);
     }
     d = max(0.01, d);

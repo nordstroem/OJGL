@@ -256,6 +256,7 @@ ojstd::vector<Scene> Edison2022::buildSceneGraph(const Vector2i& sceneSize) cons
             vector.push_back(ojstd::make_shared<UniformMatrix4fv>("iCameraMatrix", FreeCameraController::instance().getCameraMatrix()));
             vector.push_back(ojstd::make_shared<Uniform1f>("C_6_SINCE", timeSince));
             vector.push_back(ojstd::make_shared<Uniform1f>("C_6_TOTAL", ojstd::max(0.f, music->syncChannels()[6].getTotalHits() - counter)));
+            vector.push_back(ojstd::make_shared<Uniform1f>("C_4_SINCE", music->syncChannels()[2].getTimeSinceAnyNote().toSeconds()));
             return vector;
         });
 
@@ -316,7 +317,7 @@ void Edison2022::update(const Duration& relativeSceneTime, const Duration& elaps
             float t2 = ojstd::smoothstep(15.f, 25.f, relativeSceneTime.toSeconds());
             const Vector3f split2Target = { 0.f, 10.f, 0.0f };
             Vector3f split2 = { 0.2f, 100.1f, -0.2f };
-            split2 = lerp3f(end, split2, t2 * 0.9);
+            split2 = lerp3f(end, split2, t2 * 0.95);
             FreeCameraController::instance().set(split2, split1Target);
         }
     }

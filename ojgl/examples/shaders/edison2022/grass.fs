@@ -5,7 +5,7 @@ const float S_normalEpsilon = 1e-3;
 const int S_maxSteps = 150;
 const float S_maxDistance = 400.0;
 const float S_distanceMultiplier = 0.5;
-const float S_minVolumetricJumpDistance = 0.03;
+const float S_minVolumetricJumpDistance = 0.02;
 const float S_volumetricDistanceMultiplier = 0.75;
 const int S_reflectionJumps = 2;
 
@@ -27,6 +27,7 @@ uniform mat4 iCameraMatrix;
 
 uniform float C_6_SINCE; // 6 melody synth
 uniform float C_6_TOTAL;
+uniform float C_4_SINCE;
 
 const int grassType = 1;
 const int wallType = 2;
@@ -73,7 +74,7 @@ VolumetricResult volUn(VolumetricResult a, VolumetricResult b)
     return VolumetricResult(min(a.distance, b.distance), a.color + b.color);
 }
 
-const float missileHeight = 20;//15 + 10 * smoothstep(15, 20, iTime);
+const float missileHeight = 1;//15 + 10 * smoothstep(15, 20, iTime);
 const float missileRadius = 20;
 #define MISSILE_TIME (C_6_TOTAL * 0.5 + 5 + 0.5 * pow(C_6_SINCE, 0.3))
 #define GRASS_TIME (0.4*iTime + C_6_TOTAL * 0.4 + 0.4 * pow(C_6_SINCE, 0.3))
@@ -90,7 +91,6 @@ vec3 ballPositionCalc() {
     float t1 = t0 + (22 + missileHeight) / speed;
     float t2 = t1 + missileRadius / speed;
     float t3 = t2 + circleAngleLength * perimeter / speed;
-
 
     if (t < t0) { // hidden
         return vec3(0, -12 - 10 -10*smoothstep(0, t0, t), 0);
@@ -129,7 +129,7 @@ VolumetricResult missile(in vec3 p) {
     float distortionFrequency = 1.0;
 
     float snakeRadius = 0.2;
-    float verticalD = sdCappedCylinder(p - vec3(0, 0, distortionStrength*sin(distortionFrequency*p.y)), vec2(snakeRadius, missileHeight));
+    float verticalD = sdCappedCylinder(p - vec3(0, -12, distortionStrength*sin(distortionFrequency*p.y)), vec2(snakeRadius, missileHeight+12));
     float horizontalD = sdCappedCylinder(p.xzy - vec3(distortionStrength*sin(distortionFrequency*p.z), +missileRadius/2, missileHeight), vec2(snakeRadius, missileRadius/2));
     if (t > t2 + 2) {
         horizontalD = 99999.0;
@@ -172,28 +172,28 @@ VolumetricResult missile(in vec3 p) {
 VolumetricResult evaluateLight(in vec3 p)
 {
     vec3 orgP = p;
-    p.y += 12.;
+    p.y += 12.3;
     int a = int(pModPolar(p.xz, 8)) + 3;
-    float d = sdBox(p, vec3(19.0,  0.6*pow(0.7*psin(p.x + 5*(iTime +34)+ 2*p.z),1), 0.1));
-    float d2 = sdTorus(p, vec2(4.f, 0.2f));
-    d = min(d, d2);
+    float d = sdBox(p, vec3(19.0 - max(0, 19*(iTime-5)), 0.3*pow(0.7*psin(p.x + 5*(iTime +34)+ 2*p.z),1), 0.001));
+    float d2 = sdTorus(p, vec2(4.f, 0.001f));
+   // d = min(d, d2);
 
-    float d3 = sdTorus(orgP + vec3(0, 12, 0), vec2(19.f, 0.2f));
+    float d3 = sdTorus(orgP + vec3(0, 12.3, 0), vec2(19.f, 0.001f));
     d = min(d, d3);
     d = max(0.01, d);
 
-	float strength = 10 * (1 - smoothstep(0, 6, iTime));
+	float strength = 10;
 	vec3 col = vec3(0.1, 0.8, 0.2);
 
-	vec3 res = col * strength / (d * d);
-    VolumetricResult symbols = {d + 0.5*smoothstep(0, 6, iTime), res};
+	vec3 res = col * strength / (d * d)  * 1 / (0.2+ pow(C_4_SINCE, 0.7));
+    VolumetricResult symbols = {d , res};
 
 	return volUn(symbols, missile(orgP));
 }
 
 
 float getFogAmount(in vec3 p) {
-    return 0.001;
+    return 0.00065;
 
 }
 
@@ -254,7 +254,7 @@ DistanceInfo map(in vec3 p, bool isMarch)
 float getReflectiveIndex(int type)
 {
     if(type == wallType)
-        return 0.3 * smoothstep(0, 3, iTime);
+        return 0.1 * smoothstep(0, 3, iTime);
     if (type == grassType)
         return 0.2;
     if (type == flowerType)
