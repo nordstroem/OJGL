@@ -195,7 +195,7 @@ ojstd::vector<Scene> Edison2022::buildSceneGraph(const Vector2i& sceneSize) cons
             return vector;
         });
 
-        scenes.emplace_back(chrom, Duration::seconds(28), "scene1");
+        scenes.emplace_back(chrom, Duration::seconds(20), "scene1");
     }
 
     {
@@ -275,7 +275,7 @@ void Edison2022::update(const Duration& relativeSceneTime, const Duration& elaps
     if (currentScene == "scene0") {
         FreeCameraController::instance().set({ 85.5, 81.9, -63 }, -4.0f, -0.674f);
     } else if (currentScene == "scene1") {
-        if (relativeSceneTime.toSeconds() > 15) {
+        if (relativeSceneTime.toSeconds() > 11) {
             FreeCameraController::instance().set({ 30.17f, 23.19f, 34.3f }, 2.548f, -0.374f);
         } else {
             FreeCameraController::instance().set({ 77.832f, 90.95f, -63.8f }, 2.35f, -0.054f);

@@ -11,7 +11,7 @@ out vec4 fragColor;
 uniform float iTime;
 uniform vec2 iResolution;
 uniform mat4 iCameraMatrix;
-uniform float C_2_SINCE; 
+uniform float C_2_SINCE;
 uniform float C_2_TOTAL;
 
 const int sphereType = 1;
@@ -23,12 +23,12 @@ float at2 = 0.0;
 const float pi = 3.14159256;
 
 bool isSecondScene() {
-    return iTime > 15;
+    return iTime > 11;
 }
 DistanceInfo map(in vec3 p, bool isMarch)
 {
     bool isSecond = isSecondScene();
-    p.y-= isSecond ? 1.5 * (iTime - 24) : 3.2 * iTime;
+    p.y-= isSecond ? 1.5 * (iTime - 20) : 3.2 * iTime;
     p.y += 0.5*sin(iTime);
     vec3 absOrgPos = p;
     float k = isSecond ? 5 : 1;
@@ -50,7 +50,7 @@ DistanceInfo map(in vec3 p, bool isMarch)
     float s = 0.6;
     float px = floor((p.y-s/2)/s);
     pMod1(p.y, s);
-    
+
     float a = pModPolar(p.xz, 6);
     p.x -= 2.5;
 
@@ -73,7 +73,7 @@ DistanceInfo map(in vec3 p, bool isMarch)
     p = orgOctoP;
     p.x -= 0.3*sin(0.3*p.y + 3*iTime);
     p.y -= 4.1;
-    
+
     vec3 headColor = 20.0*vec3(0.2, 0.3, 1.0);
     headColor.x *= 0.2 + 0.8*psin(10*kr.x + kr.z);
     headColor.y *= 0.2 + 0.8*psin(3*kr.z + 10);
@@ -82,14 +82,14 @@ DistanceInfo map(in vec3 p, bool isMarch)
     ep = 4*(mod(t-1.2, 2)-1);
     ep = exp(-ep*ep);
     d = sdCutHollowSphere(vec3(p.x, -p.y-3.75*ep, p.z), 5+2*ep, -1-3*ep, 0.1);
-    
+
     d = max(bBoxD, d);
     DistanceInfo head = {d, sphereType, 2*headColor};
     if (isMarch)
         at += 0.1/(1.2+d*d*d);
 
     p = orgPos;
-    
+
 
     d = sdPlane(p, vec4(0, 1, 0, 13)) + 0.05*noise_2(p.xz + vec2(iTime, iTime*0.2));
     DistanceInfo floor = {d, wallType, 0.3*vec3(0.0, 0.02, 0.1)};
@@ -118,7 +118,7 @@ vec3 getColor(in MarchResult result)
     vec3 lightColor = vec3(0.1, 0.3, 1.3) * 1 / (0.2+ pow(C_2_SINCE, 0.7));
     if (result.type != invalidType) {
         vec3 ambient = result.color;
-        
+
         vec3 invLight = normalize(lightPosition - result.position);
         vec3 normal = normal(result.position);
         float k = max(0.0, dot(result.rayDirection, reflect(invLight, normal)));
