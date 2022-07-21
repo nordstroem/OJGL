@@ -3,7 +3,6 @@
 #include "TextRenderer.hpp"
 #include "music/Music.h"
 #include "utility/Log.h"
-#include "utility/Spline3.h"
 
 using namespace ojgl;
 
@@ -46,19 +45,6 @@ Edison2022::Edison2022()
     // ascent.fs
     //FreeCameraController::instance().set({ 0.f, 85.5f, 90.74f }, 0.f, -0.77f);
 }
-
-// clang-format off
-auto ts = {0.0f, 15.0f, 25.0f, };
-float ps_x[] = {39.0531f, 7.105427357601002e-16f, 0.3502011999999999f, -0.017112168888888887f, 60.0948f, -1.0446780000000004f, -0.41984639999999995f, 0.03147202f, };
-float ps_y[] = {50.1299f, 2.2204460492503132e-17f, -0.012499400000000018f, 0.0005044044444444456f, 49.0199f, -0.03450899999999969f, 0.010198800000000036f, -0.0005648900000000034f, };
-float ps_z[] = {0.0f, 0.0f, -0.060000000000000005f, 0.004f, 0.0f, 0.9f, 0.12000000000000001f, -0.011000000000000001f, };
-// clang-format on
-
-ojstd::vector<Polynomial3> polysX = polynomialLoad(ps_x);
-ojstd::vector<Polynomial3> polysY = polynomialLoad(ps_y);
-ojstd::vector<Polynomial3> polysZ = polynomialLoad(ps_z);
-
-Spline3 spline = Spline3(ts, polysX, polysY, polysZ);
 
 ojstd::vector<Scene> Edison2022::buildSceneGraph(const Vector2i& sceneSize) const
 {
@@ -190,14 +176,14 @@ ojstd::vector<Scene> Edison2022::buildSceneGraph(const Vector2i& sceneSize) cons
             return { ojstd::make_shared<Uniform2f>("blurDir", 0.f, 1.f) };
         });
 
-        auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "common/fxaa.vs", "common/fxaa.fs");
-        fxaa->setInputs(blur2);
+        /*auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "common/fxaa.vs", "common/fxaa.fs");
+        fxaa->setInputs(blur2);*/
 
         //auto post = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2022/post.fs");
         //post->setInputs(fxaa);
 
         auto chrom = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2022/ship_chrom_ab.fs");
-        chrom->setInputs(fxaa);
+        chrom->setInputs(blur2);
         chrom->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
             Buffer::UniformVector vector;
             vector.push_back(ojstd::make_shared<UniformMatrix4fv>("iCameraMatrix", FreeCameraController::instance().getCameraMatrix()));
@@ -223,11 +209,11 @@ ojstd::vector<Scene> Edison2022::buildSceneGraph(const Vector2i& sceneSize) cons
             return vector;
         });
 
-        auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "common/fxaa.vs", "common/fxaa.fs");
-        fxaa->setInputs(raymarch);
+        /*auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "common/fxaa.vs", "common/fxaa.fs");
+        fxaa->setInputs(raymarch);*/
 
         auto chrom = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2022/ship_chrom_ab.fs");
-        chrom->setInputs(fxaa);
+        chrom->setInputs(raymarch);
         chrom->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) mutable {
             Buffer::UniformVector vector;
             vector.push_back(ojstd::make_shared<UniformMatrix4fv>("iCameraMatrix", FreeCameraController::instance().getCameraMatrix()));
@@ -260,11 +246,11 @@ ojstd::vector<Scene> Edison2022::buildSceneGraph(const Vector2i& sceneSize) cons
             return vector;
         });
 
-        auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "common/fxaa.vs", "common/fxaa.fs");
-        fxaa->setInputs(raymarch);
+        /*auto fxaa = Buffer::construct(sceneSize.x, sceneSize.y, "common/fxaa.vs", "common/fxaa.fs");
+        fxaa->setInputs(raymarch);*/
 
         auto chrom = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2022/ship_chrom_ab.fs");
-        chrom->setInputs(fxaa);
+        chrom->setInputs(raymarch);
         chrom->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
             Buffer::UniformVector vector;
             vector.push_back(ojstd::make_shared<UniformMatrix4fv>("iCameraMatrix", FreeCameraController::instance().getCameraMatrix()));
@@ -286,8 +272,6 @@ void Edison2022::update(const Duration& relativeSceneTime, const Duration& elaps
     OJ_UNUSED(elapsedTime);
     OJ_UNUSED(relativeSceneTime);
     auto& camera = FreeCameraController::instance();
-    Vector3f newPosition = spline(relativeSceneTime.toSeconds());
-    camera.set(newPosition, { 0.f, 0.f, 0.f });
     if (currentScene == "scene0") {
         FreeCameraController::instance().set({ 85.5, 81.9, -63 }, -4.0f, -0.674f);
     } else if (currentScene == "scene1") {
