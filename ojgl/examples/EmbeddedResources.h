@@ -36,7 +36,7 @@ namespace ojgl::resources {
           },
           
 {
-  #include "shaders/common/fxaa.fs"
+  #include "shaders/common/fxaa.vs"
           , "common/fxaa.vs"
           },
           {

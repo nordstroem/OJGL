@@ -28,14 +28,14 @@ bool isSecondScene() {
 DistanceInfo map(in vec3 p, bool isMarch)
 {
     bool isSecond = isSecondScene();
-    p.y-= isSecond ? 1.5 * (iTime - 13) : 3.2 * (iTime +1);
+    p.y-= isSecond ? 1.5 * (iTime - 12) : 3.2 * (iTime +1);
     p.y += 0.5*sin(iTime);
     vec3 absOrgPos = p;
     float k = isSecond ? 5 : 1;
-    vec3 bBoxSize = vec3(25+k*50, 40 + (k-1)*80, 25 + k*50);
+    vec3 bBoxSize = vec3(25+k*50, 30 + (k-1)*80, 25 + k*50);
     float bBoxD = sdBox(absOrgPos + vec3(0, 0, 0), bBoxSize);
     vec3 kr = pMod3(p.xyz, vec3(50,80,50));
-    float o = 2*noise_3(6*kr);
+    float o = 2*noise_3(7*kr);
     float t = mod(iTime, 28);
     t += o;
     vec3 orgPos = p;
@@ -43,6 +43,11 @@ DistanceInfo map(in vec3 p, bool isMarch)
     p.z -= 10*noise_3(50*kr+5) - 7;
     p.y += 30*noise_3(50*kr - 10) +5;
 
+    if (kr.z == 2 && kr.y == 0 && kr.x == 0) {
+        p.y += 30;
+        //p.z -= 10;
+        //p.x += 2;
+    }
     p.y -= 0.5 * (0 + 3*floor(t / 2) + 3*smoothstep(0, 1, mod(t, 2)));
     p.xz *= rot(0.2*sin(iTime));
     vec3 orgOctoP = p;
