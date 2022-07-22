@@ -311,5 +311,5 @@ void Edison2022::update(const Duration& relativeSceneTime, const Duration& elaps
 
 ojstd::string Edison2022::getTitle() const
 {
-    return "Edison 2022";
+    return "Lake Lurker";
 }
