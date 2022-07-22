@@ -102,7 +102,7 @@ DistanceInfo jellyfish(in vec3 p, bool isMarch, bool light, int id)
     p.xz *= rot(-0.2);
     float t = iTime;
     p.xz *= rot(0.2*sin(iTime));
-    p.y += 120.0 - 120*smoothstep(0, 10, t + 3*hash11(23*id)) + 15;
+    p.y += 120.0 - 120*smoothstep(0, 10, t + 3*hash11(23*id + 1.1)) + 15;
 
     if (iTime > 30) {
         p.y += 20*smoothstep(30, 36, iTime);

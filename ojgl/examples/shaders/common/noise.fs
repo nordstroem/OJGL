@@ -1,12 +1,12 @@
 R""(
 float hash11(float p)
 {
-    return fract(sin(p * 727.1) * 435.545);
+    return fract(sin(mod(p * 727.1, 3.14159265)) * 435.545);
 }
 float hash12(vec2 p)
 {
     float h = dot(p, vec2(127.1, 311.7));
-    return fract(sin(h) * 437.545);
+    return fract(sin(mod(h, 2 * 3.14159265)) * 437.545);
 }
 vec3 hash31(float p)
 {
