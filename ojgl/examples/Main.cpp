@@ -46,10 +46,15 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
         _ASSERTE(ret == 1);
     }
 #endif
-    //popup::Data popupData = popup::show();
 
+#ifdef _DEBUG
     const Vector2i windowSize(1280, 720);
     const bool fullScreen = false;
+#else
+    popup::Data popupData = popup::show();
+    const Vector2i windowSize(popupData.width, popupData.height);
+    const bool fullScreen = popupData.full;
+#endif
     const bool showCursor = !fullScreen;
 
     ShaderReader::setBasePath("examples/shaders/");
