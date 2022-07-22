@@ -23,6 +23,6 @@ private:
     Duration _currentTime;
     ojstd::vector<Duration> _lastTimePerNote;
     ojstd::vector<ojstd::vector<Duration>> _timesPerNote;
-    ojstd::vector<int> _totalHitsPerNote;
+    ojstd::vector<int> _THitsPerNote;
 };
 } //namespace ojgl

@@ -8,7 +8,7 @@ uniform sampler2D inTexture0;
 
 void main()
 {
-    vec2 uv = fragCoord.xy;// / iResolution.xy;
+    vec2 uv = fragCoord.xy;
     vec3 col = vec3(0.);
     const float samples = 20.;
     float totalWeight = 0.;
@@ -29,7 +29,7 @@ void main()
         vec2 uv3 = clamp(uv + blurDir * f * dist, vec2(0.001), vec2(0.999));
         col += texture(inTexture0, uv3).rgb * weight;
     }
-    fragColor.rgb = col / totalWeight; //mix( texture(inTexture0, uv).rgb, col / 20., texture(inTexture0, uv).a);
+    fragColor.rgb = col / totalWeight;
     fragColor.a = focus;
 }
 

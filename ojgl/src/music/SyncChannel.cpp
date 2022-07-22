@@ -12,7 +12,7 @@ SyncChannel::SyncChannel(int numNotes, int minNote, int channel)
     for (int i = 0; i < numNotes; i++) {
         _lastTimePerNote.push_back(Duration(0));
         _timesPerNote.push_back(ojstd::vector<Duration>());
-        _totalHitsPerNote.push_back(0);
+        _THitsPerNote.push_back(0);
     }
 }
 
@@ -28,7 +28,7 @@ void SyncChannel::tick(Duration currentTime)
         ojstd::vector<Duration>& s = _timesPerNote[note];
         while (!s.empty() && s[0] <= _currentTime) {
             _lastTimePerNote[note] = _currentTime;
-            _totalHitsPerNote[note]++;
+            _THitsPerNote[note]++;
             s.erase(s.begin());
         }
     }
@@ -45,7 +45,7 @@ Duration SyncChannel::getTimeToNext(int relativeNote) const
 
 Duration SyncChannel::getTimeSinceLast(int relativeNote) const
 {
-    if (_totalHitsPerNote[relativeNote] == 0) {
+    if (_THitsPerNote[relativeNote] == 0) {
         return Duration::maximum();
     }
     return _currentTime - _lastTimePerNote[relativeNote];
@@ -63,11 +63,11 @@ Duration SyncChannel::getTimeSinceAnyNote() const
 
 int SyncChannel::getTotalHitsPerNote(int relativeNote) const
 {
-    return _totalHitsPerNote[relativeNote];
+    return _THitsPerNote[relativeNote];
 }
 
 int SyncChannel::getTotalHits() const
 {
-    return ojstd::accumulate(_totalHitsPerNote.begin(), _totalHitsPerNote.end(), 0);
+    return ojstd::accumulate(_THitsPerNote.begin(), _THitsPerNote.end(), 0);
 }
 } //namespace ojgl

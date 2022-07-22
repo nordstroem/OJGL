@@ -11,8 +11,8 @@ out vec4 fragColor;
 uniform float iTime;
 uniform vec2 iResolution;
 uniform mat4 iCameraMatrix;
-uniform float C_2_SINCE;
-uniform float C_2_TOTAL;
+uniform float C_2_S;
+uniform float C_2_T;
 
 const int sphereType = 1;
 const int wallType = 2;
@@ -45,8 +45,8 @@ DistanceInfo map(in vec3 p, bool isMarch)
 
     if (kr.z == 2 && kr.y == 0 && kr.x == 0) {
         p.y += 30;
-        //p.z -= 10;
-        //p.x += 2;
+
+
     }
     p.y -= 0.5 * (0 + 3*floor(t / 2) + 3*smoothstep(0, 1, mod(t, 2)));
     p.xz *= rot(0.2*sin(iTime));
@@ -120,7 +120,7 @@ vec3 getColor(in MarchResult result)
     float fog = exp(-0.00015*l*l);
     marchPosition = result.position;
 
-    vec3 lightColor = vec3(0.1, 0.3, 1.3) * 1 / (0.2+ pow(C_2_SINCE, 0.7));
+    vec3 lightColor = vec3(0.1, 0.3, 1.3) * 1 / (0.2+ pow(C_2_S, 0.7));
     if (result.type != invalidType) {
         vec3 ambient = result.color;
 
@@ -157,19 +157,19 @@ void main()
 
     vec3 color = march(rayOrigin, rayDirection);
 
-    // Tone mapping
-   // color = mix(color, fragCoord.y*0.6*vec3(0.01, 0.1, 0.3), 0.2);
+
+
     color /= (color + vec3(1.0));
 
-    float focus = 0.0;//abs(length(marchPosition - eye) - 5) * 0.001;;
+    float focus = 0.0;
 
     if (isSecondScene()) {
-        const vec3 focusPos = eye + vec3(-30, -20, 20);//vec3(35., 20, 35);
+        const vec3 focusPos = eye + vec3(-30, -20, 20);
         float l = length(firstJumpPosition - focusPos) - 20;
         focus = min(1.0, abs( max(0, l) * 0.0025));
     }
     fragColor = vec4(pow(color, vec3(0.5)), focus);
-    //fragColor.xyz = vec3(focus);
+
 }
 
 )""

@@ -57,14 +57,14 @@ ojstd::vector<Scene> Edison2022::buildSceneGraph(const Vector2i& sceneSize) cons
 
             auto music = Music::instance();
 
-            vector.push_back(ojstd::make_shared<Uniform1f>("C_2_SINCE", music->syncChannels()[2].getTimeSinceAnyNote().toSeconds()));
-            vector.push_back(ojstd::make_shared<Uniform1f>("C_3_SINCE", music->syncChannels()[3].getTimeSinceAnyNote().toSeconds()));
-            vector.push_back(ojstd::make_shared<Uniform1f>("C_4_SINCE", music->syncChannels()[4].getTimeSinceAnyNote().toSeconds()));
-            vector.push_back(ojstd::make_shared<Uniform1f>("C_4_TOTAL", music->syncChannels()[4].getTotalHits()));
-            vector.push_back(ojstd::make_shared<Uniform1f>("C_8_SINCE", music->syncChannels()[8].getTimeSinceAnyNote().toSeconds()));
-            vector.push_back(ojstd::make_shared<Uniform1f>("C_9_SINCE", music->syncChannels()[9].getTimeSinceAnyNote().toSeconds()));
-            vector.push_back(ojstd::make_shared<Uniform1f>("C_6_SINCE", music->syncChannels()[6].getTimeSinceAnyNote().toSeconds()));
-            vector.push_back(ojstd::make_shared<Uniform1f>("C_6_TOTAL", music->syncChannels()[6].getTotalHits()));
+            vector.push_back(ojstd::make_shared<Uniform1f>("C_2_S", music->syncChannels()[2].getTimeSinceAnyNote().toSeconds()));
+            vector.push_back(ojstd::make_shared<Uniform1f>("C_3_S", music->syncChannels()[3].getTimeSinceAnyNote().toSeconds()));
+            vector.push_back(ojstd::make_shared<Uniform1f>("C_4_S", music->syncChannels()[4].getTimeSinceAnyNote().toSeconds()));
+            vector.push_back(ojstd::make_shared<Uniform1f>("C_4_T", music->syncChannels()[4].getTotalHits()));
+            vector.push_back(ojstd::make_shared<Uniform1f>("C_8_S", music->syncChannels()[8].getTimeSinceAnyNote().toSeconds()));
+            vector.push_back(ojstd::make_shared<Uniform1f>("C_9_S", music->syncChannels()[9].getTimeSinceAnyNote().toSeconds()));
+            vector.push_back(ojstd::make_shared<Uniform1f>("C_6_S", music->syncChannels()[6].getTimeSinceAnyNote().toSeconds()));
+            vector.push_back(ojstd::make_shared<Uniform1f>("C_6_T", music->syncChannels()[6].getTotalHits()));
 
             return vector;
         });
@@ -92,7 +92,7 @@ ojstd::vector<Scene> Edison2022::buildSceneGraph(const Vector2i& sceneSize) cons
 
             auto music = Music::instance();
 
-            vector.push_back(ojstd::make_shared<Uniform1f>("CHANNEL_4_SINCE", music->syncChannels()[4].getTimeSinceAnyNote().toSeconds()));
+            vector.push_back(ojstd::make_shared<Uniform1f>("C_4_S", music->syncChannels()[4].getTimeSinceAnyNote().toSeconds()));
 
             return vector;
         });
@@ -137,7 +137,7 @@ ojstd::vector<Scene> Edison2022::buildSceneGraph(const Vector2i& sceneSize) cons
 
             auto music = Music::instance();
 
-            vector.push_back(ojstd::make_shared<Uniform1f>("CHANNEL_4_SINCE", music->syncChannels()[4].getTimeSinceAnyNote().toSeconds()));
+            vector.push_back(ojstd::make_shared<Uniform1f>("C_4_S", music->syncChannels()[4].getTimeSinceAnyNote().toSeconds()));
 
             return vector;
         });
@@ -156,8 +156,8 @@ ojstd::vector<Scene> Edison2022::buildSceneGraph(const Vector2i& sceneSize) cons
             timeSince = timeSince > 5 ? 0.f : timeSince;
             Buffer::UniformVector vector;
             vector.push_back(ojstd::make_shared<UniformMatrix4fv>("iCameraMatrix", FreeCameraController::instance().getCameraMatrix()));
-            vector.push_back(ojstd::make_shared<Uniform1f>("C_2_SINCE", timeSince));
-            vector.push_back(ojstd::make_shared<Uniform1f>("C_2_TOTAL", ojstd::max(0.f, music->syncChannels()[2].getTotalHits() - counter)));
+            vector.push_back(ojstd::make_shared<Uniform1f>("C_2_S", timeSince));
+            vector.push_back(ojstd::make_shared<Uniform1f>("C_2_T", ojstd::max(0.f, music->syncChannels()[2].getTotalHits() - counter)));
             return vector;
         });
 
@@ -190,7 +190,7 @@ ojstd::vector<Scene> Edison2022::buildSceneGraph(const Vector2i& sceneSize) cons
 
             auto music = Music::instance();
 
-            vector.push_back(ojstd::make_shared<Uniform1f>("CHANNEL_4_SINCE", music->syncChannels()[4].getTimeSinceAnyNote().toSeconds()));
+            vector.push_back(ojstd::make_shared<Uniform1f>("C_4_S", music->syncChannels()[4].getTimeSinceAnyNote().toSeconds()));
 
             return vector;
         });
@@ -204,7 +204,7 @@ ojstd::vector<Scene> Edison2022::buildSceneGraph(const Vector2i& sceneSize) cons
             Buffer::UniformVector vector;
             vector.push_back(ojstd::make_shared<UniformMatrix4fv>("iCameraMatrix", FreeCameraController::instance().getCameraMatrix()));
             auto music = Music::instance();
-            vector.push_back(ojstd::make_shared<Uniform1f>("C_4_TOTAL", music->syncChannels()[4].getTotalHits()));
+            vector.push_back(ojstd::make_shared<Uniform1f>("C_4_T", music->syncChannels()[4].getTotalHits()));
 
             return vector;
         });
@@ -220,7 +220,7 @@ ojstd::vector<Scene> Edison2022::buildSceneGraph(const Vector2i& sceneSize) cons
 
             auto music = Music::instance();
 
-            vector.push_back(ojstd::make_shared<Uniform1f>("CHANNEL_4_SINCE", music->syncChannels()[4].getTimeSinceAnyNote().toSeconds()));
+            vector.push_back(ojstd::make_shared<Uniform1f>("C_4_S", music->syncChannels()[4].getTimeSinceAnyNote().toSeconds()));
 
             return vector;
         });
@@ -240,9 +240,9 @@ ojstd::vector<Scene> Edison2022::buildSceneGraph(const Vector2i& sceneSize) cons
 
             Buffer::UniformVector vector;
             vector.push_back(ojstd::make_shared<UniformMatrix4fv>("iCameraMatrix", FreeCameraController::instance().getCameraMatrix()));
-            vector.push_back(ojstd::make_shared<Uniform1f>("C_6_SINCE", timeSince));
-            vector.push_back(ojstd::make_shared<Uniform1f>("C_6_TOTAL", ojstd::max(0.f, music->syncChannels()[6].getTotalHits() - counter)));
-            vector.push_back(ojstd::make_shared<Uniform1f>("C_4_SINCE", music->syncChannels()[2].getTimeSinceAnyNote().toSeconds()));
+            vector.push_back(ojstd::make_shared<Uniform1f>("C_6_S", timeSince));
+            vector.push_back(ojstd::make_shared<Uniform1f>("C_6_T", ojstd::max(0.f, music->syncChannels()[6].getTotalHits() - counter)));
+            vector.push_back(ojstd::make_shared<Uniform1f>("C_4_S", music->syncChannels()[2].getTimeSinceAnyNote().toSeconds()));
             return vector;
         });
 
@@ -257,7 +257,7 @@ ojstd::vector<Scene> Edison2022::buildSceneGraph(const Vector2i& sceneSize) cons
 
             auto music = Music::instance();
 
-            vector.push_back(ojstd::make_shared<Uniform1f>("CHANNEL_4_SINCE", music->syncChannels()[2].getTimeSinceAnyNote().toSeconds()));
+            vector.push_back(ojstd::make_shared<Uniform1f>("C_4_S", music->syncChannels()[2].getTimeSinceAnyNote().toSeconds()));
 
             return vector;
         });

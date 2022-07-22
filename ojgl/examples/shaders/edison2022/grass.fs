@@ -25,9 +25,9 @@ uniform float iTime;
 uniform vec2 iResolution;
 uniform mat4 iCameraMatrix;
 
-uniform float C_6_SINCE; // 6 melody synth
-uniform float C_6_TOTAL;
-uniform float C_4_SINCE;
+uniform float C_6_S;
+uniform float C_6_T;
+uniform float C_4_S;
 
 const int grassType = 1;
 const int wallType = 2;
@@ -51,11 +51,11 @@ float pcurve( float x, float a, float b )
 float grassDistance(vec3 p, float h, float w, float d)
 {
     float a = pModPolar(p.xz, 4);
-    //p.y+= 20 - t*20;
+
     p.x-=d;
-    //float t2 = smoothstep(0.5, 1.0, t);
-    //float k = -0.2 * (1-t2) + (0.8+0.2) * t2;
-    //p.x += 0.3*pow(0.15*(p.y+h), 2);
+
+
+
     p.x-= 0.8 * pow(0.13*(p.y+h), 2);
     float x = clamp((p.y + h)/(2*h), 0, 1);
     float r = w*max(0, pcurve(x, 0.2, 1.5));
@@ -74,15 +74,15 @@ VolumetricResult volUn(VolumetricResult a, VolumetricResult b)
     return VolumetricResult(min(a.distance, b.distance), a.color + b.color);
 }
 
-const float missileHeight = 1;//15 + 10 * smoothstep(15, 20, iTime);
+const float missileHeight = 1;
 const float missileRadius = 20;
-#define MISSILE_TIME (C_6_TOTAL * 0.5 + 5 + 0.5 * pow(C_6_SINCE, 0.3))
-#define GRASS_TIME (0.4*iTime + C_6_TOTAL * 0.4 + 0.4 * pow(C_6_SINCE, 0.3))
-#define GRASS_TIME_2 (C_6_TOTAL * 0.7 + 5 + 0.7 * pow(C_6_SINCE, 0.3))
-//(0.75 * (C_6_TOTAL * 0.5  + 0.5 * pow(C_6_SINCE, 0.3)))
+#define MISSILE_TIME (C_6_T * 0.5 + 5 + 0.5 * pow(C_6_S, 0.3))
+#define GRASS_TIME (0.4*iTime + C_6_T * 0.4 + 0.4 * pow(C_6_S, 0.3))
+#define GRASS_TIME_2 (C_6_T * 0.7 + 5 + 0.7 * pow(C_6_S, 0.3))
+
 
 vec3 ballPositionCalc() {
-    float t = MISSILE_TIME;//4*mod(iTime, 10);
+    float t = MISSILE_TIME;
     const float speed = 25;
     const float perimeter = 2 * pi * missileRadius;
     const float endAngle = 4*pi - 2.2;
@@ -92,11 +92,11 @@ vec3 ballPositionCalc() {
     float t2 = t1 + missileRadius / speed;
     float t3 = t2 + circleAngleLength * perimeter / speed;
 
-    if (t < t0) { // hidden
+    if (t < t0) {
         return vec3(0, -12 - 10 -10*smoothstep(0, t0, t), 0);
-    } else  if (t < t1){ // up
+    } else  if (t < t1){
         return vec3(0, -22 + (t-t0) * speed, 0);
-    } else if (t < t2) { // out to torus
+    } else if (t < t2) {
          return vec3(0, missileHeight, speed*(t-t1));
     } else {
         t = min(t3, t);
@@ -110,7 +110,7 @@ vec3 ballPositionCalc() {
 vec3 ballPosition = ballPositionCalc();
 
 VolumetricResult missile(in vec3 p) {
-    float t = MISSILE_TIME;//4*mod(iTime, 10);
+    float t = MISSILE_TIME;
     const float speed = 25;
     const float perimeter = 2 * pi * missileRadius;
     const float endAngle = 4*pi - 2.2;
@@ -148,20 +148,20 @@ VolumetricResult missile(in vec3 p) {
         torusD = max(torusD, p.x);
     }
 
-    //torusD = max(0.05, torusD);
+
 
 
 
     p = orgP;
-    float d = min(verticalD, horizontalD);//min(verticalD, torusD);
+    float d = min(verticalD, horizontalD);
     d = min(d, torusD);
-   // d = min(d, escapeD);
+
     d = max(0.01, d);
     float ball = length(orgP - ballPosition) - 7.0 * (1 - smoothstep(t3-2, t3, MISSILE_TIME)) + 3*smoothstep(t3-0.5, t3, MISSILE_TIME);
 
-    //d = min(ball, horizontalD);
+
     d = max(d, ball);
-    //d = min(d, ball);
+
 
     vec3 res = col * strength * smoothstep(0, 3, iTime) / (d * d);
     VolumetricResult bullet = {d, res};
@@ -175,7 +175,7 @@ VolumetricResult evaluateLight(in vec3 p)
     int a = int(pModPolar(p.xz, 8)) + 3;
     float d = sdBox(p, vec3(19.0 - max(0, 19*(iTime-5)), 0.3*pow(0.7*psin(p.x + 5*(iTime +34)+ 2*p.z),1), 0.001));
     float d2 = sdTorus(p, vec2(4.f, 0.001f));
-   // d = min(d, d2);
+
 
     float d3 = sdTorus(orgP + vec3(0, 12.3, 0), vec2(19.f, 0.001f));
     d = min(d, d3);
@@ -184,7 +184,7 @@ VolumetricResult evaluateLight(in vec3 p)
 	float strength = 10;
 	vec3 col = vec3(0.1, 0.8, 0.2);
 
-	vec3 res = col * strength / (d * d)  * 1 / (0.2+ pow(C_4_SINCE, 0.7));
+	vec3 res = col * strength / (d * d)  * 1 / (0.2+ pow(C_4_S, 0.7));
     VolumetricResult symbols = {d , res};
 
 	return volUn(symbols, missile(orgP));
@@ -202,7 +202,7 @@ DistanceInfo map(in vec3 p, bool isMarch)
 
     vec3 orgP = p;
     p = orgP;
-   // p.xz *= rot(3.6*smoothstep(0, 20, iTime)  + 0.07*iTime);
+
     p.xz *= rot(0.5* GRASS_TIME_2);
     float t0 = GRASS_TIME_2;
     float t = smoothstep(5, 20, t0);
@@ -227,11 +227,11 @@ DistanceInfo map(in vec3 p, bool isMarch)
 
     d = min(d, min(d2, d3));
 
-    //p = orgP;
-    //float d5 = sdCappedCylinder(p, vec2(0.2,10));
-    //d = min(d, d5);
 
-    float fogStrength = 0.3 * pow(C_6_SINCE, 0.8);
+
+
+
+    float fogStrength = 0.3 * pow(C_6_S, 0.8);
     if (isMarch)
         fogColor += (0.07 + fogStrength)/(1.2+d*d*d) * grassColor * smoothstep(0, 5, iTime);
 
@@ -276,8 +276,8 @@ vec3 getColor(in MarchResult result)
 
         float l = length(result.position.xyz);
         float shadow = 1.0;
-        //if (result.type == wallType)
-        //    shadow = shadowFunction(result.position, lightPosition, 32);
+
+
 
         float diffuse = max(0., dot(invLight, normal));
         vec3 color = vec3(ambient * (0.1 + 0.96*diffuse));
@@ -288,11 +288,11 @@ vec3 getColor(in MarchResult result)
         return color  * result.transmittance + result.scatteredLight;
     } else {
         vec3 color = 0.00*14.67*vec3(0.0, 0.02, 0.05);
-        //color += at * 1.2*vec3(0.1, 0.1, 0.3);
+
         float l = length(result.position.xz);
         float fog = exp(-0.00035*l*l);
 
-        //if (result.position.y < 100)
+
              color = color * fog * result.transmittance + result.scatteredLight;
         return color;
     }
@@ -313,14 +313,14 @@ void main()
 
     vec3 color = march(rayOrigin, rayDirection);
 
-    // Tone mapping
-   // color = mix(color, 0.2*vec3(0.01, 0.1, 0.3), 0.25);
-  //  color = mix(color, 0.2*vec3(0.01, 0.3, 0.1), 0.06);
+
+
+
     color /= (color + vec3(1.0));
 
     fragColor = vec4(pow(color, vec3(0.5)), 1.0);
     fragColor.xyz *= (1 - smoothstep(25, 31, iTime));
-    //fragColor = vec4(vec3(fragColor.y), 1.0);
+
 
 
 }

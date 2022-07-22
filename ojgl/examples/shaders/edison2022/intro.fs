@@ -67,7 +67,7 @@ DistanceInfo jellyfish(in vec3 p, bool issMarch)
     p.z += 40;
     p.y += -30;
     p.xz *= rot(-0.2);
-    p = vec3(p.y, -p.x, p.z);//
+    p = vec3(p.y, -p.x, p.z);
     float t = iTime;
     p += jellyfishPosition;
     p.xz *= rot(0.2*sin(iTime));
@@ -91,8 +91,8 @@ DistanceInfo jellyfish(in vec3 p, bool issMarch)
     vec3 legColor = 1.0*vec3(0.5, 0.5, 1.0);
     legColor *= 0.2 + 0.5*psin(px*5);
     DistanceInfo legs = {0.5*d, sphereType, legColor };
-    //if (isMarch)
-    //    at += 0.0008/(1.2+d*d*d);
+
+
 
     p = orgOctoP;
     p.x -= 0.3*sin(0.3*p.y + 3*iTime);
@@ -104,8 +104,8 @@ DistanceInfo jellyfish(in vec3 p, bool issMarch)
     ep = exp(-ep*ep);
     d = sdCutHollowSphere(vec3(p.x, -p.y-3.75*ep, p.z), 5+2*ep, -1-3*ep, 0.1);
     DistanceInfo head = {d, sphereType, headColor};
-    //if (isMarch)
-    //    at += 0.01/(1.2+d*d*d);
+
+
 
     DistanceInfo blob = un(head, legs);
 
@@ -126,8 +126,8 @@ float ojDistance(in vec3 p, bool isMarch) {
     float d = sdTorus(p.yxz, vec2(2, 0.0));
 
     p = orgP;
-   // d = min(d, sdBox(p, vec3(0.1, 4.5, 0.1)));
-   // d = min(d, sdBox(p, vec3(0.1, 0.1, 3)));
+
+
 
     p.z -= -5;
     vec3 jp = p;
@@ -150,20 +150,20 @@ float ojDistance(in vec3 p, bool isMarch) {
 }
 
 DistanceInfo stone(in vec3 p, bool isMarch) {
-    //p.y += 6;
-    //p.xz *= rot(-1.2);
-    //vec3 orgP = p;
-    ////float d = sdBox(p, vec3(2.0, 2.0, 2.0));
-    ////DistanceInfo stone = {d + fbm3_high(orgP*4.0,0.4,2.96 ) * 0.1, shipType, vec3(0.1)};
 
 
-    //pModPolar(p.xz, 2.7);
-    //mo(p.xy, vec2(0.0, 1.5));
-    //float d = sdTriPrism(p, vec2(20.0, 10.0));// + fbm3_high(orgP*4.0,0.4,2.96 ) * 0.1 + 0.8*noise_3(p*0.5);
 
-    //// d = min(d, ojd);
 
-    // Ship
+
+
+
+
+
+
+
+
+
+
     const float scale = 40.0;
 
     vec3 rp = p / scale;
@@ -178,7 +178,7 @@ DistanceInfo stone(in vec3 p, bool isMarch) {
     float d = sdRoundBox(rp , vec3(len, height, width), 0.0);
     d = max(-sdRoundBox(rp - vec3(0.55, 0.1, 0) , vec3(0.1, 0.1, 0.15), 0.0), d);
 
-    // top
+
     if (rp.y > 0.2) {
         width -= rp.y - 0.2;
     }
@@ -187,21 +187,21 @@ DistanceInfo stone(in vec3 p, bool isMarch) {
 
     d = min(d, d2);
 
-    // antenna
+
     const float w = 0.02 + 0.5 - rp.y * 0.2 - 0.4;
     const float d3 = sdRoundBox(rp - vec3(0, 0.22, 0), vec3(w, 0.3, w), 0.0);
 
     d = smink(d, d3, 0.05);
 
     d *= scale;
-    // End ship
+
 
 
     float ojd = ojDistance(p - vec3(0.1, 3.5, -9), isMarch);
 
-    //d = min(d, ojd);
 
-     //d -= 0.05*noise_3(2.0*p);
+
+
      DistanceInfo stone = {d, shipType,  vec3(0.1)};
      DistanceInfo oj = {ojd, ojType,  vec3(0.1)};
     return un(stone, oj);
@@ -217,25 +217,25 @@ DistanceInfo map(in vec3 p, bool isMarch)
     vec3 orgP = p;
     p = orgP;
     vec2 ojUV = clamp(vec2(-p.z / 20 + 1, -p.x / 20 + 1), vec2(0.0), vec2(1.0));
-   // bool onOJ = texture(ojText, ojUV).x < 0.5;
+
     vec3 floorColor = 0.467*vec3(0.0, 0.02, 0.05);
 
-    //if (onOJ) {
-    //    floorColor = 0.05*vec3(1.0);
-    //   //floorColor *= 0.5;
-    //   p.y-=0.5 +  0.1*noise_2(3*p.xz);
-    //   //float d = sdPlane(p, vec4(0, 1, 0, 13));
-    // //  floorColor += 0.01/(0.05+0.9*d*d*d) * vec3(3.0, 3.0, 0.4);
-    //}
+
+
+
+
+
+
+
 
     float d = sdPlane(p, vec4(0, 1, 0, 13));
-    //float wn = noise_2(p.xz + vec2(iTime, iTime*0.2));
+
     const float n = noise_2(p.xz);
     float wn = n*n + noise_2(p.xz * 0.3) * 2.0;
 
-    //float t = mod(iTime, 15);
-    //floorColor *= smoothstep(0, 10, t);
-    //DistanceInfo floor = {d - 0.08*sin(p.x), wallType, floorColor};
+
+
+
     DistanceInfo floor = {d - wn * 2.0 - sin((p.x - 40.0) * 0.05)*20.0 - 20, wallType, floorColor};
 
     p = orgP;
@@ -243,17 +243,17 @@ DistanceInfo map(in vec3 p, bool isMarch)
 
     p.y+=3;
     DistanceInfo ojD = stone(p, isMarch);
-    //ojD.distance -= 0.05*noise_3(2.0*p);
+
     DistanceInfo res = sunk(floor, ojD, 1);
 
     {
-        //p = orgP;
-        //pMod2(p.xz, vec2(30.0));
-        //float d = sdCylinder(p.xzy, 3);
-        //res = un(res, DistanceInfo(d, shipType, vec3(1, 0, 0)));
+
+
+
+
     }
 
-    //res = un(res, DistanceInfo(90-p.y, wallType, vec3(0)));
+
 
     if (!isMarch) {
         DistanceInfo jf = jellyfish(orgP, isMarch);
@@ -287,14 +287,14 @@ vec3 eye = vec3(0);
 
 vec3 getColor(in MarchResult result)
 {
-    //vec3 jp = jellyfishPosition();
-    //jp = vec3(jp.y, -jp.x+10, -jp.z);
-    vec3 lightPosition = vec3(0, 30, -10); //vec3(-15, 35, -10);
+
+
+    vec3 lightPosition = vec3(0, 30, -10);
     if (result.type != invalidType) {
         vec3 ambient = result.color;
         vec3 normal = normal(result.position);
         if (result.type == wallType) {
-            //ambient = mix(vec3(0,0.05,0), 0.00*vec3(0.01, 0.01, 0.2), normal.y);
+
         }
 
         vec3 invLight = normalize(lightPosition - result.position);
@@ -303,18 +303,18 @@ vec3 getColor(in MarchResult result)
 
         float l = length(result.position.xz);
         float shadow = 1.0;
-       //z if (result.type == wallType)
+
             shadow = shadowFunction(result.position, lightPosition, 32);
 
         float diffuse = max(0., dot(invLight, normal));
         vec3 color = vec3(ambient * (0.00 + 0.96*diffuse)) * 1.0;
         float fog = exp(-0.00035*l*l);
-        color += at;//*at*200.0;
+        color += at;
         color *= ((0.0 + 0.9*shadow)  + 30.0*spec*shadow) * fog;
         return color;
     } else {
         vec3 color = vec3(0);
-        //color += at * 1.2*vec3(0.1, 0.1, 0.3);
+
         float l = length(result.position.xz);
         float fog = exp(-0.00035*l*l);
 
@@ -340,13 +340,13 @@ void main()
 
     vec3 color = march(rayOrigin, rayDirection);
 
-    // Tone mapping
+
     color = mix(color, 0.1*vec3(0.01, 0.1, 0.3), 0.2);
     color /= (color + vec3(1.0));
 
     float ns = length(vec2(u-0.05,v));
     fragColor = vec4(pow(color, vec3(0.5)), 0.05+ns*1.2 + ns*2.2 * noise_2(vec2(u, v + iTime * 0.1) * 50.0));
-    //fragColor = vec4(vec3(fragColor.y), 1.0);
+
 
     fragColor.xyz *= smoothstep(0, 6, iTime);
 }
