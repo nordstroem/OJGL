@@ -309,16 +309,23 @@ VolumetricResult evaluateLight(in vec3 p)
 	return res;
 }
 
-DistanceInfo map(in vec3 p, bool isMarch)
+DistanceInfo map(in vec3 p, bool isMarch, vec3 rd)
 {
     const bool showingOnlyOil = iTime > PART_2_CHANNEL + 3 && iTime < PART_3_OIL - 3;
     DistanceInfo shipDI = showingOnlyOil ? DistanceInfo(99999.0, -1, vec3(-1)) : DistanceInfo(shipDistance(p), -1, vec3(1, 2, 3));
 
 
-
+    //155ms
 
     float wn = 0.03*(noise_2(p.xz * 20 - vec2(5.0*iTime, 2.1*iTime)) + noise_2(p.xz * 15 - vec2(4.0*iTime,  -2.1*iTime)));
-    float wd = p.y + 0.0 + pow(wn, 0.1) * 0.1;
+    float d = p.y / -rd.y;
+   float wd = rd.y >= 0 ? 9999.0 : d;
+   if (!isMarch) { // normal
+       wd = p.y;
+   }
+   //float wd = p.y;
+    wd += pow(wn, 0.05) * 0.1;
+    //wd = abs(wd);
     DistanceInfo waterDI = {wd, -1, vec3(1, 2, 3)};
 
     DistanceInfo res = waterDI;
@@ -376,7 +383,7 @@ vec3 getColor(in MarchResult result, vec3 eye)
     const float dis = length(lightPos - result.position);
     const float specStr = 3.0 / (dis * dis);
     specTotal += spec * specStr;
-
+    return result.scatteredLight;
     return result.scatteredLight +  result.transmittance * vec3(specTotal);
 
 }
@@ -410,7 +417,7 @@ FullMarchResult march2(in vec3 rayOrigin, in vec3 rayDirection)
                 rayDirection = normalize(rayDirection);
             }
 
-            DistanceInfo info = map(p, true);
+            DistanceInfo info = map(p, true, normalize(rayDirection));
             float jumpDistance = info.distance * S_distanceMultiplier;
 
             float fogAmount = getFogAmount(p);
@@ -426,6 +433,7 @@ FullMarchResult march2(in vec3 rayOrigin, in vec3 rayDirection)
             if (info.distance < S_distanceEpsilon) {
                 vec3 color = getColor(MarchResult(info.type, p, steps, transmittance, scatteredLight, jump, rayDirection, info.color), rayOrigin);
                 t = 0.0;
+                color = max(color, vec3(0));
                 rayDirection = reflect(rayDirection, normal(p));
                 rayOrigin = p + 0.02 * rayDirection;
 
@@ -436,6 +444,7 @@ FullMarchResult march2(in vec3 rayOrigin, in vec3 rayDirection)
 
             if (t > S_maxDistance || steps == S_maxDistance - 1) {
                 vec3 color = getColor(MarchResult(invalidType, p, steps, transmittance, scatteredLight, jump, rayDirection, info.color), rayOrigin);
+                color = max(color, vec3(0));
                 resultColor = mix(resultColor, color, reflectionModifier);
                 return FullMarchResult(resultColor, firstJumpPos);
             }
@@ -504,6 +513,7 @@ void main()
         focus = abs(length(firstJumpPos - eye) - lenToShip) * 0.1;
     }
 
+    //focus = 0.0;
 
     color /= (color + vec3(1.0));
 

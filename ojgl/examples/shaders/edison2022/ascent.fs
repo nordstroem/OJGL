@@ -151,7 +151,7 @@ DistanceInfo jellyfish(in vec3 p, bool isMarch, bool light, int id)
 
 }
 
-DistanceInfo map(in vec3 p, bool isMarch)
+DistanceInfo map(in vec3 p, bool isMarch, vec3 dummy)
 {
     vec3 grassColor = vec3(0.1, 0.5, 0.2);
 

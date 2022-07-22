@@ -36,7 +36,7 @@ const float pi = 3.14159256;
 bool isSecondScene() {
     return iTime > 11;
 }
-DistanceInfo map(in vec3 p, bool isMarch)
+DistanceInfo map(in vec3 p, bool isMarch, vec3 dummy)
 {
     bool isSecond = isSecondScene();
     p.y-= isSecond ? 1.5 * (iTime - 12) : 3.2 * (iTime +1);

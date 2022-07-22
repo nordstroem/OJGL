@@ -31,6 +31,7 @@ public:
 Window::Window(Vector2i size, ojstd::string title, bool fullScreen, bool showCursor)
     : _priv(ojstd::make_unique<Details>(size))
 {
+    SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE);
     ShowCursor(showCursor);
 
     if (fullScreen) {

@@ -24,7 +24,7 @@ struct VolumetricResult {
 };
 
 vec3 firstJumpPosition = vec3(0);
-DistanceInfo map(in vec3 p, bool isMarch);
+DistanceInfo map(in vec3 p, bool isMarch, vec3 rd);
 VolumetricResult evaluateLight(in vec3 p);
 float getFogAmount(in vec3 p);
 vec3 getColor(in MarchResult result);
@@ -42,7 +42,7 @@ vec3 normal(in vec3 p)
     for( int i=ZERO; i<4; i++ )
     {
         vec3 e = 0.5773*(2.0*vec3((((i+3)>>1)&1),((i>>1)&1),(i&1))-1.0);
-        n += e*map(p+0.0005*e, false).distance;
+        n += e*map(p+0.0005*e, false, vec3(0)).distance;
       //if( n.x+n.y+n.z>100.0 ) break;
     }
     return normalize(n);
@@ -58,11 +58,11 @@ float shadowFunction(in vec3 hitPosition, in vec3 lightPosition, float k)
     float maxDistance = length(dir);
     dir = normalize(dir);
     while (t < maxDistance) {
-        float h = map(hitPosition + dir * t, false).distance;
+        float h = map(hitPosition + dir * t, false, vec3(0)).distance;
 
         if(h < S_distanceEpsilon)
             return 0.0;
-        
+
         res = min(res, k*h/t );
 
         t += h;
@@ -95,7 +95,7 @@ vec3 march(in vec3 rayOrigin, in vec3 rayDirection)
             if (jump == 0) {
                 firstJumpPosition = p;
             }
-            DistanceInfo info = map(p, true);
+            DistanceInfo info = map(p, true, rayDirection);
             float jumpDistance = info.distance * S_distanceMultiplier;
 
 #if S_VOLUMETRIC
@@ -105,8 +105,8 @@ vec3 march(in vec3 rayOrigin, in vec3 rayDirection)
             float volumetricJumpDistance = max(S_minVolumetricJumpDistance, vr.distance * S_volumetricDistanceMultiplier);
             jumpDistance = min(jumpDistance, volumetricJumpDistance);
             vec3 lightIntegrated = vr.color - vr.color * exp(-fogAmount * jumpDistance);
-            scatteredLight += transmittance * lightIntegrated;	
-            transmittance *= exp(-fogAmount * jumpDistance);      
+            scatteredLight += transmittance * lightIntegrated;
+            transmittance *= exp(-fogAmount * jumpDistance);
 #endif
 
             t += jumpDistance;

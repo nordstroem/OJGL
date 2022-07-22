@@ -199,7 +199,7 @@ DistanceInfo stone(in vec3 p, bool isMarch) {
 
 
 
-DistanceInfo map(in vec3 p, bool isMarch)
+DistanceInfo map(in vec3 p, bool isMarch, vec3 dummy)
 {
     vec3 orgP = p;
     p = orgP;
