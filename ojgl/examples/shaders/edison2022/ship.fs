@@ -311,7 +311,8 @@ VolumetricResult evaluateLight(in vec3 p)
 
 DistanceInfo map(in vec3 p, bool isMarch)
 {
-    DistanceInfo shipDI = DistanceInfo(shipDistance(p), -1, vec3(1, 2, 3));
+    const bool showingOnlyOil = iTime > PART_2_CHANNEL + 3 && iTime < PART_3_OIL - 3;
+    DistanceInfo shipDI = showingOnlyOil ? DistanceInfo(99999.0, -1, vec3(-1)) : DistanceInfo(shipDistance(p), -1, vec3(1, 2, 3));
 
 
 
@@ -322,10 +323,12 @@ DistanceInfo map(in vec3 p, bool isMarch)
 
     DistanceInfo res = waterDI;
 
-    if (isSinking) {
-        res = sunk(shipDI, waterDI, 0.1);
-    } else {
-        res = un(shipDI, waterDI);
+    if (!showingOnlyOil) {
+        if (isSinking) {
+            res = sunk(shipDI, waterDI, 0.1);
+        } else {
+            res = un(shipDI, waterDI);
+        }
     }
 
 
