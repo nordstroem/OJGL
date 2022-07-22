@@ -1,6 +1,6 @@
 R""(
 
-const float S_distanceEpsilon = 1e-3;
+const float S_distanceEpsilon = 1e-1;
 const float S_normalEpsilon = 1e-3;
 const int S_maxSteps = 100;
 const float S_maxDistance = 250.0;
@@ -151,19 +151,6 @@ float ojDistance(in vec3 p, bool isMarch) {
 
 DistanceInfo stone(in vec3 p, bool isMarch) {
 
-
-
-
-
-
-
-
-
-
-
-
-
-
     const float scale = 40.0;
 
     vec3 rp = p / scale;
@@ -203,7 +190,7 @@ DistanceInfo stone(in vec3 p, bool isMarch) {
 
 
      DistanceInfo stone = {d, shipType,  vec3(0.1)};
-     DistanceInfo oj = {ojd, ojType,  vec3(0.1)};
+     DistanceInfo oj = {ojd+0.1, ojType,  vec3(0.1)};
     return un(stone, oj);
 }
 
@@ -218,7 +205,7 @@ DistanceInfo map(in vec3 p, bool isMarch)
     p = orgP;
     vec2 ojUV = clamp(vec2(-p.z / 20 + 1, -p.x / 20 + 1), vec2(0.0), vec2(1.0));
 
-    vec3 floorColor = 0.467*vec3(0.0, 0.02, 0.05);
+    vec3 floorColor = 0.1*vec3(0.0, 0.02, 0.05);
 
 
 

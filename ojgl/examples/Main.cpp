@@ -48,7 +48,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
 #endif
 
 #ifdef _DEBUG
-    const Vector2i windowSize(1280, 720);
+    const Vector2i windowSize(1920, 1080);
     const bool fullScreen = false;
 #else
     popup::Data popupData = popup::show();
