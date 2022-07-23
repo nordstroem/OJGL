@@ -49,7 +49,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
 
     bool saveFrames = true;
 #ifdef _DEBUG
-    const Vector2i windowSize(1920, 1080);
+    const Vector2i windowSize(2560, 1440);
     const bool fullScreen = false;
 #else
     popup::Data popupData = popup::show();
@@ -71,6 +71,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
     while (!glState.end() && !window.isClosePressed()) {
         Timer timer;
         timer.start();
+
 #ifdef _DEBUG
         FreeCameraController::instance().update(window);
 

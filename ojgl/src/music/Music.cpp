@@ -10,6 +10,7 @@ namespace ojgl {
 Music::Music(const unsigned char* song, bool fixedTimestep)
     : _song(song)
     , _player(ojstd::make_shared<V2MPlayer>())
+    , _fixedTimestep(fixedTimestep)
 {
 }
 
