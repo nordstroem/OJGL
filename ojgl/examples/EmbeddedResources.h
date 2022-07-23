@@ -252,6 +252,50 @@ namespace ojgl::resources {
 #include "shaders/edison2021/chrom_ab.fs"
           , "edison2021/chrom_ab.fs"
           },
+          {
+#include "shaders/edison2022/raymarch_utils.fs"
+          , "edison2022/raymarch_utils.fs"
+          },
+          {
+#include "shaders/edison2022/raymarch_settings.fs"
+          , "edison2022/raymarch_settings.fs"
+          },
+         {
+ #include "shaders/edison2022/raymarch_settings_refract.fs"
+          , "edison2022/raymarch_settings_refract.fs"
+          },
+          {
+#include "shaders/edison2022/chrom_ab.fs"
+          , "edison2022/chrom_ab.fs"
+          },
+          {
+#include "shaders/edison2022/grass.fs"
+          , "edison2022/grass.fs"
+          },
+          {
+#include "shaders/edison2022/jellyfish.fs"
+          , "edison2022/jellyfish.fs"
+          },
+         {
+#include "shaders/edison2022/intro.fs"
+          , "edison2022/intro.fs"
+          },
+          {
+#include "shaders/edison2022/ascent.fs"
+          , "edison2022/ascent.fs"
+          },
+          {
+#include "shaders/edison2022/ship.fs"
+          , "edison2022/ship.fs"
+          },
+          {
+#include "shaders/edison2022/ship_chrom_ab.fs"
+          , "edison2022/ship_chrom_ab.fs"
+          },
+          {
+#include "shaders/edison2022/blur1.fs"
+          , "edison2022/blur1.fs"
+          },
   };
 // clang-format on
 }

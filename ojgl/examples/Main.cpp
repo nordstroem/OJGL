@@ -85,7 +85,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
     Window window(windowSize, demo->getTitle(), fullScreen, showCursor);
     TextRenderer::instance().setHDC(window.hdcBackend());
 
-    GLState glState(window, *demo);
+    GLState glState(window, demo);
 
     while (!glState.end() && !window.isClosePressed()) {
         Timer timer;
@@ -154,7 +154,13 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
         timer.end();
 
 #ifdef _DEBUG
-        ojstd::string debugTitle("Frame time: ");
+        ojstd::string debugTitle("Scene time: ");
+        debugTitle.append(ojstd::to_string(glState.relativeSceneTime().toSeconds<long>()));
+        debugTitle.append(" Total time: ");
+        debugTitle.append(ojstd::to_string(glState.elapsedTime().toSeconds<long>()));
+        debugTitle.append(" Current scene: ");
+        debugTitle.append(glState.currentScene());
+        debugTitle.append(" Frame time: ");
         debugTitle.append(ojstd::to_string(timer.elapsed().toMilliseconds<long>()));
         debugTitle.append(" ms");
         window.setTitle(debugTitle);

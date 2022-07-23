@@ -25,13 +25,14 @@ static ojstd::shared_ptr<Buffer> buildPassthroughBuffer(const Vector2i& windowSi
     return buffer;
 }
 
-GLState::GLState(const Window& window, const Demo& demo)
+GLState::GLState(const Window& window, const ojstd::shared_ptr<Demo>& demo)
+    : _demo(demo)
 {
-    const Vector2i sceneSize = window.size().cropToAspectRatio(demo.getAspectRatio());
+    const Vector2i sceneSize = window.size().cropToAspectRatio(demo->getAspectRatio());
     _mainBuffer = buildPassthroughBuffer(window.size(), sceneSize);
-    _scenes = demo.buildSceneGraph(sceneSize);
+    _scenes = demo->buildSceneGraph(sceneSize);
 
-    if (const auto* song = demo.getSong()) {
+    if (const auto* song = demo->getSong()) {
         Music::createInstance(song);
         Music::instance()->play();
         _clock = Clock::Music;
@@ -91,6 +92,7 @@ Scene& GLState::operator[](const ojstd::string& name) const
 
 void GLState::update()
 {
+    this->_demo->update(this->relativeSceneTime(), this->elapsedTime(), currentScene());
     this->render();
     if (!this->isPaused())
         if (Music::instance() != nullptr)

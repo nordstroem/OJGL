@@ -1,7 +1,7 @@
 #pragma once
 
-#include <type_traits>
 #include "utility/OJstd.h"
+#include <type_traits>
 
 template <typename T>
 struct Vector3 {
@@ -18,19 +18,24 @@ struct Vector3 {
     {
     }
 
-    Vector3 operator*(T a)
+    Vector3 operator*(const T& a) const
     {
         return Vector3(x * a, y * a, z * a);
     }
 
-    void operator+=(Vector3 v)
+    void operator+=(const Vector3& v)
     {
         x += v.x;
         y += v.y;
         z += v.z;
     }
 
-    Vector3 operator-(Vector3 v)
+    Vector3 operator+(const Vector3& v) const
+    {
+        return Vector3(x + v.x, y + v.y, z + v.z);
+    }
+
+    Vector3 operator-(const Vector3& v) const
     {
         return Vector3(x - v.x, y - v.y, z - v.z);
     }
@@ -41,6 +46,12 @@ struct Vector3 {
         x /= len;
         y /= len;
         z /= len;
+    }
+
+    Vector3 normalized() const
+    {
+        T len = static_cast<T>(ojstd::sqrt(static_cast<float>(x * x + y * y + z * z)));
+        return Vector3f(x / len, y / len, z / len);
     }
 
     [[nodiscard]] T lenSq()

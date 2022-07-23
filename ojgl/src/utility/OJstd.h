@@ -1,7 +1,7 @@
 #pragma once
+#include <crtdbg.h>
 #include <cstring>
 #include <utility>
-#include <crtdbg.h>
 
 namespace ojstd {
 
@@ -10,6 +10,9 @@ constexpr float pi = 3.14159265f;
 float sin(float angle);
 float cos(float angle);
 float tan(float angle);
+float atan2(float y, float x);
+float acos(float angle);
+
 int ftoi(float value);
 
 template <typename T>
@@ -69,6 +72,16 @@ ForwardIt find(ForwardIt first, ForwardIt last, const Value& val)
     return last;
 }
 
+template <typename Container>
+int bisect_left(const Container& container, typename Container::value_type value)
+{
+    for (int i = 0; i < container.size(); i++) {
+        if (value < container[i])
+            return i;
+    }
+    return container.size();
+}
+
 template <typename T>
 class unique_ptr {
 public:
@@ -88,7 +101,6 @@ public:
             delete _ptr;
         }
     }
-
 
     unique_ptr(unique_ptr<T>&& other)
     {
@@ -118,8 +130,6 @@ public:
     T* operator->() const { return _ptr; }
     T& operator*() const noexcept { return *_ptr; }
     T* get() const { return _ptr; }
-
-
 
 private:
     T* _ptr = nullptr;
@@ -224,6 +234,8 @@ shared_ptr<T> make_shared(Args&&... args)
 template <typename T>
 class vector {
 public:
+    using value_type = T;
+
     vector()
     {
         this->values = (T*)calloc(this->capacity, sizeof(T));

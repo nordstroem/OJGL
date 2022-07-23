@@ -3,6 +3,7 @@
 #include "render/Window.h"
 #include "utility/Matrix.h"
 #include "utility/OJstd.h"
+#include "utility/Timepoint.h"
 #include "utility/Vector.h"
 
 namespace ojgl {
@@ -15,16 +16,20 @@ public:
 
 public:
     static FreeCameraController& instance();
-    FreeCameraController() = default;
+    FreeCameraController();
 
     void update(const Window& window);
     Matrix getCameraMatrix() const;
     void set(const Vector3f& newPosition, float newHeading, float newElevation);
+    void set(const Vector3f& newPosition, const Vector3f& lookAt);
 
 private:
-    static constexpr float _translationSpeed = 0.025f;
-    static constexpr float _rotationSpeed = 0.02f;
+    static constexpr float _translationSpeed = 0.01f;
+    static constexpr float _rotationSpeed = 0.002f;
 
     Vector2i _previousCursorPosition;
+    Timepoint _previousUpdateTime;
+    bool _lockTarget = false;
+    Vector3f _target;
 };
 }

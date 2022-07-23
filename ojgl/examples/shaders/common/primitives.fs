@@ -77,4 +77,13 @@ float sdHexPrism( vec3 p, vec2 h )
        p.z-h.y );
   return min(max(d.x,d.y),0.0) + length(max(d,0.0));
 }
+float sdCutHollowSphere( vec3 p, float r, float h, float t )
+{
+    vec2 q = vec2( length(p.xz), p.y );
+
+    float w = sqrt(r*r-h*h);
+
+    return ((h*q.x<w*q.y) ? length(q-vec2(w,h)) : 
+                            abs(length(q)-r) ) - t;
+}
 )""
