@@ -192,7 +192,7 @@ popup::Data popup::show()
     auto pred = [defaultWidth, defaultHeight](auto p) { return p.first == defaultWidth && p.second == defaultHeight; };
     int index = ojstd::find_if(resolutions.begin(), resolutions.end(), pred) - resolutions.begin();
 
-#ifdef  _DEBUG
+#ifdef _DEBUG
     const ojstd::string registrySubkey = "Software\\OJ";
     const ojstd::string registryKey = "resolution_index";
 
@@ -213,8 +213,7 @@ popup::Data popup::show()
         if (status == ERROR_SUCCESS) {
             _ASSERTE(type == REG_DWORD);
             index = static_cast<int>(savedIndex);
-        }
-        else {
+        } else {
             _ASSERTE(status == ERROR_FILE_NOT_FOUND);
         }
     }
@@ -240,14 +239,14 @@ popup::Data popup::show()
     data.width = resolutions[callbackData.reslistindex].first;
     data.height = resolutions[callbackData.reslistindex].second;
 
-#ifdef  _DEBUG
+#ifdef _DEBUG
     {
         HKEY keyHandle;
 
         // Create key if it doesn't exist, otherwise open it
         {
             DWORD disposition;
-            const LSTATUS status  =  RegCreateKeyExA(
+            const LSTATUS status = RegCreateKeyExA(
                 HKEY_CURRENT_USER,
                 registrySubkey.c_str(),
                 0,
@@ -260,10 +259,10 @@ popup::Data popup::show()
             _ASSERTE(status == ERROR_SUCCESS || disposition == REG_OPENED_EXISTING_KEY);
         }
 
-         // Save the selected resolution index into the registry
+        // Save the selected resolution index into the registry
         {
             const DWORD resolutionIndex = static_cast<DWORD>(callbackData.reslistindex);
-            const LSTATUS status =  RegSetValueExA(
+            const LSTATUS status = RegSetValueExA(
                 keyHandle,
                 registryKey.c_str(),
                 0,

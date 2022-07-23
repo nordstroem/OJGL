@@ -26,6 +26,7 @@ static ojstd::shared_ptr<Buffer> buildPassthroughBuffer(const Vector2i& windowSi
 }
 
 GLState::GLState(const Window& window, const ojstd::shared_ptr<Demo>& demo)
+    : _demo(demo)
 {
     const Vector2i sceneSize = window.size().cropToAspectRatio(demo->getAspectRatio());
     _mainBuffer = buildPassthroughBuffer(window.size(), sceneSize);
