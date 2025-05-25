@@ -11,7 +11,7 @@ const float S_volumetricDistanceMultiplier = 0.75;
 const int S_reflectionJumps = 2;
 
 #define S_VOLUMETRIC 0
-#define S_REFLECTIONS 1
+#define S_REFLECTIONS 0
 #define S_REFRACTIONS 0
 
 #include "common/noise.fs"
@@ -27,11 +27,14 @@ uniform vec2 iResolution;
 
 const int sphereType = 1;
 
-
 vec3 getColor(in MarchResult result)
 {
+    vec3 lightPosition = vec3(100, 10, 50);
     if (result.type == sphereType) {
-        return vec3(1.0, 0.0, 0.0);
+        vec3 normal = normal(result.position);
+        vec3 invLight = normalize(lightPosition - result.position);
+        float diffuse = max(0., dot(invLight, normal));
+        return vec3(1.0, 0.0, 0.0) * (0.02 + 0.98*diffuse);
     }
     return vec3(0.0);
 }

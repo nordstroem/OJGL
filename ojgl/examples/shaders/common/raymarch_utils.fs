@@ -65,6 +65,8 @@ vec3 march(in vec3 rayOrigin, in vec3 rayDirection)
 
 #if S_REFLECTIONS
     for (int jump = 0; jump < S_reflectionJumps; jump++) {
+#else
+        int jump = 0;
 #endif
         for (int steps = 0; steps < S_maxSteps; ++steps) {
             vec3 p = rayOrigin + t * rayDirection;
