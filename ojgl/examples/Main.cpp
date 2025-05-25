@@ -36,6 +36,7 @@ enum class DemoType {
     Template,
     Edison2021,
     Edison2022,
+    Edison2025,
 };
 
 ojstd::shared_ptr<Demo> getDemo(DemoType type)
@@ -55,6 +56,8 @@ ojstd::shared_ptr<Demo> getDemo(DemoType type)
         return ojstd::make_shared<Edison2021>();
     case DemoType::Edison2022:
         return ojstd::make_shared<Edison2022>();
+    case DemoType::Edison2025:
+        return ojstd::make_shared<Edison2025>();
     }
 
     _ASSERTE(false);
@@ -72,7 +75,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
         _ASSERTE(ret == 1);
     }
 #endif
-    popup::Data popupData = popup::show();
+    popup::Data popupData { .width = 1220, .height = 720, .full = false };
 
     bool saveFrames = false;
     const Vector2i windowSize(popupData.width, popupData.height);
@@ -83,7 +86,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
     for (const auto& [content, path] : resources::shaders)
         ShaderReader::preLoad(path, content);
 
-    const auto demo = getDemo(DemoType::Edison2022);
+    const auto demo = getDemo(DemoType::Edison2025);
     Window window(windowSize, demo->getTitle(), fullScreen, showCursor);
     TextRenderer::instance().setHDC(window.hdcBackend());
 

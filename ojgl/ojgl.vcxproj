@@ -126,10 +126,11 @@
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalOptions>/Zc:sizedDealloc-  /std:c++17 /EHsc /DVC_EXTRALEAN /DWIN32_LEAN_AND_MEAN /DWIN32_EXTRA_LEAN /DNOMINMAX /w4 4062 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:sizedDealloc- /std:c++20  /EHsc /DVC_EXTRALEAN /DWIN32_LEAN_AND_MEAN /DWIN32_EXTRA_LEAN /DNOMINMAX /w4 4062 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)examples;$(IncludePath)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <LanguageStandard>Default</LanguageStandard>
     </ClCompile>
     <Link>
       <OutputFile>$(OutDir)ojgl.exe</OutputFile>
@@ -166,13 +167,14 @@
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalOptions>/Zc:sizedDealloc-  /std:c++17 /EHsc /DVC_EXTRALEAN /DWIN32_LEAN_AND_MEAN /DWIN32_EXTRA_LEAN /DNOMINMAX %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:sizedDealloc- /std:c++20  /EHsc /DVC_EXTRALEAN /DWIN32_LEAN_AND_MEAN /DWIN32_EXTRA_LEAN /DNOMINMAX %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)examples;$(IncludePath)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <LanguageStandard>Default</LanguageStandard>
     </ClCompile>
     <Link>
       <OutputFile>$(OutDir)ojgl.exe</OutputFile>
@@ -216,10 +218,11 @@
       <PrecompiledHeader />
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalOptions>/Zc:sizedDealloc-  /std:c++17 /arch:IA32 /DVC_EXTRALEAN /DWIN32_LEAN_AND_MEAN /DWIN32_EXTRA_LEAN /DNOMINMAX %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:sizedDealloc- /std:c++20  /arch:IA32 /DVC_EXTRALEAN /DWIN32_LEAN_AND_MEAN /DWIN32_EXTRA_LEAN /DNOMINMAX %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)examples;$(IncludePath)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <LanguageStandard>Default</LanguageStandard>
     </ClCompile>
     <Link>
       <OutputFile>$(OutDir)ojgl.exe</OutputFile>
@@ -259,6 +262,8 @@
       <PrecompiledHeader />
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <LanguageStandard>Default</LanguageStandard>
+      <AdditionalOptions>/Zc:sizedDealloc- /std:c++20  </AdditionalOptions>
     </ClCompile>
     <Link>
       <OutputFile>$(OutDir)ojgl.exe</OutputFile>
@@ -289,6 +294,8 @@
       <PrecompiledHeader />
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <LanguageStandard>Default</LanguageStandard>
+      <AdditionalOptions>/Zc:sizedDealloc- /std:c++20  </AdditionalOptions>
     </ClCompile>
     <Link>
       <OutputFile>$(OutDir)ojgl.exe</OutputFile>
@@ -412,6 +419,7 @@
     <None Include="examples\shaders\edison2022\raymarch_utils.fs" />
     <None Include="examples\shaders\edison2022\ship.fs" />
     <None Include="examples\shaders\edison2022\ship_chrom_ab.fs" />
+    <None Include="examples\shaders\edison2025\experiment.fs" />
     <None Include="examples\shaders\experiments\cachedGeometry.fs" />
     <None Include="examples\shaders\common\noise.fs" />
     <None Include="examples\shaders\common\primitives.fs" />

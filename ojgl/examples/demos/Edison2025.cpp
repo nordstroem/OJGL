@@ -6,10 +6,12 @@ Edison2025::Edison2025()
 {
 }
 
-ojstd::vector<ojgl::Scene> ojgl::Edison2025::buildSceneGraph(const Vector2i& sceneSize) const
+ojstd::vector<Scene> Edison2025::buildSceneGraph(const Vector2i& sceneSize) const
 {
-    OJ_UNUSED(sceneSize);
-    return {};
+    ojstd::vector<Scene> scenes;
+    auto experiment = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2025/experiment.fs");
+    scenes.emplace_back(experiment, Duration::seconds(1000000), "experiment");
+    return scenes;
 }
 
 const unsigned char* Edison2025::getSong() const { return nullptr; }
