@@ -114,6 +114,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <AdditionalOptions>/DVC_EXTRALEAN /DWIN32_LEAN_AND_MEAN /DWIN32_EXTRA_LEAN /DNOMINMAX %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>Default</LanguageStandard>
     </ClCompile>
     <Lib>
       <OutputFile>$(OutDir)libct.lib</OutputFile>
@@ -141,6 +142,7 @@
       <OmitFramePointers>false</OmitFramePointers>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
       <WholeProgramOptimization>true</WholeProgramOptimization>
+      <LanguageStandard>Default</LanguageStandard>
     </ClCompile>
     <Lib>
       <OutputFile>$(OutDir)libct.lib</OutputFile>
@@ -164,6 +166,7 @@
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>Default</LanguageStandard>
     </ClCompile>
     <Lib>
       <OutputFile>$(OutDir)libct.lib</OutputFile>
@@ -185,6 +188,7 @@
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>Default</LanguageStandard>
     </ClCompile>
     <Lib>
       <OutputFile>$(OutDir)libct.lib</OutputFile>
@@ -208,6 +212,7 @@
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>Default</LanguageStandard>
     </ClCompile>
     <Lib>
       <OutputFile>$(OutDir)libct.lib</OutputFile>

@@ -2,13 +2,7 @@
 #include "FreeCameraController.h"
 #include "TextRenderer.hpp"
 #include "demo/Demo.h"
-#include "demos/DodensTriumf.h"
-#include "demos/Edison2021.h"
-#include "demos/Edison2022.h"
-#include "demos/Eldur.h"
-#include "demos/InnerSystemLab.h"
-#include "demos/QED.h"
-#include "demos/Template.h"
+#include "demos/Edison2025.h"
 #include "render/GLState.h"
 #include "render/Popup.h"
 #include "render/Texture.h"
@@ -34,31 +28,13 @@ enum class DemoType {
     QED,
     Template,
     Edison2021,
-    Edison2022
+    Edison2022,
+    Edison2025,
 };
 
-ojstd::shared_ptr<Demo> getDemo(DemoType type)
+ojstd::shared_ptr<Demo> getDemo([[maybe_unused]] DemoType type)
 {
-    switch (type) {
-    case DemoType::Eldur:
-        return ojstd::make_shared<Eldur>();
-    case DemoType::QED:
-        return ojstd::make_shared<QED>();
-    case DemoType::DodensTriumf:
-        return ojstd::make_shared<DodensTriumf>();
-    case DemoType::InnerSystemLab:
-        return ojstd::make_shared<InnerSystemLab>();
-    case DemoType::Template:
-        return ojstd::make_shared<Template>();
-    case DemoType::Edison2021:
-        return ojstd::make_shared<Edison2021>();
-    case DemoType::Edison2022:
-        return ojstd::make_shared<Edison2022>();
-    }
-
-    _ASSERTE(false);
-
-    return nullptr;
+    return ojstd::make_shared<Edison2025>();
 }
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
@@ -82,7 +58,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
     for (const auto& [content, path] : resources::shaders)
         ShaderReader::preLoad(path, content);
 
-    const auto demo = getDemo(DemoType::Edison2022);
+    const auto demo = getDemo(DemoType::Edison2025);
     Window window(windowSize, demo->getTitle(), fullScreen, showCursor);
     TextRenderer::instance().setHDC(window.hdcBackend());
 
@@ -132,8 +108,8 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
 
             case Window::KEY_C:
                 const FreeCameraController& c = FreeCameraController::instance();
-                LOG_INFO("Camera: (" << c.position.x << ", " << c.position.y << ", " << c.position.z << ")"
-                                     << ", [" << c.heading << ", " << c.elevation << "]");
+                LOG_INFO("Camera: {" << c.position.x << "f, " << c.position.y << "f, " << c.position.z << "f}"
+                                     << ", " << c.heading << "f, " << c.elevation << "f");
                 break;
 #endif
             }
@@ -165,6 +141,8 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
         debugTitle.append(ojstd::to_string(timer.elapsed().toMilliseconds<long>()));
         debugTitle.append(" ms");
         window.setTitle(debugTitle);
+
+        // ojstd::sleep(20);
 #endif
     }
 }

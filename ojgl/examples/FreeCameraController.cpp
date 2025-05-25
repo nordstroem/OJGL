@@ -44,10 +44,12 @@ void FreeCameraController::update(const Window& window)
         this->position.z -= this->_translationSpeed * dt * ojstd::cos(this->heading + ojstd::pi / 2.f);
         this->position.x -= this->_translationSpeed * dt * ojstd::sin(this->heading + ojstd::pi / 2.f);
     }
-    if (downKeys.contains(Window::KEY_Z))
+    if (downKeys.contains(Window::KEY_Z)) {
         this->position.y += this->_translationSpeed * dt;
-    if (downKeys.contains(Window::KEY_X))
+    }
+    if (downKeys.contains(Window::KEY_X)) {
         this->position.y -= this->_translationSpeed * dt;
+    }
 
     this->_previousCursorPosition = cursorPosition;
 }

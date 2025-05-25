@@ -126,10 +126,11 @@
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalOptions>/Zc:sizedDealloc-  /std:c++17 /EHsc /DVC_EXTRALEAN /DWIN32_LEAN_AND_MEAN /DWIN32_EXTRA_LEAN /DNOMINMAX /w4 4062 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:sizedDealloc- /std:c++17  /EHsc /DVC_EXTRALEAN /DWIN32_LEAN_AND_MEAN /DWIN32_EXTRA_LEAN /DNOMINMAX /w4 4062 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)examples;$(IncludePath)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <LanguageStandard>Default</LanguageStandard>
     </ClCompile>
     <Link>
       <OutputFile>$(OutDir)ojgl.exe</OutputFile>
@@ -166,13 +167,14 @@
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalOptions>/Zc:sizedDealloc-  /std:c++17 /EHsc /DVC_EXTRALEAN /DWIN32_LEAN_AND_MEAN /DWIN32_EXTRA_LEAN /DNOMINMAX %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:sizedDealloc- /std:c++17  /EHsc /DVC_EXTRALEAN /DWIN32_LEAN_AND_MEAN /DWIN32_EXTRA_LEAN /DNOMINMAX %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)examples;$(IncludePath)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <LanguageStandard>Default</LanguageStandard>
     </ClCompile>
     <Link>
       <OutputFile>$(OutDir)ojgl.exe</OutputFile>
@@ -216,10 +218,11 @@
       <PrecompiledHeader />
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalOptions>/Zc:sizedDealloc-  /std:c++17 /arch:IA32 /DVC_EXTRALEAN /DWIN32_LEAN_AND_MEAN /DWIN32_EXTRA_LEAN /DNOMINMAX %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:sizedDealloc- /std:c++17  /arch:IA32 /DVC_EXTRALEAN /DWIN32_LEAN_AND_MEAN /DWIN32_EXTRA_LEAN /DNOMINMAX %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)examples;$(IncludePath)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <LanguageStandard>Default</LanguageStandard>
     </ClCompile>
     <Link>
       <OutputFile>$(OutDir)ojgl.exe</OutputFile>
@@ -259,6 +262,8 @@
       <PrecompiledHeader />
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <LanguageStandard>Default</LanguageStandard>
+      <AdditionalOptions>/Zc:sizedDealloc- /std:c++17  </AdditionalOptions>
     </ClCompile>
     <Link>
       <OutputFile>$(OutDir)ojgl.exe</OutputFile>
@@ -289,6 +294,8 @@
       <PrecompiledHeader />
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <LanguageStandard>Default</LanguageStandard>
+      <AdditionalOptions>/Zc:sizedDealloc- /std:c++17  </AdditionalOptions>
     </ClCompile>
     <Link>
       <OutputFile>$(OutDir)ojgl.exe</OutputFile>
@@ -308,15 +315,18 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="examples\demos\Edison2022.cpp" />
-    <ClCompile Include="examples\demos\DodensTriumf.cpp" />
-    <ClCompile Include="examples\demos\Edison2021.cpp" />
-    <ClCompile Include="examples\demos\Eldur.cpp" />
-    <ClCompile Include="examples\demos\QED.cpp" />
-    <ClCompile Include="examples\demos\Template.cpp" />
+    <ClCompile Include="examples\demos\Edison2025.cpp" />
     <ClCompile Include="examples\FreeCameraController.cpp" />
     <ClCompile Include="examples\Main.cpp" />
-    <ClCompile Include="examples\demos\InnerSystemLab.cpp" />
+    <None Include="examples\shaders\edison2025\borgila_hyperspace.fs" />
+    <None Include="examples\shaders\edison2025\experiment.fs" />
+    <None Include="examples\shaders\edison2025\stars.fs" />
+    <None Include="examples\shaders\edison2025\ufo_hyperspace.fs">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="examples\shaders\edison2025\chrom_ab_hyperspace.fs">
+      <FileType>Document</FileType>
+    </None>
     <ClCompile Include="examples\TextRenderer.cpp" />
     <ClCompile Include="src\thirdparty\StbImage.cpp" />
     <ClCompile Include="src\music\Music.cpp" />
@@ -338,13 +348,7 @@
     <ClCompile Include="src\winapi\gl_loader.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="examples\demos\Edison2022.h" />
-    <ClInclude Include="examples\demos\DodensTriumf.h" />
-    <ClInclude Include="examples\demos\Edison2021.h" />
-    <ClInclude Include="examples\demos\Eldur.h" />
-    <ClInclude Include="examples\demos\QED.h" />
-    <ClInclude Include="examples\demos\Template.h" />
-    <ClInclude Include="examples\demos\InnerSystemLab.h" />
+    <ClInclude Include="examples\demos\Edison2025.h" />
     <ClInclude Include="examples\renderdoc_app.h" />
     <ClInclude Include="examples\TextRenderer.hpp" />
     <ClInclude Include="src\thirdparty\stb_image_write.h" />
@@ -410,6 +414,22 @@
     <None Include="examples\shaders\edison2022\raymarch_utils.fs" />
     <None Include="examples\shaders\edison2022\ship.fs" />
     <None Include="examples\shaders\edison2022\ship_chrom_ab.fs" />
+    <None Include="examples\shaders\edison2025\blur1.fs" />
+    <None Include="examples\shaders\edison2025\borgila.fs" />
+    <None Include="examples\shaders\edison2025\chrom_ab.fs" />
+    <None Include="examples\shaders\edison2025\indoor.fs" />
+    <None Include="examples\shaders\edison2025\lissajous.fs" />
+    <None Include="examples\shaders\edison2025\noise.fs" />
+    <None Include="examples\shaders\edison2025\oj_text.fs" />
+    <None Include="examples\shaders\edison2025\radar.fs" />
+    <None Include="examples\shaders\edison2025\ufo_landing.fs" />
+    <None Include="examples\shaders\edison2025\ufo_landing_utils.fs" />
+    <None Include="examples\shaders\edison2025\ufo_raymarch_utils.fs" />
+    <None Include="examples\shaders\edison2025\ufo_scenes.fs" />
+    <None Include="examples\shaders\edison2025\ufo_scene_1.fs" />
+    <None Include="examples\shaders\edison2025\ufo_scene_2.fs" />
+    <None Include="examples\shaders\edison2025\ufo_scene_3.fs" />
+    <None Include="examples\shaders\edison2025\ufo_scene_4.fs" />
     <None Include="examples\shaders\experiments\cachedGeometry.fs" />
     <None Include="examples\shaders\common\noise.fs" />
     <None Include="examples\shaders\common\primitives.fs" />

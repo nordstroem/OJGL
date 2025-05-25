@@ -38,9 +38,11 @@ public:
     static constexpr int KEY_Z = 0x5A;
     static constexpr int KEY_X = 0x58;
     static constexpr int KEY_C = 0x43;
+    static constexpr int KEY_Q = 0x51;
+    static constexpr int KEY_E = 0x45;
 
 private:
     class Details;
     ojstd::unique_ptr<Details> _priv;
 };
-} //namespace ojgl
+} // namespace ojgl

@@ -51,7 +51,7 @@ struct Vector3 {
     Vector3 normalized() const
     {
         T len = static_cast<T>(ojstd::sqrt(static_cast<float>(x * x + y * y + z * z)));
-        return Vector3f(x / len, y / len, z / len);
+        return Vector3(x / len, y / len, z / len);
     }
 
     [[nodiscard]] T lenSq()
