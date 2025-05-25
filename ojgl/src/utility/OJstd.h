@@ -1,6 +1,7 @@
 #pragma once
 #include <crtdbg.h>
 #include <cstring>
+#include <memory>
 #include <utility>
 
 namespace ojstd {
@@ -543,7 +544,7 @@ template <typename F, typename ReturnType, typename... Args>
 class callable : public callable_base<ReturnType, Args...> {
 public:
     callable(F&& f)
-        : _function(std::forward<F>(f)) {};
+        : _function(std::forward<F>(f)) { };
     ReturnType invoke(Args... args) override
     {
         return _function(std::forward<Args>(args)...);
@@ -593,4 +594,4 @@ private:
     ojstd::shared_ptr<callable_base<ReturnType, Args...>> _callable_ptr;
 };
 
-} //end namespace ojstd
+} // end namespace ojstd

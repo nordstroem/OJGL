@@ -5,6 +5,7 @@
 #include "demos/DodensTriumf.h"
 #include "demos/Edison2021.h"
 #include "demos/Edison2022.h"
+#include "demos/Edison2025.h"
 #include "demos/Eldur.h"
 #include "demos/InnerSystemLab.h"
 #include "demos/QED.h"
@@ -34,7 +35,7 @@ enum class DemoType {
     QED,
     Template,
     Edison2021,
-    Edison2022
+    Edison2022,
 };
 
 ojstd::shared_ptr<Demo> getDemo(DemoType type)
