@@ -75,7 +75,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
         _ASSERTE(ret == 1);
     }
 #endif
-    popup::Data popupData { .width = 1220, .height = 720, .full = false };
+    popup::Data popupData { 1220, 720, false };
 
     bool saveFrames = false;
     const Vector2i windowSize(popupData.width, popupData.height);
