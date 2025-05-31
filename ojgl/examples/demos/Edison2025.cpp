@@ -1,4 +1,5 @@
 #include "Edison2025.h"
+#include "FreeCameraController.h"
 
 namespace ojgl {
 
@@ -10,6 +11,11 @@ ojstd::vector<Scene> Edison2025::buildSceneGraph(const Vector2i& sceneSize) cons
 {
     ojstd::vector<Scene> scenes;
     auto experiment = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2025/experiment.fs");
+    experiment->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
+        Buffer::UniformVector vector;
+        vector.push_back(ojstd::make_shared<UniformMatrix4fv>("iCameraMatrix", FreeCameraController::instance().getCameraMatrix()));
+        return vector;
+    });
     scenes.emplace_back(experiment, Duration::seconds(1000000), "experiment");
     return scenes;
 }
