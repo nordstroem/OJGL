@@ -1,9 +1,9 @@
 R""(
 
-const float S_distanceEpsilon = 1e-2;
-const float S_normalEpsilon = 1e-3;
-const int S_maxSteps = 200;
-const float S_maxDistance = 500.0;
+const float S_distanceEpsilon = 1e-3;
+const float S_normalEpsilon = 5e-2;
+const int S_maxSteps = 300;
+const float S_maxDistance = 300.0;
 const float S_distanceMultiplier = 0.7;
 const float S_minVolumetricJumpDistance = 0.02;
 const float S_volumetricDistanceMultiplier = 0.75;
@@ -24,6 +24,7 @@ out vec4 fragColor;
 uniform float iTime;
 uniform vec2 iResolution;
 uniform mat4 iCameraMatrix;
+uniform sampler2D inTexture0;
 
 const int sphereType = 1;
 const int tunnelType = 2;
@@ -37,15 +38,15 @@ vec3 getAmbientColor(int type)
         case tunnelType:
             return vec3(0.2, 0.2, 0.2);
         case waterType:
-            return 0.1*vec3(1, 1, 1);
+            return vec3(0.1, 0.1, 0.7);
         default:
-           return vec3(1, 0, 1);
+           return 0.3*vec3(1, 1, 1);
     }
 }
 
 vec3 getColor(in MarchResult result)
 {
-    vec3 lightPosition = vec3(0, 0, 0);
+    vec3 lightPosition = vec3(0, 10, 0);
     vec3 ambientColor = getAmbientColor(result.type);
     vec3 normal = normal(result.position);
     vec3 invLight = normalize(lightPosition - result.position);
@@ -58,7 +59,7 @@ float getReflectiveIndex(int type) {
         case sphereType:
             return 0.0;
         case tunnelType:
-            return 0.3;
+            return 0.0;
         case waterType:
             return 0.5;
         default:
@@ -74,16 +75,23 @@ float tunnel(in vec3 p)
 
 float water(in vec3 p)
 {
-    float d = sdPlane(p, vec4(0, 1, 0, 2));
+    float d = sdPlane(p, vec4(0, 1, 0, -10));
     return d;
+}
+
+float mountain(vec3 p) {
+	float h = 4*texture(inTexture0, (p.xz)/90.0).x + 
+              5*texture(inTexture0, (p.xz)/300.0).x + 
+              200*pow(texture(inTexture0, (p.xz)/1600.0).x, 4);
+	return p.y - h + 0.5;
 }
 
 DistanceInfo map(in vec3 p)
 {
-   DistanceInfo box = {tunnel(p), tunnelType};
-   DistanceInfo sphere = {sdSphere(p - vec3(cos(iTime), sin(iTime), -10), 1.0), sphereType};
-   DistanceInfo waterDistance = {water(p), waterType}; 
-   return un(waterDistance, un(box, sphere));
+   DistanceInfo box = {mountain(p), tunnelType};
+   DistanceInfo sphere = {sdSphere(p - vec3(cos(iTime), 15 + sin(iTime), 0), 1.0), sphereType};
+   DistanceInfo waterInfo = {water(p), waterType};
+   return un(waterInfo, un(box, sphere));
 }
 
 void main()
