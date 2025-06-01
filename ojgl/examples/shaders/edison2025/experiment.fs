@@ -27,27 +27,29 @@ uniform mat4 iCameraMatrix;
 uniform sampler2D inTexture0;
 
 const int sphereType = 1;
-const int tunnelType = 2;
+const int mountainType = 2;
 const int waterType = 4;
 
-vec3 getAmbientColor(int type)
+vec3 getAmbientColor(int type, vec3 pos)
 {
     switch (type) {
         case sphereType:
             return vec3(1, 0, 0);
-        case tunnelType:
-            return vec3(0.2, 0.2, 0.2);
+        case mountainType: 
+        {
+            return vec3(0.2);
+        }
         case waterType:
             return vec3(0.1, 0.1, 0.7);
         default:
-           return 0.3*vec3(1, 1, 1);
+           return 0.3*vec3(1, 0, 1);
     }
 }
 
 vec3 getColor(in MarchResult result)
 {
     vec3 lightPosition = vec3(0, 10, 0);
-    vec3 ambientColor = getAmbientColor(result.type);
+    vec3 ambientColor = getAmbientColor(result.type, result.position);
     vec3 normal = normal(result.position);
     vec3 invLight = normalize(lightPosition - result.position);
     float diffuse = max(0., dot(invLight, normal));
@@ -58,7 +60,7 @@ float getReflectiveIndex(int type) {
     switch (type) {
         case sphereType:
             return 0.0;
-        case tunnelType:
+        case mountainType:
             return 0.0;
         case waterType:
             return 0.5;
@@ -80,15 +82,21 @@ float water(in vec3 p)
 }
 
 float mountain(vec3 p) {
+    const float r = max(0, length(p.xz) - 60);
+    const float k = 40 * exp(-0.006*r);
+    if (p.y > k) {
+        return sdPlane(p, vec4(0, 1, 0, k));
+    }
 	float h = 4*texture(inTexture0, (p.xz)/90.0).x + 
               5*texture(inTexture0, (p.xz)/300.0).x + 
               200*pow(texture(inTexture0, (p.xz)/1600.0).x, 4);
+
 	return p.y - h + 0.5;
 }
 
 DistanceInfo map(in vec3 p)
 {
-   DistanceInfo box = {mountain(p), tunnelType};
+   DistanceInfo box = {mountain(p), mountainType};
    DistanceInfo sphere = {sdSphere(p - vec3(cos(iTime), 15 + sin(iTime), 0), 1.0), sphereType};
    DistanceInfo waterInfo = {water(p), waterType};
    return un(waterInfo, un(box, sphere));
