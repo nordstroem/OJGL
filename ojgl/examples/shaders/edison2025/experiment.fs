@@ -30,33 +30,41 @@ const int sphereType = 1;
 const int mountainType = 2;
 const int waterType = 4;
 
-vec3 getAmbientColor(int type, vec3 pos)
+vec3 cameraPosition;
+
+vec3 getAmbientColor(int type, vec3 pos, vec3 normal)
 {
     switch (type) {
         case sphereType:
             return vec3(1, 0, 0);
         case mountainType: 
         {
+            if (abs(normal.y) < 0.6) {
+                return 0.5*vec3(1, 1, 1);
+            }
+            if (pos.y < 10.02 + 0.05*(0.5-noise_2(10*pos.xz))) {
+                return vec3(0.15);
+            }
             return vec3(0.2);
         }
         case waterType:
             return vec3(0.1, 0.1, 0.7);
         default:
-           return 0.3*vec3(1, 0, 1);
+           return vec3(1, 0, 1);
     }
 }
 
 vec3 getColor(in MarchResult result)
 {
-    vec3 lightPosition = vec3(0, 10, 0);
-    vec3 ambientColor = getAmbientColor(result.type, result.position);
+    vec3 lightPosition = vec3(-100, 20, 200);
     vec3 normal = normal(result.position);
     vec3 invLight = normalize(lightPosition - result.position);
     float diffuse = max(0., dot(invLight, normal));
-
+    vec3 ambientColor = getAmbientColor(result.type, result.position, normal);
     vec3 color = ambientColor * (0.02 + 0.98*diffuse);
-    vec3 ao = vec3(float(result.steps) / S_maxSteps);
-    return mix(color, ao, 0.9);
+    vec3 ao = vec3(float(result.steps) / 600);
+
+    return mix(color, ao, 0.5);
 }
 
 float getReflectiveIndex(int type) {
@@ -66,7 +74,7 @@ float getReflectiveIndex(int type) {
         case mountainType:
             return 0.0;
         case waterType:
-            return 0.5;
+            return 1.0;
         default:
            return 0.0;
     }
@@ -109,8 +117,8 @@ void main()
     float u = (fragCoord.x - 0.5);
     float v = (fragCoord.y - 0.5) * iResolution.y / iResolution.x;
     vec3 rayOrigin = (iCameraMatrix * vec4(u, v, -0.7, 1.0)).xyz;
-    vec3 eye = (iCameraMatrix * vec4(0.0, 0.0, 0.0, 1)).xyz;
-    vec3 rayDirection = normalize(rayOrigin - eye);
+    cameraPosition = (iCameraMatrix * vec4(0.0, 0.0, 0.0, 1)).xyz;
+    vec3 rayDirection = normalize(rayOrigin - cameraPosition);
 
     vec3 color = march(rayOrigin, rayDirection);
     color /= (color + vec3(1.0));
