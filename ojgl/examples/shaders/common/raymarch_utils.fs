@@ -85,7 +85,7 @@ vec3 march(in vec3 rayOrigin, in vec3 rayDirection)
 #endif
 
             t += jumpDistance;
-            if (info.distance < S_distanceEpsilon) {
+            if (info.distance < (S_distanceEpsilon)) {
                 vec3 color = getColor(MarchResult(info.type, p, steps, transmittance, scatteredLight, jump));
 #if !S_REFLECTIONS
                 return color;

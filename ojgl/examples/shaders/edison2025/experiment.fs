@@ -2,8 +2,8 @@ R""(
 
 const float S_distanceEpsilon = 1e-3;
 const float S_normalEpsilon = 5e-2;
-const int S_maxSteps = 300;
-const float S_maxDistance = 300.0;
+const int S_maxSteps = 600;
+const float S_maxDistance = 500.0;
 const float S_distanceMultiplier = 0.7;
 const float S_minVolumetricJumpDistance = 0.02;
 const float S_volumetricDistanceMultiplier = 0.75;
@@ -53,7 +53,10 @@ vec3 getColor(in MarchResult result)
     vec3 normal = normal(result.position);
     vec3 invLight = normalize(lightPosition - result.position);
     float diffuse = max(0., dot(invLight, normal));
-    return ambientColor * (0.02 + 0.98*diffuse);
+
+    vec3 color = ambientColor * (0.02 + 0.98*diffuse);
+    vec3 ao = vec3(float(result.steps) / S_maxSteps);
+    return mix(color, ao, 0.9);
 }
 
 float getReflectiveIndex(int type) {
@@ -77,7 +80,7 @@ float tunnel(in vec3 p)
 
 float water(in vec3 p)
 {
-    float d = sdPlane(p, vec4(0, 1, 0, -10));
+    float d = sdPlane(p, vec4(0, 1, 0, -10)) + 0.002*noise_2(5*p.xz + iTime);
     return d;
 }
 
@@ -88,7 +91,6 @@ float mountain(vec3 p) {
         return sdPlane(p, vec4(0, 1, 0, k));
     }
 	float h = 4*texture(inTexture0, (p.xz)/90.0).x + 
-              5*texture(inTexture0, (p.xz)/300.0).x + 
               200*pow(texture(inTexture0, (p.xz)/1600.0).x, 4);
 
 	return p.y - h + 0.5;
