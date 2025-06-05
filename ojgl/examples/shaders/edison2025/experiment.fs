@@ -31,6 +31,7 @@ const int mountainType = 2;
 const int waterType = 4;
 
 vec3 cameraPosition;
+vec3 rayDirection;
 
 vec3 getAmbientColor(int type, vec3 pos, vec3 normal)
 {
@@ -38,15 +39,7 @@ vec3 getAmbientColor(int type, vec3 pos, vec3 normal)
         case sphereType:
             return vec3(1, 0, 0);
         case mountainType: 
-        {
-            if (abs(normal.y) < 0.6) {
-                return 0.5*vec3(1, 1, 1);
-            }
-            if (pos.y < 10.02 + 0.05*(0.5-noise_2(10*pos.xz))) {
-                return vec3(0.15);
-            }
-            return vec3(0.2);
-        }
+            return 0.0*vec3(0.2, 0.2, 0.1);
         case waterType:
             return vec3(0.1, 0.1, 0.7);
         default:
@@ -63,8 +56,11 @@ vec3 getColor(in MarchResult result)
     vec3 ambientColor = getAmbientColor(result.type, result.position, normal);
     vec3 color = ambientColor * (0.02 + 0.98*diffuse);
     vec3 ao = vec3(float(result.steps) / 600);
+    float k = max(0.0, dot(rayDirection, reflect(invLight, normal)));
+    float spec = 1 * pow(k, 30.0);
+    color += spec;
 
-    return mix(color, ao, 0.5);
+    return mix(color, ao, 0.75);
 }
 
 float getReflectiveIndex(int type) {
@@ -118,10 +114,10 @@ void main()
     float v = (fragCoord.y - 0.5) * iResolution.y / iResolution.x;
     vec3 rayOrigin = (iCameraMatrix * vec4(u, v, -0.7, 1.0)).xyz;
     cameraPosition = (iCameraMatrix * vec4(0.0, 0.0, 0.0, 1)).xyz;
-    vec3 rayDirection = normalize(rayOrigin - cameraPosition);
+    rayDirection = normalize(rayOrigin - cameraPosition);
 
     vec3 color = march(rayOrigin, rayDirection);
-    color /= (color + vec3(1.0));
+    // color /= (color + vec3(1.0));
 
     fragColor = vec4(pow(color, vec3(0.5)), 1.0);
 }
