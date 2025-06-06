@@ -84,7 +84,7 @@ float tunnel(in vec3 p)
 
 float water(in vec3 p)
 {
-    float d = sdPlane(p, vec4(0, 1, 0, -10)) + 0.002*noise_2(5*p.xz + iTime);
+    float d = sdPlane(p, vec4(0, 1, 0, 0)) + 0.002*noise_2(5*p.xz + iTime);
     return d;
 }
 
@@ -98,32 +98,28 @@ float mountain(vec3 p)
 	float h = 4*texture(inTexture0, (p.xz)/90.0).x + 
               200*pow(texture(inTexture0, (p.xz)/1600.0).x, 4);
 
-	return p.y - h + 0.5;
+	return p.y - h + 10;
 }
 
-float opXor(float d1, float d2 )
+float opOnion( in float sdf, in float thickness )
 {
-    return max(min(d1,d2),-max(d1,d2));
+    return abs(sdf)-thickness;
 }
+
 float boat(vec3 p)
 {
-    float marker = sdSphere(p - vec3(0, 0, -10), 0.1);
-    float markers = marker;
-
-    p.z *= (1 - 1*smoothstep(1, 27, abs(p.y)));
-
-
-    vec3 p1 = p;
-    p1 -= vec3(0, 10.6, 0);
-    p1.y = -p1.y;
-    float prism = sdTriPrism(p1, vec2(2, 5));
+    p.y += 0.05 * sin(iTime);
+    p.z += 0.1 * sin(iTime + 3);
+    p.x += 0.1 * sin(iTime + 5);
+    float fz = 1.7 - 0.7 * smoothstep(-2.0, 2.0, p.y);
+    float fx = 1*smoothstep(3, 7, abs(p.z));
+    float fx2 = 1.0*smoothstep(-3.0, 2.0, p.y);
 
     vec3 p2 = p;
-    p2 -= vec3(0, 10.1, 0);
-    float box = sdBox(p2, vec3(2, 1.2, 5));
-    float h = mix(box, prism, 0.65);
-
-    return min(marker, h);
+    p2 -= vec3(0, 0.4, 0);
+    float box = sdBox(p2, vec3(2 - fx - fx2, 1.2, 7 / fz));
+    float h = box;
+    return h;
 
 }
 
