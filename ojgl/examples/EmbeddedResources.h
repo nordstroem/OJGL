@@ -303,6 +303,10 @@ namespace ojgl::resources {
 #include "shaders/edison2025/experiment.fs"
           , "edison2025/experiment.fs"
           },
+          {
+#include "shaders/edison2025/noise.fs"
+          , "edison2025/noise.fs"
+          },
   };
 // clang-format on
 }

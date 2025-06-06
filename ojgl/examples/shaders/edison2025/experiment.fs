@@ -37,13 +37,13 @@ vec3 getAmbientColor(int type, vec3 pos, vec3 normal)
 {
     switch (type) {
         case sphereType:
-            return vec3(1, 0, 0);
+            return 1.2*vec3(1, 1, 1);
         case mountainType: 
             return 0.0*vec3(0.2, 0.2, 0.1);
         case waterType:
             return vec3(0.1, 0.1, 0.7);
         default:
-           return vec3(1, 0, 1);
+           return 5*vec3(0, 0.0, 1);
     }
 }
 
@@ -88,7 +88,8 @@ float water(in vec3 p)
     return d;
 }
 
-float mountain(vec3 p) {
+float mountain(vec3 p)
+{
     const float r = max(0, length(p.xz) - 60);
     const float k = 40 * exp(-0.006*r);
     if (p.y > k) {
@@ -100,19 +101,45 @@ float mountain(vec3 p) {
 	return p.y - h + 0.5;
 }
 
+float opXor(float d1, float d2 )
+{
+    return max(min(d1,d2),-max(d1,d2));
+}
+float boat(vec3 p)
+{
+    float marker = sdSphere(p - vec3(0, 0, -10), 0.1);
+    float markers = marker;
+
+    p.z *= (1 - 1*smoothstep(1, 27, abs(p.y)));
+
+
+    vec3 p1 = p;
+    p1 -= vec3(0, 10.6, 0);
+    p1.y = -p1.y;
+    float prism = sdTriPrism(p1, vec2(2, 5));
+
+    vec3 p2 = p;
+    p2 -= vec3(0, 10.1, 0);
+    float box = sdBox(p2, vec3(2, 1.2, 5));
+    float h = mix(box, prism, 0.65);
+
+    return min(marker, h);
+
+}
+
 DistanceInfo map(in vec3 p)
 {
    DistanceInfo box = {mountain(p), mountainType};
-   DistanceInfo sphere = {sdSphere(p - vec3(cos(iTime), 15 + sin(iTime), 0), 1.0), sphereType};
+   DistanceInfo sphereInfo = {boat(p), sphereType};
    DistanceInfo waterInfo = {water(p), waterType};
-   return un(waterInfo, un(box, sphere));
+   return un(waterInfo, un(box, sphereInfo));
 }
 
 void main()
 {
     float u = (fragCoord.x - 0.5);
     float v = (fragCoord.y - 0.5) * iResolution.y / iResolution.x;
-    vec3 rayOrigin = (iCameraMatrix * vec4(u, v, -0.7, 1.0)).xyz;
+    vec3 rayOrigin = (iCameraMatrix * vec4(u, v, -0.5, 1.0)).xyz;
     cameraPosition = (iCameraMatrix * vec4(0.0, 0.0, 0.0, 1)).xyz;
     rayDirection = normalize(rayOrigin - cameraPosition);
 

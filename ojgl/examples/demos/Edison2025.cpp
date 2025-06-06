@@ -10,7 +10,7 @@ Edison2025::Edison2025()
 ojstd::vector<Scene> Edison2025::buildSceneGraph(const Vector2i& sceneSize) const
 {
     ojstd::vector<Scene> scenes;
-    auto noise = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "eldur/mountainNoise.fs");
+    auto noise = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2025/noise.fs");
     noise->setRenderOnce(true);
 
     auto experiment = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2025/experiment.fs");
