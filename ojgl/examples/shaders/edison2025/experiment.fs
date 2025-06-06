@@ -111,14 +111,29 @@ float boat(vec3 p)
     p.y += 0.05 * sin(iTime);
     p.z += 0.1 * sin(iTime + 3);
     p.x += 0.1 * sin(iTime + 5);
-    float fz = 1.7 - 0.7 * smoothstep(-2.0, 2.0, p.y);
-    float fx = 1*smoothstep(3, 7, abs(p.z));
-    float fx2 = 1.0*smoothstep(-3.0, 2.0, p.y);
+    
+
+    float ffz = p.z > 0.0 ? -4.0 : -7.0;
+    float fz = 1.7 - 0.7 * smoothstep(ffz, 2.0, p.y);
+    float fx = 0.971*smoothstep(3, 7, abs(p.z));
+    float fx2 = 1*smoothstep(-3.0, 2.0, p.y);
+    float fy = 0.5*smoothstep(3, 7, p.z);
+    
+    vec3 p1 = p;
+    p1 -= vec3(0, 0.4, 0);
+    float hull = sdBox(p1, vec3(2 - fx - fx2, 1.0 + fy, 7 / fz));
 
     vec3 p2 = p;
-    p2 -= vec3(0, 0.4, 0);
-    float box = sdBox(p2, vec3(2 - fx - fx2, 1.2, 7 / fz));
-    float h = box;
+    p2.y -= 1.5;
+    float windows = sdBox(p2, vec3(0.8, 0.2, 3.3));
+
+    vec3 p3 = p;
+    p3.z = abs(p3.z);
+    p3.y -= 3;
+    p3.z -= 3.6;
+    float mast = sdCappedCylinder(p3, vec2(0.08, 2.2));
+
+    float h = min(mast, min(windows, hull));
     return h;
 
 }
