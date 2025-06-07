@@ -26,7 +26,7 @@ uniform vec2 iResolution;
 uniform mat4 iCameraMatrix;
 uniform sampler2D inTexture0;
 
-const int sphereType = 1;
+const int boatType = 1;
 const int mountainType = 2;
 const int waterType = 4;
 
@@ -36,7 +36,7 @@ vec3 rayDirection;
 vec3 getAmbientColor(int type, vec3 pos, vec3 normal)
 {
     switch (type) {
-        case sphereType:
+        case boatType:
             return 1.2*vec3(1, 1, 1);
         case mountainType: 
             return 0.0*vec3(0.2, 0.2, 0.1);
@@ -65,7 +65,7 @@ vec3 getColor(in MarchResult result)
 
 float getReflectiveIndex(int type) {
     switch (type) {
-        case sphereType:
+        case boatType:
             return 0.0;
         case mountainType:
             return 0.0;
@@ -101,11 +101,6 @@ float mountain(vec3 p)
 	return p.y - h + 10;
 }
 
-float opOnion( in float sdf, in float thickness )
-{
-    return abs(sdf)-thickness;
-}
-
 float boat(vec3 p)
 {
     p.y += 0.05 * sin(iTime);
@@ -124,8 +119,11 @@ float boat(vec3 p)
     float hull = sdBox(p1, vec3(2 - fx - fx2, 1.0 + fy, 7 / fz));
 
     vec3 p2 = p;
-    p2.y -= 1.5;
-    float windows = sdBox(p2, vec3(0.8, 0.2, 3.3));
+    p2.y -= 1.3;
+    float wfx = 0.9 * smoothstep(-0.8, 0.8, p2.y);
+    float wffy = p2.y < 0 ? 0 : 0.3; 
+    float wfy = wffy * smoothstep(2.9, 3.3, abs(p2.z));
+    float windows = sdBox(p2, vec3(1.2 - wfx, 0.3 - wfy, 3.3));
 
     vec3 p3 = p;
     p3.z = abs(p3.z);
@@ -133,7 +131,22 @@ float boat(vec3 p)
     p3.z -= 3.6;
     float mast = sdCappedCylinder(p3, vec2(0.08, 2.2));
 
-    float h = min(mast, min(windows, hull));
+
+    vec3 p4 = p;
+    p4.y -= 4.4;
+    p4.y -= 0.9*smoothstep(0, 5, abs(p.z));
+    float line = sdBox(p4, vec3(0.01, 0.01, 3.6));
+    
+    vec3 p5 = p;
+    p5.z = abs(p5.z);
+    p5.z -= 4.6;
+    p5.y -= 3.2;
+    p5.zy *= rot(-1.1);
+    float line2 = sdBox(p5, vec3(0.01, 0.01, 2.05));
+
+    line = min(line, line2);
+
+    float h = min(line, min(mast, min(windows, hull)));
     return h;
 
 }
@@ -141,7 +154,7 @@ float boat(vec3 p)
 DistanceInfo map(in vec3 p)
 {
    DistanceInfo box = {mountain(p), mountainType};
-   DistanceInfo sphereInfo = {boat(p), sphereType};
+   DistanceInfo sphereInfo = {boat(p), boatType};
    DistanceInfo waterInfo = {water(p), waterType};
    return un(waterInfo, un(box, sphereInfo));
 }
