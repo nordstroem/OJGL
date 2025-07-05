@@ -307,6 +307,10 @@ namespace ojgl::resources {
 #include "shaders/edison2025/noise.fs"
           , "edison2025/noise.fs"
           },
+          {
+#include "shaders/edison2025/noise.fs"
+          , "edison2025/lissajous.fs"
+          },
   };
 // clang-format on
 }

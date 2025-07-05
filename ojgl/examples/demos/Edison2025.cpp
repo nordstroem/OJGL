@@ -22,8 +22,12 @@ ojstd::vector<Scene> Edison2025::buildSceneGraph(const Vector2i& sceneSize) cons
     auto noise = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2025/noise.fs");
     noise->setRenderOnce(true);
 
+    auto lissajous = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2025/lissajous.fs");
+
+    lissajous->setFeedbackInputs(lissajous);
+
     auto experiment = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2025/experiment.fs");
-    experiment->setInputs(noise);
+    experiment->setInputs(noise, lissajous);
 
     experiment->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
         Buffer::UniformVector vector;
