@@ -1,10 +1,19 @@
 #include "Edison2025.h"
 #include "FreeCameraController.h"
+#include "TextRenderer.hpp"
 
 namespace ojgl {
 
 Edison2025::Edison2025()
 {
+}
+
+ojstd::shared_ptr<Texture> Edison2025::getText(const ojstd::string& text) const
+{
+    if (!this->_textures.contains(text))
+        this->_textures[text] = TextRenderer::instance().get(text);
+
+    return this->_textures[text];
 }
 
 ojstd::vector<Scene> Edison2025::buildSceneGraph(const Vector2i& sceneSize) const
@@ -21,6 +30,13 @@ ojstd::vector<Scene> Edison2025::buildSceneGraph(const Vector2i& sceneSize) cons
         vector.push_back(ojstd::make_shared<UniformMatrix4fv>("iCameraMatrix", FreeCameraController::instance().getCameraMatrix()));
         return vector;
     });
+
+    experiment->setTextureCallback([this]([[maybe_unused]] float relativeSceneTime) {
+        ojstd::vector<ojstd::shared_ptr<Uniform1t>> vector;
+        vector.push_back(ojstd::make_shared<Uniform1t>("borgilaTexture", this->getText("BORGILA")));
+        return vector;
+    });
+
     scenes.emplace_back(experiment, Duration::seconds(1000000), "experiment");
     return scenes;
 }

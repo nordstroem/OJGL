@@ -24,24 +24,30 @@ out vec4 fragColor;
 uniform float iTime;
 uniform vec2 iResolution;
 uniform mat4 iCameraMatrix;
+uniform sampler2D borgilaTexture;
 uniform sampler2D inTexture0;
 
 const int boatType = 1;
 const int mountainType = 2;
+const int borgilaType = 3;
 const int waterType = 4;
 
 vec3 cameraPosition;
 vec3 rayDirection;
 
+bool willHitText = false;
+
 vec3 getAmbientColor(int type, vec3 pos, vec3 normal)
 {
     switch (type) {
         case boatType:
-            return 1.2*vec3(1, 1, 1);
+            return  1.2*vec3(1, 1, 1);
         case mountainType: 
             return 0.0*vec3(0.2, 0.2, 0.1);
         case waterType:
             return vec3(0.1, 0.1, 0.7);
+        case borgilaType:
+            return vec3(0.0);
         default:
            return 5*vec3(0, 0.0, 1);
     }
@@ -55,7 +61,7 @@ vec3 getColor(in MarchResult result)
     float diffuse = max(0., dot(invLight, normal));
     vec3 ambientColor = getAmbientColor(result.type, result.position, normal);
     vec3 color = ambientColor * (0.02 + 0.98*diffuse);
-    vec3 ao = vec3(float(result.steps) / 600);
+    vec3 ao = willHitText ? vec3(0.001) : vec3(float(result.steps) / 600);
     float k = max(0.0, dot(rayDirection, reflect(invLight, normal)));
     float spec = 1 * pow(k, 30.0);
     color += spec;
@@ -76,10 +82,50 @@ float getReflectiveIndex(int type) {
     }
 }
 
-float tunnel(in vec3 p)
+float uvBox(vec3 p, vec3 b, inout vec2 uv)
 {
-    float d = -sdSphere(vec3(p.xy, 0), 4.0 + 0.5*sin(0.05*p.z));
+    vec3 d = abs(p) - b;
+    float dis = length(max(d, 0.0)) + min(max(d.x, max(d.y, d.z)), 0.0);
+
+    uv = p.xy / (b.xy * 2) - 0.5;
+    uv.x*=-1;
+    return dis;
+}
+
+float borgilaText(in vec3 p)
+{
+    p = vec3(-p.z, p.y, p.x);
+    p.y -= 1.0;
+    p.z -= 1.0;
+    p.x -= -4;
+    vec2 uv;
+    float d =  uvBox(p, vec3(0.6, 0.25, 0.03), uv);
+    uv.x *=-1;
+    if ( d < 0.001) {
+        float s = texture(borgilaTexture, uv).x;
+        if (s > 0.2) { // If not on text
+            d = 100;
+        }
+	}
     return d;
+}
+
+bool willHitBorgilaText(vec3 rayOrigin, vec3 rayDirection) {
+    float t = 0;
+    float lastJumpDistance = 10000;
+    for (int steps = 0; steps < 20; ++steps) {
+        vec3 p = rayOrigin + t * rayDirection;
+        float d = borgilaText(p);
+        if (d < S_distanceEpsilon) {
+            return true;
+        }
+        t += d;
+        if (d > lastJumpDistance) {
+            return false;
+        }
+        lastJumpDistance = d;
+    }
+    return false;
 }
 
 float water(in vec3 p)
@@ -103,10 +149,9 @@ float mountain(vec3 p)
 
 float boat(vec3 p)
 {
-    p.y += 0.05 * sin(iTime);
-    p.z += 0.1 * sin(iTime + 3);
-    p.x += 0.1 * sin(iTime + 5);
-    
+    // p.y += 0.05 * sin(iTime);
+    // p.z += 0.1 * sin(iTime + 3);
+    // p.x += 0.1 * sin(iTime + 5);
 
     float ffz = p.z > 0.0 ? -4.0 : -7.0;
     float fz = 1.7 - 0.7 * smoothstep(ffz, 2.0, p.y);
@@ -167,6 +212,7 @@ void main()
     cameraPosition = (iCameraMatrix * vec4(0.0, 0.0, 0.0, 1)).xyz;
     rayDirection = normalize(rayOrigin - cameraPosition);
 
+    willHitText = willHitBorgilaText(rayOrigin, rayDirection);
     vec3 color = march(rayOrigin, rayDirection);
     // color /= (color + vec3(1.0));
 

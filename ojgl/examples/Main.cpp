@@ -169,6 +169,8 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
         debugTitle.append(ojstd::to_string(timer.elapsed().toMilliseconds<long>()));
         debugTitle.append(" ms");
         window.setTitle(debugTitle);
+
+        ojstd::sleep(20);
 #endif
     }
 }

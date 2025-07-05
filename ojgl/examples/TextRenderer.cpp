@@ -20,7 +20,7 @@ ojstd::shared_ptr<Texture> TextRenderer::get(const ojstd::string& text)
     int fontSize = 96;
     HDC vhdc = CreateCompatibleDC((HDC)_hdcBackend);
     auto hFont = CreateFont(fontSize, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS,
-        CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Segoe Script"));
+        CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Arial Black"));
 
     SelectObject(vhdc, hFont);
 
@@ -45,7 +45,7 @@ ojstd::shared_ptr<Texture> TextRenderer::get(const ojstd::string& text)
     SelectObject(vhdc, hbmp);
     ExtFloodFill(vhdc, 0, 0, 0x00FFFFFF, FLOODFILLBORDER);
 
-    //SetTextAlign(vhdc, TA_CENTER);
+    // SetTextAlign(vhdc, TA_CENTER);
     DrawText(vhdc, text.c_str(), text.length(), &rect, DT_CENTER);
 
     GetDIBits(vhdc, hbmp, 0, h, nullptr, &bmpi, BI_RGB);
