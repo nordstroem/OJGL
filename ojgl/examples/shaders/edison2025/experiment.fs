@@ -7,7 +7,7 @@ const float S_maxDistance = 500.0;
 const float S_distanceMultiplier = 0.7;
 const float S_minVolumetricJumpDistance = 0.02;
 const float S_volumetricDistanceMultiplier = 0.75;
-const int S_reflectionJumps = 3;
+const int S_reflectionJumps = 2;
 
 #define S_VOLUMETRIC 1
 #define S_REFLECTIONS 1
@@ -27,12 +27,15 @@ uniform mat4 iCameraMatrix;
 uniform sampler2D borgilaTexture;
 uniform sampler2D inTexture0;
 uniform sampler2D inTexture1;
+uniform sampler2D inTexture2;
 
 const int boatType = 1;
 const int mountainType = 2;
 const int lissajousType = 3;
 const int waterType = 4;
-const int objectType = 5;
+const int instrumentPanelType = 5;
+const int hullType = 6;
+const int screenType = 7;
 
 vec3 cameraPosition;
 vec3 rayDirection;
@@ -52,13 +55,26 @@ vec3 getAmbientColor(int type, vec3 pos, vec3 normal)
             return 0.0*vec3(0.2, 0.2, 0.8);
         case waterType:
             return vec3(0.1, 0.1, 0.7);
-        case objectType:
-            return vec3(1.0);
+        case instrumentPanelType:
+            return vec3(0.3);
+        case screenType:
+            return vec3(0.02);
         case lissajousType:
             return vec3(0.0, 0.0, 0.0);
+        case hullType:
+            return vec3(1.0);
         default:
            return 5*vec3(0, 0.0, 1);
     }
+}
+
+float specularIndex(int type) {
+    switch(type) {
+        case screenType:
+            return 0.0;
+        default:
+            return 1.0;
+    }    
 }
 
 float getFogAmount(in vec3 p)
@@ -76,10 +92,11 @@ vec3 getColor(in MarchResult result)
     vec3 color = ambientColor * (0.02 + 0.98*diffuse);
     vec3 ao = vec3(float(result.steps) / 600);
     float k = max(0.0, dot(rayDirection, reflect(invLight, normal)));
-    float spec = 1 * pow(k, 30.0);
+    float spec = specularIndex(result.type) * pow(k, 30.0);
     color += spec;
 
-    return result.scatteredLight + result.transmittance *  mix(color, ao, 0.75);
+    float aof = result.type == screenType ? 0.0 : 0.75;
+    return result.scatteredLight + result.transmittance *  mix(color, ao, aof);
 
 }
 
@@ -91,8 +108,12 @@ float getReflectiveIndex(int type) {
             return 0.0;
         case waterType:
             return 1.0;
-        case objectType:
-            return 0.75;
+        case screenType:
+            return 0.2;
+        case instrumentPanelType:
+            return 0.05;
+        case hullType:
+            return 0.0;
         default:
            return 0.0;
     }
@@ -121,13 +142,48 @@ float mountain(vec3 p)
 }
 
 
-float object(vec3 p)
+float instrumentPanel(vec3 p)
 {
+    vec3 po = p;
+    p.y -= -0.05;
+    p.z -= 2.0;
+    float d = sdBox(p, vec3(4.0, 1.0, 1.0)); 
+
+    p = po;
     p.y -= 1.5;
     p.zy *= rot(boatRotation);
-    // float sdBoxFrame( vec3 p, vec3 b, float e )
+    float s = 0.01;
+    float d1 = sdBoxFrame(p - vec3(-2.0, 0.0, 0.03), vec3(1.0, 1.0, 1.0), s);
+    float dd1 = sdBoxFrame(p - vec3(-0.0, 0.0, 0.03), vec3(1.0, 1.0, 1.0), s);
+    d1 = min(d1, dd1);
+    float dd2 = sdBoxFrame(p - vec3(2.0, 0.0, 0.03), vec3(1.0, 1.0, 1.0), s);
+    d1 = min(d1, dd2);
 
-    return sdBox(p, vec3(1.0));
+    return min(d, d1);
+}
+
+float screens(vec3 p) {
+    vec3 po = p;
+    p.y -= 1.5;
+    p.zy *= rot(boatRotation);
+    
+
+    float d2 = sdBox(p, vec3(3.0, 1.0, 1.0)); 
+    return d2;
+
+}
+
+float hull(vec3 p) {
+    vec3 po = p;
+    p.y += 0.0;
+    p.z -= 0.0;
+    float bd = sdCappedCylinder(p, vec2(6,2));
+    p = po.zxy;
+    float cd = sdCylinder(p, 5.0);
+    p = po;
+    p.y += 5.0;
+    float ed = sdBox(p, vec3(5.0));
+    return min(ed, max(bd, -cd));
 }
 
 
@@ -162,19 +218,41 @@ float lissajous(vec3 p)
     return d;
 }
 
+float radar(vec3 p)
+{
+    p.y -= 1.5;
+    p.zy *= rot(boatRotation);
+    p.z -= 1;
+    p.x -= 2.0;
+    vec2 uv;
+    float d =  uvBox(p, vec3(0.8, 0.8, 0.0), uv);
+    uv.x *=-1;
+    if ( d < 0.01) {
+        float s = texture(inTexture2, uv).x;
+        if (s < 0.01) { // If not on text
+            d = 0.1;
+        }
+        if (d < 0.01)
+            lissajousStrength = s;
+        
+	}
+    return d;
+}
+
 DistanceInfo map(in vec3 p)
 {
    DistanceInfo box = {mountain(p), mountainType};
-   DistanceInfo sphereInfo = {object(p), objectType};
+   DistanceInfo sphereInfo = {instrumentPanel(p), instrumentPanelType};
+   DistanceInfo screenInfo = {screens(p), screenType};
    DistanceInfo waterInfo = {water(p), waterType};
-   DistanceInfo lissajousInfo = {lissajous(p), lissajousType};
-   return un(waterInfo, un(box, sphereInfo));
+   DistanceInfo hullInfo = {hull(p), hullType};
+   return un(screenInfo, un(hullInfo, un(waterInfo, un(box, sphereInfo))));
 }
 
 VolumetricResult evaluateLight(in vec3 p)
 {
     float d = lissajous(p);
-
+    d = min(d, radar(p));
     float str = lissajousStrength;
     vec3 color = vec3(0.1, 0.9, 0.1);
     vec3 res = color * str / (d * d);
@@ -190,7 +268,7 @@ void main()
     cameraPosition = (iCameraMatrix * vec4(0.0, 0.0, 0.0, 1)).xyz;
     rayDirection = normalize(rayOrigin - cameraPosition);
 
-    boatRotation = 0;//iTime;
+    boatRotation = 0.4;
     vec3 color = march(rayOrigin, rayDirection);
     // color /= (color + vec3(1.0));
 
