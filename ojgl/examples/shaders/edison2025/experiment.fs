@@ -151,7 +151,7 @@ float lissajous(vec3 p)
     uv.x *=-1;
     if ( d < 0.01) {
         float s = texture(inTexture1, uv).x;
-        if (s < 0.1) { // If not on text
+        if (s < 0.01) { // If not on text
             d = 0.1;
         }
 
@@ -190,7 +190,7 @@ void main()
     cameraPosition = (iCameraMatrix * vec4(0.0, 0.0, 0.0, 1)).xyz;
     rayDirection = normalize(rayOrigin - cameraPosition);
 
-    boatRotation = iTime;
+    boatRotation = 0;//iTime;
     vec3 color = march(rayOrigin, rayDirection);
     // color /= (color + vec3(1.0));
 
