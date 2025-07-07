@@ -11,7 +11,7 @@ out vec4 fragColor;
 void main()
 {
     float u = (fragCoord.x - 0.5);
-    float v = (fragCoord.y - 0.5) ;
+    float v = (fragCoord.y - 0.5);
     vec2 uv = vec2(u, v);
     
     float k = 1.0;
