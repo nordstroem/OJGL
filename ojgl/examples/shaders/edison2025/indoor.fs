@@ -37,6 +37,7 @@ const int waterType = 4;
 const int instrumentPanelType = 5;
 const int hullType = 6;
 const int screenType = 7;
+const int ufoType = 8;
 
 vec3 cameraPosition;
 vec3 rayDirection;
@@ -65,6 +66,8 @@ vec3 getAmbientColor(int type, vec3 pos, vec3 normal)
             return vec3(0.0, 0.0, 0.0);
         case hullType:
             return vec3(1.0);
+        case ufoType:
+            return vec3(5.0);
         default:
            return 5*vec3(0, 0.0, 1);
     }
@@ -116,6 +119,8 @@ float getReflectiveIndex(int type) {
             return 0.05;
         case hullType:
             return 0.0;
+        case ufoType:
+            return 0.1;
         default:
            return 0.0;
     }
@@ -271,17 +276,29 @@ float ojText(vec3 p)
     return d;
 }
 
+float ufo(vec3 p) {
+    float heading = -3.1415;
+    float l = 0;
+    if (iTime > 20.0) {
+        p -= vec3(-46.524 -l, 50.38, 121.575 + l);
+    }
+    float s = 0.9*smoothstep(25.0, 35.0, iTime);
+    float d2 = sdTorus(p - vec3(0, -3*s, 0), vec2(s*8.5, 0.5));
+    float d1 = length(p) - 2.0 * s;
+    return min(d1, d2);
+}
+
 DistanceInfo map(vec3 p)
 {
    DistanceInfo box = {mountain(p), mountainType};
    DistanceInfo waterInfo = {water(p), waterType};
+   DistanceInfo ufoInfo = {ufo(p), ufoType};
 
    p -= boatPosition;
    DistanceInfo sphereInfo = {instrumentPanel(p), instrumentPanelType};
    DistanceInfo screenInfo = {screens(p), screenType};
    DistanceInfo hullInfo = {hull(p), hullType};
-//    return waterInfo;
-   return un(screenInfo, un(hullInfo, un(waterInfo, un(box, sphereInfo))));
+   return un(ufoInfo, un(screenInfo, un(hullInfo, un(waterInfo, un(box, sphereInfo)))));
 }
 
 VolumetricResult evaluateLight(in vec3 p)
