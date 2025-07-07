@@ -156,7 +156,7 @@ float instrumentPanel(vec3 p)
     p.y -= -0.05;
     p.z -= 2.0;
 
-    float d = sdBox(p, vec3(4.0, 1.0, 1.0)); 
+    float d = sdBox(p, vec3(6.0, 1.0, 1.0)); 
 
     p = po;
     p.y -= 1.5;
@@ -170,6 +170,14 @@ float instrumentPanel(vec3 p)
     float dd2 = sdBoxFrame(p - vec3(2.0, 0.0, 0.03), vec3(1.0, 1.0, 1.0), s);
     d1 = min(d1, dd2);
 
+    p = po;
+    
+    p.y -= 1.0;
+    p.zy *= rot(screenRotation);
+    p.xz *= rot(boatRotation);
+    float d3 = sdBox(p, vec3(7.0, 0.9, 1.0));
+
+    d = min(d, d3);
     return min(d, d1);
 }
 
@@ -178,9 +186,9 @@ float screens(vec3 p) {
     p.y -= 1.5;
     p.zy *= rot(screenRotation);
     p.xz *= rot(boatRotation);
-    
 
     float d2 = sdBox(p, vec3(3.0, 1.0, 1.0)); 
+    p = po;
     return d2;
 
 }
@@ -318,7 +326,7 @@ void main()
 {
     float u = (fragCoord.x - 0.5);
     float v = (fragCoord.y - 0.5) * iResolution.y / iResolution.x;
-    vec3 rayOrigin = (iCameraMatrix * vec4(u, v, -0.5, 1.0)).xyz;
+    vec3 rayOrigin = (iCameraMatrix * vec4(u, v, -0.52, 1.0)).xyz;
     cameraPosition = (iCameraMatrix * vec4(0.0, 0.0, 0.0, 1)).xyz;
     rayDirection = normalize(rayOrigin - cameraPosition);
 
@@ -335,7 +343,7 @@ void main()
     vec3 color = march(rayOrigin, rayDirection);
     // color /= (color + vec3(1.0));
 
-    // fragColor = texture(inTexture1, fragCoord);
+    color *= smoothstep(0, 1, iTime);
     fragColor = vec4(pow(color, vec3(0.5)), 1.0);
 }
 

@@ -272,8 +272,7 @@ void main()
     willHitText = willHitBorgilaText(rayOrigin, rayDirection);
     vec3 color = march(rayOrigin, rayDirection);
     // color /= (color + vec3(1.0));
-
-    // fragColor = texture(inTexture1, fragCoord);
+    color *= 1.0 - smoothstep(19, 20, iTime);
     fragColor = vec4(pow(color, vec3(0.5)), 1.0);
 }
 

@@ -136,7 +136,9 @@ ojstd::vector<Scene> Edison2025::buildSceneGraph(const Vector2i& sceneSize) cons
             return vector;
         });
 
-        scenes.emplace_back(experiment, Duration::seconds(3000), "indoor");
+        auto post = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2025/post.fs");
+        post->setInputs(experiment);
+        scenes.emplace_back(post, Duration::seconds(3000), "indoor");
     }
 
     return scenes;
