@@ -267,7 +267,7 @@ void main()
         boatPosition = vec3(-25.6426, 0.0, -20.0);
         boatPosition += vec3(0.0, 0.0, 0.5*iTime);
     }
-        boatPosition += vec3(0.05 * sin(iTime), 0.1 * sin(iTime + 3), 0.1 * sin(iTime + 5));
+    boatPosition += vec3(0.05 * sin(iTime), 0.1 * sin(iTime + 3), 0.1 * sin(iTime + 5));
     
     willHitText = willHitBorgilaText(rayOrigin, rayDirection);
     vec3 color = march(rayOrigin, rayDirection);
