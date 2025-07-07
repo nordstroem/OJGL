@@ -49,4 +49,4 @@ void Texture::load(unsigned char* img)
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-} //namespace ojgl
+} // namespace ojgl

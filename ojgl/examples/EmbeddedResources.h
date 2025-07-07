@@ -315,6 +315,10 @@ namespace ojgl::resources {
 #include "shaders/edison2025/radar.fs"
           , "edison2025/radar.fs"
           },
+          {
+#include "shaders/edison2025/oj_text.fs"
+          , "edison2025/oj_text.fs"
+          },
   };
 // clang-format on
 }

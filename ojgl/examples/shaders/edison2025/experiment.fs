@@ -28,6 +28,7 @@ uniform sampler2D borgilaTexture;
 uniform sampler2D inTexture0;
 uniform sampler2D inTexture1;
 uniform sampler2D inTexture2;
+uniform sampler2D inTexture3;
 
 const int boatType = 1;
 const int mountainType = 2;
@@ -239,6 +240,27 @@ float radar(vec3 p)
     return d;
 }
 
+float ojText(vec3 p)
+{
+    p.y -= 1.5;
+    p.zy *= rot(boatRotation);
+    p.z -= 1;
+    p.x -= -2.0;
+    vec2 uv;
+    float d =  uvBox(p, vec3(0.8, 0.8, 0.0), uv);
+    uv.x *=-1;
+    if ( d < 0.01) {
+        float s = texture(inTexture3, uv).x;
+        if (s < 0.001) { // If not on text
+            d = 0.1;
+        }
+        if (d < 0.01)
+            lissajousStrength = s;
+        
+	}
+    return d;
+}
+
 DistanceInfo map(in vec3 p)
 {
    DistanceInfo box = {mountain(p), mountainType};
@@ -253,6 +275,7 @@ VolumetricResult evaluateLight(in vec3 p)
 {
     float d = lissajous(p);
     d = min(d, radar(p));
+    d = min(d, ojText(p));
     float str = lissajousStrength;
     vec3 color = vec3(0.1, 0.9, 0.1);
     vec3 res = color * str / (d * d);
