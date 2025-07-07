@@ -16,6 +16,8 @@ struct DistanceInfo {
 
 DistanceInfo un(DistanceInfo a, DistanceInfo b) { return a.distance < b.distance ? a : b; }
 
+const float rw = 1.5;
+
 float circles(vec2 uv)
 {
     float q = length(uv);
@@ -42,7 +44,7 @@ float radar(vec2 uv) {
     for(int i = 0; i < 5; i++) {
         float d = 5.0;
         uv = uvo;
-        uv *= rot(-1.0*iTime + 0.01*i);
+        uv *= rot(-rw*iTime + 0.01*i);
         float q = length(uv);
         if (q > 0.45 || uv.y < 0.01) {
             d = 0.5;
@@ -55,6 +57,17 @@ float radar(vec2 uv) {
     return dmin;
 }
 
+float blip(vec2 uv) {
+    uv.x -= 0.1;
+    uv.y -= 0.385;
+    float s = 0.03 * cbeat(iTime -0.4, 2 * PI / rw, 130.0);
+
+    if (iTime < 10.0) {
+        s = 0.0;
+    }
+    return length(uv) - s;
+}
+
 void main()
 {
     float u = (fragCoord.x - 0.5);
@@ -64,8 +77,10 @@ void main()
     DistanceInfo dc = {circles(uv), 0.005};
     DistanceInfo dl = {lines(uv), 0.005};
     DistanceInfo dr = {radar(uv), 0.01};
+    DistanceInfo db = {blip(uv), 0.00};
     DistanceInfo d = un(dc, dl);
     d = un(d, dr);
+    d = un(d, db);
     float alpha = smoothstep(d.lineWidth, 0.0, d.distance);
     vec3 color = mix(vec3(0.0), vec3(1.0, 0.0, 0.0), alpha);
 

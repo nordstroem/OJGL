@@ -26,7 +26,7 @@ ojstd::vector<Scene> Edison2025::buildSceneGraph(const Vector2i& sceneSize) cons
     ojstd::vector<Scene> scenes;
 
     // Borgila scene
-    {
+    if (false) {
         auto noise = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2025/noise.fs");
         noise->setRenderOnce(true);
 
@@ -173,14 +173,21 @@ void Edison2025::update(const Duration& relativeSceneTime, const Duration& elaps
             camera.set({ -19.6426f, 3.28002f, -2.09492f }, 0.676f, -0.08f);
         }
     } else {
-        if (currentTime < 30.0) {
-            Vector3f cameraPosition { 21.9963f, 3.94f, -72.8188f };
-            float speed = 1.0f;
-            float heading = -3.1415f;
-            cameraPosition.x += speed * ojstd::sin(heading) * currentTime;
-            cameraPosition.z += -speed * ojstd::cos(heading) * currentTime;
-
-            camera.set(cameraPosition, heading, -0.22f);
+        Vector3f cameraPosition { 21.9963f, 3.94f, -72.8188f };
+        float speed = 1.0f;
+        float heading = -3.1415f;
+        float elevation = -0.22f;
+        Vector3f dv { speed * ojstd::sin(heading), 0.0, -speed * ojstd::cos(heading) * currentTime };
+        cameraPosition += dv;
+        if (currentTime < 15.0) {
+            camera.set(cameraPosition, heading, elevation);
+        } else if (currentTime < 30) {
+            float s = ojstd::smoothstep(15.0, 20.0, currentTime);
+            cameraPosition.x -= 1.75f * s;
+            cameraPosition.y -= 0.5f * s;
+            cameraPosition.z += 2.9f * s;
+            elevation -= 0.4f * s;
+            camera.set(cameraPosition, heading, elevation);
         }
     }
 }

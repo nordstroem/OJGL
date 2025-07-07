@@ -306,7 +306,12 @@ void main()
     rayDirection = normalize(rayOrigin - cameraPosition);
 
     boatRotation = -3.1415;
-    boatPosition = vec3(iCameraMatrix[3][0], 0.0, iCameraMatrix[3][2] + 5.5);
+
+    boatPosition = vec3(21.9963, 0.0, -72.8188 + 5.5);
+    float speed = 1.0f;
+    boatPosition.x += speed * sin(boatRotation) * iTime;
+    boatPosition.z += -speed * cos(boatRotation) * iTime;
+    // boatPosition = vec3(iCameraMatrix[3][0], 0.0, iCameraMatrix[3][2] + 5.5);
     boatPosition += vec3(0.05 * sin(iTime), 0.05 * sin(iTime + 3), 0.05 * sin(iTime + 5));
     
     screenRotation = -0.4;
