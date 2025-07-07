@@ -45,7 +45,8 @@ bool willHitText = false;
 float lissajousStrength = 0;
 
 vec3 boatPosition;
-float boatRotation = 0;
+float boatRotation;
+float screenRotation = 0;
 
 vec3 getAmbientColor(int type, vec3 pos, vec3 normal)
 {
@@ -146,13 +147,17 @@ float mountain(vec3 p)
 float instrumentPanel(vec3 p)
 {
     vec3 po = p;
+    p.xz *= rot(boatRotation);
     p.y -= -0.05;
     p.z -= 2.0;
+
     float d = sdBox(p, vec3(4.0, 1.0, 1.0)); 
 
     p = po;
     p.y -= 1.5;
-    p.zy *= rot(boatRotation);
+    p.zy *= rot(screenRotation);
+    p.xz *= rot(boatRotation);
+
     float s = 0.01;
     float d1 = sdBoxFrame(p - vec3(-2.0, 0.0, 0.03), vec3(1.0, 1.0, 1.0), s);
     float dd1 = sdBoxFrame(p - vec3(-0.0, 0.0, 0.03), vec3(1.0, 1.0, 1.0), s);
@@ -166,7 +171,8 @@ float instrumentPanel(vec3 p)
 float screens(vec3 p) {
     vec3 po = p;
     p.y -= 1.5;
-    p.zy *= rot(boatRotation);
+    p.zy *= rot(screenRotation);
+    p.xz *= rot(boatRotation);
     
 
     float d2 = sdBox(p, vec3(3.0, 1.0, 1.0)); 
@@ -201,7 +207,9 @@ float uvBox(vec3 p, vec3 b, inout vec2 uv)
 float lissajous(vec3 p)
 {
     p.y -= 1.5;
-    p.zy *= rot(boatRotation);
+    p.zy *= rot(screenRotation);
+    p.xz *= rot(boatRotation);
+
     p.z -= 1;
     vec2 uv;
     float d =  uvBox(p, vec3(0.8, 0.8, 0.0), uv);
@@ -222,7 +230,8 @@ float lissajous(vec3 p)
 float radar(vec3 p)
 {
     p.y -= 1.5;
-    p.zy *= rot(boatRotation);
+    p.zy *= rot(screenRotation);
+    p.xz *= rot(boatRotation);
     p.z -= 1;
     p.x -= 2.0;
     vec2 uv;
@@ -243,7 +252,8 @@ float radar(vec3 p)
 float ojText(vec3 p)
 {
     p.y -= 1.5;
-    p.zy *= rot(boatRotation);
+    p.zy *= rot(screenRotation);
+    p.xz *= rot(boatRotation);
     p.z -= 1;
     p.x -= -2.0;
     vec2 uv;
@@ -261,18 +271,22 @@ float ojText(vec3 p)
     return d;
 }
 
-DistanceInfo map(in vec3 p)
+DistanceInfo map(vec3 p)
 {
    DistanceInfo box = {mountain(p), mountainType};
+   DistanceInfo waterInfo = {water(p), waterType};
+
+   p -= boatPosition;
    DistanceInfo sphereInfo = {instrumentPanel(p), instrumentPanelType};
    DistanceInfo screenInfo = {screens(p), screenType};
-   DistanceInfo waterInfo = {water(p), waterType};
    DistanceInfo hullInfo = {hull(p), hullType};
+//    return waterInfo;
    return un(screenInfo, un(hullInfo, un(waterInfo, un(box, sphereInfo))));
 }
 
 VolumetricResult evaluateLight(in vec3 p)
 {
+    p -= boatPosition;
     float d = lissajous(p);
     d = min(d, radar(p));
     d = min(d, ojText(p));
@@ -291,7 +305,9 @@ void main()
     cameraPosition = (iCameraMatrix * vec4(0.0, 0.0, 0.0, 1)).xyz;
     rayDirection = normalize(rayOrigin - cameraPosition);
 
-    boatRotation = 0.4;
+    boatRotation = -3.1415;
+    boatPosition = vec3(iCameraMatrix[3][0], 0.0, iCameraMatrix[3][2] + 5.5);
+    screenRotation = -0.4;
     vec3 color = march(rayOrigin, rayDirection);
     // color /= (color + vec3(1.0));
 

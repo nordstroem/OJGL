@@ -319,6 +319,14 @@ namespace ojgl::resources {
 #include "shaders/edison2025/oj_text.fs"
           , "edison2025/oj_text.fs"
           },
+          {
+#include "shaders/edison2025/borgila.fs"
+          , "edison2025/borgila.fs"
+          },
+          {
+#include "shaders/edison2025/indoor.fs"
+          , "edison2025/indoor.fs"
+          },
   };
 // clang-format on
 }

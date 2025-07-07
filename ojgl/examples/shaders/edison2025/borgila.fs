@@ -7,7 +7,7 @@ const float S_maxDistance = 500.0;
 const float S_distanceMultiplier = 0.7;
 const float S_minVolumetricJumpDistance = 0.02;
 const float S_volumetricDistanceMultiplier = 0.75;
-const int S_reflectionJumps = 2;
+const int S_reflectionJumps = 3;
 
 #define S_VOLUMETRIC 1
 #define S_REFLECTIONS 1
@@ -45,7 +45,7 @@ vec3 getAmbientColor(int type, vec3 pos, vec3 normal)
 {
     switch (type) {
         case boatType:
-            return  1.5*vec3(1, 1, 1);
+            return  willHitText ? vec3(0.0) : 1.5*vec3(1, 1, 1);
         case mountainType: 
             return 0.0*vec3(0.2, 0.2, 0.1);
         case waterType:
@@ -59,30 +59,30 @@ vec3 getAmbientColor(int type, vec3 pos, vec3 normal)
 
 float getFogAmount(in vec3 p)
 {
-    return 0.004;
+    return 0.0008;
 }
 
 vec3 getColor(in MarchResult result)
 {
-    vec3 lightPosition = vec3(-100, 20, 200);
+    vec3 lightPosition = vec3(50, 10, 200);
     vec3 normal = normal(result.position);
     vec3 invLight = normalize(lightPosition - result.position);
     float diffuse = max(0., dot(invLight, normal));
     vec3 ambientColor = getAmbientColor(result.type, result.position, normal);
     vec3 color = ambientColor * (0.02 + 0.98*diffuse);
-    vec3 ao = willHitText ? vec3(0.001) : vec3(float(result.steps) / 600);
+    vec3 ao = vec3(float(result.steps) / 600);
     float k = max(0.0, dot(rayDirection, reflect(invLight, normal)));
     float spec = 1 * pow(k, 30.0);
     color += spec;
-
-    return result.scatteredLight + result.transmittance *  mix(color, ao, 0.75);
+    float aof = willHitText || result.type == boatType ? 0.2 : 0.75;
+    return result.scatteredLight + result.transmittance *  mix(color, ao, aof);
 
 }
 
 float getReflectiveIndex(int type) {
     switch (type) {
         case boatType:
-            return 0.1;
+            return 0.5;
         case mountainType:
             return 0.0;
         case waterType:
@@ -257,7 +257,18 @@ void main()
     cameraPosition = (iCameraMatrix * vec4(0.0, 0.0, 0.0, 1)).xyz;
     rayDirection = normalize(rayOrigin - cameraPosition);
 
-    boatPosition = vec3(0.05 * sin(iTime), 0.1 * sin(iTime + 3), 0.1 * sin(iTime + 5));
+    if (iTime < 5.0) {
+        boatPosition = vec3(0.0);
+    }
+    else if (iTime < 10.0) {
+        boatPosition = vec3(-25.6538, 0.0, -57.434);
+        boatPosition += vec3(0.0, 0.0, 1.5*iTime);
+    } else {
+        boatPosition = vec3(-25.6426, 0.0, -20.0);
+        boatPosition += vec3(0.0, 0.0, 0.5*iTime);
+    }
+        boatPosition += vec3(0.05 * sin(iTime), 0.1 * sin(iTime + 3), 0.1 * sin(iTime + 5));
+    
     willHitText = willHitBorgilaText(rayOrigin, rayDirection);
     vec3 color = march(rayOrigin, rayDirection);
     // color /= (color + vec3(1.0));
