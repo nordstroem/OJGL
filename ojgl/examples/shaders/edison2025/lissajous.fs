@@ -3,6 +3,7 @@ R""(
 
 uniform sampler2D feedbackTexture0;
 uniform float iTime;
+uniform float iPreviousTime;
 uniform vec2 iResolution;
 in vec2 fragCoord;
 out vec4 fragColor;
@@ -43,7 +44,11 @@ void main()
     vec3 color = mix(vec3(0.0), vec3(1.0, 0.0, 0.0), alpha);
     vec3 prevColor = texture(feedbackTexture0, fragCoord).xyz;
     color = min(color + prevColor, vec3(1.0));
-    color = mix(color, vec3(0.0), 0.05);
+
+    float tau = 0.7;
+    float dt = iTime - iPreviousTime;
+    float emaAlpha = 1 - exp(-dt / tau);
+    color = mix(color, vec3(0.0), emaAlpha);
     fragColor = vec4(color, 1);
 }
 )""

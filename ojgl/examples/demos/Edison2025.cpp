@@ -4,6 +4,11 @@
 
 namespace ojgl {
 
+namespace {
+    float previousTimes[] = { 0.0f, 0.0f };
+    int previousTimeIndex = 0;
+}
+
 Edison2025::Edison2025()
 {
 }
@@ -25,12 +30,24 @@ ojstd::vector<Scene> Edison2025::buildSceneGraph(const Vector2i& sceneSize) cons
     auto lissajous = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2025/lissajous.fs");
     lissajous->setFeedbackInputs(lissajous);
 
+    lissajous->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
+        Buffer::UniformVector vector;
+        vector.push_back(ojstd::make_shared<Uniform1f>("iPreviousTime", previousTimes[previousTimeIndex]));
+        return vector;
+    });
+
     auto radar = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2025/radar.fs");
     radar->setTextureCallback([this]([[maybe_unused]] float relativeSceneTime) {
         ojstd::vector<ojstd::shared_ptr<Uniform1t>> vector;
         vector.push_back(ojstd::make_shared<Uniform1t>("ojTexture", this->getText("OJ", "Arial Black")));
         return vector;
     });
+    radar->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
+        Buffer::UniformVector vector;
+        vector.push_back(ojstd::make_shared<Uniform1f>("iPreviousTime", previousTimes[previousTimeIndex]));
+        return vector;
+    });
+
     radar->setFeedbackInputs(radar);
 
     auto experiment = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2025/experiment.fs");
@@ -64,6 +81,13 @@ void Edison2025::update(const Duration& relativeSceneTime, const Duration& elaps
     OJ_UNUSED(relativeSceneTime);
     OJ_UNUSED(elapsedTime);
     OJ_UNUSED(currentScene);
+    const float currentTime = relativeSceneTime.toSeconds<float>();
+    previousTimes[previousTimeIndex] = currentTime;
+    previousTimeIndex++;
+    previousTimeIndex = previousTimeIndex % 2;
+    for (size_t i = 0; i < 2; i++) {
+        previousTimes[previousTimeIndex] = ojstd::clamp(previousTimes[previousTimeIndex], currentTime - 0.5f, currentTime);
+    }
 }
 
 }
