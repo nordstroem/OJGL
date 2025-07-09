@@ -1,9 +1,9 @@
 R""(
 
-const float S_distanceEpsilon = 1e-3;
+float S_distanceEpsilon = 1e-3;
 const float S_normalEpsilon = 5e-2;
 const int S_maxSteps = 600;
-const float S_maxDistance = 500.0;
+const float S_maxDistance = 800.0;
 const float S_distanceMultiplier = 0.7;
 const float S_minVolumetricJumpDistance = 0.02;
 const float S_volumetricDistanceMultiplier = 0.75;
@@ -298,6 +298,7 @@ float ufo(vec3 p) {
 
 DistanceInfo map(vec3 p)
 {
+   S_distanceEpsilon = 1e-3 + (1e-1)*(smoothstep(100, 400, length(p)));
    DistanceInfo box = {mountain(p), mountainType};
    DistanceInfo waterInfo = {water(p), waterType};
    DistanceInfo ufoInfo = {ufo(p), ufoType};
