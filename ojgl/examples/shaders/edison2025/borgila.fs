@@ -95,7 +95,7 @@ vec3 getColor(in MarchResult result)
 
         h += 0.001 * noise_2(uv);
 
-        color = mix(color, 2*vec3(pow(h, 1000)), h);
+        color = mix(color, 1.5*vec3(pow(h, 1000)), h);
         return result.scatteredLight + result.transmittance * mix(color, ao, aof);
     } else {
         return result.scatteredLight + result.transmittance *  mix(color, ao, aof);

@@ -79,13 +79,16 @@ ojstd::vector<Scene> Edison2025::buildSceneGraph(const Vector2i& sceneSize) cons
             return vector;
         });
 
-        scenes.emplace_back(experiment, Duration::seconds(2000), "borgila");
+        scenes.emplace_back(experiment, Duration::seconds(30), "borgila");
     }
 
     // indoor scene
     {
         auto noise = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2025/noise.fs");
         noise->setRenderOnce(true);
+
+        auto stars = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2025/stars.fs");
+        stars->setRenderOnce(true);
 
         // lissajous
         auto lissajous = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2025/lissajous.fs");
@@ -122,7 +125,7 @@ ojstd::vector<Scene> Edison2025::buildSceneGraph(const Vector2i& sceneSize) cons
         });
 
         auto experiment = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2025/indoor.fs");
-        experiment->setInputs(noise, lissajous, radar, ojText);
+        experiment->setInputs(noise, lissajous, radar, ojText, stars);
 
         experiment->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
             Buffer::UniformVector vector;
