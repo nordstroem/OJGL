@@ -326,11 +326,7 @@ namespace ojgl::resources {
           {
 #include "shaders/edison2025/indoor.fs"
           , "edison2025/indoor.fs"
-          },
-        {
-#include "shaders/edison2025/post.fs"
-          , "edison2025/post.fs"
-          },
+          }
   };
 // clang-format on
 }
