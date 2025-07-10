@@ -30,42 +30,11 @@ ojstd::vector<Scene> Edison2025::buildSceneGraph(const Vector2i& sceneSize) cons
         auto noise = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2025/noise.fs");
         noise->setRenderOnce(true);
 
-        // lissajous
-        auto lissajous = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2025/lissajous.fs");
-        lissajous->setFeedbackInputs(lissajous);
-
-        lissajous->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
-            Buffer::UniformVector vector;
-            vector.push_back(ojstd::make_shared<Uniform1f>("iPreviousTime", previousTimes[previousTimeIndex]));
-            return vector;
-        });
-
-        // radar
-        auto radar = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2025/radar.fs");
-        radar->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
-            Buffer::UniformVector vector;
-            vector.push_back(ojstd::make_shared<Uniform1f>("iPreviousTime", previousTimes[previousTimeIndex]));
-            return vector;
-        });
-        radar->setFeedbackInputs(radar);
-
-        // oj text
-        auto ojText = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2025/oj_text.fs");
-        ojText->setFeedbackInputs(ojText);
-        ojText->setTextureCallback([this]([[maybe_unused]] float relativeSceneTime) {
-            ojstd::vector<ojstd::shared_ptr<Uniform1t>> vector;
-            vector.push_back(ojstd::make_shared<Uniform1t>("ojTexture", this->getText("OJ", "Arial Black")));
-            return vector;
-        });
-
-        ojText->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
-            Buffer::UniformVector vector;
-            vector.push_back(ojstd::make_shared<Uniform1f>("iPreviousTime", previousTimes[previousTimeIndex]));
-            return vector;
-        });
+        auto stars = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2025/stars.fs");
+        stars->setRenderOnce(true);
 
         auto experiment = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2025/borgila.fs");
-        experiment->setInputs(noise, lissajous, radar, ojText);
+        experiment->setInputs(noise, stars);
 
         experiment->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
             Buffer::UniformVector vector;

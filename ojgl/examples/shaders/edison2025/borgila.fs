@@ -91,11 +91,8 @@ vec3 getColor(in MarchResult result)
         vec2 uv;
         uv.x = (yaw + PI) / (2.0 * PI);
         uv.y = (pitch + PI / 2.0) / PI;
-        float h = hash12(uv);
-
-        h += 0.001 * noise_2(uv);
-
-        color = mix(color, 1.5*vec3(pow(h, 1000)), h);
+        float h = texture(inTexture1, uv * 5).x;
+        color = mix(color, color + 2*vec3(clamp(h, 0.0, 1.0)), h);
         return result.scatteredLight + result.transmittance * mix(color, ao, aof);
     } else {
         return result.scatteredLight + result.transmittance *  mix(color, ao, aof);
