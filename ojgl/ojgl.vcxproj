@@ -315,7 +315,14 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="examples\demos\DodensTriumf.cpp" />
+    <ClCompile Include="examples\demos\Edison2021.cpp" />
+    <ClCompile Include="examples\demos\Edison2022.cpp" />
     <ClCompile Include="examples\demos\Edison2025.cpp" />
+    <ClCompile Include="examples\demos\Eldur.cpp" />
+    <ClCompile Include="examples\demos\InnerSystemLab.cpp" />
+    <ClCompile Include="examples\demos\QED.cpp" />
+    <ClCompile Include="examples\demos\Template.cpp" />
     <ClCompile Include="examples\FreeCameraController.cpp" />
     <ClCompile Include="examples\Main.cpp" />
     <None Include="examples\shaders\edison2025\borgila_hyperspace.fs" />
@@ -348,7 +355,14 @@
     <ClCompile Include="src\winapi\gl_loader.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="examples\demos\DodensTriumf.h" />
+    <ClInclude Include="examples\demos\Edison2021.h" />
+    <ClInclude Include="examples\demos\Edison2022.h" />
     <ClInclude Include="examples\demos\Edison2025.h" />
+    <ClInclude Include="examples\demos\Eldur.h" />
+    <ClInclude Include="examples\demos\InnerSystemLab.h" />
+    <ClInclude Include="examples\demos\QED.h" />
+    <ClInclude Include="examples\demos\Template.h" />
     <ClInclude Include="examples\renderdoc_app.h" />
     <ClInclude Include="examples\TextRenderer.hpp" />
     <ClInclude Include="src\thirdparty\stb_image_write.h" />
