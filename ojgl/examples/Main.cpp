@@ -2,7 +2,14 @@
 #include "FreeCameraController.h"
 #include "TextRenderer.hpp"
 #include "demo/Demo.h"
+#include "demos/DodensTriumf.h"
+#include "demos/Edison2021.h"
+#include "demos/Edison2022.h"
 #include "demos/Edison2025.h"
+#include "demos/Eldur.h"
+#include "demos/InnerSystemLab.h"
+#include "demos/QED.h"
+#include "demos/Template.h"
 #include "render/GLState.h"
 #include "render/Popup.h"
 #include "render/Texture.h"
@@ -34,7 +41,26 @@ enum class DemoType {
 
 ojstd::shared_ptr<Demo> getDemo([[maybe_unused]] DemoType type)
 {
-    return ojstd::make_shared<Edison2025>();
+    switch (type) {
+    case DemoType::Eldur:
+        return ojstd::make_shared<Eldur>();
+    case DemoType::QED:
+        return ojstd::make_shared<QED>();
+    case DemoType::DodensTriumf:
+        return ojstd::make_shared<DodensTriumf>();
+    case DemoType::InnerSystemLab:
+        return ojstd::make_shared<InnerSystemLab>();
+    case DemoType::Template:
+        return ojstd::make_shared<Template>();
+    case DemoType::Edison2021:
+        return ojstd::make_shared<Edison2021>();
+    case DemoType::Edison2022:
+        return ojstd::make_shared<Edison2022>();
+    case DemoType::Edison2025:
+        return ojstd::make_shared<Edison2025>();
+    }
+    _ASSERTE(false);
+    return nullptr;
 }
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
@@ -141,8 +167,6 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
         debugTitle.append(ojstd::to_string(timer.elapsed().toMilliseconds<long>()));
         debugTitle.append(" ms");
         window.setTitle(debugTitle);
-
-        // ojstd::sleep(20);
 #endif
     }
 }
