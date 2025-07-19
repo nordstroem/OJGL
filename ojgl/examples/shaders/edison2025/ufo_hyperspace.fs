@@ -296,7 +296,7 @@ FullMarchResult march2(in vec3 rayOrigin, in vec3 rayDirection)
 
             t += jumpDistance;
             if (info.distance < (S_distanceEpsilon)) {
-                vec3 color = getColor(MarchResult(info.type, p, steps, transmittance, scatteredLight, jump, rayDirection));
+                vec3 color = getColor(MarchResult(info.type, p, steps, transmittance, scatteredLight, jump));
 
                 t = 0.0;
                 rayDirection = reflect(rayDirection, normal(p));
@@ -309,7 +309,7 @@ FullMarchResult march2(in vec3 rayOrigin, in vec3 rayDirection)
             }
 
             if (t > S_maxDistance || steps == S_maxDistance - 1) {
-                vec3 color = getColor(MarchResult(invalidType, p, steps, transmittance, scatteredLight, jump, rayDirection));
+                vec3 color = getColor(MarchResult(invalidType, p, steps, transmittance, scatteredLight, jump));
                 resultColor = mix(resultColor, color, reflectionModifier);
                 return FullMarchResult(resultColor, firstJumpPos);
             }

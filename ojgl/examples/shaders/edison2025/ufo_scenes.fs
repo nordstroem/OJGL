@@ -144,8 +144,8 @@ vec3 getColor(in MarchResult result)
     vec3 ao = vec3(float(result.steps) / 600);
     float aof = result.type == boatType ? 0.2 : 0.75;
     if (result.type == invalidType && result.jump == 0) {
-        float pitch = asin(result.rayDirection.y);
-        float yaw = atan(result.rayDirection.z, result.rayDirection.x);
+        float pitch = asin(rayDirection.y);
+        float yaw = atan(rayDirection.z, rayDirection.x);
 
         vec2 uv;
         uv.x = (yaw + PI) / (2.0 * PI);
