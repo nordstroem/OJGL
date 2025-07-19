@@ -5,6 +5,7 @@
 #include "demos/DodensTriumf.h"
 #include "demos/Edison2021.h"
 #include "demos/Edison2022.h"
+#include "demos/Edison2025.h"
 #include "demos/Eldur.h"
 #include "demos/InnerSystemLab.h"
 #include "demos/QED.h"
@@ -34,10 +35,11 @@ enum class DemoType {
     QED,
     Template,
     Edison2021,
-    Edison2022
+    Edison2022,
+    Edison2025,
 };
 
-ojstd::shared_ptr<Demo> getDemo(DemoType type)
+ojstd::shared_ptr<Demo> getDemo([[maybe_unused]] DemoType type)
 {
     switch (type) {
     case DemoType::Eldur:
@@ -54,10 +56,10 @@ ojstd::shared_ptr<Demo> getDemo(DemoType type)
         return ojstd::make_shared<Edison2021>();
     case DemoType::Edison2022:
         return ojstd::make_shared<Edison2022>();
+    case DemoType::Edison2025:
+        return ojstd::make_shared<Edison2025>();
     }
-
     _ASSERTE(false);
-
     return nullptr;
 }
 
@@ -82,7 +84,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
     for (const auto& [content, path] : resources::shaders)
         ShaderReader::preLoad(path, content);
 
-    const auto demo = getDemo(DemoType::Edison2022);
+    const auto demo = getDemo(DemoType::Edison2025);
     Window window(windowSize, demo->getTitle(), fullScreen, showCursor);
     TextRenderer::instance().setHDC(window.hdcBackend());
 
@@ -132,8 +134,8 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
 
             case Window::KEY_C:
                 const FreeCameraController& c = FreeCameraController::instance();
-                LOG_INFO("Camera: (" << c.position.x << ", " << c.position.y << ", " << c.position.z << ")"
-                                     << ", [" << c.heading << ", " << c.elevation << "]");
+                LOG_INFO("Camera: {" << c.position.x << "f, " << c.position.y << "f, " << c.position.z << "f}"
+                                     << ", " << c.heading << "f, " << c.elevation << "f");
                 break;
 #endif
             }

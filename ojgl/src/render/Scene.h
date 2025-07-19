@@ -22,4 +22,4 @@ private:
     Duration _duration;
     ojstd::string _name;
 };
-} //namespace ojgl
+} // namespace ojgl
