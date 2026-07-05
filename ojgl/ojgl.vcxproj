@@ -319,6 +319,7 @@
     <ClCompile Include="examples\demos\Edison2021.cpp" />
     <ClCompile Include="examples\demos\Edison2022.cpp" />
     <ClCompile Include="examples\demos\Edison2025.cpp" />
+    <ClCompile Include="examples\demos\Edison2026.cpp" />
     <ClCompile Include="examples\demos\Eldur.cpp" />
     <ClCompile Include="examples\demos\InnerSystemLab.cpp" />
     <ClCompile Include="examples\demos\QED.cpp" />
@@ -334,6 +335,7 @@
     <None Include="examples\shaders\edison2025\chrom_ab_hyperspace.fs">
       <FileType>Document</FileType>
     </None>
+    <None Include="examples\shaders\edison2026\cube.fs" />
     <ClCompile Include="examples\TextRenderer.cpp" />
     <ClCompile Include="src\thirdparty\StbImage.cpp" />
     <ClCompile Include="src\music\Music.cpp" />
@@ -359,6 +361,7 @@
     <ClInclude Include="examples\demos\Edison2021.h" />
     <ClInclude Include="examples\demos\Edison2022.h" />
     <ClInclude Include="examples\demos\Edison2025.h" />
+    <ClInclude Include="examples\demos\Edison2026.h" />
     <ClInclude Include="examples\demos\Eldur.h" />
     <ClInclude Include="examples\demos\InnerSystemLab.h" />
     <ClInclude Include="examples\demos\QED.h" />
