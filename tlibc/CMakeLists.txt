@@ -34,7 +34,7 @@ target_compile_definitions(tlibc PRIVATE
     _CRT_SECURE_NO_DEPRECATE _CRT_NONSTDC_NO_DEPRECATE
     VC_EXTRALEAN WIN32_LEAN_AND_MEAN WIN32_EXTRA_LEAN NOMINMAX
     $<$<CONFIG:Debug,OptimizedDebug>:_DEBUG>
-    $<$<CONFIG:Release>:NDEBUG>
+    $<$<CONFIG:Release,CrinklerRelease>:NDEBUG>
 )
 
 target_compile_options(tlibc PRIVATE
@@ -44,6 +44,9 @@ target_compile_options(tlibc PRIVATE
     /U_MBCS                                    # old project used CharacterSet=NotSet, not MBCS
     # size-optimize + whole-program optimization in the optimized configs
     $<$<CONFIG:OptimizedDebug,Release>:/O1;/Os;/GL>
+    # CrinklerRelease is size-optimized too, but /GL (LTCG) objects cannot be read by Crinkler,
+    # so it omits /GL.
+    $<$<CONFIG:CrinklerRelease>:/O1;/Os>
     # tlibc re-implements CRT functions (strcat, wcscmp, ...) that MSVC would otherwise treat
     # as intrinsics; disable intrinsic generation so they can be defined here. Must come after
     # any /O1 (which implies /Oi).

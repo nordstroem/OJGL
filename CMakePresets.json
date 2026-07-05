@@ -12,6 +12,12 @@
             "generator": "Visual Studio 17 2022",
             "architecture": "Win32",
             "binaryDir": "${sourceDir}/build"
+        },
+        {
+            "name": "windows-x86-ninja",
+            "displayName": "Windows x86 (Ninja)",
+            "generator": "Ninja Multi-Config",
+            "binaryDir": "${sourceDir}/build-ninja"
         }
     ],
     "buildPresets": [
@@ -29,6 +35,11 @@
             "name": "release",
             "configurePreset": "windows-x86",
             "configuration": "Release"
+        },
+        {
+            "name": "crinklerrelease",
+            "configurePreset": "windows-x86-ninja",
+            "configuration": "CrinklerRelease"
         }
     ]
 }
