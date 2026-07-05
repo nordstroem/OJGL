@@ -111,5 +111,10 @@ target_link_options(ojgl PRIVATE
     # CrinklerRelease: Crinkler links + compresses. /NODEFAULTLIB keeps it from auto-importing
     # msvcrt/inserting its own startup (tlibc is the CRT); /MANIFEST:NO so CMake's vs_link_exe
     # wrapper skips mt.exe (Crinkler does not support manifests). No /GL/LTCG objects reach it.
-    $<$<CONFIG:CrinklerRelease>:/NODEFAULTLIB;/ENTRY:mainCRTStartup;/MANIFEST:NO;/CRINKLER;/RANGE:opengl32;/COMPMODE:SLOW;/TRANSFORM:CALLS;/REPORT:ojgl_crinkler_report.html;/PRINT:IMPORTS>
+    # /REUSE lets Crinkler read/write a reuse file that records the part layout. It is required
+    # to split an oversized part: /REUSEMODE:PARTS (the default) honors the parts defined in the
+    # file (so a hand-added "Code2" part is respected) while recalculating section ordering,
+    # models, and hash size. The file is written before the 64k check, so even a failing build
+    # produces a complete file to edit.
+    $<$<CONFIG:CrinklerRelease>:/NODEFAULTLIB;/ENTRY:mainCRTStartup;/MANIFEST:NO;/CRINKLER;/RANGE:opengl32;/COMPMODE:FAST;/TRANSFORM:CALLS;/REUSE:ojgl_crinkler_reuse.txt;/REUSEMODE:PARTS;/REPORT:ojgl_crinkler_report.html;/PRINT:IMPORTS;/HASHTRIES:10;/HASHSIZE:1000>
 )
