@@ -7,7 +7,7 @@ ojstd::vector<Scene> Edison2026::buildSceneGraph(const Vector2i& sceneSize) cons
 {
     ojstd::vector<Scene> scenes;
     {
-        auto cube = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2026/cube.fs");
+        auto cube = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2026/cube3.fs");
         cube->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
             Buffer::UniformVector vector;
             vector.push_back(ojstd::make_shared<UniformMatrix4fv>("iCameraMatrix", FreeCameraController::instance().getCameraMatrix()));

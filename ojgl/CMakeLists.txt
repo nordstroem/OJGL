@@ -4,8 +4,8 @@ set(OJGL_SOURCES
     # examples/demos/DodensTriumf.cpp
     # examples/demos/Edison2021.cpp
     # examples/demos/Edison2022.cpp
-    examples/demos/Edison2025.cpp
-    # examples/demos/Edison2026.cpp
+    # examples/demos/Edison2025.cpp
+    examples/demos/Edison2026.cpp
     # examples/demos/Eldur.cpp
     # examples/demos/InnerSystemLab.cpp
     # examples/demos/QED.cpp
