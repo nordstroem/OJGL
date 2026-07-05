@@ -6,7 +6,11 @@
 
 namespace ojgl {
 
+#ifdef OJGL_SYNTH_4KLANG
+class FourKlangPlayer;
+#else
 class V2MPlayer;
+#endif
 
 class Music {
 
@@ -29,8 +33,18 @@ private:
     explicit Music(const unsigned char* song, bool fixedTimestep);
 
 private:
+#ifdef OJGL_SYNTH_4KLANG
+    ojstd::shared_ptr<FourKlangPlayer> _player;
+#else
     ojstd::shared_ptr<V2MPlayer> _player;
+#endif
     void _initSync();
+#ifdef OJGL_SYNTH_4KLANG
+    // 4klang renders on a background thread; audio start is deferred until the render finishes.
+    void _tryStartAudio();
+    bool _audioStarted = false;
+    unsigned int _pendingStartMs = 0;
+#endif
     const unsigned char* _song;
     Duration _syncOffset;
     ojstd::unordered_map<int, SyncChannel> _syncChannels;

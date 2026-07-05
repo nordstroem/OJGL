@@ -1,5 +1,9 @@
 ﻿#include "Music.h"
+#ifdef OJGL_SYNTH_4KLANG
+#include "FourKlangPlayer.h"
+#else
 #include "V2MPlayer.h"
+#endif
 #include "utility/Log.h"
 #include "utility/OJstd.h"
 #include <limits>
@@ -9,15 +13,23 @@ namespace ojgl {
 
 Music::Music(const unsigned char* song, bool fixedTimestep)
     : _song(song)
+#ifdef OJGL_SYNTH_4KLANG
+    , _player(ojstd::make_shared<FourKlangPlayer>())
+#else
     , _player(ojstd::make_shared<V2MPlayer>())
+#endif
     , _fixedTimestep(fixedTimestep)
 {
 }
 
 Music::~Music()
 {
+#ifdef OJGL_SYNTH_4KLANG
+    this->_player->stopAudio();
+#else
     this->_player->Close();
     dsClose();
+#endif
 }
 
 static ojstd::shared_ptr<Music> music;
@@ -37,10 +49,26 @@ void Music::createInstance(const unsigned char* song, bool fixedTimestep)
 
 void Music::play()
 {
+#ifdef OJGL_SYNTH_4KLANG
+    // The song is baked into the assembled 4klang object; there is no runtime song pointer.
+    // Kick off the (multi-second) render on a background thread; audio starts once it is done.
+    this->_player->beginRender();
+#else
     this->_player->Init();
     this->_player->Open(this->_song);
+#endif
     setTime(Duration::milliseconds(0));
 }
+
+#ifdef OJGL_SYNTH_4KLANG
+void Music::_tryStartAudio()
+{
+    if (!_audioStarted && _player->renderDone()) {
+        _player->startAudio(_pendingStartMs, GetForegroundWindow());
+        _audioStarted = true;
+    }
+}
+#endif
 
 void Music::_initSync()
 {
@@ -78,6 +106,10 @@ void Music::_initSync()
 
 void Music::updateSync()
 {
+#ifdef OJGL_SYNTH_4KLANG
+    // Polled from the main loop: start playback as soon as the background render completes.
+    _tryStartAudio();
+#endif
     auto time = this->elapsedTime();
     for (auto& kv : _syncChannels) {
         kv.second.tick(time);
@@ -90,15 +122,27 @@ Duration Music::elapsedTime() const
     if (_fixedTimestep) {
         return Duration(1000 * _currentFrame / 60);
     } else {
+#ifdef OJGL_SYNTH_4KLANG
+        // Until the background render finishes and audio starts, sit at the requested offset.
+        if (!_audioStarted)
+            return _syncOffset;
+        // DirectSound's play cursor is absolute song position, so no _syncOffset is added.
+        return Duration::milliseconds(this->_player->elapsedMilliseconds());
+#else
         // @todo verify this formula.
         long ms = ojstd::ftoi(dsGetCurSmp() * 1000.f / (44100.f * 4.f));
         return Duration::milliseconds(ms) + _syncOffset;
+#endif
     }
 }
 
 void Music::stop()
 {
+#ifdef OJGL_SYNTH_4KLANG
+    this->_player->stopAudio();
+#else
     this->_player->Stop();
+#endif
 }
 
 ojstd::unordered_map<int, SyncChannel>& Music::syncChannels()
@@ -108,6 +152,17 @@ ojstd::unordered_map<int, SyncChannel>& Music::syncChannels()
 
 void Music::setTime(Duration time)
 {
+#ifdef OJGL_SYNTH_4KLANG
+    // 4klang exposes no note stream, so there is nothing to pre-tick; _initSync() simply builds
+    // no channels (audio-only for now). Audio (re)start is deferred to _tryStartAudio() so we
+    // never block on the background render; it fires here immediately if the render is done.
+    _initSync();
+    this->_player->stopAudio();
+    _pendingStartMs = time.toMilliseconds<unsigned int>();
+    _audioStarted = false;
+    _syncOffset = time;
+    _tryStartAudio();
+#else
     auto ms = time.toMilliseconds<sU32>();
     this->_player->Stop();
     dsClose();
@@ -121,5 +176,6 @@ void Music::setTime(Duration time)
     dsInit(this->_player->RenderProxy, this->_player.get(), GetForegroundWindow());
     this->_player->Play(ms);
     _syncOffset = time;
+#endif
 }
 } //namespace ojgl

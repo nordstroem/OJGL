@@ -28,11 +28,18 @@ GLState::GLState(const Window& window, const ojstd::shared_ptr<Demo>& demo, bool
     _mainBuffer = buildPassthroughBuffer(window.size(), sceneSize, true);
     _scenes = demo->buildSceneGraph(sceneSize);
 
+#ifdef OJGL_SYNTH_4KLANG
+    // The 4klang song is baked into the build, not supplied by the demo, so always create music.
+    Music::createInstance(demo->getSong(), saveFrames);
+    Music::instance()->play();
+    _clock = Clock::Music;
+#else
     if (const auto* song = demo->getSong()) {
         Music::createInstance(song, saveFrames);
         Music::instance()->play();
         _clock = Clock::Music;
     }
+#endif
 
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     _systemClockStartTime = Timepoint::now();

@@ -20,6 +20,16 @@ endif()
 #   CrinklerRelease- like Release, but linked+compressed with Crinkler (Ninja generator only)
 set(CMAKE_CONFIGURATION_TYPES "Debug;OptimizedDebug;Release;CrinklerRelease" CACHE STRING "" FORCE)
 
+# Which software synthesizer produces the music. This is an exclusive, configure-time choice:
+#   V2     - the V2 synth (libv2.lib); song is a runtime V2M byte array from Demo::getSong().
+#   4KLANG - the 4klang synth; the song is baked into build-time assembly (assembled by YASM,
+#            see ojgl/CMakeLists.txt) and rendered up front. Selected via -DOJGL_SYNTH=4KLANG.
+set(OJGL_SYNTH "V2" CACHE STRING "Music synth backend: V2 or 4KLANG")
+set_property(CACHE OJGL_SYNTH PROPERTY STRINGS "V2" "4KLANG")
+if(NOT OJGL_SYNTH STREQUAL "V2" AND NOT OJGL_SYNTH STREQUAL "4KLANG")
+    message(FATAL_ERROR "OJGL_SYNTH must be 'V2' or '4KLANG', got '${OJGL_SYNTH}'")
+endif()
+
 # All real compiler/linker flags are applied per-target via generator expressions so the
 # behavior is explicit and diffable. Clear CMake's built-in per-config defaults (which would
 # otherwise inject things like /RTC1, /Ob0, /INCREMENTAL) so they don't fight our flags.
