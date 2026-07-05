@@ -11,13 +11,35 @@ audiovisual productions synced to music). Each production (`Edison2021`, `Edison
 
 ## Build & run
 
-Built with **CMake** using the Visual Studio generator, targeting **Win32 (x86)**. Configure
-once, then build any config:
+Built with **CMake**, targeting **Win32 (x86)**. Builds must run from a **Visual Studio
+developer PowerShell** (x86). If your shell isn't already one, enter it first:
 
 ```
-cmake -S . -B build -G "Visual Studio 17 2022" -A Win32
-cmake --build build --config Debug          # or OptimizedDebug, or Release
+Import-Module "C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\Tools\Microsoft.VisualStudio.DevShell.dll"
+Enter-VsDevShell -Arch x86 -VsInstallPath "C:\Program Files\Microsoft Visual Studio\2022\Community"
 ```
+
+There are two generators, each with its own build directory (both are also defined as
+CMake presets in `CMakePresets.json`):
+
+- **Visual Studio** → `build/` — for Debug / OptimizedDebug / Release.
+- **Ninja Multi-Config** → `build-ninja/` — required for `CrinklerRelease` (Crinkler only works
+  with the Ninja/Makefile generators; see the note in the root `CMakeLists.txt`).
+
+Configure once per generator, then build any config:
+
+```
+# Visual Studio build tree (build/)
+cmake -S . -B build -G "Visual Studio 17 2022" -A Win32
+cmake --build .\build --config=Debug          # or OptimizedDebug, or Release
+
+# Ninja build tree (build-ninja/), needed for Crinkler
+cmake -S . -B build-ninja -G "Ninja Multi-Config"
+cmake --build .\build-ninja\ --config=CrinklerRelease
+```
+
+Or via presets: `cmake --preset windows-x86` / `windows-x86-ninja` to configure, then
+`cmake --build --preset debug` / `crinklerrelease` etc.
 
 This generates `build/OJGL.sln`, which you can also open in Visual Studio (`ojgl` is the
 startup project). The build is defined by three `CMakeLists.txt` files: the root (config
@@ -36,6 +58,9 @@ Configurations (the old `Unicode Debug`/`Unicode Release` configs were dropped):
   link `tlibc`.
 - **Release** — `/NODEFAULTLIB`, links `tlibc` + `libv2` + DirectX libs, `mainCRTStartup`
   entry, Windows subsystem, size optimization. This is the shippable minimal binary.
+- **CrinklerRelease** — like Release, but linked and compressed with Crinkler (a drop-in
+  `link.exe` replacement). **Ninja generator only** (`build-ninja/`); the VS generator lets
+  MSBuild pick the linker so Crinkler can't be injected there.
 
 **Working directory must be `ojgl/`** when running, because `ShaderReader` resolves shader
 paths relative to `examples/shaders/`. The VS debugger working directory is set automatically
