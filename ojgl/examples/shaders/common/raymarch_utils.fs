@@ -91,12 +91,15 @@ vec3 march(in vec3 rayOrigin, in vec3 rayDirection)
 #if !S_REFLECTIONS
                 return color;
 #else
+                resultColor = mix(resultColor, color, reflectionModifier);
+                reflectionModifier *= getReflectiveIndex(info.type);
+                if (reflectionModifier < 0.005) // Further reflections contribute nothing; skip the extra march (and the normal() below)
+                    return resultColor;
+
                 t = 0.0;
                 rayDirection = reflect(rayDirection, normal(p));
                 rayOrigin = p + 0.1 * rayDirection;
 
-                resultColor = mix(resultColor, color, reflectionModifier);
-                reflectionModifier *= getReflectiveIndex(info.type);
                 break;
  #endif
             }
