@@ -11,25 +11,36 @@ audiovisual productions synced to music). Each production (`Edison2021`, `Edison
 
 ## Build & run
 
-Built with Visual Studio via `OJGL.sln`. There is no CMake/makefile — open the solution or
-build with `msbuild OJGL.sln`. All configurations target **Win32 (x86)** even though the
-platform dropdown shows x64.
+Built with **CMake** using the Visual Studio generator, targeting **Win32 (x86)**. Configure
+once, then build any config:
 
-Two projects:
+```
+cmake -S . -B build -G "Visual Studio 17 2022" -A Win32
+cmake --build build --config Debug          # or OptimizedDebug, or Release
+```
+
+This generates `build/OJGL.sln`, which you can also open in Visual Studio (`ojgl` is the
+startup project). The build is defined by three `CMakeLists.txt` files: the root (config
+types, CRT selection), `tlibc/`, and `ojgl/`. **To add or remove a source file, edit the
+`OJGL_SOURCES` list in `ojgl/CMakeLists.txt`** (shaders/songs/headers are globbed for IDE
+display only). There are no `.sln`/`.vcxproj` files under version control anymore.
+
+Two targets:
 - **`ojgl`** — the framework + demos (main executable).
-- **`tlibc`** — a tiny custom C runtime. It replaces the standard CRT in size-optimized
-  builds so the final release binary is small (a demoscene size constraint).
+- **`tlibc`** — a tiny custom C runtime (`libct.lib`). It replaces the standard CRT in the
+  Release build so the final binary is small (a demoscene size constraint).
 
-Configurations:
+Configurations (the old `Unicode Debug`/`Unicode Release` configs were dropped):
 - **Debug / OptimizedDebug** — Console subsystem, standard CRT, enables the `_DEBUG` code
-  paths (free camera, timeline scrubbing, hot shader reload, RenderDoc capture).
-- **Release / Unicode Release** — `IgnoreAllDefaultLibraries`, links `tlibc` + `libv2` +
-  DirectX libs, `mainCRTStartup` entry, Windows subsystem, whole-program optimization. This
-  is the shippable minimal binary.
+  paths (free camera, timeline scrubbing, hot shader reload, RenderDoc capture). Does **not**
+  link `tlibc`.
+- **Release** — `/NODEFAULTLIB`, links `tlibc` + `libv2` + DirectX libs, `mainCRTStartup`
+  entry, Windows subsystem, size optimization. This is the shippable minimal binary.
 
-**Working directory must be `ojgl/`** when running (see `.vscode/launch.json`), because
-`ShaderReader` resolves shader paths relative to `examples/shaders/`. The debug binary is at
-`bin/ojgl/Win32/Debug/ojgl.exe`.
+**Working directory must be `ojgl/`** when running, because `ShaderReader` resolves shader
+paths relative to `examples/shaders/`. The VS debugger working directory is set automatically
+(`VS_DEBUGGER_WORKING_DIRECTORY`); from the CLI, run from `ojgl/`. The debug binary is at
+`build/ojgl/Debug/ojgl.exe`.
 
 Which demo runs is hardcoded in `ojgl/examples/Main.cpp` (`getDemo(DemoType::...)`). There is
 no test suite.
