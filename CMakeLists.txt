@@ -45,15 +45,43 @@ string(REPLACE "/EHsc" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
 # Crinkler is a drop-in link.exe replacement that also compresses the executable. Only the
 # Ninja/Makefile generators honor CMAKE_LINKER (the VS generator lets MSBuild pick the linker),
-# so wire it there only; a VS-generator configure is left completely untouched. We copy
-# Crinkler.exe to a build-local link.exe: because it is NOT named crinkler.exe, /CRINKLER
-# defaults off, so for every config except CrinklerRelease (which passes /CRINKLER) it simply
-# forwards its arguments to the real link.exe on PATH.
+# so wire it there only; a VS-generator configure is left completely untouched.
+#
+# CMAKE_LINKER can NOT be made config-dependent via a generator expression - it is substituted
+# into the link rule as a literal string (verified empirically: a "$<IF:$<CONFIG:...>,...>"
+# placed here is passed through to the linker invocation unevaluated), and a single Ninja
+# Multi-Config build tree only ever has one toolchain/linker path shared by all its configs. So
+# CMAKE_LINKER has to point at one binary that itself dispatches per-config.
+#
+# The naive way to do that is to copy Crinkler.exe to a build-local link.exe: since it isn't
+# named crinkler.exe, /CRINKLER defaults off, and Crinkler is documented to transparently
+# forward its arguments to the real link.exe on PATH in that case. But that passthrough mode
+# has a stack-buffer-overrun bug in this Crinkler build (3.0a) - it crashes with
+# STATUS_STACK_BUFFER_OVERRUN once the forwarded command line has more than ~5 arguments,
+# which made it unusable for Debug/OptimizedDebug/Release (whose real link.exe invocations have
+# far more than 5 args). So instead CMAKE_LINKER points at our own tiny dispatcher batch file,
+# which inspects its arguments for the literal "/CRINKLER" flag - added via generator
+# expression only for CrinklerRelease, see ojgl/CMakeLists.txt - and routes to Crinkler.exe (its
+# own native compressing linker, not the buggy passthrough) or straight to the real link.exe
+# accordingly, forwarding all arguments unmodified either way.
 if(CMAKE_GENERATOR MATCHES "Ninja")
     configure_file(
         "${CMAKE_SOURCE_DIR}/crinkler30a/crinkler30a/Win32/Crinkler.exe"
-        "${CMAKE_BINARY_DIR}/crinkler/link.exe" COPYONLY)
-    set(CMAKE_LINKER "${CMAKE_BINARY_DIR}/crinkler/link.exe")
+        "${CMAKE_BINARY_DIR}/crinkler/crinkler.exe" COPYONLY)
+    # The real link.exe lives next to cl.exe; resolve it directly instead of relying on PATH
+    # order (which, on a machine with Git for Windows installed, can otherwise resolve
+    # "link.exe" to Git's own coreutils hard-link tool instead of MSVC's linker).
+    get_filename_component(_msvc_bin_dir "${CMAKE_CXX_COMPILER}" DIRECTORY)
+    find_program(OJGL_REAL_LINKER NAMES link.exe PATHS "${_msvc_bin_dir}" NO_DEFAULT_PATH REQUIRED)
+    file(WRITE "${CMAKE_BINARY_DIR}/crinkler/link.bat" "@echo off\r
+echo %*| findstr /C:\"/CRINKLER\" >nul\r
+if %errorlevel%==0 (\r
+    \"${CMAKE_BINARY_DIR}/crinkler/crinkler.exe\" %*\r
+) else (\r
+    \"${OJGL_REAL_LINKER}\" %*\r
+)\r
+")
+    set(CMAKE_LINKER "${CMAKE_BINARY_DIR}/crinkler/link.bat")
     # CMake defaults to the "-LIBPATH:" spelling for MSVC library directories. link.exe accepts
     # both dash and slash, but Crinkler only understands "/LIBPATH:", so emit the slash form.
     set(CMAKE_LIBRARY_PATH_FLAG "/LIBPATH:")
