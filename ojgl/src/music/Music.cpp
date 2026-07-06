@@ -149,6 +149,13 @@ void Music::setTime(Duration time)
     // Re-seek by repositioning the DirectSound play cursor; no libv2 tick loop. _syncOffset is
     // left at 0 because startAudio positions the cursor at the absolute song offset.
     this->_player->startAudio(time.toMilliseconds<unsigned long>(), GetForegroundWindow());
+    // SyncChannel's per-note queues only drain forward (tick() pops from the front), so without
+    // rebuilding here, seeking backward (e.g. restart) leaves _lastTimePerNote at a later
+    // timestamp than the now-earlier elapsedTime(), making getTimeSinceAnyNote() go negative.
+    // Rebuilding from the (cheaply re-scanned) full event list on every seek mirrors what the
+    // V2M path already does in this same function.
+    _syncChannels = ojstd::unordered_map<int, SyncChannel>();
+    _initSync();
 #else
     auto ms = time.toMilliseconds<sU32>();
     this->_player->Stop();
