@@ -13,8 +13,8 @@ namespace ojgl::resources {
           , "common/quad.vs"
           },
           {
-#include "shaders/edison2026/cube3.fs"
-          , "edison2026/cube3.fs"
+#include "shaders/edison2026/cube.fs"
+          , "edison2026/cube.fs"
           }
   };
 // clang-format on

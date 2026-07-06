@@ -1,4 +1,4 @@
-
+R""(
 const float S_distanceEpsilon = 2e-3;
 const float S_normalEpsilon = 1e-2;
 const int S_maxSteps = 100;
@@ -265,3 +265,4 @@ void main()
 
     fragColor = vec4(pow(color, vec3(0.4545)), 1.0);
 }
+)""
