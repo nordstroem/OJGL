@@ -214,6 +214,8 @@ out vec4 fragColor;
 uniform float iTime;
 uniform vec2 iResolution;
 uniform mat4 iCameraMatrix;
+uniform float C_0_S;
+uniform float C_0_T;
 
 const int cubeType = 1;
 
@@ -237,7 +239,8 @@ vec3 getColor(in MarchResult result)
         vec3 normal = normal(result.position);
         vec3 invLight = normalize(lightPosition - result.position);
         float diffuse = max(0.0, dot(invLight, normal));
-        return vec3(0.2, 0.5, 0.9) * (0.1 + 0.9 * diffuse);
+        float pulse = exp(-C_0_S * 6.0); // bright flash right after a Clinkster sync trigger, decaying over ~0.3-0.5s
+        return vec3(0.2, 0.5, 0.9) * (0.1 + 0.9 * diffuse) * (1.0 + 2.0 * pulse);
     } else {
         return vec3(0.0);
     }

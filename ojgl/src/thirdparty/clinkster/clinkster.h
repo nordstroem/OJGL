@@ -41,12 +41,14 @@ extern "C" {
 	// The number of tracks in the music.
 	extern const unsigned int Clinkster_NumTracks;
 
+	// Number of ticks per per-track block in Clinkster_NoteTiming (1 << LOGNUMTICKS).
+	extern const unsigned int Clinkster_NumTicks;
+
 	// Timing data used by Clinkster_GetInstrumentTrigger.
-	// Consists of NUMTRACKS blocks of (1 << LOGNUMTICKS) ints
-	// (constants defined in music.asm) where index i for a track
-	// holds the last tick (at or prior to i) where a note was
-	// triggered in that track.
-	extern unsigned int Clinkster_TimingData[];
+	// Consists of NUMTRACKS blocks of Clinkster_NumTicks ints
+	// where index i for a track holds the last tick (at or prior
+	// to i) where a note was triggered in that track.
+	extern unsigned int Clinkster_NoteTiming[];
 
 	// Wav file header to use if you want to write the music to disk.
 	// Write these 44 bytes followed by Clinkster_MusicBuffer with a

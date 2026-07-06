@@ -114,7 +114,7 @@ if(OJGL_SYNTH STREQUAL "V2")
         $<$<CONFIG:Release,CrinklerRelease>:DSound>)
 elseif(OJGL_SYNTH STREQUAL "CLINKSTER")
     # Clinkster: the song is baked into build-time assembly and rendered up front. The engine
-    # (clinkster.asm) %includes the exported song (music.asm); both are assembled to one object.
+    # (clinkster.asm) %includes the exported song (music2.asm); both are assembled to one object.
     find_program(OJGL_ASM_EXECUTABLE NAMES vsyasm yasm nasm nasmw
         DOC "Assembler for Clinkster's NASM-syntax .asm (yasm/vsyasm/nasm)")
     if(NOT OJGL_ASM_EXECUTABLE)
@@ -132,7 +132,7 @@ elseif(OJGL_SYNTH STREQUAL "CLINKSTER")
                 -o ${_clinkster_obj}
                 ${_clinkster_dir}/clinkster.asm
         DEPENDS ${_clinkster_dir}/clinkster.asm
-                ${_clinkster_dir}/music.asm
+                ${_clinkster_dir}/music2.asm
         COMMENT "Assembling Clinkster engine + baked song -> clinkster.obj")
     set_source_files_properties(${_clinkster_obj} PROPERTIES GENERATED TRUE EXTERNAL_OBJECT TRUE)
 

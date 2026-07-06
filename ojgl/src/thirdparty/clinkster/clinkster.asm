@@ -2,7 +2,7 @@
 ; If set to 1, timing information is generated during music generation
 ; which is needed for Clinkster_GetInstrumentTrigger.
 ; Set it to 0 if you don't need this functionality.
-%define CLINKSTER_GENERATE_TIMING_DATA 0
+%define CLINKSTER_GENERATE_TIMING_DATA 1
 
 ; Offset applied by Clinkster_GetPosition to compensate for graphics latency.
 ; Measured in samples (44100ths of a second).
@@ -40,6 +40,8 @@ global _Clinkster_NumTracks
 %if CLINKSTER_GENERATE_TIMING_DATA
 global Clinkster_NoteTiming
 global _Clinkster_NoteTiming
+global Clinkster_NumTicks
+global _Clinkster_NumTicks
 %endif
 global Clinkster_WavFileHeader
 global _Clinkster_WavFileHeader
@@ -78,6 +80,11 @@ _Clinkster_NumTracks:
 	dd NUMTRACKS
 
 %if CLINKSTER_GENERATE_TIMING_DATA
+section numtk rdata align=4
+Clinkster_NumTicks:
+_Clinkster_NumTicks:
+	dd (1<<LOGNUMTICKS)
+
 section musdat bss align=4
 Clinkster_NoteTiming:
 _Clinkster_NoteTiming:

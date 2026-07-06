@@ -72,4 +72,39 @@ long ClinksterPlayer::elapsedMilliseconds() const
     return ojstd::ftoi(_audio->currentFrame() / static_cast<float>(kSampleRate) * 1000.0f);
 }
 
+ojstd::vector<SyncEvent> ClinksterPlayer::popSyncEvents()
+{
+    ojstd::vector<SyncEvent> events;
+
+    // Clinkster has no note pitch/velocity per track; every trigger on every track is
+    // synthesized as note 0 so each channel ends up with exactly one relative note
+    // (Music::_initSync computes numNotes = maxNote - minNote + 1 == 1 per channel).
+    constexpr int kNote = 0;
+    constexpr int kVelocity = 127;
+
+    const unsigned int numTracks = Clinkster_NumTracks;
+    const unsigned int musicLength = Clinkster_MusicLength; // ticks with real song data
+    const unsigned int stride = Clinkster_NumTicks; // per-track block size in Clinkster_NoteTiming
+
+    for (unsigned int track = 0; track < numTracks; track++) {
+        int lastValue = -1; // sentinel: never equals a valid tick index
+        for (unsigned int tick = 0; tick < musicLength; tick++) {
+            int stored = static_cast<int>(Clinkster_NoteTiming[track * stride + tick]);
+            // Rising edge: the table now records *this* tick as the latest trigger. Never trust
+            // tick 0 as a genuine trigger -- BSS-zero-initialized entries before a track's first
+            // real note alias with a legitimate "note at tick 0", and the two can't be told apart
+            // from this table alone; skipping tick 0 is the safer failure mode (a late first hit
+            // instead of a spurious one at song start).
+            if (tick > 0 && stored == static_cast<int>(tick) && stored != lastValue) {
+                float seconds = static_cast<float>(tick) / Clinkster_TicksPerSecond;
+                long ms = ojstd::ftoi(seconds * 1000.0f);
+                events.push_back(SyncEvent(static_cast<int>(track), kNote, kVelocity, Duration::milliseconds(ms)));
+            }
+            lastValue = stored;
+        }
+    }
+
+    return events;
+}
+
 } // namespace ojgl

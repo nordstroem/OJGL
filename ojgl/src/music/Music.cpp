@@ -60,6 +60,7 @@ void Music::play()
     this->_player->beginRender();
     while (!this->_player->renderDone())
         Sleep(10);
+    _initSync(); // populate _syncChannels now that Clinkster_NoteTiming is filled
     this->_player->startAudio(0, GetForegroundWindow());
 #else
     this->_player->Init();

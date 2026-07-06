@@ -1,5 +1,6 @@
 #include "Edison2026.h"
 #include "FreeCameraController.h"
+#include "music/Music.h"
 
 using namespace ojgl;
 
@@ -11,6 +12,9 @@ ojstd::vector<Scene> Edison2026::buildSceneGraph(const Vector2i& sceneSize) cons
         cube->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
             Buffer::UniformVector vector;
             vector.push_back(ojstd::make_shared<UniformMatrix4fv>("iCameraMatrix", FreeCameraController::instance().getCameraMatrix()));
+            auto music = Music::instance();
+            vector.push_back(ojstd::make_shared<Uniform1f>("C_0_S", music->syncChannels()[10].getTimeSinceAnyNote().toSeconds()));
+            vector.push_back(ojstd::make_shared<Uniform1f>("C_0_T", static_cast<float>(music->syncChannels()[10].getTotalHits())));
             return vector;
         });
 

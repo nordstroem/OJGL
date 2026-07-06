@@ -30,9 +30,11 @@ public:
     // Play cursor in milliseconds from the start of the song.
     long elapsedMilliseconds() const;
 
-    // Audio-only backend: no beat-sync events. Kept to mirror V2MPlayer so Music::_initSync
-    // builds an empty channel set (see the deferred beat-sync follow-up).
-    ojstd::vector<SyncEvent> popSyncEvents() { return {}; }
+    // Scans the baked Clinkster_NoteTiming table (filled during Clinkster_GenerateMusic) and
+    // synthesizes one SyncEvent per detected note trigger, per track. Must be called once after
+    // renderDone() and before startAudio(); the result is meant to be consumed once by
+    // Music::_initSync().
+    ojstd::vector<SyncEvent> popSyncEvents();
 
 private:
     static unsigned long __stdcall renderThreadProc(void* self);
