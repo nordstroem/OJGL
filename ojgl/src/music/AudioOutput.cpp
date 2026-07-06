@@ -13,18 +13,16 @@
 
 namespace ojgl {
 
-// 2 channels * 4 bytes per float sample.
-static constexpr unsigned long kBytesPerFrame = 2 * sizeof(float);
-
 AudioOutput::~AudioOutput()
 {
     close();
 }
 
-void AudioOutput::init(const float* interleavedStereo, unsigned long numFrames, unsigned long sampleRate, void* hWnd)
+void AudioOutput::init(const void* interleavedStereo, unsigned long numFrames, unsigned long sampleRate, unsigned short bitsPerSample, void* hWnd)
 {
     close();
     _numFrames = numFrames;
+    _bytesPerFrame = 2 * (bitsPerSample / 8); // 2 channels
 
     LPDIRECTSOUND8 ds = nullptr;
     if (FAILED(DirectSoundCreate8(nullptr, &ds, nullptr)))
@@ -35,18 +33,18 @@ void AudioOutput::init(const float* interleavedStereo, unsigned long numFrames, 
     ds->SetCooperativeLevel(hWnd ? static_cast<HWND>(hWnd) : GetForegroundWindow(), DSSCL_PRIORITY);
 
     WAVEFORMATEX wfx = {};
-    wfx.wFormatTag = WAVE_FORMAT_IEEE_FLOAT;
+    wfx.wFormatTag = (bitsPerSample == 32) ? WAVE_FORMAT_IEEE_FLOAT : WAVE_FORMAT_PCM;
     wfx.nChannels = 2;
     wfx.nSamplesPerSec = sampleRate;
-    wfx.wBitsPerSample = 32;
-    wfx.nBlockAlign = static_cast<WORD>(kBytesPerFrame);
-    wfx.nAvgBytesPerSec = sampleRate * kBytesPerFrame;
+    wfx.wBitsPerSample = bitsPerSample;
+    wfx.nBlockAlign = static_cast<WORD>(_bytesPerFrame);
+    wfx.nAvgBytesPerSec = sampleRate * _bytesPerFrame;
     wfx.cbSize = 0;
 
     DSBUFFERDESC desc = {};
     desc.dwSize = sizeof(DSBUFFERDESC);
     desc.dwFlags = DSBCAPS_GETCURRENTPOSITION2 | DSBCAPS_GLOBALFOCUS | DSBCAPS_CTRLVOLUME;
-    desc.dwBufferBytes = numFrames * kBytesPerFrame;
+    desc.dwBufferBytes = numFrames * _bytesPerFrame;
     desc.lpwfxFormat = &wfx;
 
     LPDIRECTSOUNDBUFFER buffer = nullptr;
@@ -73,7 +71,7 @@ void AudioOutput::play(unsigned long startFrame)
     if (!_buffer)
         return;
     auto* buffer = static_cast<LPDIRECTSOUNDBUFFER>(_buffer);
-    buffer->SetCurrentPosition(startFrame * kBytesPerFrame);
+    buffer->SetCurrentPosition(startFrame * _bytesPerFrame);
     buffer->Play(0, 0, 0); // no looping: the buffer holds the whole song
 }
 
@@ -89,7 +87,7 @@ long AudioOutput::currentFrame() const
         return 0;
     DWORD playCursor = 0;
     static_cast<LPDIRECTSOUNDBUFFER>(_buffer)->GetCurrentPosition(&playCursor, nullptr);
-    return static_cast<long>(playCursor / kBytesPerFrame);
+    return static_cast<long>(playCursor / _bytesPerFrame);
 }
 
 void AudioOutput::close()

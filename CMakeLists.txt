@@ -20,6 +20,12 @@ endif()
 #   CrinklerRelease- like Release, but linked+compressed with Crinkler (Ninja generator only)
 set(CMAKE_CONFIGURATION_TYPES "Debug;OptimizedDebug;Release;CrinklerRelease" CACHE STRING "" FORCE)
 
+# Music synth backend, selected at configure time (the switch is exclusive: a build is either
+# V2 or Clinkster). V2 is the default runtime-streamed .v2m player; CLINKSTER bakes the song
+# into build-time assembly and renders it up front. (Leave room for a future 4KLANG value.)
+set(OJGL_SYNTH "V2" CACHE STRING "Music synth backend: V2 or CLINKSTER")
+set_property(CACHE OJGL_SYNTH PROPERTY STRINGS "V2" "CLINKSTER")
+
 # All real compiler/linker flags are applied per-target via generator expressions so the
 # behavior is explicit and diffable. Clear CMake's built-in per-config defaults (which would
 # otherwise inject things like /RTC1, /Ob0, /INCREMENTAL) so they don't fight our flags.

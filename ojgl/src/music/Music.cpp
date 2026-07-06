@@ -1,5 +1,9 @@
 ﻿#include "Music.h"
+#ifdef OJGL_SYNTH_CLINKSTER
+#include "ClinksterPlayer.h"
+#else
 #include "V2MPlayer.h"
+#endif
 #include "utility/Log.h"
 #include "utility/OJstd.h"
 #include <limits>
@@ -7,17 +11,30 @@
 
 namespace ojgl {
 
+#ifdef OJGL_SYNTH_CLINKSTER
+Music::Music(const unsigned char* song, bool fixedTimestep)
+    : _song(song)
+    , _player(ojstd::make_shared<ClinksterPlayer>())
+    , _fixedTimestep(fixedTimestep)
+{
+}
+#else
 Music::Music(const unsigned char* song, bool fixedTimestep)
     : _song(song)
     , _player(ojstd::make_shared<V2MPlayer>())
     , _fixedTimestep(fixedTimestep)
 {
 }
+#endif
 
 Music::~Music()
 {
+#ifdef OJGL_SYNTH_CLINKSTER
+    this->_player->stopAudio();
+#else
     this->_player->Close();
     dsClose();
+#endif
 }
 
 static ojstd::shared_ptr<Music> music;
@@ -37,9 +54,18 @@ void Music::createInstance(const unsigned char* song, bool fixedTimestep)
 
 void Music::play()
 {
+#ifdef OJGL_SYNTH_CLINKSTER
+    // Render the whole song up front (a few seconds); a startup busy-wait is fine for a first
+    // pass (see the deferred "loading state" follow-up), then start audio from the beginning.
+    this->_player->beginRender();
+    while (!this->_player->renderDone())
+        Sleep(10);
+    this->_player->startAudio(0, GetForegroundWindow());
+#else
     this->_player->Init();
     this->_player->Open(this->_song);
     setTime(Duration::milliseconds(0));
+#endif
 }
 
 void Music::_initSync()
@@ -90,15 +116,25 @@ Duration Music::elapsedTime() const
     if (_fixedTimestep) {
         return Duration(1000 * _currentFrame / 60);
     } else {
+#ifdef OJGL_SYNTH_CLINKSTER
+        // The DirectSound play cursor already reflects the seek position (SetCurrentPosition),
+        // so elapsedMilliseconds() is absolute; _syncOffset stays 0 for this backend.
+        return Duration::milliseconds(this->_player->elapsedMilliseconds()) + _syncOffset;
+#else
         // @todo verify this formula.
         long ms = ojstd::ftoi(dsGetCurSmp() * 1000.f / (44100.f * 4.f));
         return Duration::milliseconds(ms) + _syncOffset;
+#endif
     }
 }
 
 void Music::stop()
 {
+#ifdef OJGL_SYNTH_CLINKSTER
+    this->_player->stopAudio();
+#else
     this->_player->Stop();
+#endif
 }
 
 ojstd::unordered_map<int, SyncChannel>& Music::syncChannels()
@@ -108,6 +144,11 @@ ojstd::unordered_map<int, SyncChannel>& Music::syncChannels()
 
 void Music::setTime(Duration time)
 {
+#ifdef OJGL_SYNTH_CLINKSTER
+    // Re-seek by repositioning the DirectSound play cursor; no libv2 tick loop. _syncOffset is
+    // left at 0 because startAudio positions the cursor at the absolute song offset.
+    this->_player->startAudio(time.toMilliseconds<unsigned long>(), GetForegroundWindow());
+#else
     auto ms = time.toMilliseconds<sU32>();
     this->_player->Stop();
     dsClose();
@@ -121,5 +162,6 @@ void Music::setTime(Duration time)
     dsInit(this->_player->RenderProxy, this->_player.get(), GetForegroundWindow());
     this->_player->Play(ms);
     _syncOffset = time;
+#endif
 }
 } //namespace ojgl

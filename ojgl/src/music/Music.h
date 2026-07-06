@@ -6,7 +6,11 @@
 
 namespace ojgl {
 
+#ifdef OJGL_SYNTH_CLINKSTER
+class ClinksterPlayer;
+#else
 class V2MPlayer;
+#endif
 
 class Music {
 
@@ -29,10 +33,14 @@ private:
     explicit Music(const unsigned char* song, bool fixedTimestep);
 
 private:
+#ifdef OJGL_SYNTH_CLINKSTER
+    ojstd::shared_ptr<ClinksterPlayer> _player;
+#else
     ojstd::shared_ptr<V2MPlayer> _player;
+#endif
     void _initSync();
     const unsigned char* _song;
-    Duration _syncOffset;
+    Duration _syncOffset = Duration::milliseconds(0);
     ojstd::unordered_map<int, SyncChannel> _syncChannels;
     int _currentFrame = 0;
     bool _fixedTimestep = false;

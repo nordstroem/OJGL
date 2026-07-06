@@ -4,8 +4,10 @@
 # Project-specific files
 *.png
 
-# CMake build output
+# CMake build output (build/ plus the per-generator/per-synth trees:
+# build-ninja/, build-clinkster/, build-ninja-clinkster/, ...)
 build/
+build-*/
 CMakeUserPresets.json
 CMakeSettings.json
 
