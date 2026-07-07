@@ -15,19 +15,9 @@
         },
         {
             "name": "windows-x86-ninja",
-            "displayName": "Windows x86 (Ninja)",
+            "displayName": "Windows x86 (Ninja, needed for CrinklerRelease)",
             "generator": "Ninja Multi-Config",
             "binaryDir": "${sourceDir}/build-ninja"
-        },
-        {
-            "name": "windows-x86-clinkster",
-            "displayName": "Windows x86, Clinkster synth (Visual Studio)",
-            "generator": "Visual Studio 17 2022",
-            "architecture": "Win32",
-            "binaryDir": "${sourceDir}/build-clinkster",
-            "cacheVariables": {
-                "OJGL_SYNTH": "CLINKSTER"
-            }
         }
     ],
     "buildPresets": [
