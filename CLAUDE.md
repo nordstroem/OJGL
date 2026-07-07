@@ -146,8 +146,12 @@ the standard library (linked against `tlibc`).
 
 Create a self-contained `productions/<name>/` directory:
 
-1. `productions/<name>/X.{h,cpp}` subclassing `Demo` (`src/demo/Demo.h`); implement
-   `buildSceneGraph`, `getTitle`, and (for V2) `getSong`.
+1. `productions/<name>/X.cpp` defining a `Demo` subclass (`src/demo/Demo.h`) — implement
+   `buildSceneGraph`, `getTitle`, and (for V2) `getSong` — and defining
+   `ojstd::shared_ptr<Demo> ojgl::createSelectedDemo()` to return one (`return
+   ojstd::make_shared<X>();`). `createSelectedDemo` is declared in `Demo.h` and is how `Main.cpp`
+   instantiates the demo, so the demo class stays private to its `.cpp`: no per-production header
+   is needed.
 2. `productions/<name>/shaders/*.fs` / `*.vs` for demo-specific shaders (shared ones live in
    `productions/common/shaders/`). List each shader you use in the demo's `ojgl_add_demo` call
    (`SHADERS` for the demo's own, `COMMON_SHADERS` for shared ones) — nothing is embedded unless
@@ -156,8 +160,9 @@ Create a self-contained `productions/<name>/` directory:
    into a byte array. **Clinkster** → `productions/<name>/music/song.asm`.
 4. `productions/<name>/CMakeLists.txt` with a single `ojgl_add_demo(NAME X SYNTH V2|CLINKSTER
    SOURCES X.cpp SHADERS ... COMMON_SHADERS ...)` call (see `cmake/OjglDemo.cmake` for options:
-   `SHADERS`, `COMMON_SHADERS`, `SHADER_DIR`, `SHADER_PREFIX`, `MUSIC`, `HEADER`). The class name
-   is `NAME`; the header defaults to `<NAME>.h`.
+   `SHADERS`, `COMMON_SHADERS`, `SHADER_DIR`, `SHADER_PREFIX`, `MUSIC`, `INCLUDE_DIR`). `NAME` is
+   the logical demo name; the C++ class is whatever the `.cpp` defines (only
+   `createSelectedDemo()` is visible to the framework).
 5. Build it with `-DOJGL_DEMO=<name>`. No changes to `Main.cpp` or the root `CMakeLists.txt` are
    needed — selection is by directory name.
 

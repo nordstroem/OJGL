@@ -22,4 +22,9 @@ public:
     }
 };
 
+// Constructs the production selected at build time (OJGL_DEMO). Each production defines this
+// in its own .cpp; exactly one production is compiled per build, so exactly one definition is
+// linked. This is how Main.cpp instantiates the demo without depending on its concrete class.
+ojstd::shared_ptr<Demo> createSelectedDemo();
+
 }

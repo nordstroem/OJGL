@@ -205,7 +205,8 @@ target_link_libraries(ojgl PRIVATE
 
 # Register the selected production. Each production lives in productions/<OJGL_DEMO>/ and its
 # CMakeLists.txt calls ojgl_add_demo() to add its sources + music backend and to generate the
-# SelectedDemo.h / EmbeddedShaders.h consumed by the ojgl target.
+# EmbeddedShaders.h consumed by the ojgl target. The demo is instantiated via
+# ojgl::createSelectedDemo(), which the production defines in its own .cpp.
 if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/productions/${OJGL_DEMO}/CMakeLists.txt")
     message(FATAL_ERROR
         "OJGL_DEMO='${OJGL_DEMO}' not found: productions/${OJGL_DEMO}/CMakeLists.txt is missing.")

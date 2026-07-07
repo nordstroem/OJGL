@@ -1,8 +1,20 @@
-#include "Edison2022.h"
 #include "FreeCameraController.h"
 #include "TextRenderer.hpp"
+#include "demo/Demo.h"
 #include "music/Music.h"
+#include "render/Texture.h"
 #include "utility/Log.h"
+
+namespace ojgl {
+class Edison2022 final : public Demo {
+public:
+    Edison2022();
+    ojstd::vector<Scene> buildSceneGraph(const Vector2i& sceneSize) const override;
+    const unsigned char* getSong() const override;
+    ojstd::string getTitle() const override;
+    void update(const Duration& relativeSceneTime, const Duration& elapsedTime, const ojstd::string& currentScene) const override;
+};
+}
 
 using namespace ojgl;
 
@@ -282,4 +294,9 @@ void Edison2022::update(const Duration& relativeSceneTime, const Duration& elaps
 ojstd::string Edison2022::getTitle() const
 {
     return "Lake Lurker";
+}
+
+ojstd::shared_ptr<Demo> ojgl::createSelectedDemo()
+{
+    return ojstd::make_shared<Edison2022>();
 }

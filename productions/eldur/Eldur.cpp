@@ -1,4 +1,13 @@
-#include "Eldur.h"
+#include "demo/Demo.h"
+
+namespace ojgl {
+class Eldur final : public Demo {
+public:
+    ojstd::vector<Scene> buildSceneGraph(const Vector2i& sceneSize) const override;
+    ojstd::string getTitle() const override;
+    const unsigned char* getSong() const override;
+};
+}
 
 using namespace ojgl;
 
@@ -72,4 +81,9 @@ static const unsigned char song[] = {
 const unsigned char* Eldur::getSong() const
 {
     return song;
+}
+
+ojstd::shared_ptr<Demo> ojgl::createSelectedDemo()
+{
+    return ojstd::make_shared<Eldur>();
 }

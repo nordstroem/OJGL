@@ -2,15 +2,17 @@
 #
 # Exactly one demo is compiled per build (OJGL_DEMO). The demo declares its own music
 # backend, so selecting the demo drives all the synth wiring; there is no separate global
-# synth switch. This function wires the demo sources + backend and generates the
-# SelectedDemo.h factory that Main.cpp uses to instantiate the demo.
+# synth switch. This function wires the demo sources + backend. The demo itself is
+# instantiated through ojgl::createSelectedDemo() (declared in demo/Demo.h), which each
+# production defines in its .cpp — so no per-production header is needed and no factory is
+# generated.
 #
 # ojgl_add_demo(
-#   NAME     <Edison2026>            # logical + C++ class name (namespace ojgl)
+#   NAME     <Edison2026>            # logical name; also the demo's own dir/shader defaults
 #   SYNTH    <V2|CLINKSTER>          # music backend (exclusive per binary)
 #   SOURCES  <a.cpp> [b.cpp ...]     # demo sources (relative to the caller's dir)
-#   [HEADER  <Edison2026.h>]         # demo header include, default "<NAME>.h"
-#   [INCLUDE_DIR <dir>]              # dir put on the include path so HEADER/SOURCES resolve,
+#   [INCLUDE_DIR <dir>]              # dir put on the include path so SOURCES' own includes
+#                                    #   (e.g. music/*.inc) resolve,
 #                                    #   default the caller's CMAKE_CURRENT_SOURCE_DIR
 #   [MUSIC   <path>]                 # V2:       the *_song.inc (embedded by the demo .cpp)
 #                                    #   CLINKSTER: the baked-song .asm (its dir becomes -I)
@@ -38,7 +40,7 @@
 set(_OJGL_CMAKE_MODULE_DIR "${CMAKE_CURRENT_LIST_DIR}")
 
 function(ojgl_add_demo)
-    set(oneValueArgs NAME SYNTH HEADER INCLUDE_DIR MUSIC SHADER_DIR SHADER_PREFIX)
+    set(oneValueArgs NAME SYNTH INCLUDE_DIR MUSIC SHADER_DIR SHADER_PREFIX)
     set(multiValueArgs SOURCES SHADERS COMMON_SHADERS)
     cmake_parse_arguments(DEMO "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
@@ -47,9 +49,6 @@ function(ojgl_add_demo)
     endif()
     if(NOT DEMO_SOURCES)
         message(FATAL_ERROR "ojgl_add_demo(${DEMO_NAME}): SOURCES is required")
-    endif()
-    if(NOT DEMO_HEADER)
-        set(DEMO_HEADER "${DEMO_NAME}.h")
     endif()
     if(NOT DEMO_INCLUDE_DIR)
         set(DEMO_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
@@ -119,14 +118,6 @@ function(ojgl_add_demo)
     else()
         message(FATAL_ERROR "ojgl_add_demo(${DEMO_NAME}): SYNTH must be V2 or CLINKSTER (got '${DEMO_SYNTH}')")
     endif()
-
-    # --- generate the demo factory consumed by Main.cpp (replaces the old enum/switch) ---
-    set(OJGL_DEMO_CLASS "${DEMO_NAME}")
-    set(OJGL_DEMO_HEADER "${DEMO_HEADER}")
-    configure_file(
-        "${_OJGL_CMAKE_MODULE_DIR}/SelectedDemo.h.in"
-        "${OJGL_GENERATED_DIR}/SelectedDemo.h"
-        @ONLY)
 
     # --- generate the embedded-shader list (replaces the hand-maintained EmbeddedResources.h) ---
     # Embed exactly the shaders the demo declares: its own (SHADERS, resolved against

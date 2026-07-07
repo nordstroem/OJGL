@@ -1,6 +1,14 @@
-#include "Edison2026.h"
 #include "FreeCameraController.h"
+#include "demo/Demo.h"
 #include "music/Music.h"
+
+namespace ojgl {
+class Edison2026 final : public Demo {
+public:
+    ojstd::vector<Scene> buildSceneGraph(const Vector2i& sceneSize) const override;
+    ojstd::string getTitle() const override;
+};
+}
 
 using namespace ojgl;
 
@@ -29,4 +37,9 @@ ojstd::vector<Scene> Edison2026::buildSceneGraph(const Vector2i& sceneSize) cons
 ojstd::string Edison2026::getTitle() const
 {
     return "Edison 2026";
+}
+
+ojstd::shared_ptr<Demo> ojgl::createSelectedDemo()
+{
+    return ojstd::make_shared<Edison2026>();
 }

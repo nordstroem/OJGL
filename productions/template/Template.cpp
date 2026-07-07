@@ -1,5 +1,13 @@
-#include "Template.h"
 #include "FreeCameraController.h"
+#include "demo/Demo.h"
+
+namespace ojgl {
+class Template final : public Demo {
+public:
+    ojstd::vector<Scene> buildSceneGraph(const Vector2i& sceneSize) const override;
+    ojstd::string getTitle() const override;
+};
+}
 
 using namespace ojgl;
 
@@ -23,4 +31,9 @@ ojstd::vector<Scene> Template::buildSceneGraph(const Vector2i& sceneSize) const
 ojstd::string Template::getTitle() const
 {
     return "Template Demo";
+}
+
+ojstd::shared_ptr<Demo> ojgl::createSelectedDemo()
+{
+    return ojstd::make_shared<Template>();
 }

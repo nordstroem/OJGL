@@ -1,7 +1,22 @@
-#include "Edison2021.h"
 #include "FreeCameraController.h"
 #include "TextRenderer.hpp"
+#include "demo/Demo.h"
 #include "music/Music.h"
+#include "render/Texture.h"
+
+namespace ojgl {
+class Edison2021 final : public Demo {
+public:
+    Edison2021();
+    ojstd::vector<Scene> buildSceneGraph(const Vector2i& sceneSize) const override;
+    ojstd::string getTitle() const override;
+    const unsigned char* getSong() const override;
+
+private:
+    ojstd::shared_ptr<Texture> getText(const ojstd::string& text) const;
+    mutable ojstd::unordered_map<ojstd::string, ojstd::shared_ptr<Texture>> _textures;
+};
+}
 
 using namespace ojgl;
 
@@ -190,4 +205,9 @@ ojstd::vector<Scene> Edison2021::buildSceneGraph(const Vector2i& sceneSize) cons
     }
 
     return scenes;
+}
+
+ojstd::shared_ptr<Demo> ojgl::createSelectedDemo()
+{
+    return ojstd::make_shared<Edison2021>();
 }

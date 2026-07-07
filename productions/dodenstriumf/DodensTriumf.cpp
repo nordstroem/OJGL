@@ -1,5 +1,14 @@
-#include "DodensTriumf.h"
+#include "demo/Demo.h"
 #include "music/Music.h"
+
+namespace ojgl {
+class DodensTriumf final : public Demo {
+public:
+    ojstd::vector<Scene> buildSceneGraph(const Vector2i& sceneSize) const override;
+    ojstd::string getTitle() const override;
+    const unsigned char* getSong() const override;
+};
+}
 
 using namespace ojgl;
 
@@ -69,4 +78,9 @@ ojstd::vector<Scene> DodensTriumf::buildSceneGraph(const Vector2i& sceneSize) co
     }
 
     return scenes;
+}
+
+ojstd::shared_ptr<Demo> ojgl::createSelectedDemo()
+{
+    return ojstd::make_shared<DodensTriumf>();
 }
