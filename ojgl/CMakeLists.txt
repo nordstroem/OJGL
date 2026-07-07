@@ -16,8 +16,7 @@ set(OJGL_SOURCES
     src/thirdparty/StbImage.cpp
     src/music/Music.cpp
     src/music/SyncChannel.cpp
-    # Backend-specific music sources (V2MPlayer / ClinksterPlayer + AudioOutput) are added
-    # conditionally below, selected by the OJGL_SYNTH cache variable.
+    # Backend-specific music sources are added conditionally below (OJGL_SYNTH).
     src/render/Buffer.cpp
     src/render/GLState.cpp
     src/render/Mesh.cpp
@@ -34,8 +33,7 @@ set(OJGL_SOURCES
     src/winapi/gl_loader.cpp
 )
 
-# Non-compiled files (headers, GLSL shaders, embedded songs). Included in the target purely so
-# they appear in the generated Visual Studio solution, mirroring the old <None>/<ClInclude> items.
+# Non-compiled files (headers, shaders, songs), included only so they show in the IDE.
 file(GLOB_RECURSE OJGL_DISPLAY_FILES CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/*.hpp"
@@ -92,29 +90,23 @@ target_link_libraries(ojgl PRIVATE
     # linked in every config
     opengl32 kernel32 user32 gdi32 winspool comdlg32 advapi32 shell32
     ole32 oleaut32 uuid odbc32 odbccp32
-    # Release/CrinklerRelease replace the standard CRT with tlibc and pull in the DirectX libs.
-    # (DSound is added per-backend below: for V2 it is Release/Crinkler-only because Debug gets
-    # the DirectSound entry points from inside libv2.lib.)
+    # Release/CrinklerRelease swap in tlibc and the DirectX libs (DSound is added per-backend).
     $<$<CONFIG:Release,CrinklerRelease>:tlibc>
     $<$<CONFIG:Release,CrinklerRelease>:DDraw>
     $<$<CONFIG:Release,CrinklerRelease>:Dinput8>
 )
 
-# ---------------------------------------------------------------------------------------------
-# Music synth backend selection (OJGL_SYNTH). Exclusive at configure time; no runtime dispatch.
-# ---------------------------------------------------------------------------------------------
+# Music synth backend (OJGL_SYNTH), exclusive at configure time.
 if(OJGL_SYNTH STREQUAL "V2")
-    # V2: runtime-streamed .v2m player. libv2.lib provides the synth *and* the DirectSound
-    # helpers (dsInit/dsGetCurSmp/dsClose), so it is linked in every config; the DSound system
-    # import lib is only needed where libv2 does not already pull those entry points in.
+    # libv2.lib provides the synth and the DirectSound helpers, so it links in every config;
+    # the DSound import lib is only needed where libv2 doesn't already pull those in.
     target_sources(ojgl PRIVATE src/music/V2MPlayer.cpp)
     target_compile_definitions(ojgl PRIVATE OJGL_SYNTH_V2)
     target_link_libraries(ojgl PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}/src/thirdparty/libv2.lib"
         $<$<CONFIG:Release,CrinklerRelease>:DSound>)
 elseif(OJGL_SYNTH STREQUAL "CLINKSTER")
-    # Clinkster: the song is baked into build-time assembly and rendered up front. The engine
-    # (clinkster.asm) %includes the exported song (music2.asm); both are assembled to one object.
+    # clinkster.asm %includes the baked song (music2.asm); both assemble to one object.
     find_program(OJGL_ASM_EXECUTABLE NAMES vsyasm yasm nasm nasmw
         DOC "Assembler for Clinkster's NASM-syntax .asm (yasm/vsyasm/nasm)")
     if(NOT OJGL_ASM_EXECUTABLE)
@@ -141,29 +133,22 @@ elseif(OJGL_SYNTH STREQUAL "CLINKSTER")
         src/music/AudioOutput.cpp
         ${_clinkster_obj})
     target_compile_definitions(ojgl PRIVATE OJGL_SYNTH_CLINKSTER)
-    # Our AudioOutput needs DirectSound in *every* config (unlike V2, there is no libv2 to
-    # provide it). winmm resolves the waveOut* imports referenced by Clinkster's unused
-    # Start/GetPosition sections, which Debug does not strip.
+    # AudioOutput needs DirectSound in every config (no libv2 to provide it); winmm resolves the
+    # waveOut* imports from Clinkster's unused sections that Debug doesn't strip.
     target_link_libraries(ojgl PRIVATE dsound winmm)
 else()
     message(FATAL_ERROR "Unknown OJGL_SYNTH '${OJGL_SYNTH}' (expected V2 or CLINKSTER)")
 endif()
 
 target_link_options(ojgl PRIVATE
-    # Neither libv2.lib's modules nor the assembled clinkster.obj carry SAFESEH metadata, so the
-    # link must not require it. Crinkler builds its own imports and does not understand /SAFESEH,
-    # so it is applied to every config except CrinklerRelease.
+    # libv2.lib and clinkster.obj lack SAFESEH metadata; Crinkler doesn't understand /SAFESEH, so
+    # apply it to every config except CrinklerRelease.
     $<$<NOT:$<CONFIG:CrinklerRelease>>:/SAFESEH:NO>
     $<$<CONFIG:Debug>:/DEBUG:FASTLINK>
     $<$<CONFIG:OptimizedDebug>:/DEBUG:FASTLINK;/OPT:REF;/OPT:ICF>
-    # Release: ignore default libs (tlibc is the CRT), enter through mainCRTStartup, fold/trim,
-    # emit a .map, and run link-time codegen (tlibc objects are compiled with /GL).
+    # Release: tlibc is the CRT (/NODEFAULTLIB), enter through mainCRTStartup, LTCG (tlibc is /GL).
     $<$<CONFIG:Release>:/DEBUG;/NODEFAULTLIB;/ENTRY:mainCRTStartup;/OPT:REF;/OPT:ICF;/MAP;/LTCG>
-    # CrinklerRelease: Crinkler links + compresses. /NODEFAULTLIB keeps it from auto-importing
-    # msvcrt/inserting its own startup (tlibc is the CRT); /MANIFEST:NO so CMake's vs_link_exe
-    # wrapper skips mt.exe (Crinkler does not support manifests). No /GL/LTCG objects reach it.
-    # (The /REUSE + /REUSEMODE:PARTS reuse-file mechanism was removed: it crashed Crinkler on the
-    # Clinkster backend's large pre-rendered-song BSS. Crinkler now recomputes the part layout
-    # from scratch each build, which links cleanly.)
+    # CrinklerRelease: Crinkler links + compresses. /MANIFEST:NO so CMake's wrapper skips mt.exe
+    # (Crinkler has no manifest support). /REUSE was removed: it crashed on Clinkster's large BSS.
     $<$<CONFIG:CrinklerRelease>:/NODEFAULTLIB;/ENTRY:mainCRTStartup;/MANIFEST:NO;/CRINKLER;/RANGE:opengl32;/COMPMODE:FAST;/TRANSFORM:CALLS;/REPORT:ojgl_crinkler_report.html;/PRINT:IMPORTS;/HASHTRIES:1;/HASHSIZE:1000>
 )
