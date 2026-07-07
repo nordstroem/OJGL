@@ -398,6 +398,9 @@ public:
         return this->find(key) != this->end();
     }
 
+    size_t size() const { return keyValuePairs.size(); }
+    bool empty() const { return keyValuePairs.size() == 0; }
+
 private:
     vector<Pair<K, V>> keyValuePairs;
 };
