@@ -117,9 +117,9 @@ include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/OjglDemo.cmake")
 # Framework/app sources. The selected demo's own sources and its music backend are added by
 # ojgl_add_demo below.
 set(OJGL_SOURCES
-    examples/FreeCameraController.cpp
-    examples/Main.cpp
-    examples/TextRenderer.cpp
+    src/app/FreeCameraController.cpp
+    src/app/Main.cpp
+    src/app/TextRenderer.cpp
     src/thirdparty/StbImage.cpp
     src/music/Music.cpp
     src/music/SyncChannel.cpp
@@ -139,17 +139,18 @@ set(OJGL_SOURCES
     src/winapi/gl_loader.cpp
 )
 
-# Non-compiled files (headers, shaders, songs), included only so they show in the IDE.
+# Non-compiled files (headers, shaders, songs), included only so they show in the IDE. All
+# productions are listed for navigation even though only OJGL_DEMO is compiled.
 file(GLOB_RECURSE OJGL_DISPLAY_FILES CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/*.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/examples/*.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/examples/*.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/examples/shaders/*.fs"
-    "${CMAKE_CURRENT_SOURCE_DIR}/examples/shaders/*.vs"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/render/shaders/*.fs"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/render/shaders/*.vs"
-    "${CMAKE_CURRENT_SOURCE_DIR}/examples/songs/*.inc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/productions/*.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/productions/*.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/productions/*.fs"
+    "${CMAKE_CURRENT_SOURCE_DIR}/productions/*.vs"
+    "${CMAKE_CURRENT_SOURCE_DIR}/productions/*.inc"
 )
 set_source_files_properties(${OJGL_DISPLAY_FILES} PROPERTIES HEADER_FILE_ONLY TRUE)
 
@@ -166,7 +167,7 @@ set_target_properties(ojgl PROPERTIES
     VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
-target_include_directories(ojgl PRIVATE src examples "${OJGL_GENERATED_DIR}")
+target_include_directories(ojgl PRIVATE src src/app "${OJGL_GENERATED_DIR}")
 
 target_compile_definitions(ojgl PRIVATE
     WIN32 _CONSOLE _CRT_SECURE_NO_WARNINGS

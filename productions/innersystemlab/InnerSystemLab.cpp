@@ -140,7 +140,7 @@ ojstd::string InnerSystemLab::getTitle() const
 }
 
 static const unsigned char song[] = {
-#include "songs/innersystemlab_song.inc"
+#include "music/innersystemlab_song.inc"
 };
 
 const unsigned char* InnerSystemLab::getSong() const

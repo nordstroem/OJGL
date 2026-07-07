@@ -5,11 +5,11 @@ using namespace ojgl;
 
 ojstd::string DodensTriumf::getTitle() const
 {
-    return "OJ - Dödens Triumf";
+    return "OJ - Dï¿½dens Triumf";
 }
 
 static const unsigned char song[] = {
-#include "songs/dodenstriumf_song.inc"
+#include "music/dodenstriumf_song.inc"
 };
 
 const unsigned char* DodensTriumf::getSong() const

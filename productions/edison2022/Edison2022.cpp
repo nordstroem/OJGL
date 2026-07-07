@@ -14,7 +14,7 @@ inline Vector3f lerp3f(const Vector3f& left, const Vector3f& right, float amount
 }
 
 static const unsigned char song[] = {
-#include "songs/edison_2022_song.inc"
+#include "music/edison_2022_song.inc"
 };
 
 const unsigned char* Edison2022::getSong() const

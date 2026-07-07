@@ -15,7 +15,7 @@ ojstd::string Edison2021::getTitle() const
 }
 
 static const unsigned char song[] = {
-#include "songs/edison_2021_song.inc"
+#include "music/edison_2021_song.inc"
 };
 
 const unsigned char* Edison2021::getSong() const
