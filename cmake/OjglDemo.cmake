@@ -14,10 +14,13 @@
 #                                    #   default the caller's CMAKE_CURRENT_SOURCE_DIR
 #   [MUSIC   <path>]                 # V2:       the *_song.inc (embedded by the demo .cpp)
 #                                    #   CLINKSTER: the baked-song .asm (its dir becomes -I)
-#   SHADER_DIRS <dir> [dir ...]      # shader folders to embed (the demo's + common/); each
-#                                    #   folder's basename is the virtual-path prefix, e.g.
-#                                    #   <common>/quad.vs -> "common/quad.vs"
+#   [SHADERS <dir>]                  # the demo's own shader folder, default "<caller>/shaders"
+#   [SHADER_PREFIX <prefix>]         # virtual-path prefix for the demo's shaders (e.g. a shader
+#                                    #   "cube.fs" -> "<prefix>/cube.fs"), default lowercased NAME
 # )
+#
+# The shared common/ shaders (productions/common/shaders) are always embedded under the
+# "common/" prefix; the demo only declares its own folder.
 #
 # Expects the caller to have set OJGL_ROOT (dir containing src/) and OJGL_GENERATED_DIR.
 
@@ -26,8 +29,8 @@
 set(_OJGL_CMAKE_MODULE_DIR "${CMAKE_CURRENT_LIST_DIR}")
 
 function(ojgl_add_demo)
-    set(oneValueArgs NAME SYNTH HEADER INCLUDE_DIR MUSIC)
-    set(multiValueArgs SOURCES SHADER_DIRS)
+    set(oneValueArgs NAME SYNTH HEADER INCLUDE_DIR MUSIC SHADERS SHADER_PREFIX)
+    set(multiValueArgs SOURCES)
     cmake_parse_arguments(DEMO "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     if(NOT DEMO_NAME)
@@ -36,14 +39,17 @@ function(ojgl_add_demo)
     if(NOT DEMO_SOURCES)
         message(FATAL_ERROR "ojgl_add_demo(${DEMO_NAME}): SOURCES is required")
     endif()
-    if(NOT DEMO_SHADER_DIRS)
-        message(FATAL_ERROR "ojgl_add_demo(${DEMO_NAME}): SHADER_DIRS is required")
-    endif()
     if(NOT DEMO_HEADER)
         set(DEMO_HEADER "${DEMO_NAME}.h")
     endif()
     if(NOT DEMO_INCLUDE_DIR)
         set(DEMO_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+    endif()
+    if(NOT DEMO_SHADERS)
+        set(DEMO_SHADERS "${CMAKE_CURRENT_SOURCE_DIR}/shaders")
+    endif()
+    if(NOT DEMO_SHADER_PREFIX)
+        string(TOLOWER "${DEMO_NAME}" DEMO_SHADER_PREFIX)
     endif()
 
     target_sources(ojgl PRIVATE ${DEMO_SOURCES})
@@ -83,7 +89,15 @@ function(ojgl_add_demo)
                     ${_clinkster_dir}/clinkster.asm
             DEPENDS ${_clinkster_dir}/clinkster.asm ${DEMO_MUSIC}
             COMMENT "Assembling Clinkster engine + baked song -> clinkster.obj")
-        set_source_files_properties(${_clinkster_obj} PROPERTIES GENERATED TRUE EXTERNAL_OBJECT TRUE)
+        # This function runs in the demo's subdirectory, but the ojgl target lives in the root.
+        # A bare OUTPUT custom command only gets a build rule via a target in its own directory,
+        # so wrap it in a custom target ojgl depends on, and mark the object EXTERNAL_OBJECT in
+        # ojgl's directory scope (TARGET_DIRECTORY) so ojgl links it instead of compiling it.
+        add_custom_target(${DEMO_NAME}_clinkster DEPENDS ${_clinkster_obj})
+        add_dependencies(ojgl ${DEMO_NAME}_clinkster)
+        set_source_files_properties(${_clinkster_obj}
+            TARGET_DIRECTORY ojgl
+            PROPERTIES EXTERNAL_OBJECT TRUE GENERATED TRUE)
 
         target_sources(ojgl PRIVATE
             "${OJGL_ROOT}/src/music/ClinksterPlayer.cpp"
@@ -106,13 +120,19 @@ function(ojgl_add_demo)
         @ONLY)
 
     # --- generate the embedded-shader list (replaces the hand-maintained EmbeddedResources.h) ---
-    # Each shader folder's basename is the virtual-path prefix (folder "common" -> "common/x.fs").
-    # Release embeds the source via #include of the R""()"" literal; debug also records the disk
-    # path for hot reload. Include order is irrelevant (ShaderReader resolves #includes lazily).
+    # Embed the shared common/ shaders (prefix "common") plus the demo's own shaders (prefix
+    # SHADER_PREFIX). Release embeds the source via #include of the R""()"" literal; debug also
+    # records the disk path for hot reload. Include order is irrelevant (ShaderReader resolves
+    # #includes lazily).
+    set(_shader_dirs "${OJGL_ROOT}/productions/common/shaders" "${DEMO_SHADERS}")
+    set(_shader_prefixes "common" "${DEMO_SHADER_PREFIX}")
     set(OJGL_SHADER_EMBED_ENTRIES "")
     set(OJGL_SHADER_DISKPATH_ENTRIES "")
-    foreach(_dir IN LISTS DEMO_SHADER_DIRS)
-        get_filename_component(_prefix "${_dir}" NAME)
+    list(LENGTH _shader_dirs _shader_dir_count)
+    math(EXPR _shader_dir_last "${_shader_dir_count} - 1")
+    foreach(_i RANGE ${_shader_dir_last})
+        list(GET _shader_dirs ${_i} _dir)
+        list(GET _shader_prefixes ${_i} _prefix)
         file(GLOB _dir_files CONFIGURE_DEPENDS "${_dir}/*.fs" "${_dir}/*.vs")
         foreach(_f IN LISTS _dir_files)
             get_filename_component(_fn "${_f}" NAME)

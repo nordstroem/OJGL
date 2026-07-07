@@ -105,9 +105,10 @@ add_subdirectory(src/thirdparty/tlibc)
 # ojgl - the framework + demos executable.
 # =====================================================================================
 
-# Which production to build. Exactly one demo is compiled per build; the demo declares its
-# own music backend (see ojgl_add_demo), so this selection drives all the synth wiring.
-set(OJGL_DEMO "Edison2026" CACHE STRING "Which production/demo to build")
+# Which production to build (directory name under productions/). Exactly one demo is compiled
+# per build; the demo declares its own music backend (see ojgl_add_demo), so this selection
+# drives all the synth wiring.
+set(OJGL_DEMO "edison2026" CACHE STRING "Which production to build (directory name under productions/)")
 
 set(OJGL_ROOT "${CMAKE_CURRENT_SOURCE_DIR}")
 set(OJGL_GENERATED_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated")
@@ -201,23 +202,14 @@ target_link_libraries(ojgl PRIVATE
     $<$<CONFIG:Release,CrinklerRelease>:Dinput8>
 )
 
-# Register the selected production (adds its sources + music backend, generates the
-# SelectedDemo.h factory). Until the demos move into productions/<name>/ dirs, they are
-# registered here. Only Edison2026 (the active demo) is wired so far; others are added as
-# they migrate.
-if(OJGL_DEMO STREQUAL "Edison2026")
-    ojgl_add_demo(
-        NAME Edison2026
-        SYNTH CLINKSTER
-        SOURCES examples/demos/Edison2026.cpp
-        INCLUDE_DIR examples/demos
-        MUSIC "${CMAKE_CURRENT_SOURCE_DIR}/src/thirdparty/clinkster/music2.asm"
-        SHADER_DIRS
-            "${CMAKE_CURRENT_SOURCE_DIR}/examples/shaders/common"
-            "${CMAKE_CURRENT_SOURCE_DIR}/examples/shaders/edison2026")
-else()
-    message(FATAL_ERROR "Unknown OJGL_DEMO '${OJGL_DEMO}'")
+# Register the selected production. Each production lives in productions/<OJGL_DEMO>/ and its
+# CMakeLists.txt calls ojgl_add_demo() to add its sources + music backend and to generate the
+# SelectedDemo.h / EmbeddedShaders.h consumed by the ojgl target.
+if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/productions/${OJGL_DEMO}/CMakeLists.txt")
+    message(FATAL_ERROR
+        "OJGL_DEMO='${OJGL_DEMO}' not found: productions/${OJGL_DEMO}/CMakeLists.txt is missing.")
 endif()
+add_subdirectory(productions/${OJGL_DEMO})
 
 target_link_options(ojgl PRIVATE
     # libv2.lib and clinkster.obj lack SAFESEH metadata; Crinkler doesn't understand /SAFESEH, so

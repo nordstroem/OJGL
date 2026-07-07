@@ -10,7 +10,7 @@
 ; appropriate for typical display latencies for high-framerate effects.
 %define CLINKSTER_TIMER_OFFSET 2048
 
-%include "music2.asm"
+%include "song.asm"
 
 
 ;; ********** Definitions **********
