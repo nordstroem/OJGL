@@ -10,7 +10,6 @@ public:
     Edison2021();
     ojstd::vector<Scene> buildSceneGraph(const Vector2i& sceneSize) const override;
     ojstd::string getTitle() const override;
-    const unsigned char* getSong() const override;
 
 private:
     ojstd::shared_ptr<Texture> getText(const ojstd::string& text) const;
@@ -27,15 +26,6 @@ Edison2021::Edison2021()
 ojstd::string Edison2021::getTitle() const
 {
     return "OJ - Enigma";
-}
-
-static const unsigned char song[] = {
-#include "music/edison_2021_song.inc"
-};
-
-const unsigned char* Edison2021::getSong() const
-{
-    return song;
 }
 
 ojstd::shared_ptr<Texture> Edison2021::getText(const ojstd::string& text) const

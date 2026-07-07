@@ -23,6 +23,35 @@ ClinksterPlayer::~ClinksterPlayer()
     }
 }
 
+ojstd::shared_ptr<MusicPlayer> createSelectedPlayer()
+{
+    return ojstd::make_shared<ClinksterPlayer>();
+}
+
+void ClinksterPlayer::play(Duration startTime)
+{
+    // Render the whole song up front on the first call (a few seconds); a startup busy-wait is
+    // fine for a first pass (see the deferred "loading state" follow-up).
+    if (!renderDone()) {
+        beginRender();
+        while (!renderDone())
+            Sleep(10);
+    }
+    // startAudio re-seeks by repositioning the DirectSound play cursor (SetCurrentPosition), so
+    // the cursor is absolute and elapsedTime() needs no offset.
+    startAudio(startTime.toMilliseconds<unsigned long>(), GetForegroundWindow());
+}
+
+void ClinksterPlayer::stop()
+{
+    stopAudio();
+}
+
+Duration ClinksterPlayer::elapsedTime() const
+{
+    return Duration::milliseconds(elapsedMilliseconds());
+}
+
 unsigned long __stdcall ClinksterPlayer::renderThreadProc(void* self)
 {
     auto* player = static_cast<ClinksterPlayer*>(self);

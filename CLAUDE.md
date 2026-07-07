@@ -106,16 +106,22 @@ this pattern.
 - `setTextureCallback` returns `Uniform1t` texture bindings.
 - `iCameraMatrix` uniform comes from `FreeCameraController::instance().getCameraMatrix()`.
 
-**Music sync (two backends).** Each production declares `SYNTH V2` or `SYNTH CLINKSTER` in its
-`ojgl_add_demo` call. **V2**: V2M-synth data (`libv2`, `src/music/`) embedded as a byte array in
-`productions/<name>/music/*_song.inc` and returned by `Demo::getSong()`. **Clinkster**: the song
-is baked into build-time assembly (`productions/<name>/music/song.asm`, `%include`d by the
-shared `src/thirdparty/clinkster/clinkster.asm` and assembled by yasm/nasm); the demo does not
-override `getSong()`. The backend is preprocessor-exclusive (`OJGL_SYNTH_V2` /
-`OJGL_SYNTH_CLINKSTER`), so a binary uses exactly one. Either way, Music exposes
-`syncChannels()`; visuals are beat-synced by feeding channel state into uniforms, by convention
-named `C_<channel>_S` (seconds since last note, `getTimeSinceAnyNote()`) and `C_<channel>_T`
-(total note hits, `getTotalHits()`). This naming recurs across every demo's uniform callbacks.
+**Music sync (two backends).** Each production declares `SYNTH V2` or `SYNTH CLINKSTER` plus its
+song via `ojgl_add_demo(MUSIC …)`. Both backends implement the common `MusicPlayer` interface
+(`src/music/MusicPlayer.h`); `createSelectedPlayer()` (parallel to `createSelectedDemo()`, defined
+in the one player `.cpp` CMake compiles) builds the right player, and `Music` drives it with no
+`#ifdef`. **V2**: V2M-synth data (`libv2`, `src/music/`) — `ojgl_add_demo` embeds the
+`productions/<name>/music/*_song.inc` bytes into the generated `EmbeddedSong.h` as
+`resources::song`, which the V2 factory injects into `V2MPlayer`. **Clinkster**: the song is baked
+into build-time assembly (`productions/<name>/music/song.asm`, `%include`d by the shared
+`src/thirdparty/clinkster/clinkster.asm` and assembled by yasm/nasm); `resources::song` is null and
+the Clinkster factory ignores it. A demo has music iff a song is embedded (`createSelectedPlayer()`
+returns non-null); a demo with no `MUSIC` (e.g. `Template`) runs silently. There is no
+`Demo::getSong()`/`getMusicEnabled()` and no `OJGL_SYNTH_*` define — the backend is selected purely
+by which player `.cpp` is compiled. Either way, Music exposes `syncChannels()`; visuals are
+beat-synced by feeding channel state into uniforms, by convention named `C_<channel>_S` (seconds
+since last note, `getTimeSinceAnyNote()`) and `C_<channel>_T` (total note hits, `getTotalHits()`).
+This naming recurs across every demo's uniform callbacks.
 
 **Shaders & resource embedding (generated).** GLSL fragment shaders (`.fs`) and vertex shaders
 (`.vs`) live in `productions/<name>/shaders/` plus the shared `productions/common/shaders/`;
@@ -147,21 +153,22 @@ the standard library (linked against `tlibc`).
 Create a self-contained `productions/<name>/` directory:
 
 1. `productions/<name>/X.cpp` defining a `Demo` subclass (`src/demo/Demo.h`) — implement
-   `buildSceneGraph`, `getTitle`, and (for V2) `getSong` — and defining
+   `buildSceneGraph` and `getTitle` — and defining
    `ojstd::shared_ptr<Demo> ojgl::createSelectedDemo()` to return one (`return
    ojstd::make_shared<X>();`). `createSelectedDemo` is declared in `Demo.h` and is how `Main.cpp`
    instantiates the demo, so the demo class stays private to its `.cpp`: no per-production header
-   is needed.
+   is needed. The demo does not touch the song — music is wired entirely by `ojgl_add_demo(MUSIC …)`.
 2. `productions/<name>/shaders/*.fs` / `*.vs` for demo-specific shaders (shared ones live in
    `productions/common/shaders/`). List each shader you use in the demo's `ojgl_add_demo` call
    (`SHADERS` for the demo's own, `COMMON_SHADERS` for shared ones) — nothing is embedded unless
    listed.
-3. Music: **V2** → `productions/<name>/music/<name>_song.inc`, `#include`d by the demo `.cpp`
-   into a byte array. **Clinkster** → `productions/<name>/music/song.asm`.
+3. Music (declared via `ojgl_add_demo(MUSIC …)`, not in the `.cpp`): **V2** →
+   `productions/<name>/music/<name>_song.inc` (embedded into the generated `EmbeddedSong.h`).
+   **Clinkster** → `productions/<name>/music/song.asm`. Omit `MUSIC` for a silent demo.
 4. `productions/<name>/CMakeLists.txt` with a single `ojgl_add_demo(NAME X SYNTH V2|CLINKSTER
-   SOURCES X.cpp SHADERS ... COMMON_SHADERS ...)` call (see `cmake/OjglDemo.cmake` for options:
-   `SHADERS`, `COMMON_SHADERS`, `SHADER_DIR`, `SHADER_PREFIX`, `MUSIC`, `INCLUDE_DIR`). `NAME` is
-   the logical demo name; the C++ class is whatever the `.cpp` defines (only
+   MUSIC music/<song> SOURCES X.cpp SHADERS ... COMMON_SHADERS ...)` call (see `cmake/OjglDemo.cmake`
+   for options: `SHADERS`, `COMMON_SHADERS`, `SHADER_DIR`, `SHADER_PREFIX`, `MUSIC`, `INCLUDE_DIR`).
+   `NAME` is the logical demo name; the C++ class is whatever the `.cpp` defines (only
    `createSelectedDemo()` is visible to the framework).
 5. Build it with `-DOJGL_DEMO=<name>`. No changes to `Main.cpp` or the root `CMakeLists.txt` are
    needed — selection is by directory name.

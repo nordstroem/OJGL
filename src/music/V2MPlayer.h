@@ -12,6 +12,7 @@
 
 #pragma once
 
+#include "MusicPlayer.h"
 #include "SyncEvent.hpp"
 #include "thirdparty/libv2.h"
 #include "utility/OJstd.h"
@@ -39,9 +40,22 @@ typedef int sBool; // use for boolean function results
 /**                                                                                 **/
 /*************************************************************************************/
 
-class V2MPlayer {
+class V2MPlayer final : public MusicPlayer {
 public:
-    ojstd::vector<ojgl::SyncEvent> popSyncEvents();
+    // song: pointer to the embedded v2m data; must remain valid for the player's lifetime.
+    explicit V2MPlayer(const unsigned char* song)
+        : _song(song)
+    {
+    }
+    ~V2MPlayer() override;
+
+    // MusicPlayer interface. play() performs the one-time Init()+Open() on the first call, then
+    // (re)starts playback at startTime; elapsedTime() adds _playOffset because a seek restarts
+    // the DirectSound cursor from zero.
+    void play(Duration startTime) override;
+    void stop() override;
+    Duration elapsedTime() const override;
+    ojstd::vector<ojgl::SyncEvent> popSyncEvents() override;
 
     void Tick();
     // init
@@ -177,6 +191,9 @@ public:
     PlayerState m_state;
 
 private:
+    const unsigned char* _song; // embedded v2m data, injected at construction
+    bool _opened = false; // guards the one-time Init()+Open() done on the first play()
+    Duration _playOffset = Duration::milliseconds(0); // added to the DirectSound cursor after a seek
     ojstd::mutex _syncEventsMutex;
     ojstd::vector<ojgl::SyncEvent> _syncEvents;
     ojstd::unordered_map<int, int> _barTickToMs;

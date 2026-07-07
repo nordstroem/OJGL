@@ -14,7 +14,10 @@
 #   [INCLUDE_DIR <dir>]              # dir put on the include path so SOURCES' own includes
 #                                    #   (e.g. music/*.inc) resolve,
 #                                    #   default the caller's CMAKE_CURRENT_SOURCE_DIR
-#   [MUSIC   <path>]                 # V2:       the *_song.inc (embedded by the demo .cpp)
+#   [MUSIC   <path>]                 # the song resource for the chosen backend:
+#                                    #   V2:        the *_song.inc, embedded as resources::song
+#                                    #              in the generated EmbeddedSong.h (omit for a
+#                                    #              silent demo, e.g. Template)
 #                                    #   CLINKSTER: the baked-song .asm (its dir becomes -I)
 #   [SHADERS <a.fs> [b.fs ...]]      # the demo's own shader files to embed (filenames relative
 #                                    #   to SHADER_DIR). Only listed shaders are embedded — there
@@ -64,11 +67,12 @@ function(ojgl_add_demo)
     target_include_directories(ojgl PRIVATE "${DEMO_INCLUDE_DIR}")
 
     # --- music synth backend (exclusive; the demo declares which one) ---
+    # Which backend is compiled is decided purely by which player .cpp we add below; each such
+    # .cpp defines ojgl::createSelectedPlayer(). No preprocessor synth switch is needed.
     if(DEMO_SYNTH STREQUAL "V2")
         # libv2.lib provides the synth and DirectSound helpers, so it links in every config;
         # DSound is only needed where libv2 doesn't already pull it in.
         target_sources(ojgl PRIVATE "${OJGL_ROOT}/src/music/V2MPlayer.cpp")
-        target_compile_definitions(ojgl PRIVATE OJGL_SYNTH_V2)
         target_link_libraries(ojgl PRIVATE
             "${OJGL_ROOT}/src/thirdparty/libv2.lib"
             $<$<CONFIG:Release,CrinklerRelease>:DSound>)
@@ -111,13 +115,29 @@ function(ojgl_add_demo)
             "${OJGL_ROOT}/src/music/ClinksterPlayer.cpp"
             "${OJGL_ROOT}/src/music/AudioOutput.cpp"
             ${_clinkster_obj})
-        target_compile_definitions(ojgl PRIVATE OJGL_SYNTH_CLINKSTER)
         # AudioOutput needs DirectSound in every config (no libv2 to provide it); winmm resolves
         # the waveOut* imports from Clinkster's unused sections that Debug doesn't strip.
         target_link_libraries(ojgl PRIVATE dsound winmm)
     else()
         message(FATAL_ERROR "ojgl_add_demo(${DEMO_NAME}): SYNTH must be V2 or CLINKSTER (got '${DEMO_SYNTH}')")
     endif()
+
+    # --- generate the embedded song (resources::song, read by createSelectedPlayer) ---
+    # V2 embeds the demo's *_song.inc bytes as an array. Clinkster (song baked into the linked
+    # object) and any demo without MUSIC get a null pointer, which createSelectedPlayer() treats
+    # as "this demo has no music".
+    if(DEMO_SYNTH STREQUAL "V2" AND DEMO_MUSIC)
+        if(NOT EXISTS "${DEMO_MUSIC}")
+            message(FATAL_ERROR "ojgl_add_demo(${DEMO_NAME}): MUSIC file not found at ${DEMO_MUSIC}")
+        endif()
+        set(OJGL_SONG_DEFINITION "inline const unsigned char song[] = {\n#include \"${DEMO_MUSIC}\"\n};")
+    else()
+        set(OJGL_SONG_DEFINITION "inline const unsigned char* const song = nullptr;")
+    endif()
+    configure_file(
+        "${_OJGL_CMAKE_MODULE_DIR}/EmbeddedSong.h.in"
+        "${OJGL_GENERATED_DIR}/EmbeddedSong.h"
+        @ONLY)
 
     # --- generate the embedded-shader list (replaces the hand-maintained EmbeddedResources.h) ---
     # Embed exactly the shaders the demo declares: its own (SHADERS, resolved against

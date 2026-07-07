@@ -2,6 +2,7 @@
 ojgl_add_demo(
     NAME Edison2021
     SYNTH V2
+    MUSIC "${CMAKE_CURRENT_SOURCE_DIR}/music/edison_2021_song.inc"
     SOURCES Edison2021.cpp
     SHADERS
         blob.fs

@@ -2,6 +2,7 @@
 ojgl_add_demo(
     NAME InnerSystemLab
     SYNTH V2
+    MUSIC "${CMAKE_CURRENT_SOURCE_DIR}/music/innersystemlab_song.inc"
     SOURCES InnerSystemLab.cpp
     SHADERS
         edison_1.fs

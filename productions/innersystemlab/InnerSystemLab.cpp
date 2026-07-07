@@ -6,7 +6,6 @@ class InnerSystemLab final : public Demo {
 public:
     ojstd::vector<Scene> buildSceneGraph(const Vector2i& sceneSize) const override;
     ojstd::string getTitle() const override;
-    const unsigned char* getSong() const override;
 };
 }
 
@@ -146,15 +145,6 @@ struct SolarSystem {
 ojstd::string InnerSystemLab::getTitle() const
 {
     return "OJ - Inner System Lab";
-}
-
-static const unsigned char song[] = {
-#include "music/innersystemlab_song.inc"
-};
-
-const unsigned char* InnerSystemLab::getSong() const
-{
-    return song;
 }
 
 #define TIME_1 58

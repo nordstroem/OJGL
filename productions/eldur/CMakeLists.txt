@@ -2,6 +2,7 @@
 ojgl_add_demo(
     NAME Eldur
     SYNTH V2
+    MUSIC "${CMAKE_CURRENT_SOURCE_DIR}/music/eldur_song.inc"
     SOURCES Eldur.cpp
     SHADERS
         lavaIntro.fs

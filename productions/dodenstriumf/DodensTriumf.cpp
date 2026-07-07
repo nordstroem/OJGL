@@ -6,7 +6,6 @@ class DodensTriumf final : public Demo {
 public:
     ojstd::vector<Scene> buildSceneGraph(const Vector2i& sceneSize) const override;
     ojstd::string getTitle() const override;
-    const unsigned char* getSong() const override;
 };
 }
 
@@ -15,15 +14,6 @@ using namespace ojgl;
 ojstd::string DodensTriumf::getTitle() const
 {
     return "OJ - D�dens Triumf";
-}
-
-static const unsigned char song[] = {
-#include "music/dodenstriumf_song.inc"
-};
-
-const unsigned char* DodensTriumf::getSong() const
-{
-    return song;
 }
 
 ojstd::vector<Scene> DodensTriumf::buildSceneGraph(const Vector2i& sceneSize) const

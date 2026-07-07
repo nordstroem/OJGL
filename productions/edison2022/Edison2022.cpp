@@ -10,7 +10,6 @@ class Edison2022 final : public Demo {
 public:
     Edison2022();
     ojstd::vector<Scene> buildSceneGraph(const Vector2i& sceneSize) const override;
-    const unsigned char* getSong() const override;
     ojstd::string getTitle() const override;
     void update(const Duration& relativeSceneTime, const Duration& elapsedTime, const ojstd::string& currentScene) const override;
 };
@@ -23,15 +22,6 @@ inline Vector3f lerp3f(const Vector3f& left, const Vector3f& right, float amount
 {
     return left * (1.f - amount) + right * amount;
 }
-}
-
-static const unsigned char song[] = {
-#include "music/edison_2022_song.inc"
-};
-
-const unsigned char* Edison2022::getSong() const
-{
-    return song;
 }
 
 Edison2022::Edison2022()

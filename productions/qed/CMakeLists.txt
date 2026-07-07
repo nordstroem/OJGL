@@ -3,6 +3,7 @@
 ojgl_add_demo(
     NAME QED
     SYNTH V2
+    MUSIC "${CMAKE_CURRENT_SOURCE_DIR}/music/qed_song.inc"
     SOURCES QED.cpp
     SHADER_PREFIX QED
     SHADERS

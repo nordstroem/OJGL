@@ -5,7 +5,6 @@ class Eldur final : public Demo {
 public:
     ojstd::vector<Scene> buildSceneGraph(const Vector2i& sceneSize) const override;
     ojstd::string getTitle() const override;
-    const unsigned char* getSong() const override;
 };
 }
 
@@ -72,15 +71,6 @@ ojstd::vector<Scene> Eldur::buildSceneGraph(const Vector2i& sceneSize) const
 ojstd::string Eldur::getTitle() const
 {
     return "OJ - Eldur";
-}
-
-static const unsigned char song[] = {
-#include "music/eldur_song.inc"
-};
-
-const unsigned char* Eldur::getSong() const
-{
-    return song;
 }
 
 ojstd::shared_ptr<Demo> ojgl::createSelectedDemo()

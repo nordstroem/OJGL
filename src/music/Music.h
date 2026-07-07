@@ -6,11 +6,7 @@
 
 namespace ojgl {
 
-#ifdef OJGL_SYNTH_CLINKSTER
-class ClinksterPlayer;
-#else
-class V2MPlayer;
-#endif
+class MusicPlayer;
 
 class Music {
 
@@ -20,7 +16,10 @@ public:
     ~Music();
 
     static ojstd::shared_ptr<Music> instance();
-    static void createInstance(const unsigned char* song, bool fixedTimestep);
+    // Builds the singleton for the selected backend via createSelectedPlayer(). If no song is
+    // embedded (createSelectedPlayer() returns nullptr) the singleton is left null and the demo
+    // runs without music.
+    static void createInstance(bool fixedTimestep);
 
     void play();
     void updateSync();
@@ -30,17 +29,11 @@ public:
     ojstd::unordered_map<int, SyncChannel>& syncChannels();
 
 private:
-    explicit Music(const unsigned char* song, bool fixedTimestep);
+    Music(const ojstd::shared_ptr<MusicPlayer>& player, bool fixedTimestep);
 
 private:
-#ifdef OJGL_SYNTH_CLINKSTER
-    ojstd::shared_ptr<ClinksterPlayer> _player;
-#else
-    ojstd::shared_ptr<V2MPlayer> _player;
-#endif
+    ojstd::shared_ptr<MusicPlayer> _player;
     void _initSync();
-    const unsigned char* _song;
-    Duration _syncOffset = Duration::milliseconds(0);
     ojstd::unordered_map<int, SyncChannel> _syncChannels;
     int _currentFrame = 0;
     bool _fixedTimestep = false;

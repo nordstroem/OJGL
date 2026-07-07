@@ -6,7 +6,6 @@ class QED final : public Demo {
 public:
     ojstd::vector<Scene> buildSceneGraph(const Vector2i& sceneSize) const override;
     ojstd::string getTitle() const override;
-    const unsigned char* getSong() const;
 };
 }
 
@@ -351,14 +350,6 @@ ojstd::vector<Scene> QED::buildSceneGraph(const Vector2i& sceneSize) const
 ojstd::string QED::getTitle() const
 {
     return "OJ - Q.E.D.";
-}
-
-static const unsigned char song[] = {
-#include "music/qed_song.inc"
-};
-
-const unsigned char* QED::getSong() const {
-  return song;
 }
 
 ojstd::shared_ptr<Demo> ojgl::createSelectedDemo()

@@ -13,7 +13,6 @@ class Edison2025 final : public Demo {
 public:
     Edison2025();
     ojstd::vector<Scene> buildSceneGraph(const Vector2i& sceneSize) const override;
-    const unsigned char* getSong() const override;
     ojstd::string getTitle() const override;
     void update(const Duration& relativeSceneTime, const Duration& elapsedTime, const ojstd::string& currentScene) const override;
 
@@ -44,15 +43,6 @@ ojstd::shared_ptr<Texture> Edison2025::getText(const ojstd::string& text, const 
         this->_textures[text + font] = TextRenderer::instance().get(text, font);
 
     return this->_textures[text + font];
-}
-
-static const unsigned char song[] = {
-#include "music/edison_2025_song.inc"
-};
-
-const unsigned char* Edison2025::getSong() const
-{
-    return song;
 }
 
 ojstd::vector<Scene> Edison2025::buildSceneGraph(const Vector2i& sceneSize) const

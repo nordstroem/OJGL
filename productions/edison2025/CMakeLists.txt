@@ -1,8 +1,8 @@
 # Edison2025 — V2-scored production. Selected with -DOJGL_DEMO=edison2025.
-# The song (music/edison_2025_song.inc) is embedded directly by Edison2025.cpp.
 ojgl_add_demo(
     NAME Edison2025
     SYNTH V2
+    MUSIC "${CMAKE_CURRENT_SOURCE_DIR}/music/edison_2025_song.inc"
     SOURCES Edison2025.cpp
     SHADERS
         blur1.fs
