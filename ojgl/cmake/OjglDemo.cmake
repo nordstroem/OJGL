@@ -14,6 +14,9 @@
 #                                    #   default the caller's CMAKE_CURRENT_SOURCE_DIR
 #   [MUSIC   <path>]                 # V2:       the *_song.inc (embedded by the demo .cpp)
 #                                    #   CLINKSTER: the baked-song .asm (its dir becomes -I)
+#   SHADER_DIRS <dir> [dir ...]      # shader folders to embed (the demo's + common/); each
+#                                    #   folder's basename is the virtual-path prefix, e.g.
+#                                    #   <common>/quad.vs -> "common/quad.vs"
 # )
 #
 # Expects the caller to have set OJGL_ROOT (dir containing src/) and OJGL_GENERATED_DIR.
@@ -24,7 +27,7 @@ set(_OJGL_CMAKE_MODULE_DIR "${CMAKE_CURRENT_LIST_DIR}")
 
 function(ojgl_add_demo)
     set(oneValueArgs NAME SYNTH HEADER INCLUDE_DIR MUSIC)
-    set(multiValueArgs SOURCES)
+    set(multiValueArgs SOURCES SHADER_DIRS)
     cmake_parse_arguments(DEMO "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     if(NOT DEMO_NAME)
@@ -32,6 +35,9 @@ function(ojgl_add_demo)
     endif()
     if(NOT DEMO_SOURCES)
         message(FATAL_ERROR "ojgl_add_demo(${DEMO_NAME}): SOURCES is required")
+    endif()
+    if(NOT DEMO_SHADER_DIRS)
+        message(FATAL_ERROR "ojgl_add_demo(${DEMO_NAME}): SHADER_DIRS is required")
     endif()
     if(NOT DEMO_HEADER)
         set(DEMO_HEADER "${DEMO_NAME}.h")
@@ -92,10 +98,31 @@ function(ojgl_add_demo)
     endif()
 
     # --- generate the demo factory consumed by Main.cpp (replaces the old enum/switch) ---
-    set(OJGL_DEMO_HEADER "${DEMO_HEADER}")
     set(OJGL_DEMO_CLASS "${DEMO_NAME}")
+    set(OJGL_DEMO_HEADER "${DEMO_HEADER}")
     configure_file(
         "${_OJGL_CMAKE_MODULE_DIR}/SelectedDemo.h.in"
         "${OJGL_GENERATED_DIR}/SelectedDemo.h"
+        @ONLY)
+
+    # --- generate the embedded-shader list (replaces the hand-maintained EmbeddedResources.h) ---
+    # Each shader folder's basename is the virtual-path prefix (folder "common" -> "common/x.fs").
+    # Release embeds the source via #include of the R""()"" literal; debug also records the disk
+    # path for hot reload. Include order is irrelevant (ShaderReader resolves #includes lazily).
+    set(OJGL_SHADER_EMBED_ENTRIES "")
+    set(OJGL_SHADER_DISKPATH_ENTRIES "")
+    foreach(_dir IN LISTS DEMO_SHADER_DIRS)
+        get_filename_component(_prefix "${_dir}" NAME)
+        file(GLOB _dir_files CONFIGURE_DEPENDS "${_dir}/*.fs" "${_dir}/*.vs")
+        foreach(_f IN LISTS _dir_files)
+            get_filename_component(_fn "${_f}" NAME)
+            set(_vp "${_prefix}/${_fn}")
+            string(APPEND OJGL_SHADER_EMBED_ENTRIES "    {\n#include \"${_f}\"\n    , \"${_vp}\" },\n")
+            string(APPEND OJGL_SHADER_DISKPATH_ENTRIES "    { \"${_vp}\", \"${_f}\" },\n")
+        endforeach()
+    endforeach()
+    configure_file(
+        "${_OJGL_CMAKE_MODULE_DIR}/EmbeddedShaders.h.in"
+        "${OJGL_GENERATED_DIR}/EmbeddedShaders.h"
         @ONLY)
 endfunction()

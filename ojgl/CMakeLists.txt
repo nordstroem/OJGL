@@ -106,7 +106,10 @@ if(OJGL_DEMO STREQUAL "Edison2026")
         SYNTH CLINKSTER
         SOURCES examples/demos/Edison2026.cpp
         INCLUDE_DIR examples/demos
-        MUSIC "${CMAKE_CURRENT_SOURCE_DIR}/src/thirdparty/clinkster/music2.asm")
+        MUSIC "${CMAKE_CURRENT_SOURCE_DIR}/src/thirdparty/clinkster/music2.asm"
+        SHADER_DIRS
+            "${CMAKE_CURRENT_SOURCE_DIR}/examples/shaders/common"
+            "${CMAKE_CURRENT_SOURCE_DIR}/examples/shaders/edison2026")
 else()
     message(FATAL_ERROR "Unknown OJGL_DEMO '${OJGL_DEMO}'")
 endif()

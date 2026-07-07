@@ -26,6 +26,18 @@ bool fileExists(const ojstd::string& path)
     struct stat fileStat;
     return stat(path.c_str(), &fileStat) == 0;
 }
+
+// .fs/.vs files store their GLSL inside an R""( ... )"" raw-string wrapper (so they can also be
+// #include'd as string literals into the embedded resources). Strip the wrapper when reading
+// from disk.
+ojstd::string unwrapRawString(const std::string& fileContents)
+{
+    std::string pre = "R\"\"(";
+    std::string post = ")\"\"";
+    size_t start = fileContents.find(pre);
+    size_t end = fileContents.rfind(post);
+    return fileContents.substr(start + pre.length(), end - start - pre.length()).c_str();
+}
 #endif
 
 ojstd::string replaceIncludes(const ojstd::string& rawShader)
@@ -59,18 +71,23 @@ ojstd::string replaceIncludes(const ojstd::string& rawShader)
 void ShaderReader::preLoad(const ojstd::string& path, const ojstd::string& content)
 {
     _ASSERT_EXPR(!ShaderReader::_shaders.contains(path), ojstd::wstringWrapper(path + " is already preloaded.").ptr);
-    ShaderReader::_shaders[path].content = replaceIncludes(content);
+    ShaderContent& entry = ShaderReader::_shaders[path];
+    entry.rawContent = content;
+    entry.resolved = false;
 }
 
-void ShaderReader::setBasePath(const ojstd::string& basePath)
+#ifdef _DEBUG
+void ShaderReader::registerDiskPath(const ojstd::string& path, const ojstd::string& diskPath)
 {
-    ShaderReader::_basePath = basePath;
+    ShaderReader::_shaders[path].diskPath = diskPath;
 }
+#endif
 
 bool ShaderReader::modified(const ojstd::string& path)
 {
 #ifdef _DEBUG
-    return modifyTime(ShaderReader::_basePath + path) != ShaderReader::_shaders[path].modifyTime;
+    ShaderContent& entry = ShaderReader::_shaders[path];
+    return entry.diskPath.length() != 0 && modifyTime(entry.diskPath) != entry.modifyTime;
 #else
     OJ_UNUSED(path);
     return false;
@@ -79,48 +96,51 @@ bool ShaderReader::modified(const ojstd::string& path)
 
 const ojstd::string& ShaderReader::get(const ojstd::string& path)
 {
-#ifdef _DEBUG
-    auto fullPath = _basePath + path;
-    if (!fileExists(fullPath)) {
-        if (!ShaderReader::_shaders.contains(path))
-            _ASSERT_EXPR(fileExists(fullPath), ojstd::wstringWrapper(fullPath + " not found.").ptr);
-        return ShaderReader::_shaders[path].content;
-    }
     _ASSERT_EXPR(ShaderReader::_shaders.contains(path), ojstd::wstringWrapper(path + " is not preloaded.").ptr);
-    if (modified(path)) {
-        LOG_INFO("[" << path.c_str() << "]"
-                     << " modified");
 
-        std::ifstream shaderFile;
-        // Enable exceptions to try and get more info about why the shader reader sometimes fails when reloading
-        std::ios_base::iostate exceptionMask = shaderFile.exceptions() | std::ios::failbit;
-        shaderFile.exceptions(exceptionMask);
+#ifdef _DEBUG
+    // Reload the raw source from disk when the file has changed (hot reload).
+    {
+        ShaderContent& entry = ShaderReader::_shaders[path];
+        if (entry.diskPath.length() != 0 && fileExists(entry.diskPath)) {
+            const long long diskTime = modifyTime(entry.diskPath);
+            if (diskTime != entry.modifyTime) {
+                std::ifstream shaderFile;
+                // Enable exceptions to try and get more info about why the shader reader sometimes fails when reloading
+                std::ios_base::iostate exceptionMask = shaderFile.exceptions() | std::ios::failbit;
+                shaderFile.exceptions(exceptionMask);
 
-        try {
-            shaderFile.open(fullPath.c_str());
-        } catch (std::ios_base::failure& e) {
-            std::cerr << "ShaderReader failed: " << e.what() << '\n';
-        }
+                try {
+                    shaderFile.open(entry.diskPath.c_str());
+                } catch (std::ios_base::failure& e) {
+                    std::cerr << "ShaderReader failed: " << e.what() << '\n';
+                }
 
-        if (!shaderFile.fail()) {
-            std::stringstream buffer;
-            buffer << shaderFile.rdbuf();
-            std::string fileContents = buffer.str();
-            std::string pre = "R\"\"(";
-            std::string post = ")\"\"";
-            size_t start = fileContents.find(pre);
-            size_t end = fileContents.rfind(post);
-            std::string shader = fileContents.substr(start + pre.length(), end - start - pre.length());
-            ShaderReader::_shaders[path].content = replaceIncludes(shader.c_str());
-            ShaderReader::_shaders[path].modifyTime = modifyTime(fullPath);
-        } else {
-            LOG_INFO("Shader reading failed");
-        
+                if (!shaderFile.fail()) {
+                    LOG_INFO("[" << path.c_str() << "]"
+                                 << " modified");
+                    std::stringstream buffer;
+                    buffer << shaderFile.rdbuf();
+                    entry.rawContent = unwrapRawString(buffer.str());
+                    entry.modifyTime = diskTime;
+                    entry.resolved = false;
+                } else {
+                    LOG_INFO("Shader reading failed");
+                }
+            }
         }
     }
 #endif
-    return ShaderReader::_shaders[path].content;
+
+    // Resolve #include directives lazily and cache the result. Registration order is irrelevant:
+    // replaceIncludes calls get() for each included shader, resolving it on demand.
+    if (!ShaderReader::_shaders[path].resolved) {
+        ojstd::string raw = ShaderReader::_shaders[path].rawContent;
+        ojstd::string resolved = replaceIncludes(raw);
+        ShaderReader::_shaders[path].resolvedContent = resolved;
+        ShaderReader::_shaders[path].resolved = true;
+    }
+    return ShaderReader::_shaders[path].resolvedContent;
 }
 
 ojstd::unordered_map<ojstd::string, ShaderContent> ShaderReader::_shaders;
-ojstd::string ShaderReader::_basePath;
