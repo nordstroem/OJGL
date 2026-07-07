@@ -12,10 +12,9 @@ endif()
 # CrinklerRelease: Release linked+compressed with Crinkler (Ninja generator only).
 set(CMAKE_CONFIGURATION_TYPES "Debug;OptimizedDebug;Release;CrinklerRelease" CACHE STRING "" FORCE)
 
-# Music synth backend, exclusive at configure time. V2: runtime-streamed .v2m player.
-# CLINKSTER: song baked into build-time assembly, rendered up front.
-set(OJGL_SYNTH "V2" CACHE STRING "Music synth backend: V2 or CLINKSTER")
-set_property(CACHE OJGL_SYNTH PROPERTY STRINGS "V2" "CLINKSTER")
+# Which production to build is selected per-build via the OJGL_DEMO cache variable (see
+# ojgl/CMakeLists.txt); the demo declares its own music backend, so there is no global synth
+# switch.
 
 # Flags are set per-target via generator expressions; clear CMake's per-config defaults
 # (/RTC1, /Ob0, /INCREMENTAL, ...) so they don't fight ours.

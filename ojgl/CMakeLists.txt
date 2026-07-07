@@ -1,22 +1,22 @@
 # ojgl - the framework + demos executable.
 
+# Which production to build. Exactly one demo is compiled per build; the demo declares its
+# own music backend (see ojgl_add_demo), so this selection drives all the synth wiring.
+set(OJGL_DEMO "Edison2026" CACHE STRING "Which production/demo to build")
+
+set(OJGL_ROOT "${CMAKE_CURRENT_SOURCE_DIR}")
+set(OJGL_GENERATED_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated")
+include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/OjglDemo.cmake")
+
+# Framework/app sources. The selected demo's own sources and its music backend are added by
+# ojgl_add_demo below.
 set(OJGL_SOURCES
-    # examples/demos/DodensTriumf.cpp
-    # examples/demos/Edison2021.cpp
-    # examples/demos/Edison2022.cpp
-    # examples/demos/Edison2025.cpp
-    examples/demos/Edison2026.cpp
-    # examples/demos/Eldur.cpp
-    # examples/demos/InnerSystemLab.cpp
-    # examples/demos/QED.cpp
-    # examples/demos/Template.cpp
     examples/FreeCameraController.cpp
     examples/Main.cpp
     examples/TextRenderer.cpp
     src/thirdparty/StbImage.cpp
     src/music/Music.cpp
     src/music/SyncChannel.cpp
-    # Backend-specific music sources are added conditionally below (OJGL_SYNTH).
     src/render/Buffer.cpp
     src/render/GLState.cpp
     src/render/Mesh.cpp
@@ -60,7 +60,7 @@ set_target_properties(ojgl PROPERTIES
     VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
-target_include_directories(ojgl PRIVATE src examples)
+target_include_directories(ojgl PRIVATE src examples "${OJGL_GENERATED_DIR}")
 
 target_compile_definitions(ojgl PRIVATE
     WIN32 _CONSOLE _CRT_SECURE_NO_WARNINGS
@@ -96,48 +96,19 @@ target_link_libraries(ojgl PRIVATE
     $<$<CONFIG:Release,CrinklerRelease>:Dinput8>
 )
 
-# Music synth backend (OJGL_SYNTH), exclusive at configure time.
-if(OJGL_SYNTH STREQUAL "V2")
-    # libv2.lib provides the synth and the DirectSound helpers, so it links in every config;
-    # the DSound import lib is only needed where libv2 doesn't already pull those in.
-    target_sources(ojgl PRIVATE src/music/V2MPlayer.cpp)
-    target_compile_definitions(ojgl PRIVATE OJGL_SYNTH_V2)
-    target_link_libraries(ojgl PRIVATE
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/thirdparty/libv2.lib"
-        $<$<CONFIG:Release,CrinklerRelease>:DSound>)
-elseif(OJGL_SYNTH STREQUAL "CLINKSTER")
-    # clinkster.asm %includes the baked song (music2.asm); both assemble to one object.
-    find_program(OJGL_ASM_EXECUTABLE NAMES vsyasm yasm nasm nasmw
-        DOC "Assembler for Clinkster's NASM-syntax .asm (yasm/vsyasm/nasm)")
-    if(NOT OJGL_ASM_EXECUTABLE)
-        message(FATAL_ERROR
-            "OJGL_SYNTH=CLINKSTER needs an assembler (yasm, vsyasm or nasm) on PATH. "
-            "Install one or pass -DOJGL_ASM_EXECUTABLE=<path-to-yasm.exe>.")
-    endif()
-
-    set(_clinkster_dir "${CMAKE_CURRENT_SOURCE_DIR}/src/thirdparty/clinkster")
-    set(_clinkster_obj "${CMAKE_CURRENT_BINARY_DIR}/clinkster.obj")
-    add_custom_command(
-        OUTPUT ${_clinkster_obj}
-        COMMAND ${OJGL_ASM_EXECUTABLE} -f win32
-                -I ${_clinkster_dir}/
-                -o ${_clinkster_obj}
-                ${_clinkster_dir}/clinkster.asm
-        DEPENDS ${_clinkster_dir}/clinkster.asm
-                ${_clinkster_dir}/music2.asm
-        COMMENT "Assembling Clinkster engine + baked song -> clinkster.obj")
-    set_source_files_properties(${_clinkster_obj} PROPERTIES GENERATED TRUE EXTERNAL_OBJECT TRUE)
-
-    target_sources(ojgl PRIVATE
-        src/music/ClinksterPlayer.cpp
-        src/music/AudioOutput.cpp
-        ${_clinkster_obj})
-    target_compile_definitions(ojgl PRIVATE OJGL_SYNTH_CLINKSTER)
-    # AudioOutput needs DirectSound in every config (no libv2 to provide it); winmm resolves the
-    # waveOut* imports from Clinkster's unused sections that Debug doesn't strip.
-    target_link_libraries(ojgl PRIVATE dsound winmm)
+# Register the selected production (adds its sources + music backend, generates the
+# SelectedDemo.h factory). Until the demos move into productions/<name>/ dirs, they are
+# registered here. Only Edison2026 (the active demo) is wired so far; others are added as
+# they migrate.
+if(OJGL_DEMO STREQUAL "Edison2026")
+    ojgl_add_demo(
+        NAME Edison2026
+        SYNTH CLINKSTER
+        SOURCES examples/demos/Edison2026.cpp
+        INCLUDE_DIR examples/demos
+        MUSIC "${CMAKE_CURRENT_SOURCE_DIR}/src/thirdparty/clinkster/music2.asm")
 else()
-    message(FATAL_ERROR "Unknown OJGL_SYNTH '${OJGL_SYNTH}' (expected V2 or CLINKSTER)")
+    message(FATAL_ERROR "Unknown OJGL_DEMO '${OJGL_DEMO}'")
 endif()
 
 target_link_options(ojgl PRIVATE
