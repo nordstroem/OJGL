@@ -19,5 +19,4 @@ ojgl_add_demo(
     COMMON_SHADERS
         noise.fs
         primitives.fs
-        quad.vs
         utils.fs)

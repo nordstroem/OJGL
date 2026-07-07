@@ -19,5 +19,4 @@ ojgl_add_demo(
         fxaa.vs
         noise.fs
         primitives.fs
-        quad.vs
         utils.fs)

@@ -19,7 +19,6 @@ ojgl_add_demo(
         fxaa.vs
         noise.fs
         primitives.fs
-        quad.vs
         radial_blur.fs
         raymarch_utils.fs
         utils.fs)

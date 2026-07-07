@@ -12,5 +12,4 @@ ojgl_add_demo(
         roomScenePost.fs
     COMMON_SHADERS
         fxaa.fs
-        fxaa.vs
-        quad.vs)
+        fxaa.vs)

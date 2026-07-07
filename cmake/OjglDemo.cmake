@@ -25,6 +25,8 @@
 #   [COMMON_SHADERS <a.fs> ...]      # shared shaders (filenames relative to
 #                                    #   productions/common/shaders) this demo needs, embedded
 #                                    #   under the "common/" prefix. List only what is used.
+#                                    #   common/quad.vs and common/passThrough.fs are always
+#                                    #   embedded automatically; do not list them here.
 #   [SHADER_DIR <dir>]               # folder the SHADERS filenames resolve against,
 #                                    #   default "<caller>/shaders"
 #   [SHADER_PREFIX <prefix>]         # virtual-path prefix for the demo's shaders (e.g. a shader
@@ -149,7 +151,10 @@ function(ojgl_add_demo)
     set(OJGL_SHADER_EMBED_ENTRIES "")
     set(OJGL_SHADER_DISKPATH_ENTRIES "")
     # Each entry: "<dir>|<prefix>|<filename>".
-    set(_shader_entries "")
+    # quad.vs and passThrough.fs are used by virtually every demo, so they're always embedded
+    # here rather than requiring every production to list them in COMMON_SHADERS.
+    set(_shader_entries "${OJGL_ROOT}/productions/common/shaders|common|quad.vs"
+                        "${OJGL_ROOT}/productions/common/shaders|common|passThrough.fs")
     foreach(_fn IN LISTS DEMO_SHADERS)
         list(APPEND _shader_entries "${DEMO_SHADER_DIR}|${DEMO_SHADER_PREFIX}|${_fn}")
     endforeach()

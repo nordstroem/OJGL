@@ -14,5 +14,4 @@ ojgl_add_demo(
         post.fs
     COMMON_SHADERS
         fxaa.fs
-        fxaa.vs
-        quad.vs)
+        fxaa.vs)

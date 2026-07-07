@@ -7,7 +7,6 @@ ojgl_add_demo(
     COMMON_SHADERS
         noise.fs
         primitives.fs
-        quad.vs
         raymarch_settings.fs
         raymarch_template.fs
         raymarch_utils.fs

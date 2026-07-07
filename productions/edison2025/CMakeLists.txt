@@ -28,7 +28,6 @@ ojgl_add_demo(
     COMMON_SHADERS
         noise.fs
         primitives.fs
-        quad.vs
         radial_blur.fs
         raymarch_utils.fs
         utils.fs)
