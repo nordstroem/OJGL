@@ -9,15 +9,16 @@
 #
 # ojgl_add_demo(
 #   NAME     <Edison2026>            # logical name; also the demo's own dir/shader defaults
-#   SYNTH    <V2|CLINKSTER>          # music backend (exclusive per binary)
+#   SYNTH    <V2|CLINKSTER|None>     # music backend (exclusive per binary). None links no synth
+#                                    #   library and runs silently (e.g. Template).
 #   SOURCES  <a.cpp> [b.cpp ...]     # demo sources (relative to the caller's dir)
 #   [INCLUDE_DIR <dir>]              # dir put on the include path so SOURCES' own includes
 #                                    #   (e.g. music/*.inc) resolve,
 #                                    #   default the caller's CMAKE_CURRENT_SOURCE_DIR
-#   [MUSIC   <path>]                 # the song resource for the chosen backend:
+#   [MUSIC   <path>]                 # the song resource; required by V2 and CLINKSTER, rejected by
+#                                    #   None:
 #                                    #   V2:        the *_song.inc, embedded as resources::song
-#                                    #              in the generated EmbeddedSong.h (omit for a
-#                                    #              silent demo, e.g. Template)
+#                                    #              in the generated EmbeddedSong.h
 #                                    #   CLINKSTER: the baked-song .asm (its dir becomes -I)
 #   [SHADERS <a.fs> [b.fs ...]]      # the demo's own shader files to embed (filenames relative
 #                                    #   to SHADER_DIR). Only listed shaders are embedded — there
@@ -72,6 +73,9 @@ function(ojgl_add_demo)
     # Which backend is compiled is decided purely by which player .cpp we add below; each such
     # .cpp defines ojgl::createSelectedPlayer(). No preprocessor synth switch is needed.
     if(DEMO_SYNTH STREQUAL "V2")
+        if(NOT DEMO_MUSIC)
+            message(FATAL_ERROR "ojgl_add_demo(${DEMO_NAME}): SYNTH V2 requires MUSIC (the song .inc); use SYNTH None for a silent demo")
+        endif()
         # libv2.lib provides the synth and DirectSound helpers, so it links in every config;
         # DSound is only needed where libv2 doesn't already pull it in.
         target_sources(ojgl PRIVATE "${OJGL_ROOT}/src/music/V2MPlayer.cpp")
@@ -120,8 +124,15 @@ function(ojgl_add_demo)
         # AudioOutput needs DirectSound in every config (no libv2 to provide it); winmm resolves
         # the waveOut* imports from Clinkster's unused sections that Debug doesn't strip.
         target_link_libraries(ojgl PRIVATE dsound winmm)
+    elseif(DEMO_SYNTH STREQUAL "None")
+        # No music backend: link no synth library. NoMusicPlayer.cpp supplies a
+        # createSelectedPlayer() that returns nullptr, so the demo runs silently on the system clock.
+        if(DEMO_MUSIC)
+            message(FATAL_ERROR "ojgl_add_demo(${DEMO_NAME}): SYNTH None takes no MUSIC")
+        endif()
+        target_sources(ojgl PRIVATE "${OJGL_ROOT}/src/music/NoMusicPlayer.cpp")
     else()
-        message(FATAL_ERROR "ojgl_add_demo(${DEMO_NAME}): SYNTH must be V2 or CLINKSTER (got '${DEMO_SYNTH}')")
+        message(FATAL_ERROR "ojgl_add_demo(${DEMO_NAME}): SYNTH must be V2, CLINKSTER or None (got '${DEMO_SYNTH}')")
     endif()
 
     # --- generate the embedded song (resources::song, read by createSelectedPlayer) ---

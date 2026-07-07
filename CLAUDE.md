@@ -26,7 +26,7 @@ Enter-VsDevShell -Arch x86 -VsInstallPath "C:\Program Files\Microsoft Visual Stu
 **Which production to build is chosen at configure time** with the `OJGL_DEMO` cache variable,
 whose value is the directory name under `productions/` (e.g. `edison2026`, `edison2025`, `qed`,
 `template`). It defaults to `edison2026`. The selected production declares its own music
-backend (V2 or Clinkster), so there is no separate synth switch. Reconfigure to switch demos:
+backend (V2, Clinkster, or None), so there is no separate synth switch. Reconfigure to switch demos:
 `cmake -S . -B build -DOJGL_DEMO=edison2025`.
 
 There are two generators, each with its own build directory (both are also defined as
@@ -106,8 +106,9 @@ this pattern.
 - `setTextureCallback` returns `Uniform1t` texture bindings.
 - `iCameraMatrix` uniform comes from `FreeCameraController::instance().getCameraMatrix()`.
 
-**Music sync (two backends).** Each production declares `SYNTH V2` or `SYNTH CLINKSTER` plus its
-song via `ojgl_add_demo(MUSIC …)`. Both backends implement the common `MusicPlayer` interface
+**Music sync (backends).** Each production declares `SYNTH V2`, `SYNTH CLINKSTER`, or `SYNTH None`;
+`V2` and `CLINKSTER` also require a song via `ojgl_add_demo(MUSIC …)`, `None` links no synth library
+and takes no `MUSIC`. Both real backends implement the common `MusicPlayer` interface
 (`src/music/MusicPlayer.h`); `createSelectedPlayer()` (parallel to `createSelectedDemo()`, defined
 in the one player `.cpp` CMake compiles) builds the right player, and `Music` drives it with no
 `#ifdef`. **V2**: V2M-synth data (`libv2`, `src/music/`) — `ojgl_add_demo` embeds the
@@ -115,8 +116,9 @@ in the one player `.cpp` CMake compiles) builds the right player, and `Music` dr
 `resources::song`, which the V2 factory injects into `V2MPlayer`. **Clinkster**: the song is baked
 into build-time assembly (`productions/<name>/music/song.asm`, `%include`d by the shared
 `src/thirdparty/clinkster/clinkster.asm` and assembled by yasm/nasm); `resources::song` is null and
-the Clinkster factory ignores it. A demo has music iff a song is embedded (`createSelectedPlayer()`
-returns non-null); a demo with no `MUSIC` (e.g. `Template`) runs silently. There is no
+the Clinkster factory ignores it. **None**: `NoMusicPlayer.cpp` supplies a `createSelectedPlayer()`
+that returns nullptr (e.g. `Template`). A demo has music iff `createSelectedPlayer()` returns
+non-null; otherwise `Music` is never created and the demo runs on the system clock. There is no
 `Demo::getSong()`/`getMusicEnabled()` and no `OJGL_SYNTH_*` define — the backend is selected purely
 by which player `.cpp` is compiled. Either way, Music exposes `syncChannels()`; visuals are
 beat-synced by feeding channel state into uniforms, by convention named `C_<channel>_S` (seconds
@@ -164,10 +166,12 @@ Create a self-contained `productions/<name>/` directory:
    listed.
 3. Music (declared via `ojgl_add_demo(MUSIC …)`, not in the `.cpp`): **V2** →
    `productions/<name>/music/<name>_song.inc` (embedded into the generated `EmbeddedSong.h`).
-   **Clinkster** → `productions/<name>/music/song.asm`. Omit `MUSIC` for a silent demo.
-4. `productions/<name>/CMakeLists.txt` with a single `ojgl_add_demo(NAME X SYNTH V2|CLINKSTER
-   MUSIC music/<song> SOURCES X.cpp SHADERS ... COMMON_SHADERS ...)` call (see `cmake/OjglDemo.cmake`
-   for options: `SHADERS`, `COMMON_SHADERS`, `SHADER_DIR`, `SHADER_PREFIX`, `MUSIC`, `INCLUDE_DIR`).
+   **Clinkster** → `productions/<name>/music/song.asm`. For a silent demo use `SYNTH None` and no
+   `MUSIC`.
+4. `productions/<name>/CMakeLists.txt` with a single `ojgl_add_demo(NAME X SYNTH V2|CLINKSTER|None
+   MUSIC music/<song> SOURCES X.cpp SHADERS ... COMMON_SHADERS ...)` call (`MUSIC` required for
+   V2/CLINKSTER, rejected by None; see `cmake/OjglDemo.cmake` for options: `SHADERS`,
+   `COMMON_SHADERS`, `SHADER_DIR`, `SHADER_PREFIX`, `MUSIC`, `INCLUDE_DIR`).
    `NAME` is the logical demo name; the C++ class is whatever the `.cpp` defines (only
    `createSelectedDemo()` is visible to the framework).
 5. Build it with `-DOJGL_DEMO=<name>`. No changes to `Main.cpp` or the root `CMakeLists.txt` are
