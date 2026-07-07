@@ -106,8 +106,8 @@ this pattern.
 - `setTextureCallback` returns `Uniform1t` texture bindings.
 - `iCameraMatrix` uniform comes from `FreeCameraController::instance().getCameraMatrix()`.
 
-**Music sync (backends).** Each production declares `SYNTH V2`, `SYNTH CLINKSTER`, or `SYNTH None`;
-`V2` and `CLINKSTER` also require a song via `ojgl_add_demo(MUSIC …)`, `None` links no synth library
+**Music sync (backends).** Each production declares `SYNTH V2`, `SYNTH Clinkster`, or `SYNTH None`;
+`V2` and `Clinkster` also require a song via `ojgl_add_demo(MUSIC …)`, `None` links no synth library
 and takes no `MUSIC`. Both real backends implement the common `MusicPlayer` interface
 (`src/music/MusicPlayer.h`); `createSelectedPlayer()` (parallel to `createSelectedDemo()`, defined
 in the one player `.cpp` CMake compiles) builds the right player, and `Music` drives it with no
@@ -168,9 +168,9 @@ Create a self-contained `productions/<name>/` directory:
    `productions/<name>/music/<name>_song.inc` (embedded into the generated `EmbeddedSong.h`).
    **Clinkster** → `productions/<name>/music/song.asm`. For a silent demo use `SYNTH None` and no
    `MUSIC`.
-4. `productions/<name>/CMakeLists.txt` with a single `ojgl_add_demo(NAME X SYNTH V2|CLINKSTER|None
+4. `productions/<name>/CMakeLists.txt` with a single `ojgl_add_demo(NAME X SYNTH V2|Clinkster|None
    MUSIC music/<song> SOURCES X.cpp SHADERS ... COMMON_SHADERS ...)` call (`MUSIC` required for
-   V2/CLINKSTER, rejected by None; see `cmake/OjglDemo.cmake` for options: `SHADERS`,
+   V2/Clinkster, rejected by None; see `cmake/OjglDemo.cmake` for options: `SHADERS`,
    `COMMON_SHADERS`, `SHADER_DIR`, `SHADER_PREFIX`, `MUSIC`, `INCLUDE_DIR`).
    `NAME` is the logical demo name; the C++ class is whatever the `.cpp` defines (only
    `createSelectedDemo()` is visible to the framework).

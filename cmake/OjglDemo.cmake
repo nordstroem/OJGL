@@ -9,17 +9,17 @@
 #
 # ojgl_add_demo(
 #   NAME     <Edison2026>            # logical name; also the demo's own dir/shader defaults
-#   SYNTH    <V2|CLINKSTER|None>     # music backend (exclusive per binary). None links no synth
+#   SYNTH    <V2|Clinkster|None>     # music backend (exclusive per binary). None links no synth
 #                                    #   library and runs silently (e.g. Template).
 #   SOURCES  <a.cpp> [b.cpp ...]     # demo sources (relative to the caller's dir)
 #   [INCLUDE_DIR <dir>]              # dir put on the include path so SOURCES' own includes
 #                                    #   (e.g. music/*.inc) resolve,
 #                                    #   default the caller's CMAKE_CURRENT_SOURCE_DIR
-#   [MUSIC   <path>]                 # the song resource; required by V2 and CLINKSTER, rejected by
+#   [MUSIC   <path>]                 # the song resource; required by V2 and Clinkster, rejected by
 #                                    #   None:
 #                                    #   V2:        the *_song.inc, embedded as resources::song
 #                                    #              in the generated EmbeddedSong.h
-#                                    #   CLINKSTER: the baked-song .asm (its dir becomes -I)
+#                                    #   Clinkster: the baked-song .asm (its dir becomes -I)
 #   [SHADERS <a.fs> [b.fs ...]]      # the demo's own shader files to embed (filenames relative
 #                                    #   to SHADER_DIR). Only listed shaders are embedded — there
 #                                    #   is no globbing, so unused files are never shipped.
@@ -82,9 +82,9 @@ function(ojgl_add_demo)
         target_link_libraries(ojgl PRIVATE
             "${OJGL_ROOT}/src/thirdparty/libv2.lib"
             $<$<CONFIG:Release,CrinklerRelease>:DSound>)
-    elseif(DEMO_SYNTH STREQUAL "CLINKSTER")
+    elseif(DEMO_SYNTH STREQUAL "Clinkster")
         if(NOT DEMO_MUSIC)
-            message(FATAL_ERROR "ojgl_add_demo(${DEMO_NAME}): SYNTH CLINKSTER requires MUSIC (the song .asm)")
+            message(FATAL_ERROR "ojgl_add_demo(${DEMO_NAME}): SYNTH Clinkster requires MUSIC (the song .asm)")
         endif()
         # clinkster.asm %includes the baked song; assemble both into one object. The song's
         # directory is the assembler include path, so each demo supplies its own song.
@@ -92,7 +92,7 @@ function(ojgl_add_demo)
             DOC "Assembler for Clinkster's NASM-syntax .asm (yasm/vsyasm/nasm)")
         if(NOT OJGL_ASM_EXECUTABLE)
             message(FATAL_ERROR
-                "SYNTH CLINKSTER needs an assembler (yasm, vsyasm or nasm) on PATH. "
+                "SYNTH Clinkster needs an assembler (yasm, vsyasm or nasm) on PATH. "
                 "Install one or pass -DOJGL_ASM_EXECUTABLE=<path-to-yasm.exe>.")
         endif()
 
@@ -132,7 +132,7 @@ function(ojgl_add_demo)
         endif()
         target_sources(ojgl PRIVATE "${OJGL_ROOT}/src/music/NoMusicPlayer.cpp")
     else()
-        message(FATAL_ERROR "ojgl_add_demo(${DEMO_NAME}): SYNTH must be V2, CLINKSTER or None (got '${DEMO_SYNTH}')")
+        message(FATAL_ERROR "ojgl_add_demo(${DEMO_NAME}): SYNTH must be V2, Clinkster or None (got '${DEMO_SYNTH}')")
     endif()
 
     # --- generate the embedded song (resources::song, read by createSelectedPlayer) ---
