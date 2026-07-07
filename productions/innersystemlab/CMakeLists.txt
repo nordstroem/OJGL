@@ -2,4 +2,14 @@
 ojgl_add_demo(
     NAME InnerSystemLab
     SYNTH V2
-    SOURCES InnerSystemLab.cpp)
+    SOURCES InnerSystemLab.cpp
+    SHADERS
+        edison_1.fs
+        edison_1_post.fs
+        edison_2.fs
+        edison_planets.fs
+        hospital.fs
+    COMMON_SHADERS
+        fxaa.fs
+        fxaa.vs
+        quad.vs)

@@ -2,4 +2,21 @@
 ojgl_add_demo(
     NAME Edison2022
     SYNTH V2
-    SOURCES Edison2022.cpp)
+    SOURCES Edison2022.cpp
+    SHADERS
+        ascent.fs
+        blur1.fs
+        grass.fs
+        intro.fs
+        jellyfish.fs
+        raymarch_settings_refract.fs
+        raymarch_utils.fs
+        ship.fs
+        ship_chrom_ab.fs
+    COMMON_SHADERS
+        fxaa.fs
+        fxaa.vs
+        noise.fs
+        primitives.fs
+        quad.vs
+        utils.fs)

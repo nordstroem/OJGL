@@ -121,12 +121,17 @@ named `C_<channel>_S` (seconds since last note, `getTimeSinceAnyNote()`) and `C_
 (`.vs`) live in `productions/<name>/shaders/` plus the shared `productions/common/shaders/`;
 each `.fs`/`.vs` wraps its source in an `R""( … )""` raw-string literal. `ShaderReader` serves
 shader source by a virtual path (`<prefix>/<file>`, e.g. `edison2026/cube.fs`, `common/quad.vs`)
-and resolves `#include` directives lazily, so registration order does not matter. **You do not
-maintain any embed list by hand**: `ojgl_add_demo` globs the selected demo's shader folder +
-`common/` and generates `EmbeddedShaders.h` (in `build/generated/`) — the release embed list
-plus, for debug, a virtual→absolute-path map used for hot reload (`modified()`). Just drop a new
-`.fs`/`.vs` in the folder and reconfigure. The virtual prefix defaults to the lowercased demo
-name; override with `SHADER_PREFIX` (e.g. QED uses `QED`).
+and resolves `#include` directives lazily, so registration order does not matter. **Each demo
+declares exactly which shaders it embeds** — there is no globbing, so a production ships only
+the files it actually uses (this matters most for the shared `common/` folder). In
+`ojgl_add_demo`, list the demo's own shaders in `SHADERS` (filenames under the demo's
+`shaders/` folder) and the shared ones it needs in `COMMON_SHADERS` (filenames under
+`productions/common/shaders/`). From those two lists `ojgl_add_demo` generates
+`EmbeddedShaders.h` (in `build/generated/`) — the release embed list plus, for debug, a
+virtual→absolute-path map used for hot reload (`modified()`). A listed file that doesn't exist
+is a configure-time error. When you add a `.fs`/`.vs`, add its name to the relevant list and
+reconfigure. The virtual prefix defaults to the lowercased demo name; override with
+`SHADER_PREFIX` (e.g. QED uses `QED`).
 
 **Text.** `TextRenderer` (`src/app/TextRenderer.hpp`) rasterizes strings to textures using
 Windows GDI fonts (e.g. `getText("BORGILA", "Arial Black")`), passed to shaders as textures.
@@ -144,12 +149,15 @@ Create a self-contained `productions/<name>/` directory:
 1. `productions/<name>/X.{h,cpp}` subclassing `Demo` (`src/demo/Demo.h`); implement
    `buildSceneGraph`, `getTitle`, and (for V2) `getSong`.
 2. `productions/<name>/shaders/*.fs` / `*.vs` for demo-specific shaders (shared ones live in
-   `productions/common/shaders/`). No embed list to edit — they are globbed and generated.
+   `productions/common/shaders/`). List each shader you use in the demo's `ojgl_add_demo` call
+   (`SHADERS` for the demo's own, `COMMON_SHADERS` for shared ones) — nothing is embedded unless
+   listed.
 3. Music: **V2** → `productions/<name>/music/<name>_song.inc`, `#include`d by the demo `.cpp`
    into a byte array. **Clinkster** → `productions/<name>/music/song.asm`.
 4. `productions/<name>/CMakeLists.txt` with a single `ojgl_add_demo(NAME X SYNTH V2|CLINKSTER
-   SOURCES X.cpp ...)` call (see `cmake/OjglDemo.cmake` for options: `SHADERS`, `SHADER_PREFIX`,
-   `MUSIC`, `HEADER`). The class name is `NAME`; the header defaults to `<NAME>.h`.
+   SOURCES X.cpp SHADERS ... COMMON_SHADERS ...)` call (see `cmake/OjglDemo.cmake` for options:
+   `SHADERS`, `COMMON_SHADERS`, `SHADER_DIR`, `SHADER_PREFIX`, `MUSIC`, `HEADER`). The class name
+   is `NAME`; the header defaults to `<NAME>.h`.
 5. Build it with `-DOJGL_DEMO=<name>`. No changes to `Main.cpp` or the root `CMakeLists.txt` are
    needed — selection is by directory name.
 

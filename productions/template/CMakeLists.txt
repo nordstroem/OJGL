@@ -3,4 +3,12 @@
 ojgl_add_demo(
     NAME Template
     SYNTH V2
-    SOURCES Template.cpp)
+    SOURCES Template.cpp
+    COMMON_SHADERS
+        noise.fs
+        primitives.fs
+        quad.vs
+        raymarch_settings.fs
+        raymarch_template.fs
+        raymarch_utils.fs
+        utils.fs)

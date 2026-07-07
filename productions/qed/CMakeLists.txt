@@ -4,4 +4,19 @@ ojgl_add_demo(
     NAME QED
     SYNTH V2
     SOURCES QED.cpp
-    SHADER_PREFIX QED)
+    SHADER_PREFIX QED
+    SHADERS
+        blur1.fs
+        post.fs
+        rayMarch.fs
+        rayMarch.vs
+        raymarch_utils.fs
+        raymarch_utils_tower.fs
+        sphere.fs
+        sphere.vs
+        tower.fs
+    COMMON_SHADERS
+        noise.fs
+        primitives.fs
+        quad.vs
+        utils.fs)

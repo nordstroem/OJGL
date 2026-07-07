@@ -14,13 +14,22 @@
 #                                    #   default the caller's CMAKE_CURRENT_SOURCE_DIR
 #   [MUSIC   <path>]                 # V2:       the *_song.inc (embedded by the demo .cpp)
 #                                    #   CLINKSTER: the baked-song .asm (its dir becomes -I)
-#   [SHADERS <dir>]                  # the demo's own shader folder, default "<caller>/shaders"
+#   [SHADERS <a.fs> [b.fs ...]]      # the demo's own shader files to embed (filenames relative
+#                                    #   to SHADER_DIR). Only listed shaders are embedded — there
+#                                    #   is no globbing, so unused files are never shipped.
+#   [COMMON_SHADERS <a.fs> ...]      # shared shaders (filenames relative to
+#                                    #   productions/common/shaders) this demo needs, embedded
+#                                    #   under the "common/" prefix. List only what is used.
+#   [SHADER_DIR <dir>]               # folder the SHADERS filenames resolve against,
+#                                    #   default "<caller>/shaders"
 #   [SHADER_PREFIX <prefix>]         # virtual-path prefix for the demo's shaders (e.g. a shader
 #                                    #   "cube.fs" -> "<prefix>/cube.fs"), default lowercased NAME
 # )
 #
-# The shared common/ shaders (productions/common/shaders) are always embedded under the
-# "common/" prefix; the demo only declares its own folder.
+# Shaders are embedded from two explicit lists (no globbing): SHADERS (the demo's own, under
+# SHADER_PREFIX) and COMMON_SHADERS (from productions/common/shaders, under "common/"). Each
+# listed file must exist; a typo is a configure-time error. To add a shader, drop it in the
+# folder and add its name to the relevant list.
 #
 # Expects the caller to have set OJGL_ROOT (dir containing src/) and OJGL_GENERATED_DIR.
 
@@ -29,8 +38,8 @@
 set(_OJGL_CMAKE_MODULE_DIR "${CMAKE_CURRENT_LIST_DIR}")
 
 function(ojgl_add_demo)
-    set(oneValueArgs NAME SYNTH HEADER INCLUDE_DIR MUSIC SHADERS SHADER_PREFIX)
-    set(multiValueArgs SOURCES)
+    set(oneValueArgs NAME SYNTH HEADER INCLUDE_DIR MUSIC SHADER_DIR SHADER_PREFIX)
+    set(multiValueArgs SOURCES SHADERS COMMON_SHADERS)
     cmake_parse_arguments(DEMO "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     if(NOT DEMO_NAME)
@@ -45,8 +54,8 @@ function(ojgl_add_demo)
     if(NOT DEMO_INCLUDE_DIR)
         set(DEMO_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
     endif()
-    if(NOT DEMO_SHADERS)
-        set(DEMO_SHADERS "${CMAKE_CURRENT_SOURCE_DIR}/shaders")
+    if(NOT DEMO_SHADER_DIR)
+        set(DEMO_SHADER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/shaders")
     endif()
     if(NOT DEMO_SHADER_PREFIX)
         string(TOLOWER "${DEMO_NAME}" DEMO_SHADER_PREFIX)
@@ -120,26 +129,35 @@ function(ojgl_add_demo)
         @ONLY)
 
     # --- generate the embedded-shader list (replaces the hand-maintained EmbeddedResources.h) ---
-    # Embed the shared common/ shaders (prefix "common") plus the demo's own shaders (prefix
-    # SHADER_PREFIX). Release embeds the source via #include of the R""()"" literal; debug also
-    # records the disk path for hot reload. Include order is irrelevant (ShaderReader resolves
-    # #includes lazily).
-    set(_shader_dirs "${OJGL_ROOT}/productions/common/shaders" "${DEMO_SHADERS}")
-    set(_shader_prefixes "common" "${DEMO_SHADER_PREFIX}")
+    # Embed exactly the shaders the demo declares: its own (SHADERS, resolved against
+    # DEMO_SHADER_DIR, under prefix SHADER_PREFIX) plus the shared ones it uses (COMMON_SHADERS,
+    # from productions/common/shaders, under "common/"). No globbing — a demo ships only the
+    # shaders it lists. Release embeds the source via #include of the R""()"" literal; debug also
+    # records the disk path for hot reload. Order is irrelevant (ShaderReader resolves #includes
+    # lazily).
     set(OJGL_SHADER_EMBED_ENTRIES "")
     set(OJGL_SHADER_DISKPATH_ENTRIES "")
-    list(LENGTH _shader_dirs _shader_dir_count)
-    math(EXPR _shader_dir_last "${_shader_dir_count} - 1")
-    foreach(_i RANGE ${_shader_dir_last})
-        list(GET _shader_dirs ${_i} _dir)
-        list(GET _shader_prefixes ${_i} _prefix)
-        file(GLOB _dir_files CONFIGURE_DEPENDS "${_dir}/*.fs" "${_dir}/*.vs")
-        foreach(_f IN LISTS _dir_files)
-            get_filename_component(_fn "${_f}" NAME)
-            set(_vp "${_prefix}/${_fn}")
-            string(APPEND OJGL_SHADER_EMBED_ENTRIES "    {\n#include \"${_f}\"\n    , \"${_vp}\" },\n")
-            string(APPEND OJGL_SHADER_DISKPATH_ENTRIES "    { \"${_vp}\", \"${_f}\" },\n")
-        endforeach()
+    # Each entry: "<dir>|<prefix>|<filename>".
+    set(_shader_entries "")
+    foreach(_fn IN LISTS DEMO_SHADERS)
+        list(APPEND _shader_entries "${DEMO_SHADER_DIR}|${DEMO_SHADER_PREFIX}|${_fn}")
+    endforeach()
+    foreach(_fn IN LISTS DEMO_COMMON_SHADERS)
+        list(APPEND _shader_entries "${OJGL_ROOT}/productions/common/shaders|common|${_fn}")
+    endforeach()
+    foreach(_entry IN LISTS _shader_entries)
+        string(REPLACE "|" ";" _parts "${_entry}")
+        list(GET _parts 0 _dir)
+        list(GET _parts 1 _prefix)
+        list(GET _parts 2 _fn)
+        set(_f "${_dir}/${_fn}")
+        if(NOT EXISTS "${_f}")
+            message(FATAL_ERROR
+                "ojgl_add_demo(${DEMO_NAME}): declared shader '${_fn}' not found at ${_f}")
+        endif()
+        set(_vp "${_prefix}/${_fn}")
+        string(APPEND OJGL_SHADER_EMBED_ENTRIES "    {\n#include \"${_f}\"\n    , \"${_vp}\" },\n")
+        string(APPEND OJGL_SHADER_DISKPATH_ENTRIES "    { \"${_vp}\", \"${_f}\" },\n")
     endforeach()
     configure_file(
         "${_OJGL_CMAKE_MODULE_DIR}/EmbeddedShaders.h.in"
