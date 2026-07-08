@@ -66,7 +66,7 @@ Two targets:
   the standard CRT in the Release build so the final binary is small (a demoscene size
   constraint).
 
-Configurations (the old `Unicode Debug`/`Unicode Release` configs were dropped):
+Configurations:
 - **Debug / OptimizedDebug** — Console subsystem, standard CRT, enables the `_DEBUG` code
   paths (free camera, timeline scrubbing, hot shader reload, RenderDoc capture). Does **not**
   link `tlibc`.
@@ -77,9 +77,9 @@ Configurations (the old `Unicode Debug`/`Unicode Release` configs were dropped):
   `link.exe` replacement). **Ninja generator only** (`build-ninja/`); the VS generator lets
   MSBuild pick the linker so Crinkler can't be injected there.
 
-The **working directory no longer matters** at runtime: in debug, `ShaderReader` reads shaders
-via absolute paths generated at configure time; in release they are embedded. The debug binary
-is at `build/Debug/ojgl.exe`. There is no test suite.
+At runtime, `ShaderReader` reads shaders via absolute paths generated at configure time in debug
+builds; in release they are embedded. The debug binary is at `build/Debug/ojgl.exe`. There is no
+test suite.
 
 Debug-only runtime controls (in `Main.cpp`): Esc quit · ←/→ seek ±5s · ↑/↓ prev/next scene ·
 Space pause · R restart · P capture frame (RenderDoc) · C log camera position. `_DEBUG` builds
@@ -118,12 +118,10 @@ into build-time assembly (`productions/<name>/music/song.asm`, `%include`d by th
 `src/thirdparty/clinkster/clinkster.asm` and assembled by yasm/nasm); `resources::song` is null and
 the Clinkster factory ignores it. **None**: `NoMusicPlayer.cpp` supplies a `createSelectedPlayer()`
 that returns nullptr (e.g. `Template`). A demo has music iff `createSelectedPlayer()` returns
-non-null; otherwise `Music` is never created and the demo runs on the system clock. There is no
-`Demo::getSong()`/`getMusicEnabled()` and no `OJGL_SYNTH_*` define — the backend is selected purely
-by which player `.cpp` is compiled. Either way, Music exposes `syncChannels()`; visuals are
-beat-synced by feeding channel state into uniforms, by convention named `C_<channel>_S` (seconds
-since last note, `getTimeSinceAnyNote()`) and `C_<channel>_T` (total note hits, `getTotalHits()`).
-This naming recurs across every demo's uniform callbacks.
+non-null; otherwise `Music` is never created and the demo runs on the system clock. Either way,
+Music exposes `syncChannels()`; visuals are beat-synced by feeding channel state into uniforms,
+by convention named `C_<channel>_S` (seconds since last note) and `C_<channel>_T` (total note
+hits). This naming recurs across every demo's uniform callbacks.
 
 **Shaders & resource embedding (generated).** GLSL fragment shaders (`.fs`) and vertex shaders
 (`.vs`) live in `productions/<name>/shaders/` plus the shared `productions/common/shaders/`;
@@ -138,8 +136,7 @@ the files it actually uses (this matters most for the shared `common/` folder). 
 `EmbeddedShaders.h` (in `build/generated/`) — the release embed list plus, for debug, a
 virtual→absolute-path map used for hot reload (`modified()`). A listed file that doesn't exist
 is a configure-time error. When you add a `.fs`/`.vs`, add its name to the relevant list and
-reconfigure. The virtual prefix defaults to the lowercased demo name; override with
-`SHADER_PREFIX` (e.g. QED uses `QED`).
+reconfigure.
 
 **Text.** `TextRenderer` (`src/app/TextRenderer.hpp`) rasterizes strings to textures using
 Windows GDI fonts (e.g. `getText("BORGILA", "Arial Black")`), passed to shaders as textures.
