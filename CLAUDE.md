@@ -48,8 +48,11 @@ cmake -S . -B build-ninja -G "Ninja Multi-Config" -DOJGL_DEMO=edison2026
 cmake --build .\build-ninja\ --config=CrinklerRelease
 ```
 
-Or via presets: `cmake --preset windows-x86` / `windows-x86-ninja` to configure (add
-`-DOJGL_DEMO=<name>` to pick a demo), then `cmake --build --preset debug` / `crinklerrelease`.
+Or via presets: `cmake --preset vs` / `ninja` to configure (add
+`-DOJGL_DEMO=<name>` to pick a demo). The `ninja` configure preset turns on
+`CMAKE_EXPORT_COMPILE_COMMANDS`. Build presets (`debug` / `optimizeddebug` / `release` /
+`crinklerrelease`) default to the Ninja tree; `vsdebug` builds Debug from the Visual Studio
+tree instead.
 
 This generates `build/OJGL.sln`, which you can also open in Visual Studio (`ojgl` is the
 startup project). The build is defined by: the root `CMakeLists.txt` (config types, CRT
