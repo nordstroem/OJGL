@@ -269,3 +269,7 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+
+# Clinkster wav-render tool build output
+tools/clinkster_wav/out/
+*.wav
