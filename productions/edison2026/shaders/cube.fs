@@ -33,7 +33,6 @@ float gFocusDistance = 0.0;
 const vec3 S_focusTarget = vec3(0.0, 0.0, -5.0);
 const float S_focusStrength = 0.03;
 
-
 float GridPattern(in vec2 uv)
 {
   return 0.5*clamp(10.*sin(PI*uv.x) + 10.5, 0.0, 1.0)
@@ -47,8 +46,10 @@ float SquareHolePattern(in vec2 uv)
   return smoothstep(0.1, 0.0, t*t);
 }
 
-float floorPattern(vec2 p) {
-	 return SquareHolePattern(p);
+float wallPattern(in vec2 uv) {
+    float thickness = 2.0;
+    float t = cos(uv.x*2.0) * cos(uv.y*2.0) / thickness;
+    return smoothstep(0.1, 0.0, t*t);
 }
 
 float roofPattern(vec2 p) {
@@ -62,14 +63,14 @@ DistanceInfo object(in vec3 p)
     return DistanceInfo(sdSphere(p, 1.0), sphereType);
 }
 
-vec3 cRoomSize = vec3(20);
+vec3 cRoomSize = vec3(20, 20, 20);
 
 DistanceInfo room(in vec3 p)
 {
     p.z += 5.0;
-    p.y -= floorPattern(p.xz) * 0.03;
-    p.x -= floorPattern(p.zy) * 0.03;
-    p.z -= floorPattern(p.xy) * 0.03;
+    p.y -= wallPattern(p.xz) * 0.005;
+    p.x -= wallPattern(p.zy) * 0.005;
+    p.z -= wallPattern(p.xy) * 0.005;
     return DistanceInfo(-sdBox(p, cRoomSize), roomType);
 }
 
@@ -123,7 +124,7 @@ vec3 getColor(in MarchResult result)
         return baseColor + 2.0 * gFresnel * mix(vec3(0.6, 0.8, 1.0), metalColor, 0.4) + tintedSpecular;
     } else {
         float pulse = exp(-C_0_S * 6.0);
-        vec3 metalColor = 0.005*vec3(0.2, 0.2, 0.2);
+        vec3 metalColor = 0.005*vec3(0.2, 0.5, 0.9);
         float edgeAmount = roomEdgeAmount(result.position);
         gFresnel = 0.1*pow(1.0 - max(0.0, dot(normal, viewDir)), 4.0) * (1.0 - edgeAmount);
         vec3 baseColor = metalColor * diffuse * (1.0 + 2.0 * pulse);
@@ -153,8 +154,8 @@ void main()
     vec3 color = march(rayOrigin, rayDirection);
 
     float focalDistance = length(gEye - S_focusTarget);
-    float focus = clamp( (abs(gFocusDistance - focalDistance) -5) * S_focusStrength, 0.0, 1.0);
+    float focus = clamp( (abs(gFocusDistance - focalDistance)-7.5) * S_focusStrength, 0.0, 1.0);
 
-    fragColor = vec4(pow(color, vec3(0.4545)), focus);
+    fragColor = vec4(pow(max(color, 0.0), vec3(0.4545)), focus);
 }
 )""
