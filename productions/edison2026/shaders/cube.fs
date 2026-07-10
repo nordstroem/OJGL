@@ -79,7 +79,7 @@ DistanceInfo map(in vec3 p)
     return un(object(p), room(p));
 }
 
-const float roomEdgeBevel = 0.7;
+const float roomEdgeBevel = 2.7;
 float roomEdgeAmount(in vec3 p)
 {
     vec3 q = p;
@@ -124,12 +124,15 @@ vec3 getColor(in MarchResult result)
         return baseColor + 2.0 * gFresnel * mix(vec3(0.6, 0.8, 1.0), metalColor, 0.4) + tintedSpecular;
     } else {
         float pulse = exp(-C_0_S * 6.0);
-        vec3 metalColor = 0.005*vec3(0.2, 0.5, 0.9);
         float edgeAmount = roomEdgeAmount(result.position);
-        gFresnel = 0.1*pow(1.0 - max(0.0, dot(normal, viewDir)), 4.0) * (1.0 - edgeAmount);
+        vec3 metalColor = 0.005*vec3(0.2, 0.5, 0.9);
+        gFresnel = 0.1*pow(1.0 - max(0.0, dot(normal, viewDir)), 4.0);
         vec3 baseColor = metalColor * diffuse * (1.0 + 2.0 * pulse);
-        vec3 tintedSpecular = specular * (1.0 - edgeAmount) * mix(vec3(1.0), metalColor, 0.6);
-        return baseColor + 2.0 * gFresnel * mix(vec3(0.6, 0.8, 1.0), metalColor, 0.4) + tintedSpecular;
+        vec3 tintedSpecular = specular * mix(vec3(1.0), metalColor, 0.6);
+        vec3 col = baseColor + 2.0 * gFresnel * mix(vec3(0.6, 0.8, 1.0), metalColor, 0.4) + tintedSpecular;
+
+        return col * (1.0 - 0.4*edgeAmount);
+
     }
 }
 
