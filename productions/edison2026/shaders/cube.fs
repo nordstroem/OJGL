@@ -28,6 +28,7 @@ const int sphereType = 1;
 const int roomType = 2;
 
 vec3 gEye;
+float gFresnel = 0.0;
 
 DistanceInfo object(in vec3 p)
 {
@@ -49,7 +50,7 @@ DistanceInfo map(in vec3 p)
 float getReflectiveIndex(int type)
 {
     if (type == sphereType){
-        return 0.3;
+        return mix(0.3, 0.9, gFresnel);
     }
     return 0.0;
 }
@@ -63,16 +64,21 @@ vec3 getColor(in MarchResult result)
     vec3 lightPosition = vec3(3.0, 4.0, -3.0);
     vec3 normal = normal(result.position);
     vec3 invLight = normalize(lightPosition - result.position);
+    vec3 viewDir = normalize(gEye - result.position);
     float diffuse = max(0.0, dot(invLight, normal));
+    vec3 halfDir = normalize(invLight + viewDir);
+    float specular = pow(max(0.0, dot(normal, halfDir)), 32.0);
 
     if (result.type == sphereType) {
         float pulse = exp(-C_0_S * 6.0);
-        vec3 viewDir = normalize(gEye - result.position);
-        float fresnel = pow(1.0 - max(0.0, dot(normal, viewDir)), 4.0);
-        vec3 baseColor = vec3(0.2, 0.5, 0.9) * (diffuse) * (1.0 + 2.0 * pulse);
-        return baseColor + 2*fresnel * vec3(0.6, 0.8, 1.0);
+        vec3 metalColor = 0.5*vec3(0.2, 0.5, 0.9);
+        gFresnel = pow(1.0 - max(0.0, dot(normal, viewDir)), 4.0);
+        vec3 baseColor = metalColor * diffuse * (1.0 + 2.0 * pulse);
+        vec3 tintedSpecular = specular * mix(vec3(1.0), metalColor, 0.6); 
+        return baseColor + 2.0 * gFresnel * mix(vec3(0.6, 0.8, 1.0), metalColor, 0.4) + tintedSpecular;
     } else {
-        return vec3(0.5, 0.5, 0.55) * (0.05 + 0.95 * diffuse);
+        gFresnel = 0.0;
+        return vec3(0.5, 0.5, 0.55) * (0.05 + 0.95 * diffuse) + specular * vec3(0.3);
     }
 }
 
