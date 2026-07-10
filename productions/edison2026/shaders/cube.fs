@@ -30,6 +30,28 @@ const int roomType = 2;
 vec3 gEye;
 float gFresnel = 0.0;
 
+
+float GridPattern(in vec2 uv)
+{
+  return 0.5*clamp(10.*sin(PI*uv.x) + 10.5, 0.0, 1.0)
+       / 0.5*clamp(10.*sin(PI*uv.y) + 10.5, 0.0, 1.0);
+}
+
+float SquareHolePattern(in vec2 uv)
+{
+  float thickness = 4.0;
+  float t = cos(uv.x*2.0) * cos(uv.y*2.0) / thickness;
+  return smoothstep(0.1, 0.0, t*t);
+}
+
+float floorPattern(vec2 p) {
+	 return SquareHolePattern(p);
+}
+
+float roofPattern(vec2 p) {
+	return GridPattern(p*1.0);
+}
+
 DistanceInfo object(in vec3 p)
 {
     p.z += 5.0;
@@ -39,7 +61,10 @@ DistanceInfo object(in vec3 p)
 DistanceInfo room(in vec3 p)
 {
     p.z += 5.0;
-    return DistanceInfo(-sdBox(p, 2*vec3(10.0, 10.0, 15.0)), roomType);
+    p.y -= floorPattern(p.xz) * 0.03;
+    p.x -= floorPattern(p.zy) * 0.03;
+    p.z -= floorPattern(p.xy) * 0.03;
+    return DistanceInfo(-sdBox(p, vec3(20, 20, 20)), roomType);
 }
 
 DistanceInfo map(in vec3 p)
@@ -77,8 +102,12 @@ vec3 getColor(in MarchResult result)
         vec3 tintedSpecular = specular * mix(vec3(1.0), metalColor, 0.6); 
         return baseColor + 2.0 * gFresnel * mix(vec3(0.6, 0.8, 1.0), metalColor, 0.4) + tintedSpecular;
     } else {
-        gFresnel = 0.0;
-        return vec3(0.5, 0.5, 0.55) * (0.05 + 0.95 * diffuse) + specular * vec3(0.3);
+        float pulse = exp(-C_0_S * 6.0);
+        vec3 metalColor = 0.005*vec3(0.2, 0.2, 0.2);
+        gFresnel = pow(1.0 - max(0.0, dot(normal, viewDir)), 4.0);
+        vec3 baseColor = metalColor * diffuse * (1.0 + 2.0 * pulse);
+        vec3 tintedSpecular = specular * mix(vec3(1.0), metalColor, 0.6); 
+        return baseColor + 2.0 * gFresnel * mix(vec3(0.6, 0.8, 1.0), metalColor, 0.4) + tintedSpecular;
     }
 }
 
