@@ -30,12 +30,16 @@ bool fileExists(const ojstd::string& path)
 // .fs/.vs files store their GLSL inside an R""( ... )"" raw-string wrapper (so they can also be
 // #include'd as string literals into the embedded resources). Strip the wrapper when reading
 // from disk.
+// Returns an empty string if the wrapper isn't found intact, e.g. when hot reload catches the
+// file mid-write (a partial save can be missing the opening/closing marker at read time).
 ojstd::string unwrapRawString(const std::string& fileContents)
 {
     std::string pre = "R\"\"(";
     std::string post = ")\"\"";
     size_t start = fileContents.find(pre);
     size_t end = fileContents.rfind(post);
+    if (start == std::string::npos || end == std::string::npos || end < start + pre.length())
+        return ojstd::string();
     return fileContents.substr(start + pre.length(), end - start - pre.length()).c_str();
 }
 #endif
@@ -117,13 +121,21 @@ const ojstd::string& ShaderReader::get(const ojstd::string& path)
                 }
 
                 if (!shaderFile.fail()) {
-                    LOG_INFO("[" << path.c_str() << "]"
-                                 << " modified");
                     std::stringstream buffer;
                     buffer << shaderFile.rdbuf();
-                    entry.rawContent = unwrapRawString(buffer.str());
-                    entry.modifyTime = diskTime;
-                    entry.resolved = false;
+                    ojstd::string unwrapped = unwrapRawString(buffer.str());
+                    if (unwrapped.length() == 0) {
+                        // Leave entry.modifyTime untouched so the next modified()/get() check
+                        // retries the read once the file's write has settled.
+                        LOG_INFO("[" << path.c_str() << "]"
+                                     << " reload skipped: raw-string wrapper not found (file mid-write?)");
+                    } else {
+                        LOG_INFO("[" << path.c_str() << "]"
+                                     << " modified");
+                        entry.rawContent = unwrapped;
+                        entry.modifyTime = diskTime;
+                        entry.resolved = false;
+                    }
                 } else {
                     LOG_INFO("Shader reading failed");
                 }
