@@ -29,6 +29,9 @@ const int roomType = 2;
 
 vec3 gEye;
 float gFresnel = 0.0;
+float gFocusDistance = 0.0;
+const vec3 S_focusTarget = vec3(0.0, 0.0, -5.0);
+const float S_focusStrength = 0.03;
 
 
 float GridPattern(in vec2 uv)
@@ -95,6 +98,10 @@ float getReflectiveIndex(int type)
 
 vec3 getColor(in MarchResult result)
 {
+    if (result.jump == 0) {
+        gFocusDistance = length(gEye - result.position);
+    }
+
     if (result.type == invalidType) {
         return vec3(0.0);
     }
@@ -145,6 +152,9 @@ void main()
 
     vec3 color = march(rayOrigin, rayDirection);
 
-    fragColor = vec4(pow(color, vec3(0.4545)), 1.0);
+    float focalDistance = length(gEye - S_focusTarget);
+    float focus = clamp( (abs(gFocusDistance - focalDistance) -5) * S_focusStrength, 0.0, 1.0);
+
+    fragColor = vec4(pow(color, vec3(0.4545)), focus);
 }
 )""

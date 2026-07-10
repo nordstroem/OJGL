@@ -29,7 +29,19 @@ ojstd::vector<Scene> Edison2026::buildSceneGraph(const Vector2i& sceneSize) cons
             return vector;
         });
 
-        scenes.emplace_back(cube, Duration::seconds(9999), "cube");
+        auto blur1 = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2026/blur1.fs");
+        blur1->setInputs(cube);
+        blur1->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) -> Buffer::UniformVector {
+            return { ojstd::make_shared<Uniform2f>("blurDir", 1.f, 0.f) };
+        });
+
+        auto blur2 = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2026/blur1.fs");
+        blur2->setInputs(blur1);
+        blur2->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) -> Buffer::UniformVector {
+            return { ojstd::make_shared<Uniform2f>("blurDir", 0.f, 1.f) };
+        });
+
+        scenes.emplace_back(blur2, Duration::seconds(9999), "cube");
     }
 
     return scenes;
