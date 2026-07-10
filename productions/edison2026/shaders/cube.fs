@@ -1,12 +1,12 @@
 R""(
-const float S_distanceEpsilon = 2e-3;
+const float S_distanceEpsilon = 1e-2;
 const float S_normalEpsilon = 1e-2;
 const int S_maxSteps = 100;
 const float S_maxDistance = 400.0;
 const float S_distanceMultiplier = 1.0;
 const float S_minVolumetricJumpDistance = 0.02;
 const float S_volumetricDistanceMultiplier = 0.75;
-const int S_reflectionJumps = 3;
+const int S_reflectionJumps = 2;
 
 #define S_VOLUMETRIC 0
 #define S_REFLECTIONS 1
@@ -27,6 +27,8 @@ uniform float C_0_T;
 const int sphereType = 1;
 const int roomType = 2;
 
+vec3 gEye;
+
 DistanceInfo object(in vec3 p)
 {
     p.z += 5.0;
@@ -36,7 +38,7 @@ DistanceInfo object(in vec3 p)
 DistanceInfo room(in vec3 p)
 {
     p.z += 5.0;
-    return DistanceInfo(-sdBox(p, vec3(10.0, 10.0, 15.0)), roomType);
+    return DistanceInfo(-sdBox(p, 2*vec3(10.0, 10.0, 15.0)), roomType);
 }
 
 DistanceInfo map(in vec3 p)
@@ -46,7 +48,10 @@ DistanceInfo map(in vec3 p)
 
 float getReflectiveIndex(int type)
 {
-    return 0.5;
+    if (type == sphereType){
+        return 0.3;
+    }
+    return 0.0;
 }
 
 vec3 getColor(in MarchResult result)
@@ -61,8 +66,11 @@ vec3 getColor(in MarchResult result)
     float diffuse = max(0.0, dot(invLight, normal));
 
     if (result.type == sphereType) {
-        float pulse = exp(-C_0_S * 6.0); // bright flash right after a Clinkster sync trigger, decaying over ~0.3-0.5s
-        return vec3(0.2, 0.5, 0.9) * (0.1 + 0.9 * diffuse) * (1.0 + 2.0 * pulse);
+        float pulse = exp(-C_0_S * 6.0);
+        vec3 viewDir = normalize(gEye - result.position);
+        float fresnel = pow(1.0 - max(0.0, dot(normal, viewDir)), 4.0);
+        vec3 baseColor = vec3(0.2, 0.5, 0.9) * (diffuse) * (1.0 + 2.0 * pulse);
+        return baseColor + 2*fresnel * vec3(0.6, 0.8, 1.0);
     } else {
         return vec3(0.5, 0.5, 0.55) * (0.05 + 0.95 * diffuse);
     }
@@ -83,8 +91,8 @@ void main()
     float u = (fragCoord.x - 0.5);
     float v = (fragCoord.y - 0.5) * iResolution.y / iResolution.x;
     vec3 rayOrigin = (iCameraMatrix * vec4(u, v, -1.0, 1.0)).xyz;
-    vec3 eye = (iCameraMatrix * vec4(0.0, 0.0, 0.0, 1.0)).xyz;
-    vec3 rayDirection = normalize(rayOrigin - eye);
+    gEye = (iCameraMatrix * vec4(0.0, 0.0, 0.0, 1.0)).xyz;
+    vec3 rayDirection = normalize(rayOrigin - gEye);
 
     vec3 color = march(rayOrigin, rayDirection);
 
