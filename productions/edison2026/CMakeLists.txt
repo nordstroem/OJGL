@@ -1,8 +1,12 @@
 # Edison2026 — Clinkster-scored production. Selected with -DOJGL_DEMO=edison2026.
 ojgl_add_demo(
     NAME Edison2026
-    SYNTH Clinkster
+    SYNTH None
     SOURCES Edison2026.cpp
-    MUSIC "${CMAKE_CURRENT_SOURCE_DIR}/music/song.asm"
+    # MUSIC "${CMAKE_CURRENT_SOURCE_DIR}/music/song.asm"
     SHADERS
-        cube.fs)
+        cube.fs
+    COMMON_SHADERS
+        primitives.fs
+        raymarch_utils.fs
+        utils.fs)
