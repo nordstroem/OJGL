@@ -81,10 +81,11 @@ DistanceInfo room(in vec3 p)
 
 DistanceInfo robotArm(in vec3 p)
 {
-    float aBase = 0.9 * sin(0.35 * iTime);
+    float aBase =     0.9 * sin(0.35 * iTime);
     float aShoulder = 0.35 + 0.3 * sin(0.5 * iTime + 1.0);
-    float aElbow = 0.9 + 0.5 * sin(0.45 * iTime + 2.5);
-    float aWrist = 0.8 * sin(0.7 * iTime);
+    float aElbow =    0.9 + 0.5 * sin(0.45 * iTime + 2.5);
+    float aWrist =    0.8 * sin(0.7 * iTime);
+    float aFinger =   0.8 * sin(0.3 * iTime);
 
     float dJoint = sdCappedCylinder(p - vec3(0.0, 0.13, 0.0), vec2(0.8, 0.1));
 
@@ -114,8 +115,21 @@ DistanceInfo robotArm(in vec3 p)
     dJoint = min(dJoint, sdCappedCylinder(w.xzy, vec2(0.13, 0.16)));
     vec3 tool = w;
     tool.xy *= rot(aWrist);
-    dJoint = min(dJoint, sdCappedCylinder(tool - vec3(0.0, 0.12, 0.0), vec2(0.09, 0.12)));
-    dJoint = min(dJoint, sdBox(vec3(abs(tool.x) - 0.07, tool.y - 0.36, tool.z), vec3(0.025, 0.13, 0.05)));
+    pModPolar(tool.xz, 4);
+    tool.x -= 0.1;
+    tool.xy *= rot(-0.2);
+
+    float fLength = 0.2;
+    float fRadius = 0.03;
+    dJoint = min(dJoint, sdCappedCylinder(tool - vec3(0.0, 0.12 + fLength*0.5, 0.0), vec2(fRadius, fLength)));
+    
+    // Axis 6
+    vec3 qq = tool - vec3(0.0, 0.4, 0);
+    dJoint = min(dJoint, sdCappedCylinder(qq.xzy, vec2(0.04, 0.04)));
+    qq.xy *= rot(aFinger);
+
+    dJoint = min(dJoint, sdCappedCylinder(qq - vec3(0.00, 0.12 + fLength*0.5, 0.0), vec2(fRadius, fLength)));
+    
 
     return un(DistanceInfo(dBody, armBodyType), DistanceInfo(dJoint, armJointType));
 }
