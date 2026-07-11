@@ -22,8 +22,14 @@ ojstd::vector<Scene> Edison2026::buildSceneGraph(const Vector2i& sceneSize) cons
             vector.push_back(ojstd::make_shared<UniformMatrix4fv>("iCameraMatrix", FreeCameraController::instance().getCameraMatrix()));
             auto music = Music::instance();
             if (music != nullptr) {
-                vector.push_back(ojstd::make_shared<Uniform1f>("C_0_S", music->syncChannels()[10].getTimeSinceAnyNote().toSeconds()));
-                vector.push_back(ojstd::make_shared<Uniform1f>("C_0_T", static_cast<float>(music->syncChannels()[10].getTotalHits())));
+                vector.push_back(ojstd::make_shared<Uniform1f>("mBassdrum", music->syncChannels()[1].getTimeSinceAnyNote().toSeconds()));
+                vector.push_back(ojstd::make_shared<Uniform1f>("mHihat", music->syncChannels()[2].getTimeSinceAnyNote().toSeconds()));
+                vector.push_back(ojstd::make_shared<Uniform1f>("mSnare", music->syncChannels()[3].getTimeSinceAnyNote().toSeconds()));
+                // introstrings is spread across channels 4-7 (one per chord voice); take the soonest hit.
+                float stringsSince = ojstd::min(
+                    ojstd::min(music->syncChannels()[4].getTimeSinceAnyNote().toSeconds(), music->syncChannels()[5].getTimeSinceAnyNote().toSeconds()),
+                    ojstd::min(music->syncChannels()[6].getTimeSinceAnyNote().toSeconds(), music->syncChannels()[7].getTimeSinceAnyNote().toSeconds()));
+                vector.push_back(ojstd::make_shared<Uniform1f>("mStrings", stringsSince));
             }
             return vector;
         });

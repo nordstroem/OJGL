@@ -1,9 +1,9 @@
 R""(
 const float S_distanceEpsilon = 1e-2;
 const float S_normalEpsilon = 1e-2;
-const int S_maxSteps = 100;
-const float S_maxDistance = 400.0;
-const float S_distanceMultiplier = 1.0;
+const int S_maxSteps = 400;
+const float S_maxDistance = 100.0;
+const float S_distanceMultiplier = 0.7;
 const float S_minVolumetricJumpDistance = 0.02;
 const float S_volumetricDistanceMultiplier = 0.75;
 const int S_reflectionJumps = 2;
@@ -21,8 +21,10 @@ out vec4 fragColor;
 uniform float iTime;
 uniform vec2 iResolution;
 uniform mat4 iCameraMatrix;
-uniform float C_0_S;
-uniform float C_0_T;
+uniform float mBassdrum;
+uniform float mHihat;
+uniform float mSnare;
+uniform float mStrings;
 
 const int sphereType = 1;
 const int roomType = 2;
@@ -49,16 +51,13 @@ float SquareHolePattern(in vec2 uv)
 
 DistanceInfo scene1(in vec3 p)
 {
-    pMod1(p.x, 4.0);
-    pMod1(p.z, 15.0);
-    pMod1(p.y, 5.0);
-    float r = 0.5;
-    p.z -= r*cos(5*iTime);
-    p.x -= r*sin(3*iTime);
-    p.y -= r*sin(3*iTime);
+    // pMod1(p.x, 5.0);
+    // pMod1(p.z, 15.0);
     float d1 = sdSphere(p, 1.0);
-    float d2 = sdBox(p, vec3(1.0));
-    float d = mix(d1, d2, 0.5 * (1+  sin(iTime)));
+    p.x -= 0.5 * cos(3*iTime);
+    p.z -= 0.5 * sin(3*iTime);
+    float d2 = sdCutSphere(p, 1.0, 0.0);
+    float d = smink(d1, d2, 0.8);
     return DistanceInfo(d, sphereType);
 }
 
@@ -92,8 +91,9 @@ float roomEdgeAmount(in vec3 p)
 
 float getReflectiveIndex(int type)
 {
+    float pulse = exp(-mBassdrum * 6.0);
     if (type == sphereType){
-        return mix(0.3, 0.9, gFresnel);
+        return mix(pulse, 0.9, gFresnel);
     }
     return 0.0;
 }
@@ -108,7 +108,8 @@ vec3 getColor(in MarchResult result)
         return vec3(0.0);
     }
 
-    vec3 lightPosition = vec3(3.0, 4.0, 3.0);
+    float pulse = exp(-mBassdrum * 6.0);
+    vec3 lightPosition = vec3(15 * (1 - 2*pulse), 4.0, 3.0);
     vec3 normal = normal(result.position);
     vec3 invLight = normalize(lightPosition - result.position);
     vec3 viewDir = normalize(gEye - result.position);
@@ -117,18 +118,17 @@ vec3 getColor(in MarchResult result)
     float specular = pow(max(0.0, dot(normal, halfDir)), 32.0);
 
     if (result.type == sphereType) {
-        float pulse = exp(-C_0_S * 6.0);
+        float pulse = exp(-mBassdrum * 6.0);
         vec3 metalColor = 0.5*vec3(0.2, 0.5, 0.9);
         gFresnel = pow(1.0 - max(0.0, dot(normal, viewDir)), 4.0);
         vec3 baseColor = metalColor * diffuse * (1.0 + 2.0 * pulse);
         vec3 tintedSpecular = specular * mix(vec3(1.0), metalColor, 0.6); 
         return baseColor + 2.0 * gFresnel * mix(vec3(0.6, 0.8, 1.0), metalColor, 0.4) + tintedSpecular;
     } else {
-        float pulse = exp(-C_0_S * 6.0);
         float edgeAmount = roomEdgeAmount(result.position);
         vec3 metalColor = 0.03*vec3(0.2, 0.3, 0.3);
         gFresnel = 0.1*pow(1.0 - max(0.0, dot(normal, viewDir)), 4.0);
-        vec3 baseColor = metalColor * diffuse * (1.0 + 2.0 * pulse);
+        vec3 baseColor = metalColor * diffuse;
         vec3 tintedSpecular = specular * mix(vec3(1.0), metalColor, 0.6);
         vec3 col = baseColor + 2.0 * gFresnel * mix(vec3(0.6, 0.8, 1.0), metalColor, 0.4) + tintedSpecular;
         // float shadow = 0.3 + 0.7*shadowFunction(result.position, lightPosition, 30);
