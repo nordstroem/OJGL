@@ -32,6 +32,7 @@ float gFresnel = 0.0;
 float gFocusDistance = 0.0;
 const vec3 S_focusTarget = vec3(0.0, 0.0, 0.0);
 const float S_focusStrength = 0.03;
+vec3 cRoomSize = vec3(20, 20, 20);
 
 float GridPattern(in vec2 uv)
 {
@@ -46,23 +47,26 @@ float SquareHolePattern(in vec2 uv)
   return smoothstep(0.1, 0.0, t*t);
 }
 
+DistanceInfo scene1(in vec3 p)
+{
+    pMod1(p.x, 4.0);
+    pMod1(p.z, 15.0);
+    pMod1(p.y, 5.0);
+    float r = 0.5;
+    p.z -= r*cos(5*iTime);
+    p.x -= r*sin(3*iTime);
+    p.y -= r*sin(3*iTime);
+    float d1 = sdSphere(p, 1.0);
+    float d2 = sdBox(p, vec3(1.0));
+    float d = mix(d1, d2, 0.5 * (1+  sin(iTime)));
+    return DistanceInfo(d, sphereType);
+}
+
 float wallPattern(in vec2 uv) {
     float thickness = 2.0;
     float t = cos(uv.x*2.0) * cos(uv.y*2.0) / thickness;
     return smoothstep(0.1, 0.0, t*t);
 }
-
-float roofPattern(vec2 p) {
-	return GridPattern(p*1.0);
-}
-
-DistanceInfo object(in vec3 p)
-{
-    p.y += SquareHolePattern(p.xz*10)*0.04;
-    return DistanceInfo(sdSphere(p, 1.0), sphereType);
-}
-
-vec3 cRoomSize = vec3(20, 20, 20);
 
 DistanceInfo room(in vec3 p)
 {
@@ -74,7 +78,7 @@ DistanceInfo room(in vec3 p)
 
 DistanceInfo map(in vec3 p)
 {
-    return un(object(p), room(p));
+    return un(scene1(p), room(p));
 }
 
 const float roomEdgeBevel = 2.7;
@@ -122,12 +126,12 @@ vec3 getColor(in MarchResult result)
     } else {
         float pulse = exp(-C_0_S * 6.0);
         float edgeAmount = roomEdgeAmount(result.position);
-        vec3 metalColor = 0.05*vec3(0.2, 0.5, 0.3);
+        vec3 metalColor = 0.03*vec3(0.2, 0.3, 0.3);
         gFresnel = 0.1*pow(1.0 - max(0.0, dot(normal, viewDir)), 4.0);
         vec3 baseColor = metalColor * diffuse * (1.0 + 2.0 * pulse);
         vec3 tintedSpecular = specular * mix(vec3(1.0), metalColor, 0.6);
         vec3 col = baseColor + 2.0 * gFresnel * mix(vec3(0.6, 0.8, 1.0), metalColor, 0.4) + tintedSpecular;
-
+        // float shadow = 0.3 + 0.7*shadowFunction(result.position, lightPosition, 30);
         return col * (1.0 - 0.4*edgeAmount);
 
     }
