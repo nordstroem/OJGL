@@ -40,6 +40,7 @@ public:
     static constexpr int KEY_C = 0x43;
     static constexpr int KEY_Q = 0x51;
     static constexpr int KEY_E = 0x45;
+    static constexpr int KEY_K = 0x4B;
 
 private:
     class Details;

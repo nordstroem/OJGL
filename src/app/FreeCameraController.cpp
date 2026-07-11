@@ -82,3 +82,10 @@ void FreeCameraController::set(const Vector3f& newPosition, const Vector3f& look
     this->position = newPosition;
     this->_target = lookAt;
 }
+
+void FreeCameraController::reset()
+{
+    this->position = { 0, 0, 0 };
+    this->heading = 0.f;
+    this->elevation = 0.f;
+}

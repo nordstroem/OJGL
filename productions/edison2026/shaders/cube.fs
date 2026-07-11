@@ -30,7 +30,7 @@ const int roomType = 2;
 vec3 gEye;
 float gFresnel = 0.0;
 float gFocusDistance = 0.0;
-const vec3 S_focusTarget = vec3(0.0, 0.0, -5.0);
+const vec3 S_focusTarget = vec3(0.0, 0.0, 0.0);
 const float S_focusStrength = 0.03;
 
 float GridPattern(in vec2 uv)
@@ -58,8 +58,7 @@ float roofPattern(vec2 p) {
 
 DistanceInfo object(in vec3 p)
 {
-    p.z += 5.0;
-    p.y += SquareHolePattern(p.xz*10 + iTime*5)*0.05;
+    p.y += SquareHolePattern(p.xz*10)*0.04;
     return DistanceInfo(sdSphere(p, 1.0), sphereType);
 }
 
@@ -67,7 +66,6 @@ vec3 cRoomSize = vec3(20, 20, 20);
 
 DistanceInfo room(in vec3 p)
 {
-    p.z += 5.0;
     p.y -= wallPattern(p.xz) * 0.005;
     p.x -= wallPattern(p.zy) * 0.005;
     p.z -= wallPattern(p.xy) * 0.005;
@@ -83,7 +81,6 @@ const float roomEdgeBevel = 2.7;
 float roomEdgeAmount(in vec3 p)
 {
     vec3 q = p;
-    q.z += 5.0;
     vec3 d = abs(q) - cRoomSize;
     vec3 w = smoothstep(-roomEdgeBevel, 0.0, d);
     return clamp(w.x + w.y + w.z - 1.0, 0.0, 1.0);
@@ -107,7 +104,7 @@ vec3 getColor(in MarchResult result)
         return vec3(0.0);
     }
 
-    vec3 lightPosition = vec3(3.0, 4.0, -3.0);
+    vec3 lightPosition = vec3(3.0, 4.0, 3.0);
     vec3 normal = normal(result.position);
     vec3 invLight = normalize(lightPosition - result.position);
     vec3 viewDir = normalize(gEye - result.position);
@@ -125,7 +122,7 @@ vec3 getColor(in MarchResult result)
     } else {
         float pulse = exp(-C_0_S * 6.0);
         float edgeAmount = roomEdgeAmount(result.position);
-        vec3 metalColor = 0.005*vec3(0.2, 0.5, 0.9);
+        vec3 metalColor = 0.05*vec3(0.2, 0.5, 0.3);
         gFresnel = 0.1*pow(1.0 - max(0.0, dot(normal, viewDir)), 4.0);
         vec3 baseColor = metalColor * diffuse * (1.0 + 2.0 * pulse);
         vec3 tintedSpecular = specular * mix(vec3(1.0), metalColor, 0.6);

@@ -22,6 +22,7 @@ public:
     Matrix getCameraMatrix() const;
     void set(const Vector3f& newPosition, float newHeading, float newElevation);
     void set(const Vector3f& newPosition, const Vector3f& lookAt);
+    void reset();
 
 private:
     static constexpr float _translationSpeed = 0.01f;

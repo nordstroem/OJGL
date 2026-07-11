@@ -92,10 +92,14 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
                 captureFrame = true;
                 break;
 
-            case Window::KEY_C:
+            case Window::KEY_C: {
                 const FreeCameraController& c = FreeCameraController::instance();
                 LOG_INFO("Camera: {" << c.position.x << "f, " << c.position.y << "f, " << c.position.z << "f}"
                                      << ", " << c.heading << "f, " << c.elevation << "f");
+            } break;
+
+            case Window::KEY_K:
+                FreeCameraController::instance().reset();
                 break;
 #endif
             }
