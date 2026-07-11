@@ -3,7 +3,7 @@ const float S_distanceEpsilon = 1e-2;
 const float S_normalEpsilon = 1e-3;
 const int S_maxSteps = 400;
 const float S_maxDistance = 100.0;
-const float S_distanceMultiplier = 0.7;
+const float S_distanceMultiplier = 0.9;
 const float S_minVolumetricJumpDistance = 0.02;
 const float S_volumetricDistanceMultiplier = 0.75;
 const int S_reflectionJumps = 2;
@@ -86,7 +86,7 @@ DistanceInfo robotArm(in vec3 p)
     float aElbow = 0.9 + 0.5 * sin(0.45 * iTime + 2.5);
     float aWrist = 0.8 * sin(0.7 * iTime);
 
-    float dJoint = sdCappedCylinder(p - vec3(0.0, 0.1, 0.0), vec2(0.8, 0.1));
+    float dJoint = sdCappedCylinder(p - vec3(0.0, 0.13, 0.0), vec2(0.8, 0.1));
 
     // Axis 1
     vec3 q = p - vec3(0.0, 0.65, 0.0);
