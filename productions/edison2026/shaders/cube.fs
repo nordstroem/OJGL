@@ -22,9 +22,13 @@ uniform float iTime;
 uniform vec2 iResolution;
 uniform mat4 iCameraMatrix;
 uniform float mBassdrum;
+uniform float mBassdrumTot;
 uniform float mHihat;
+uniform float mHihatTot;
 uniform float mSnare;
+uniform float mSnareTot;
 uniform float mStrings;
+uniform float mStringsTot;
 
 const int sphereType = 1;
 const int roomType = 2;
@@ -54,6 +58,8 @@ float SquareHolePattern(in vec2 uv)
 
 DistanceInfo scene1(in vec3 p)
 {
+    p.y -= 5.5;
+    p.x -= 5.0;
     // pMod1(p.x, 5.0);
     // pMod1(p.z, 15.0);
     float d1 = sdSphere(p, 1.0);
@@ -79,13 +85,20 @@ DistanceInfo room(in vec3 p)
     return DistanceInfo(-sdBox(p, cRoomSize), roomType);
 }
 
+float func(float n) {
+    return 0.8 * sin(0.3 * n*2);
+}
+
 DistanceInfo robotArm(in vec3 p)
 {
     float aBase =     0.9 * sin(0.35 * iTime);
     float aShoulder = 0.35 + 0.3 * sin(0.5 * iTime + 1.0);
     float aElbow =    0.9 + 0.5 * sin(0.45 * iTime + 2.5);
     float aWrist =    0.8 * sin(0.7 * iTime);
-    float aFinger =   0.8 * sin(0.3 * iTime);
+
+    float x0 = func(mStringsTot - 1);
+    float x1 = func(mStringsTot);
+    float aFinger = mix(x0, x1, smoothstep(0.0, 0.15, mStrings));
 
     float dJoint = sdCappedCylinder(p - vec3(0.0, 0.13, 0.0), vec2(0.8, 0.1));
 
@@ -128,7 +141,7 @@ DistanceInfo robotArm(in vec3 p)
     dJoint = min(dJoint, sdCappedCylinder(qq.xzy, vec2(0.04, 0.04)));
     qq.xy *= rot(aFinger);
 
-    dJoint = min(dJoint, sdCappedCylinder(qq - vec3(0.00, 0.12 + fLength*0.5, 0.0), vec2(fRadius, fLength)));
+    dJoint = min(dJoint, sdRoundCone(qq - vec3(0.00, 0.01, 0.0), 0.025, 0.005, fLength*2));
     
 
     return un(DistanceInfo(dBody, armBodyType), DistanceInfo(dJoint, armJointType));
@@ -136,7 +149,7 @@ DistanceInfo robotArm(in vec3 p)
 
 DistanceInfo map(in vec3 p)
 {
-    return un(robotArm(p), room(p));
+    return un(scene1(p), un(robotArm(p), room(p)));
 }
 
 const float roomEdgeBevel = 2.7;
@@ -191,12 +204,12 @@ vec3 getColor(in MarchResult result)
         vec3 tintedSpecular = specular * mix(vec3(1.0), metalColor, 0.6); 
         return baseColor + 2.0 * gFresnel * mix(vec3(0.6, 0.8, 1.0), metalColor, 0.4) + tintedSpecular;
     } else if (result.type == armBodyType) {
-        vec3 bodyColor = 0.5*vec3(0.2, 0.5, 0.9);
+        vec3 bodyColor = 0.8*vec3(0.2, 0.5, 0.9);
         gFresnel = 0.3 * pow(1.0 - max(0.0, dot(normal, viewDir)), 4.0);
         return bodyColor * (0.06 + diffuse) + 0.8 * specular * mix(vec3(1.0), bodyColor, 0.3) + gFresnel * vec3(1.0, 0.55, 0.25);
     } else if (result.type == armJointType) {
-        vec3 graphite = vec3(0.08, 0.08, 0.09);
-        gFresnel = 0.2 * pow(1.0 - max(0.0, dot(normal, viewDir)), 4.0);
+        vec3 graphite = 0.5*vec3(0.08, 0.08, 0.09);
+        gFresnel = 0.2 * pow(1.0 - max(0.0, dot(normal, viewDir)), 4.0) * step(0.1, result.position.y);
         return graphite * (0.3 + diffuse) + 0.6 * specular + gFresnel * vec3(0.4);
     } else {
         float edgeAmount = roomEdgeAmount(result.position);
