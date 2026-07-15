@@ -44,7 +44,7 @@ ojstd::string unwrapRawString(const std::string& fileContents)
 }
 #endif
 
-ojstd::string replaceIncludes(const ojstd::string& rawShader)
+ojstd::string replaceIncludes(const ojstd::string& rawShader, ojstd::vector<ojstd::string>* outIncludes = nullptr)
 {
     ojstd::string includeKeyword = R""(#include ")"";
     ojstd::string modifiedShader = rawShader;
@@ -60,6 +60,9 @@ ojstd::string replaceIncludes(const ojstd::string& rawShader)
         int includeStringLength = includeKeyword.length() + nameEnd - nameStart + 2;
         ojstd::string name = rawShader.substring(nameStart, nameEnd);
         ojstd::string includeString = rawShader.substring(includeStart, includeStart + includeStringLength);
+
+        if (outIncludes != nullptr)
+            outIncludes->push_back(name);
 
         const auto& shaderToInclude = ShaderReader::get(name);
         modifiedShader = modifiedShader.replaceFirst(includeString, shaderToInclude);
@@ -85,25 +88,34 @@ void ShaderReader::registerDiskPath(const ojstd::string& path, const ojstd::stri
 {
     ShaderReader::_shaders[path].diskPath = diskPath;
 }
-#endif
 
-bool ShaderReader::modified(const ojstd::string& path)
+bool ShaderReader::modifiedRecursive(const ojstd::string& path, ojstd::unordered_set<ojstd::string>& visited)
 {
-#ifdef _DEBUG
+    if (visited.contains(path))
+        return false;
+    visited.insert(path);
+
     ShaderContent& entry = ShaderReader::_shaders[path];
-    return entry.diskPath.length() != 0 && modifyTime(entry.diskPath) != entry.modifyTime;
-#else
-    OJ_UNUSED(path);
+    if (entry.diskPath.length() != 0 && modifyTime(entry.diskPath) != entry.modifyTime)
+        return true;
+
+    // Copy the include list: recursion below touches the shader map, which may reallocate its
+    // backing storage and invalidate `entry` (and its includes vector).
+    ojstd::vector<ojstd::string> includes = entry.includes;
+    for (const auto& include : includes) {
+        if (ShaderReader::modifiedRecursive(include, visited))
+            return true;
+    }
     return false;
-#endif
 }
 
-const ojstd::string& ShaderReader::get(const ojstd::string& path)
+bool ShaderReader::refreshFromDisk(const ojstd::string& path, ojstd::unordered_set<ojstd::string>& visited)
 {
-    _ASSERT_EXPR(ShaderReader::_shaders.contains(path), ojstd::wstringWrapper(path + " is not preloaded.").ptr);
+    if (visited.contains(path))
+        return !ShaderReader::_shaders[path].resolved;
+    visited.insert(path);
 
-#ifdef _DEBUG
-    // Reload the raw source from disk when the file has changed (hot reload).
+    // Reload this file's own source when it changed on disk.
     {
         ShaderContent& entry = ShaderReader::_shaders[path];
         if (entry.diskPath.length() != 0 && fileExists(entry.diskPath)) {
@@ -142,13 +154,60 @@ const ojstd::string& ShaderReader::get(const ojstd::string& path)
             }
         }
     }
+
+    // Recurse into includes; a changed descendant forces this entry to re-resolve so the fresh
+    // include source gets re-spliced. Copy the include list first (recursion may reallocate the map).
+    ojstd::vector<ojstd::string> includes = ShaderReader::_shaders[path].includes;
+    bool anyDependencyChanged = false;
+    for (const auto& include : includes) {
+        if (ShaderReader::refreshFromDisk(include, visited))
+            anyDependencyChanged = true;
+    }
+    if (anyDependencyChanged)
+        ShaderReader::_shaders[path].resolved = false;
+
+    return !ShaderReader::_shaders[path].resolved;
+}
+#endif
+
+bool ShaderReader::modified(const ojstd::string& path)
+{
+#ifdef _DEBUG
+    ojstd::unordered_set<ojstd::string> visited;
+    return ShaderReader::modifiedRecursive(path, visited);
+#else
+    OJ_UNUSED(path);
+    return false;
+#endif
+}
+
+const ojstd::string& ShaderReader::get(const ojstd::string& path)
+{
+    _ASSERT_EXPR(ShaderReader::_shaders.contains(path), ojstd::wstringWrapper(path + " is not preloaded.").ptr);
+
+#ifdef _DEBUG
+    // Hot reload: re-read this shader and everything it (transitively) #includes from disk, and
+    // invalidate the resolved cache of any entry whose own file or a transitive include changed.
+    {
+        ojstd::unordered_set<ojstd::string> visited;
+        ShaderReader::refreshFromDisk(path, visited);
+    }
 #endif
 
     // Resolve #include directives lazily and cache the result. Registration order is irrelevant:
     // replaceIncludes calls get() for each included shader, resolving it on demand.
     if (!ShaderReader::_shaders[path].resolved) {
         ojstd::string raw = ShaderReader::_shaders[path].rawContent;
+#ifdef _DEBUG
+        // Record the direct includes discovered while resolving, so hot reload knows this shader's
+        // dependencies. Populate a local first: replaceIncludes recurses through get(), which may
+        // reallocate the shader map and invalidate a reference held into it.
+        ojstd::vector<ojstd::string> includes;
+        ojstd::string resolved = replaceIncludes(raw, &includes);
+        ShaderReader::_shaders[path].includes = includes;
+#else
         ojstd::string resolved = replaceIncludes(raw);
+#endif
         ShaderReader::_shaders[path].resolvedContent = resolved;
         ShaderReader::_shaders[path].resolved = true;
     }

@@ -11,6 +11,7 @@ struct ShaderContent {
     long long modifyTime = 0LL;
 #ifdef _DEBUG
     ojstd::string diskPath; // absolute path on disk, for hot reload
+    ojstd::vector<ojstd::string> includes; // direct #include virtual paths, recorded at last resolve
 #endif
 };
 
@@ -28,6 +29,14 @@ public:
     static const ojstd::string& get(const ojstd::string& path);
 
 private:
+#ifdef _DEBUG
+    // Recursively re-read `path` and everything it (transitively) #includes from disk, invalidating
+    // the resolved cache of any entry whose own file or a transitive include changed. Returns true if
+    // `path`'s resolved content needs rebuilding.
+    static bool refreshFromDisk(const ojstd::string& path, ojstd::unordered_set<ojstd::string>& visited);
+    // Returns true if `path`'s own file or any of its transitive includes changed on disk.
+    static bool modifiedRecursive(const ojstd::string& path, ojstd::unordered_set<ojstd::string>& visited);
+#endif
     static ojstd::unordered_map<ojstd::string, ShaderContent> _shaders;
 };
 }
