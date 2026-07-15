@@ -3,9 +3,11 @@
 // The project defines WIN32_LEAN_AND_MEAN, so <windows.h> does not pull in the multimedia
 // headers that define WAVEFORMATEX / WAVE_FORMAT_IEEE_FLOAT, which <dsound.h> needs. Include
 // <mmsystem.h> explicitly first (and in this order).
+// clang-format off
 #include <windows.h>
 #include <mmsystem.h>
 #include <dsound.h>
+// clang-format on
 
 #ifndef WAVE_FORMAT_IEEE_FLOAT
 #define WAVE_FORMAT_IEEE_FLOAT 0x0003
@@ -32,7 +34,7 @@ void AudioOutput::init(const void* interleavedStereo, unsigned long numFrames, u
     // A window is required to set the cooperative level; the foreground window is fine.
     ds->SetCooperativeLevel(hWnd ? static_cast<HWND>(hWnd) : GetForegroundWindow(), DSSCL_PRIORITY);
 
-    WAVEFORMATEX wfx = {};
+    WAVEFORMATEX wfx = { };
     wfx.wFormatTag = (bitsPerSample == 32) ? WAVE_FORMAT_IEEE_FLOAT : WAVE_FORMAT_PCM;
     wfx.nChannels = 2;
     wfx.nSamplesPerSec = sampleRate;
@@ -41,7 +43,7 @@ void AudioOutput::init(const void* interleavedStereo, unsigned long numFrames, u
     wfx.nAvgBytesPerSec = sampleRate * _bytesPerFrame;
     wfx.cbSize = 0;
 
-    DSBUFFERDESC desc = {};
+    DSBUFFERDESC desc = { };
     desc.dwSize = sizeof(DSBUFFERDESC);
     desc.dwFlags = DSBCAPS_GETCURRENTPOSITION2 | DSBCAPS_GLOBALFOCUS | DSBCAPS_CTRLVOLUME;
     desc.dwBufferBytes = numFrames * _bytesPerFrame;

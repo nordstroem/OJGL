@@ -19,6 +19,7 @@ const int S_reflectionJumps = 2;
 #include "common/primitives.fs"
 #include "common/raymarch_utils.fs"
 #include "common/utils.fs"
+#line 23
 
 in vec2 fragCoord;
 out vec4 fragColor;
@@ -62,12 +63,10 @@ float SquareHolePattern(in vec2 uv)
   return smoothstep(0.1, 0.0, t*t);
 }
 
-DistanceInfo scene1(in vec3 p)
+DistanceInfo blob(in vec3 p)
 {
     p.y -= 5.5;
     p.x -= 5.0;
-    // pMod1(p.x, 5.0);
-    // pMod1(p.z, 15.0);
     float d1 = sdSphere(p, 1.0);
     p.x -= 0.5 * cos(3*iTime);
     p.z -= 0.5 * sin(3*iTime);
@@ -164,9 +163,11 @@ DistanceInfo cube(in vec3 p)
 DistanceInfo map(in vec3 p)
 {
 #if SCENE == 0
-    return un(scene1(p), un(robotArm(p), room(p)));
+    return un(room(p), blob(p));
+#elif SCENE == 1
+    return un(room(p), robotArm(p));
 #else
-    return un(cube(p), room(p));
+    return un(room(p), cube(p));
 #endif
 }
 
