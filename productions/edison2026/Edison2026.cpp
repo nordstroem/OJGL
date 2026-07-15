@@ -15,8 +15,10 @@ using namespace ojgl;
 ojstd::vector<Scene> Edison2026::buildSceneGraph(const Vector2i& sceneSize) const
 {
     ojstd::vector<Scene> scenes;
-    {
+
+    auto buildScene = [&sceneSize](const ojstd::string& sceneIndex) -> Scene {
         auto cube = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2026/cube.fs");
+        cube->setDefines({ { "SCENE", sceneIndex } });
         cube->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
             Buffer::UniformVector vector;
             vector.push_back(ojstd::make_shared<UniformMatrix4fv>("iCameraMatrix", FreeCameraController::instance().getCameraMatrix()));
@@ -52,8 +54,11 @@ ojstd::vector<Scene> Edison2026::buildSceneGraph(const Vector2i& sceneSize) cons
             return { ojstd::make_shared<Uniform2f>("blurDir", 0.f, 1.f) };
         });
 
-        scenes.emplace_back(blur2, Duration::seconds(9999), "cube");
-    }
+        return Scene(blur2, Duration::seconds(9999), "cube" + sceneIndex);
+    };
+
+    scenes.push_back(buildScene("0"));
+    scenes.push_back(buildScene("1"));
 
     return scenes;
 }

@@ -27,6 +27,7 @@ public:
     Buffer& setName(const ojstd::string& name);
     Buffer& setViewportOffset(const Vector2i& viewportOffset);
     Buffer& setUniformCallback(const ojstd::function<UniformVector(float)>& uniformCallback);
+    Buffer& setDefines(const ojstd::vector<ojstd::Pair<ojstd::string, ojstd::string>>& defines);
     Buffer& setMeshCallback(const ojstd::function<ojstd::vector<ojstd::Pair<ojstd::shared_ptr<Mesh>, Matrix>>(float)>& meshCallback);
     Buffer& setTextureCallback(const ojstd::function<ojstd::vector<ojstd::shared_ptr<Uniform1t>>(float)>& textureCallback);
 
@@ -92,6 +93,7 @@ private:
     ojstd::string _name = "default";
     const ojstd::string _vertexPath;
     const ojstd::string _fragmentPath;
+    ojstd::vector<ojstd::Pair<ojstd::string, ojstd::string>> _defines;
     BufferFormat _format = BufferFormat::Quad;
     const unsigned _width;
     const unsigned _height;

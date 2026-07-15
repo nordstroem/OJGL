@@ -141,6 +141,13 @@ Buffer& Buffer::setUniformCallback(const ojstd::function<UniformVector(float)>& 
     return *this;
 }
 
+Buffer& Buffer::setDefines(const ojstd::vector<ojstd::Pair<ojstd::string, ojstd::string>>& defines)
+{
+    _defines = defines;
+    loadShader();
+    return *this;
+}
+
 Buffer& Buffer::setMeshCallback(const ojstd::function<ojstd::vector<ojstd::Pair<ojstd::shared_ptr<Mesh>, Matrix>>(float)>& meshCallback)
 {
     _meshCallback = meshCallback;
@@ -329,7 +336,10 @@ void Buffer::loadShader()
     GL_CHECK_LOG(glGetShaderiv(vertID, GL_COMPILE_STATUS, &param), vertID, glGetShaderInfoLog, "Failed to compile vertex shader!");
 
     // Fragment shader
-    ojstd::string fragmentShader = "#version 430\n" + ShaderReader::get(_fragmentPath);
+    ojstd::string defines;
+    for (const auto& d : _defines)
+        defines = defines + "#define " + d.first + " " + d.second + "\n";
+    ojstd::string fragmentShader = "#version 430\n" + defines + "#line 1\n" + ShaderReader::get(_fragmentPath);
     int fragmentShaderLength = fragmentShader.length();
     auto fragmentChar = fragmentShader.c_str();
     GL_CHECK_ERROR(glShaderSource(fragID, 1, &fragmentChar, &fragmentShaderLength));

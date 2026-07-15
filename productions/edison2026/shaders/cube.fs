@@ -11,6 +11,11 @@ const int S_reflectionJumps = 2;
 #define S_VOLUMETRIC 0
 #define S_REFLECTIONS 1
 
+// SCENE is injected per-scene via Buffer::setDefines (0 = robot arm + blob, 1 = cube).
+#ifndef SCENE
+#define SCENE 0
+#endif
+
 #include "common/primitives.fs"
 #include "common/raymarch_utils.fs"
 #include "common/utils.fs"
@@ -34,6 +39,7 @@ const int sphereType = 1;
 const int roomType = 2;
 const int armBodyType = 3;
 const int armJointType = 4;
+const int cubeType = 5;
 
 vec3 gEye;
 float gFresnel = 0.0;
@@ -147,9 +153,21 @@ DistanceInfo robotArm(in vec3 p)
     return un(DistanceInfo(dBody, armBodyType), DistanceInfo(dJoint, armJointType));
 }
 
+DistanceInfo cube(in vec3 p)
+{
+    p.y -= 1.5;
+    p.xz *= rot(0.4 * iTime);
+    p.xy *= rot(0.25 * iTime);
+    return DistanceInfo(sdRoundBox(p, vec3(1.3), 0.06), cubeType);
+}
+
 DistanceInfo map(in vec3 p)
 {
+#if SCENE == 0
     return un(scene1(p), un(robotArm(p), room(p)));
+#else
+    return un(cube(p), room(p));
+#endif
 }
 
 const float roomEdgeBevel = 2.7;
@@ -173,6 +191,9 @@ float getReflectiveIndex(int type)
     }
     if (type == armJointType) {
         return 0.25;
+    }
+    if (type == cubeType) {
+        return 0.2;
     }
     return 0.0;
 }
@@ -211,6 +232,13 @@ vec3 getColor(in MarchResult result)
         vec3 graphite = 0.5*vec3(0.08, 0.08, 0.09);
         gFresnel = 0.2 * pow(1.0 - max(0.0, dot(normal, viewDir)), 4.0) * step(0.1, result.position.y);
         return graphite * (0.3 + diffuse) + 0.6 * specular + gFresnel * vec3(0.4);
+    } else if (result.type == cubeType) {
+        vec3 cubeColor = vec3(0.7, 0.35, 0.15);
+        gFresnel = 0.2 * pow(1.0 - max(0.0, dot(normal, viewDir)), 4.0);
+        vec3 baseColor = cubeColor * (0.08 + diffuse);
+        vec3 tintedSpecular = specular * mix(vec3(1.0), cubeColor, 0.5);
+        float shadow = 0.3 + 0.7*shadowFunction(result.position, lightPosition, 30);
+        return shadow * (baseColor + tintedSpecular) + gFresnel * vec3(1.0, 0.7, 0.4);
     } else {
         float edgeAmount = roomEdgeAmount(result.position);
         vec3 metalColor = 0.3*vec3(0.2, 0.3, 0.3);
