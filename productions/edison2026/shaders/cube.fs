@@ -44,8 +44,9 @@ const int cubeType = 5;
 
 vec3 gEye;
 float gFresnel = 0.0;
-float gFocusDistance = 0.0;
-const vec3 S_focusTarget = vec3(0.0, 0.0, 0.0);
+float gHitToEyeDistance = 0.0;
+const float S_focusDistance = 10.0;
+const float S_focusRadius = 10.0;
 const float S_focusStrength = 0.03;
 vec3 cRoomSize = vec3(20, 20, 20);
 float floorPosition = 0;
@@ -155,9 +156,10 @@ DistanceInfo robotArm(in vec3 p)
 DistanceInfo cube(in vec3 p)
 {
     p.y -= 1.5;
+    pMod2(p.xz, vec2(4));
     p.xz *= rot(0.4 * iTime);
-    p.xy *= rot(0.25 * iTime);
-    return DistanceInfo(sdRoundBox(p, vec3(1.3), 0.06), cubeType);
+    p.xy *= rot(0.25 * iTime); 
+    return DistanceInfo(sdRoundBox(p, vec3(0.9), 0.00), cubeType);
 }
 
 DistanceInfo map(in vec3 p)
@@ -202,7 +204,7 @@ float getReflectiveIndex(int type)
 vec3 getColor(in MarchResult result)
 {
     if (result.jump == 0) {
-        gFocusDistance = length(gEye - result.position);
+        gHitToEyeDistance = length(gEye - result.position);
     }
 
     if (result.type == invalidType) {
@@ -273,8 +275,7 @@ void main()
 
     vec3 color = march(rayOrigin, rayDirection);
 
-    float focalDistance = length(gEye - S_focusTarget);
-    float focus = clamp( (abs(gFocusDistance - focalDistance)) * S_focusStrength, 0.0, 1.0);
+    float focus = clamp( (abs(gHitToEyeDistance - S_focusDistance) - S_focusRadius) * S_focusStrength, 0.0, 1.0);
 
     fragColor = vec4(pow(max(color, 0.0), vec3(0.4545)), focus);
 }

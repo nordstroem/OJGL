@@ -60,7 +60,7 @@ ojstd::vector<Scene> Edison2026::buildSceneGraph(const Vector2i& sceneSize) cons
     scenes.push_back(buildScene("0", Duration::seconds(10)));
     scenes.push_back(buildScene("1", Duration::seconds(10)));
     scenes.push_back(buildScene("2", Duration::seconds(10)));
-    scenes.push_back(buildScene("3", Duration::seconds(10)));
+    scenes.push_back(buildScene("3", Duration::seconds(10000)));
 
     return scenes;
 }
