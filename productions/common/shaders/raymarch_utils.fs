@@ -53,6 +53,32 @@ float shadowFunction(in vec3 hitPosition, in vec3 lightPosition, float k)
     return res;
 }
 
+float shadowFunction2(in vec3 hitPosition, in vec3 normal, in vec3 lightPosition, float k)
+{
+    vec3 dir = lightPosition - hitPosition;
+    float maxDistance = length(dir);
+    dir = normalize(dir);
+
+    if (dot(normal, dir) <= 0.0)
+        return 0.0;
+
+    vec3 ro = hitPosition + normal * S_distanceEpsilon * 3.0;
+
+    float res = 1.0;
+    float t = S_distanceEpsilon * 3.0;
+    while (t < maxDistance) {
+        float h = map(ro + dir * t).distance;
+
+        if (h < S_distanceEpsilon)
+            return 0.0;
+
+        res = min(res, k * h / t);
+
+        t += h;
+    }
+    return res;
+}
+
 DistanceInfo un(DistanceInfo a, DistanceInfo b) { return a.distance < b.distance ? a : b; }
 
 vec3 march(in vec3 rayOrigin, in vec3 rayDirection)

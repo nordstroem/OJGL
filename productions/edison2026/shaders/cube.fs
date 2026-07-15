@@ -240,7 +240,7 @@ vec3 getColor(in MarchResult result)
         gFresnel = 0.2 * pow(1.0 - max(0.0, dot(normal, viewDir)), 4.0);
         vec3 baseColor = cubeColor * (0.08 + diffuse);
         vec3 tintedSpecular = specular * mix(vec3(1.0), cubeColor, 0.5);
-        float shadow = 0.3 + 0.7*shadowFunction(result.position, lightPosition, 30);
+        float shadow = 0.3 + 0.7*shadowFunction2(result.position, normal, lightPosition, 30);
         return shadow * (baseColor + tintedSpecular) + gFresnel * vec3(1.0, 0.7, 0.4);
     } else {
         float edgeAmount = roomEdgeAmount(result.position);
@@ -249,7 +249,7 @@ vec3 getColor(in MarchResult result)
         vec3 baseColor = metalColor * diffuse;
         vec3 tintedSpecular = specular * mix(vec3(1.0), metalColor, 0.6);
         vec3 col = baseColor + 2.0 * gFresnel * metalColor + tintedSpecular;
-        float shadow = 0.3 + 0.7*shadowFunction(result.position, lightPosition, 30);
+        float shadow = 0.3 + 0.7*shadowFunction2(result.position, normal, lightPosition, 30);
         return shadow * col * (1.0 - 0.4*edgeAmount);
 
     }
