@@ -27,7 +27,10 @@ void SyncChannel::tick(Duration currentTime)
     for (int note = 0; note < numNotes; note++) {
         ojstd::vector<Duration>& s = _timesPerNote[note];
         while (!s.empty() && s[0] <= _currentTime) {
-            _lastTimePerNote[note] = _currentTime;
+            // The note's own time, not the time of the tick that consumed it: a tick can be well
+            // past the note (a seek drains everything up to the target in one go), and reporting
+            // the tick time there makes every note look like it just hit.
+            _lastTimePerNote[note] = s[0];
             _totalHitsPerNote[note]++;
             s.erase(s.begin());
         }

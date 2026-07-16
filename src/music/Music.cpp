@@ -107,5 +107,11 @@ void Music::setTime(Duration time)
     // timestamp than the now-earlier elapsedTime(), making getTimeSinceAnyNote() go negative.
     _syncChannels = ojstd::unordered_map<int, SyncChannel>();
     _initSync();
+    // Drain the rebuilt channels up to the seek target before returning. GLState renders a frame
+    // before it calls updateSync(), so leaving them at zero here would make every channel report
+    // no hits at all for the first frame after any seek.
+    for (auto& kv : _syncChannels) {
+        kv.second.tick(time);
+    }
 }
 } //namespace ojgl
