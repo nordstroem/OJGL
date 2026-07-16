@@ -163,8 +163,8 @@ DistanceInfo robotArm(in vec3 p)
 }
 
 const float cCellSize = 1.6;
-const float cCellHalfWidth = 0.75;
-const float cRestHeight = 0.1;
+const float cCellHalfWidth = 0.76;
+const float cRestHeight = 0.3;
 const float cSpikeHeight = 1.7;
 const float cSpikeDecay = 0.5;
 const float cSpikeAttack = 0.05;
@@ -179,16 +179,17 @@ float cellHeight(float age, int cell)
 
 DistanceInfo cube(in vec3 p)
 {
+    p.y-=0.2;
     vec3 q = p;
     pMod1(q.x, cCellSize);
-    float d = sdRoundBox(q - vec3(0, cRestHeight, 0), vec3(cCellHalfWidth, cRestHeight, cCellHalfWidth), 0.0);
+    float d = sdBox(q - vec3(0, cRestHeight, 0), vec3(cCellHalfWidth, cRestHeight, cCellHalfWidth));
 
     int order[12] = int[](1, 3, 4, 1, 3, 1, 4, 9, 1, 5, 2, 3);
     for (int i = 0; i < NUM_STRING_HITS; i++) {
         float cell = float(order[int(mod(mStringsHitTot[i] - 69, 12))]);
         float s = cellHeight(mStringsHitAge[i], int(cell));
         vec3 r = p - vec3(cell * cCellSize, s, 0);
-        d = min(d, sdRoundBox(r, vec3(cCellHalfWidth, s, cCellHalfWidth), 0.0));
+        d = min(d, sdBox(r, vec3(cCellHalfWidth, s, cCellHalfWidth)));
     }
     return DistanceInfo(d, cubeType);
 }
@@ -218,7 +219,7 @@ float getReflectiveIndex(int type)
 {
     float pulse = exp(-mBassdrum * 6.0);
     if (type == sphereType){
-        return mix(pulse, 0.9, gFresnel);
+        return mix(0.5, 0.9, gFresnel);
     }
     if (type == armBodyType) {
         return 0.2;
@@ -243,7 +244,7 @@ vec3 getColor(in MarchResult result)
     }
 
     float pulse = exp(-mBassdrum * 6.0);
-    vec3 lightPosition = vec3(15 * (1 - 2*pulse), 4.0, 3.0);
+    vec3 lightPosition = vec3(15 * (1 - 2*pulse), 4.0, 8.0);
     vec3 normal = normal(result.position);
     vec3 invLight = normalize(lightPosition - result.position);
     vec3 viewDir = normalize(gEye - result.position);
