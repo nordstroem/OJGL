@@ -1,6 +1,7 @@
 #include "FreeCameraController.h"
 #include "demo/Demo.h"
 #include "music/Music.h"
+#include "utility/Log.h"
 
 namespace ojgl {
 class Edison2026 final : public Demo {
@@ -12,13 +13,50 @@ public:
 
 using namespace ojgl;
 
+namespace {
+
+// The cube scene raises one box per strings note and lets it sink back down over ~1.5 s, so it
+// needs the last few notes rather than just the most recent one. The sync channels only expose
+// the latest hit, so keep a small history here and hand it to the shader as parallel arrays,
+// newest first.
+constexpr int cNumStringHits = 3;
+constexpr float cLongAgo = -1000.0f;
+
+struct StringsHistory {
+    float noteTime[cNumStringHits] { cLongAgo, cLongAgo, cLongAgo };
+    float noteTot[cNumStringHits] {};
+    float lastTot { -1.0f };
+
+    void update(float tot, float timeSinceLast, float elapsed)
+    {
+        if (tot < lastTot) { // Restarted or seeked backwards.
+            *this = StringsHistory();
+        }
+        if (tot == lastTot)
+            return;
+
+        for (int i = cNumStringHits - 1; i > 0; i--) {
+            noteTime[i] = noteTime[i - 1];
+            noteTot[i] = noteTot[i - 1];
+        }
+        noteTime[0] = elapsed - timeSinceLast;
+        noteTot[0] = tot;
+        lastTot = tot;
+    }
+};
+
+StringsHistory gStringsHistory;
+
+}
+
 ojstd::vector<Scene> Edison2026::buildSceneGraph(const Vector2i& sceneSize) const
 {
     ojstd::vector<Scene> scenes;
 
-    auto buildScene = [&sceneSize](const ojstd::string& sceneIndex, const Duration& duration) -> Scene {
+    auto buildScene = [&sceneSize](int sceneIndex, const Duration& duration) -> Scene {
         auto cube = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2026/cube.fs");
-        cube->setDefines({ { "SCENE", sceneIndex } });
+        cube->setDefines({ { "SCENE", ojstd::to_string(sceneIndex) },
+            { "NUM_STRING_HITS", ojstd::to_string(cNumStringHits) } });
         cube->setUniformCallback([]([[maybe_unused]] float relativeSceneTime) {
             Buffer::UniformVector vector;
             vector.push_back(ojstd::make_shared<UniformMatrix4fv>("iCameraMatrix", FreeCameraController::instance().getCameraMatrix()));
@@ -38,6 +76,17 @@ ojstd::vector<Scene> Edison2026::buildSceneGraph(const Vector2i& sceneSize) cons
                 float stringsTot = (float)(music->syncChannels()[4].getTotalHits() + music->syncChannels()[5].getTotalHits()
                     + music->syncChannels()[6].getTotalHits() + music->syncChannels()[7].getTotalHits());
                 vector.push_back(ojstd::make_shared<Uniform1f>("mStringsTot", stringsTot));
+
+                float elapsed = music->elapsedTime().toSeconds();
+                gStringsHistory.update(stringsTot, stringsSince, elapsed);
+                ojstd::vector<float> hitAges;
+                ojstd::vector<float> hitTots;
+                for (int i = 0; i < cNumStringHits; i++) {
+                    hitAges.push_back(elapsed - gStringsHistory.noteTime[i]);
+                    hitTots.push_back(gStringsHistory.noteTot[i]);
+                }
+                vector.push_back(ojstd::make_shared<Uniform1fv>("mStringsHitAge", hitAges));
+                vector.push_back(ojstd::make_shared<Uniform1fv>("mStringsHitTot", hitTots));
             }
             return vector;
         });
@@ -54,13 +103,13 @@ ojstd::vector<Scene> Edison2026::buildSceneGraph(const Vector2i& sceneSize) cons
             return { ojstd::make_shared<Uniform2f>("blurDir", 0.f, 1.f) };
         });
 
-        return Scene(blur2, duration, "cube" + sceneIndex);
+        return Scene(blur2, duration, "cube" + ojstd::to_string(sceneIndex));
     };
 
-    scenes.push_back(buildScene("0", Duration::seconds(10)));
-    scenes.push_back(buildScene("1", Duration::seconds(10)));
-    scenes.push_back(buildScene("2", Duration::seconds(10)));
-    scenes.push_back(buildScene("3", Duration::seconds(10000)));
+    scenes.push_back(buildScene(0, Duration::seconds(20)));
+    scenes.push_back(buildScene(1, Duration::seconds(20)));
+    scenes.push_back(buildScene(2, Duration::seconds(20)));
+    scenes.push_back(buildScene(3, Duration::seconds(10000)));
 
     return scenes;
 }

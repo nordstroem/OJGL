@@ -16,6 +16,11 @@ const int S_reflectionJumps = 2;
 #define SCENE 0
 #endif
 
+// Injected via Buffer::setDefines; must match cNumStringHits in Edison2026.cpp.
+#ifndef NUM_STRING_HITS
+#define NUM_STRING_HITS 3
+#endif
+
 #include "common/primitives.fs"
 #include "common/raymarch_utils.fs"
 #include "common/utils.fs"
@@ -35,6 +40,10 @@ uniform float mSnare;
 uniform float mSnareTot;
 uniform float mStrings;
 uniform float mStringsTot;
+// The last NUM_STRING_HITS strings notes, newest first: seconds since the hit, and the value
+// mStringsTot had at it. Ages start far past cSpikeDecay so unused slots rest flat.
+uniform float mStringsHitAge[NUM_STRING_HITS];
+uniform float mStringsHitTot[NUM_STRING_HITS];
 
 const int sphereType = 1;
 const int roomType = 2;
@@ -153,13 +162,32 @@ DistanceInfo robotArm(in vec3 p)
     return un(DistanceInfo(dBody, armBodyType), DistanceInfo(dJoint, armJointType));
 }
 
+const float cCellSize = 1.6;
+const float cCellHalfWidth = 0.75;
+const float cRestHeight = 0.1;
+const float cSpikeHeight = 1.7;
+const float cSpikeDecay = 0.5;
+
+float cellHeight(float age, int cell)
+{
+    float decay = cell == 9 ? 2.0 : cSpikeDecay;
+    return cRestHeight + cSpikeHeight * (1.0 - smoothstep(0.0, decay, age));
+}
+
 DistanceInfo cube(in vec3 p)
 {
-    p.y -= 1.5;
-    pMod2(p.xz, vec2(4));
-    p.xz *= rot(0.4 * iTime);
-    p.xy *= rot(0.25 * iTime); 
-    return DistanceInfo(sdRoundBox(p, vec3(0.9), 0.00), cubeType);
+    vec3 q = p;
+    pMod1(q.x, cCellSize);
+    float d = sdRoundBox(q - vec3(0, cRestHeight, 0), vec3(cCellHalfWidth, cRestHeight, cCellHalfWidth), 0.0);
+
+    int order[12] = int[](1, 3, 4, 1, 3, 1, 4, 9, 1, 5, 2, 3);
+    for (int i = 0; i < NUM_STRING_HITS; i++) {
+        float cell = float(order[int(mod(mStringsHitTot[i] - 69, 12))]);
+        float s = cellHeight(mStringsHitAge[i], int(cell));
+        vec3 r = p - vec3(cell * cCellSize, s, 0);
+        d = min(d, sdRoundBox(r, vec3(cCellHalfWidth, s, cCellHalfWidth), 0.0));
+    }
+    return DistanceInfo(d, cubeType);
 }
 
 DistanceInfo map(in vec3 p)
@@ -190,10 +218,10 @@ float getReflectiveIndex(int type)
         return mix(pulse, 0.9, gFresnel);
     }
     if (type == armBodyType) {
-        return 0.1;
+        return 0.2;
     }
     if (type == armJointType) {
-        return 0.25;
+        return 0.8;
     }
     if (type == cubeType) {
         return 0.2;

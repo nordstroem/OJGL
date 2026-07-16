@@ -59,8 +59,9 @@ float shadowFunction2(in vec3 hitPosition, in vec3 normal, in vec3 lightPosition
     float maxDistance = length(dir);
     dir = normalize(dir);
 
+    float q = dot(normal, dir);
     if (dot(normal, dir) <= 0.0)
-        return 0.0;
+        return abs(q);
 
     vec3 ro = hitPosition + normal * S_distanceEpsilon * 3.0;
 
