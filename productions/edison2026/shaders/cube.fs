@@ -167,11 +167,14 @@ const float cCellHalfWidth = 0.75;
 const float cRestHeight = 0.1;
 const float cSpikeHeight = 1.7;
 const float cSpikeDecay = 0.5;
+const float cSpikeAttack = 0.05;
 
 float cellHeight(float age, int cell)
 {
     float decay = cell == 9 ? 2.0 : cSpikeDecay;
-    return cRestHeight + cSpikeHeight * (1.0 - smoothstep(0.0, decay, age));
+    float rise = smoothstep(0.0, cSpikeAttack, age);
+    float fall = 1.0 - smoothstep(cSpikeAttack, cSpikeAttack + decay, age);
+    return cRestHeight + cSpikeHeight * rise * fall;
 }
 
 DistanceInfo cube(in vec3 p)

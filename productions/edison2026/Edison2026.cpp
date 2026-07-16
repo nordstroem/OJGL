@@ -15,16 +15,12 @@ using namespace ojgl;
 
 namespace {
 
-// The cube scene raises one box per strings note and lets it sink back down over ~1.5 s, so it
-// needs the last few notes rather than just the most recent one. The sync channels only expose
-// the latest hit, so keep a small history here and hand it to the shader as parallel arrays,
-// newest first.
 constexpr int cNumStringHits = 3;
 constexpr float cLongAgo = -1000.0f;
 
 struct StringsHistory {
-    float noteTime[cNumStringHits] { cLongAgo, cLongAgo, cLongAgo };
-    float noteTot[cNumStringHits] {};
+    float noteTime[cNumStringHits] { cLongAgo };
+    float noteTot[cNumStringHits] { };
     float lastTot { -1.0f };
 
     void update(float tot, float timeSinceLast, float elapsed)
@@ -82,7 +78,7 @@ ojstd::vector<Scene> Edison2026::buildSceneGraph(const Vector2i& sceneSize) cons
                 ojstd::vector<float> hitAges;
                 ojstd::vector<float> hitTots;
                 for (int i = 0; i < cNumStringHits; i++) {
-                    hitAges.push_back(elapsed - gStringsHistory.noteTime[i]);
+                    hitAges.push_back(ojstd::abs(elapsed - gStringsHistory.noteTime[i]));
                     hitTots.push_back(gStringsHistory.noteTot[i]);
                 }
                 vector.push_back(ojstd::make_shared<Uniform1fv>("mStringsHitAge", hitAges));
