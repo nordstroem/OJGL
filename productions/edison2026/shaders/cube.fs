@@ -348,12 +348,12 @@ DistanceInfo oskar(in vec3 p) {
 }
 
 float elevatorShaft(in vec3 p) {
-    float d1 = sdCylinder(p.xzy, 1);
+    float d1 = sdCylinder(p.xzy, 0.8);
     return d1;
 }
 
 DistanceInfo elevatorLid(in vec3 p) {
-    float m = mod(iTime, 3.0); // fix
+    float m = clamp(iTime - 1.0, 0.0, 1.2); // fix
     
     p.z = abs(p.z);
     p += vec3(0, 0, -m);
@@ -369,7 +369,9 @@ DistanceInfo map(in vec3 p)
 #if SCENE == 0
     return un(room(p), cube(p));
 #elif SCENE == 1
-    DistanceInfo d1 = robotArm(p);
+    vec3 pRobot = p;
+    pRobot -= vec3(0, min(0.0, -4 + iTime), 0);
+    DistanceInfo d1 = robotArm(pRobot);
     
     float dElevatorShaft = elevatorShaft(p);
     DistanceInfo d2 = room(p);
