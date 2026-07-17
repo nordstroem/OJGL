@@ -771,6 +771,11 @@ void main()
 #endif
 
 #if SCENE == 2
+    float mm = mod(mBassdrumTot, 13.0);
+    if (mm == 7.0) {
+        u *= 1.0 - mBassdrum*2.0;
+        v *= 1.0 - mBassdrum*2.0;
+    } 
     if (iTime < OP0_0) {
         S_focusDistance = 28.0;
         rayOrigin = vec3(0, 39, 19 - iTime);
@@ -803,7 +808,10 @@ void main()
 	    vec3 right = normalize(cross(vec3(0, 1, 0), dir));
  	    vec3 up = cross(dir, right);
         
+
         rayDirection = normalize(dir + right*u + up*v);
+
+
     } else if (iTime < OP0_3) {
         float t = iTime - OP0_2;
         rayOrigin = vec3(-15, 28 + t*3.0, 19);
