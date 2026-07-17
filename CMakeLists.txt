@@ -223,7 +223,7 @@ target_link_options(ojgl PRIVATE
     $<$<CONFIG:Release>:/DEBUG;/NODEFAULTLIB;/ENTRY:mainCRTStartup;/OPT:REF;/OPT:ICF;/MAP;/LTCG>
     # CrinklerRelease: Crinkler links + compresses. /MANIFEST:NO so CMake's wrapper skips mt.exe
     # (Crinkler has no manifest support). /REUSE was removed: it crashed on Clinkster's large BSS.
-    $<$<CONFIG:CrinklerRelease>:/NODEFAULTLIB;/ENTRY:mainCRTStartup;/MANIFEST:NO;/CRINKLER;/RANGE:opengl32;/COMPMODE:FAST;/TRANSFORM:CALLS;/REPORT:ojgl_crinkler_report.html;/PRINT:IMPORTS;/HASHTRIES:1;/HASHSIZE:1000>
+    $<$<CONFIG:CrinklerRelease>:/NODEFAULTLIB;/ENTRY:mainCRTStartup;/MANIFEST:NO;/CRINKLER;/RANGE:opengl32,winmm;/COMPMODE:FAST;/TRANSFORM:CALLS;/REPORT:ojgl_crinkler_report.html;/PRINT:IMPORTS;/HASHTRIES:1;/HASHSIZE:1000>
 )
 
 set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT ojgl)
