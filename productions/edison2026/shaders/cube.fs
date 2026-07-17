@@ -642,7 +642,7 @@ void main()
 
 #if SCENE == 1
     if (iTime < ARM_SUBSCENE1) {
-        rayOrigin = vec3(10*cos(iTime), 11, 10*sin(iTime));
+        rayOrigin = vec3(13*cos(iTime), 3 + iTime * 0.3, 13*sin(iTime));
         gEye = rayOrigin; // TODO is this correct?
         //vec3 tar = rayOrigin + vec3(1, 1 , 0);
         vec3 tar = vec3(0, 3, 0);
@@ -653,7 +653,7 @@ void main()
         
         rayDirection = normalize(dir + right*u + up*v);
     } else if (iTime < ARM_SUBSCENE2) {
-        rayOrigin = vec3(iTime, 25, -iTime + 10);
+        rayOrigin = vec3(iTime, 22, -iTime + 10);
         gEye = rayOrigin;
         vec3 tar = rayOrigin - vec3(0.1, 1, 0.1);
         
