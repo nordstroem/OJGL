@@ -261,7 +261,7 @@ float missile(vec3 p) {
     p *= 0.2;
     vec2 b = pMod2(p.xz, vec2(3));
     //p.y -= mod((b.x + b.y)*6.0 + iTime * 10.0, 10.0);
-    p.y -= mod((b.x + b.y)*6.0 + mStrings * 10.0, 10.0);
+    p.y -= mod((b.x + b.y)*6.0 + mStrings * 10.0, 13.0) - 3.0;
 
     float w = 0.2 - 0.03 * smoothstep(1.4, 1.6, p.y);
     if (p.y > 1.7) {
@@ -326,7 +326,8 @@ DistanceInfo oskar(in vec3 p) {
         phase = fragCoord.x > 0.5 ? (fragCoord.y > 0.5 ? 0.0 : 2.0) : (fragCoord.y > 0.5 ? 3.0 : 1.0);
     } else if (iTime < OP3) {
         // L-R swipe
-        phase = fragCoord.x > mod(iTime, 1.0) ? 2.0 : 1.0;
+        float t = iTime - OP2;
+        phase = fragCoord.x > mod(t, 1.0) ? 2.0 : 1.0;
     } else if (iTime < OP4) {
         // dual band
         if (mod(mBassdrumTot, 2) >= 1) {
@@ -732,7 +733,7 @@ void main()
         rayDirection = normalize(dir + right*u + up*v);
     } else if (iTime < OP0_3) {
         float t = iTime - OP0_2;
-        rayOrigin = vec3(-15, 30 + t*3.0, 19);
+        rayOrigin = vec3(-15, 28 + t*3.0, 19);
         gEye = rayOrigin;
         vec3 tar = vec3(0, t*5, 1);
         
@@ -756,7 +757,7 @@ void main()
     } else if (iTime < OP2) {
         float t = iTime - OP0_3;
         rayOrigin = vec3(15 * sin(t * 0.25), 38, 15 * cos(t * 0.25));
-        gEye = rayOrigin; // TODO is this correct?
+        gEye = rayOrigin; 
         vec3 tar = vec3(0, 20, 0);
         
         vec3 dir = normalize(tar - rayOrigin);
@@ -765,19 +766,20 @@ void main()
         
         rayDirection = normalize(dir + right*u + up*v);
     } else if (iTime < OP3) {
-        float t = iTime - OP0_3;
-        rayOrigin = vec3(15 * sin(t * 0.25), 38 - (t - OP2) * 3, 15 * cos(t * 0.25));
-        gEye = rayOrigin; // TODO is this correct?
-        vec3 tar = rayOrigin + vec3(1, -1, 1);
+        float t = iTime - OP2;
+        rayOrigin = vec3(15 * sin(t * 0.25), 38 - (t) * 3, 15 * cos(t * 0.25));
+        gEye = rayOrigin; 
+         vec3 tar = vec3(0, 20, 0);
         
         vec3 dir = normalize(tar - rayOrigin);
 	    vec3 right = normalize(cross(vec3(0, 1, 0), dir));
  	    vec3 up = cross(dir, right);
         
         rayDirection = normalize(dir + right*u + up*v);
+
     } else if (iTime < OP4) {
         rayOrigin = vec3(-10, 4, 13);
-        gEye = rayOrigin; // TODO is this correct?
+        gEye = rayOrigin; 
         vec3 tar = vec3(0, 30, 0);
         
         vec3 dir = normalize(tar - rayOrigin);
@@ -787,7 +789,7 @@ void main()
         rayDirection = normalize(dir + right*u + up*v);
     } else if (iTime < OP5) {
         rayOrigin = vec3(-19, 9, 11);
-        gEye = rayOrigin; // TODO is this correct?
+        gEye = rayOrigin; 
         vec3 tar = vec3(0, 9, 0);
         
         vec3 dir = normalize(tar - rayOrigin);
@@ -800,7 +802,7 @@ void main()
 
 #if SCENE == 3
     rayOrigin = vec3(13*cos(iTime), 3 + iTime * 0.3, 13*sin(iTime));
-    gEye = rayOrigin; // TODO is this correct?
+    gEye = rayOrigin; 
     //vec3 tar = rayOrigin + vec3(1, 1 , 0);
     vec3 tar = vec3(0, 3, 0);
         
