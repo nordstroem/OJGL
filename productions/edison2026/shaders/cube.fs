@@ -3,10 +3,10 @@ const float S_distanceEpsilon = 1e-2;
 const float S_normalEpsilon = 1e-3;
 const int S_maxSteps = 400;
 const float S_maxDistance = 100.0;
-const float S_distanceMultiplier = 0.9;
+const float S_distanceMultiplier = 0.7;
 const float S_minVolumetricJumpDistance = 0.02;
 const float S_volumetricDistanceMultiplier = 0.75;
-const int S_reflectionJumps = 2;
+const int S_reflectionJumps = 4;
 
 #define S_VOLUMETRIC 0
 #define S_REFLECTIONS 1
@@ -50,6 +50,7 @@ const int armJointType = 4;
 const int cubeType = 5;
 const int oskarType = 7;
 const int screenType = 8;
+const int lidType = 9;
 
 vec3 gEye;
 float gFresnel = 0.0;
@@ -104,18 +105,34 @@ float func(float n) {
     return 0.8 * sin(0.3 * n*2);
 }
 
-DistanceInfo robotArm(in vec3 p)
+DistanceInfo robotArm(in vec3 p, float timeOffset)
 {
-    float aBase =     0.9 * sin(0.35 * iTime);
-    float aShoulder = 0.35 + 0.3 * sin(0.5 * iTime + 1.0);
-    float aElbow =    0.9 + 0.5 * sin(0.45 * iTime + 2.5);
-    float aWrist =    0.8 * sin(0.7 * iTime);
+    float localTime = iTime + timeOffset*2.0;
+
+    float aBase =     0.9 * sin(0.35 * localTime);
+
+    float upright = 1;
+#if SCENE == 1
+    upright = smoothstep(5, 6, iTime);
+#elif SCENE == 3
+    upright = 1.0 - smoothstep(2, 3, iTime);
+#endif
+
+    float aShoulder = 0.35 + 0.3 * sin(0.5 * localTime + 1.0);
+    aShoulder *= upright;
+
+    float aElbow =    0.9 + 0.5 * sin(0.45 * localTime + 2.5);
+    aElbow *= upright;
+
+    float aWrist =    0.8 * sin(0.7 * localTime);
+    aWrist *= upright;
 
     float x0 = func(mStringsTot - 1);
     float x1 = func(mStringsTot);
     float aFinger = mix(x0, x1, smoothstep(0.0, 0.15, mStrings));
 
     float dJoint = sdCappedCylinder(p - vec3(0.0, 0.13, 0.0), vec2(0.8, 0.1));
+
 
     // Axis 1
     vec3 q = p - vec3(0.0, 0.65, 0.0);
@@ -281,6 +298,9 @@ float OP3 = 16.0;
 float OP4 = 20.0;
 float OP5 = 25.0;
 
+float ARM_SUBSCENE1 = 9.0;
+float ARM_SUBSCENE2 = 16.0;
+
 DistanceInfo oskar(in vec3 p) {
 
     // static phase
@@ -310,12 +330,20 @@ DistanceInfo oskar(in vec3 p) {
     if (phase >= 3 ) { // waves w rocket
         float d1 = p.y - 3 + sin(p.x + mBassdrumTot * 5) +  0.1 * sin(p.x * 3 + mBassdrumTot * 3);
         float d2 = missile(p);
-        return DistanceInfo(smink(d1, d2, 1.8), oskarType);
+        if (iTime > OP3 && iTime < OP4) { // skip waves in this sub scene, causes some shadow flicker in roof
+            return DistanceInfo(d2, oskarType);
+        } else {
+            return DistanceInfo(smink(d1, d2, 1.8), oskarType);
+        }
 
     } else if (phase >= 2 ) { // llt
         float d1 = llt(p);
-        float d2 = sdSphere(p, 7.0 - mBassdrum);
-        return DistanceInfo(min(d1, d2), oskarType);
+        float d2 = sdSphere(p, 5.5 - mBassdrum*0.7);
+        p.xz *= rot(PI / 6);
+        pModPolar(p.xz, 6);
+        float r = 1.0 + 0.3 + sin(length(p.xz) - iTime*3)*0.3;
+        float d3 = sdCylinder(p.zyx- vec3(0, 0, 0), r);
+        return DistanceInfo(smink(d1, smink(d2, d3, 1.0), 0.1), oskarType);
 
     } else if (phase >= 1 ) { // tower w spheres
         vec3 q = p;
@@ -338,17 +366,72 @@ DistanceInfo oskar(in vec3 p) {
     }
 }
 
+float elevatorShaft(in vec3 p) {
+    float d1 = sdCylinder(p.xzy, 0.8);
+    return d1;
+}
+
+DistanceInfo elevatorLid(in vec3 p) {
+    float m = 0;
+
+#if SCENE == 1
+        m = clamp(iTime - 1.0, 0.0, 1.2); // fix
+#endif
+
+#if SCENE == 3
+        m = clamp(11.0 - iTime, 0.0, 1.2); // fix
+#endif
+    vec3 o = p;
+
+    p.z = abs(p.z);
+    p += vec3(0, 0, -m);
+    float d1 = sdCappedCylinder(p, vec2(1.5, 0.2));
+    float d2 = sdBox(p+vec3(0, 0, 2), vec3(2));
+    d1 = opSubtraction(d2, d1);
+
+    o.y -= 0.18;
+    pMod1(o.x, 0.4);
+    float d3 = sdCylinder(o, 0.1);
+
+    return DistanceInfo(opSubtraction(d3, d1), lidType);
+}
 
 DistanceInfo map(in vec3 p)
 {
 #if SCENE == 0
     return un(room(p), cube(p));
 #elif SCENE == 1
-    return un(room(p), robotArm(p));
+    vec3 pRobot = p;
+    pRobot -= vec3(0, min(0.0, -6 + iTime), 0);
+    DistanceInfo d2 = room(p);
+    
+    if (iTime < ARM_SUBSCENE1) {
+        DistanceInfo d1 = robotArm(pRobot, 0);
+        float dElevatorShaft = elevatorShaft(p);
+        d2.distance = opSubtraction(dElevatorShaft, d2.distance);
+
+        DistanceInfo d3 = elevatorLid(p);
+
+        return un(d1, un(d2, d3));
+    } else {
+        vec2 i = pMod2(pRobot.xz, vec2(6, 6));
+        DistanceInfo d1 = robotArm(pRobot, i.x*10 + i.y);
+        return un(d1, d2);
+    }
 #elif SCENE == 2
     return un(room(p), oskar(p));
-#else
-    return un(room(p), robotArm(p));
+#elif SCENE == 3
+    vec3 pRobot = p;
+    pRobot -= vec3(0, min(0.0, 6 - iTime), 0);
+    DistanceInfo d2 = room(p);
+
+    DistanceInfo d1 = robotArm(pRobot, 0);
+    float dElevatorShaft = elevatorShaft(p);
+    d2.distance = opSubtraction(dElevatorShaft, d2.distance);
+
+    DistanceInfo d3 = elevatorLid(p);
+
+    return un(d1, un(d2, d3));
 #endif
 }
 
@@ -383,7 +466,58 @@ float getReflectiveIndex(int type)
     if (type == screenType) {
         return 0.5;
     }
+    if (type == lidType) {
+        return 0.2;
+    }
     return 0.0;
+}
+
+float hash( in vec2 p ) {
+	float h = dot(p,vec2(127.1,311.7));	
+    return fract(sin(h)*43758.5453123);
+}
+float noise( in vec2 p ) {
+    vec2 i = floor( p );
+    vec2 f = fract( p );	
+	vec2 u = f*f*(3.0-2.0*f);
+    return mix( mix( hash( i + vec2(0.0,0.0) ), 
+                     hash( i + vec2(1.0,0.0) ), u.x),
+                mix( hash( i + vec2(0.0,1.0) ), 
+                     hash( i + vec2(1.0,1.0) ), u.x), u.y);
+}
+float noiseOctave(in vec2 p, int octaves, float persistence)
+{
+	float n = 0.;
+	float amplitude = 1.;
+	float frequency = 1.;
+	float maxValue = 0.;
+	for(int i = 0; i < octaves; i++)
+	{
+		n += noise((p+float(i)) * frequency) * amplitude;
+		maxValue += amplitude;
+		amplitude *= persistence;
+		frequency *= 2.0;
+	}
+	return n / maxValue; 
+}
+// https://www.shadertoy.com/view/XsSfDG
+vec3 rust(in vec2 uv )
+{
+	//vec2 uv = fragCoord.xy / iResolution.xy;
+    
+    float n = noiseOctave(uv * 4., 10, 0.7);
+    float gs = 0.5 + 0.5 * sin(uv.x * 50.0 + n * 60.0);
+    
+    
+    
+    vec3 blue = vec3(.25, .8, 1.);
+    vec3 rust = vec3(1., .7, .15);
+    
+    vec3 color = mix(rust, blue, 0.8 * gs);
+    float n2 = noiseOctave(uv * 100., 10, 0.7);
+    color = mix(color, vec3(n2 * 0.5 + 0.25), 0.3);
+    
+	return color;
 }
 
 vec3 getColor(in MarchResult result)
@@ -419,6 +553,13 @@ vec3 getColor(in MarchResult result)
         vec3 baseColor = metalColor * diffuse * (1.0 + 2.0 * pulse);
         vec3 tintedSpecular = specular * mix(vec3(1.0), metalColor, 0.6); 
         return baseColor + 2.0 * gFresnel * mix(vec3(0.6, 0.8, 1.0), metalColor, 0.4) + tintedSpecular;
+    } else if (result.type == lidType) {
+        float pulse = exp(-mBassdrum * 6.0);
+        vec3 metalColor = 0.5*vec3(0.2, 0.3, 0.3);
+        gFresnel = pow(1.0 - max(0.0, dot(normal, viewDir)), 4.0);
+        vec3 baseColor = metalColor * diffuse * (1.0 + 2.0 * pulse);
+        vec3 tintedSpecular = specular * mix(vec3(1.0), metalColor, 0.6); 
+        return baseColor + 2.0 * gFresnel * mix(vec3(0.6, 0.8, 1.0), metalColor, 0.4) + tintedSpecular;
     } else if (result.type == screenType) {
         float pulse = exp(-mBassdrum * 6.0);
         vec2 copy = result.position.xz;
@@ -428,21 +569,42 @@ vec3 getColor(in MarchResult result)
         // -5 to 5
         float x = a.x + 5.0;
         float z = a.y + 5.0;
-        vec3 c1 = vec3(0.3, 0.8, 0.8);
-        vec3 c2 = vec3(0.2, 0.3, 0.6);
+        vec3 c1 = rust(result.position.xz * 0.01);
+        vec3 c2 = vec3(1) - c1;
         if (mod(mHihatTot, 2.0) >= 1.0) {
-            c2 = vec3(0.3, 0.8, 0.8);
-            c1 = vec3(0.2, 0.3, 0.6);
+            vec3 tmp = c1;
+            c1 = c2;
+            c2 = tmp;
         }
-        if (x == 0 || x == 10 || z == 0 || z == 10) {
-            color = c1;
-        } else if (x == 1 || x == 9 || z == 1 || z == 9) {
-             color = c2;
-        } else if (x == 2 || x == 8 || z == 2 || z == 8) {
-            color = c1;
-        } else if (x == 3 || x == 7 || z == 3 || z == 7) {
-            color = c2;
-        } else if (x == 4 || x == 6 || z == 4 || z == 6) {
+        float xm = 11-x - 2;
+        float zm = z - 2;
+        if (
+            (xm == 1 && zm == 0) ||
+            (xm == 2 && zm == 0) ||
+            (xm == 3 && zm == 0) ||
+            (xm == 0 && zm == 1) ||
+            (xm == 0 && zm == 2) ||
+            (xm == 0 && zm == 3) ||
+            (xm == 0 && zm == 4) ||
+            (xm == 0 && zm == 5) ||
+            (xm == 4 && zm == 1) ||
+            (xm == 4 && zm == 2) ||
+            (xm == 4 && zm == 3) ||
+            (xm == 4 && zm == 4) ||
+            (xm == 4 && zm == 5) ||
+            (xm == 1 && zm == 6) ||
+            (xm == 2 && zm == 6) ||
+            (xm == 3 && zm == 6) ||
+            (xm == 8 && zm == 0) ||
+            (xm == 8 && zm == 1) ||
+            (xm == 8 && zm == 2) ||
+            (xm == 8 && zm == 3) ||
+            (xm == 8 && zm == 4) ||
+            (xm == 8 && zm == 5) ||
+            (xm == 6 && zm == 6) ||
+            (xm == 7 && zm == 6) ||
+            (xm == 8 && zm == 6)
+            ) {
             color = c1;
         } else {
             color = c2;
@@ -496,6 +658,31 @@ void main()
     vec3 rayOrigin = (iCameraMatrix * vec4(u, v, -1.0, 1.0)).xyz;
     gEye = (iCameraMatrix * vec4(0.0, 0.0, 0.0, 1.0)).xyz;
     vec3 rayDirection = normalize(rayOrigin - gEye);
+
+#if SCENE == 1
+    if (iTime < ARM_SUBSCENE1) {
+        rayOrigin = vec3(13*cos(iTime), 3 + iTime * 0.3, 13*sin(iTime));
+        gEye = rayOrigin; // TODO is this correct?
+        //vec3 tar = rayOrigin + vec3(1, 1 , 0);
+        vec3 tar = vec3(0, 3, 0);
+        
+        vec3 dir = normalize(tar - rayOrigin);
+        vec3 right = normalize(cross(vec3(0, 1, 0), dir));
+        vec3 up = cross(dir, right);
+        
+        rayDirection = normalize(dir + right*u + up*v);
+    } else if (iTime < ARM_SUBSCENE2) {
+        rayOrigin = vec3(iTime, 22, -iTime + 10);
+        gEye = rayOrigin;
+        vec3 tar = rayOrigin - vec3(0.1, 1, 0.1);
+        
+        vec3 dir = normalize(tar - rayOrigin);
+        vec3 right = normalize(cross(vec3(0, 1, 0), dir));
+        vec3 up = cross(dir, right);
+        
+        rayDirection = normalize(dir + right*u + up*v);
+    }
+#endif
 
 #if SCENE == 2
     if (iTime < OP1) {
@@ -552,10 +739,27 @@ void main()
     }
 #endif
 
+#if SCENE == 3
+    rayOrigin = vec3(13*cos(iTime), 3 + iTime * 0.3, 13*sin(iTime));
+    gEye = rayOrigin; // TODO is this correct?
+    //vec3 tar = rayOrigin + vec3(1, 1 , 0);
+    vec3 tar = vec3(0, 3, 0);
+        
+    vec3 dir = normalize(tar - rayOrigin);
+    vec3 right = normalize(cross(vec3(0, 1, 0), dir));
+    vec3 up = cross(dir, right);
+        
+    rayDirection = normalize(dir + right*u + up*v);
+#endif
+
     vec3 color = march(rayOrigin, rayDirection);
 
     float focus = clamp( (abs(gHitToEyeDistance - S_focusDistance) - S_focusRadius) * S_focusStrength, 0.0, 1.0);
 
     fragColor = vec4(pow(max(color, 0.0), vec3(0.4545)), focus);
+
+#if SCENE == 3
+    fragColor.rgb *= 1.0 - smoothstep(11, 14, iTime); // fade out
+#endif
 }
 )""
