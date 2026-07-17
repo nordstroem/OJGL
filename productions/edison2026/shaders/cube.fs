@@ -50,6 +50,7 @@ const int armJointType = 4;
 const int cubeType = 5;
 const int oskarType = 7;
 const int screenType = 8;
+const int lidType = 9;
 
 vec3 gEye;
 float gFresnel = 0.0;
@@ -346,13 +347,37 @@ DistanceInfo oskar(in vec3 p) {
     }
 }
 
+float elevatorShaft(in vec3 p) {
+    float d1 = sdCylinder(p.xzy, 1);
+    return d1;
+}
+
+DistanceInfo elevatorLid(in vec3 p) {
+    float m = mod(iTime, 3.0); // fix
+    
+    p.z = abs(p.z);
+    p += vec3(0, 0, -m);
+    float d1 = sdCappedCylinder(p, vec2(1.5, 0.2));
+    float d2 = sdBox(p+vec3(0, 0, 2), vec3(2));
+    d1 = opSubtraction(d2, d1);
+
+    return DistanceInfo(d1, lidType);
+}
 
 DistanceInfo map(in vec3 p)
 {
 #if SCENE == 0
     return un(room(p), cube(p));
 #elif SCENE == 1
-    return un(room(p), robotArm(p));
+    DistanceInfo d1 = robotArm(p);
+    
+    float dElevatorShaft = elevatorShaft(p);
+    DistanceInfo d2 = room(p);
+    d2.distance = opSubtraction(dElevatorShaft, d2.distance);
+
+    DistanceInfo d3 = elevatorLid(p);
+
+    return un(d1, un(d2, d3));
 #elif SCENE == 2
     return un(room(p), oskar(p));
 #else
@@ -389,6 +414,9 @@ float getReflectiveIndex(int type)
         return 0.5;
     }
     if (type == screenType) {
+        return 0.5;
+    }
+    if (type == lidType) {
         return 0.5;
     }
     return 0.0;
@@ -469,6 +497,13 @@ vec3 getColor(in MarchResult result)
         vec3 tintedSpecular = specular * mix(vec3(1.0), metalColor, 0.6); 
         return baseColor + 2.0 * gFresnel * mix(vec3(0.6, 0.8, 1.0), metalColor, 0.4) + tintedSpecular;
     } else if (result.type == oskarType) {
+        float pulse = exp(-mBassdrum * 6.0);
+        vec3 metalColor = 0.5*vec3(0.2, 0.5, 0.9);
+        gFresnel = pow(1.0 - max(0.0, dot(normal, viewDir)), 4.0);
+        vec3 baseColor = metalColor * diffuse * (1.0 + 2.0 * pulse);
+        vec3 tintedSpecular = specular * mix(vec3(1.0), metalColor, 0.6); 
+        return baseColor + 2.0 * gFresnel * mix(vec3(0.6, 0.8, 1.0), metalColor, 0.4) + tintedSpecular;
+    } else if (result.type == lidType) {
         float pulse = exp(-mBassdrum * 6.0);
         vec3 metalColor = 0.5*vec3(0.2, 0.5, 0.9);
         gFresnel = pow(1.0 - max(0.0, dot(normal, viewDir)), 4.0);
@@ -573,6 +608,19 @@ void main()
     vec3 rayOrigin = (iCameraMatrix * vec4(u, v, -1.0, 1.0)).xyz;
     gEye = (iCameraMatrix * vec4(0.0, 0.0, 0.0, 1.0)).xyz;
     vec3 rayDirection = normalize(rayOrigin - gEye);
+
+#if SCENE == 1
+        rayOrigin = vec3(10*cos(iTime), 12, 10*sin(iTime));
+        gEye = rayOrigin; // TODO is this correct?
+        //vec3 tar = rayOrigin + vec3(1, 1 , 0);
+        vec3 tar = vec3(0, 0, 0);
+        
+        vec3 dir = normalize(tar - rayOrigin);
+        vec3 right = normalize(cross(vec3(0, 1, 0), dir));
+        vec3 up = cross(dir, right);
+        
+        rayDirection = normalize(dir + right*u + up*v);
+#endif
 
 #if SCENE == 2
     if (iTime < OP1) {
