@@ -236,7 +236,8 @@ float udRoundBox( vec3 p, vec3 b, float r )
 {
   return length(max(abs(p)-b,0.0))-r;
 }
-
+)""
+    R""(
 float llt(vec3 p) 
 {
     p *= 0.3;
@@ -281,7 +282,7 @@ float missile(vec3 p) {
     p *= 0.2;
     vec2 b = pMod2(p.xz, vec2(3));
     //p.y -= mod((b.x + b.y)*6.0 + iTime * 10.0, 10.0);
-    p.y -= mod((b.x + b.y)*6.0 + mStrings * 10.0, 10.0);
+    p.y -= mod((b.x + b.y)*6.0 + mStrings * 10.0, 13.0) - 3.0;
 
     float w = 0.2 - 0.03 * smoothstep(1.4, 1.6, p.y);
     if (p.y > 1.7) {
@@ -312,22 +313,97 @@ float opIntersection( float d1, float d2 )
     return max(d1,d2);
 }
 
+float hash( in vec2 p ) {
+	float h = dot(p,vec2(127.1,311.7));	
+    return fract(sin(h)*43758.5453123);
+}
+float noise( in vec2 p ) {
+    vec2 i = floor( p );
+    vec2 f = fract( p );	
+	vec2 u = f*f*(3.0-2.0*f);
+    return mix( mix( hash( i + vec2(0.0,0.0) ), 
+                     hash( i + vec2(1.0,0.0) ), u.x),
+                mix( hash( i + vec2(0.0,1.0) ), 
+                     hash( i + vec2(1.0,1.0) ), u.x), u.y);
+}
+float noiseOctave(in vec2 p, int octaves, float persistence)
+{
+	float n = 0.;
+	float amplitude = 1.;
+	float frequency = 1.;
+	float maxValue = 0.;
+	for(int i = 0; i < octaves; i++)
+	{
+		n += noise((p+float(i)) * frequency) * amplitude;
+		maxValue += amplitude;
+		amplitude *= persistence;
+		frequency *= 2.0;
+	}
+	return n / maxValue; 
+}
 
-float OP1 = 10.0;
-float OP2 = 15.0;
-float OP3 = 16.0;
-float OP4 = 20.0;
-float OP5 = 25.0;
+DistanceInfo elevatorLid(in vec3 p) {
+    float m = 0;
+
+#if SCENE == 1
+        m = clamp(iTime - 1.0, 0.0, 1.2); // fix
+#endif
+
+#if SCENE == 3
+        m = clamp(11.0 - iTime, 0.0, 1.2); // fix
+#endif
+    vec3 o = p;
+
+    p.z = abs(p.z);
+    p += vec3(0, 0, -m);
+    float d1 = sdCappedCylinder(p, vec2(1.5, 0.2));
+    float d2 = sdBox(p+vec3(0, 0, 2), vec3(2));
+    d1 = opSubtraction(d2, d1);
+
+    o.y -= 0.18;
+    pMod1(o.x, 0.4);
+    float d3 = sdCylinder(o, 0.1);
+
+    return DistanceInfo(opSubtraction(d3, d1), lidType);
+}
+
+float OP0_0 = 3.0;
+float OP0_1 = OP0_0 + 4.0;
+float OP0_2 = OP0_1 + 4.0;
+float OP0_3 = OP0_2 + 4.0;
+float OP1 = OP0_3 + 10.0;
+float OP2 = OP1 + 5.0;
+float OP3 = OP2 + 1.0;
+float OP4 = OP3 + 4.0;
+float OP5 = OP4 + 5.0;
+float OP6 = OP5 + 6.0;
 
 float ARM_SUBSCENE1 = 15.0;
 float ARM_SUBSCENE2 = 16.0;
+
+bool noiseTransitionCheck() {
+    vec2 uv = fragCoord.xy;
+    uv *= 200;
+    uv = floor(uv);
+    float n = noiseOctave(uv, 10, 0.7);
+    float t = iTime - OP5;
+    return n < smoothstep(2, 3, t);
+}
 
 DistanceInfo oskar(in vec3 p) {
 
     // static phase
     float phase = 0.0;
 
-    if (iTime < OP1) {
+    if (iTime < OP0_0) {
+        phase = 0.0;
+    } else if (iTime < OP0_1) {
+        phase = 1.0;
+    } else if (iTime < OP0_2) {
+        phase = 2.0;
+    } else if (iTime < OP0_3) {
+        phase = 3.0;
+    } else if (iTime < OP1) {
          // switch phase on bassdrum
         phase = mod(mBassdrumTot, 4);
     } else if (iTime < OP2) {
@@ -335,7 +411,8 @@ DistanceInfo oskar(in vec3 p) {
         phase = fragCoord.x > 0.5 ? (fragCoord.y > 0.5 ? 0.0 : 2.0) : (fragCoord.y > 0.5 ? 3.0 : 1.0);
     } else if (iTime < OP3) {
         // L-R swipe
-        phase = fragCoord.x > mod(iTime, 1.0) ? 2.0 : 1.0;
+        float t = iTime - OP2;
+        phase = fragCoord.x > mod(t, 1.0) ? 2.0 : 1.0;
     } else if (iTime < OP4) {
         // dual band
         if (mod(mBassdrumTot, 2) >= 1) {
@@ -346,6 +423,24 @@ DistanceInfo oskar(in vec3 p) {
     } else if (iTime < OP5) {
         // four band and swap on bassdrum
          phase = mod(fragCoord.y * 4.0 + mBassdrumTot, 4.0);
+    } else if (iTime < OP6) {
+        phase = 1.0;
+
+        if (noiseTransitionCheck()) {
+            // TODO copy pasted code
+            vec3 pRobot = p;
+            //pRobot -= vec3(0, min(0.0, 6 - iTime), 0);
+            //DistanceInfo d2 = room(p);
+
+            DistanceInfo d1 = robotArm(pRobot, 0);
+            DistanceInfo d3 = elevatorLid(p);
+
+            return un(d1, d3);
+        } else if (1.0 - fragCoord.y > mBassdrum && fragCoord.x > 0.5) {
+            phase = 3.0;
+        } else if (1.0 - fragCoord.y > mHihat && fragCoord.x <= 0.5) {
+            phase = 2.0;
+        }
     }
 
     if (phase >= 3 ) { // waves w rocket
@@ -392,32 +487,8 @@ float elevatorShaft(in vec3 p) {
     return d1;
 }
 
-DistanceInfo elevatorLid(in vec3 p) {
-    float m = 0;
-    p.y*=3;
-
-#if SCENE == 1
-        m = clamp(iTime - 1.0, 0.0, 1.2); // fix
-#endif
-
-#if SCENE == 3
-        m = clamp(11.0 - iTime, 0.0, 1.2); // fix
-#endif
-    vec3 o = p;
-
-    p.z = abs(p.z);
-    p += vec3(0, 0, -m);
-    float d1 = sdCappedCylinder(p, vec2(1.5, 0.2));
-    float d2 = sdBox(p+vec3(0, 0, 2), vec3(2));
-    d1 = opSubtraction(d2, d1);
-
-    o.y -= 0.18;
-    pMod1(o.x, 0.4);
-    float d3 = sdCylinder(o, 0.1);
-
-    return DistanceInfo(opSubtraction(d3, d1), lidType);
-}
-
+)""
+    R""(
 DistanceInfo map(in vec3 p)
 {
 #if SCENE == 0
@@ -494,34 +565,7 @@ float getReflectiveIndex(int type)
     return 0.0;
 }
 
-float hash( in vec2 p ) {
-	float h = dot(p,vec2(127.1,311.7));	
-    return fract(sin(h)*43758.5453123);
-}
-float noise( in vec2 p ) {
-    vec2 i = floor( p );
-    vec2 f = fract( p );	
-	vec2 u = f*f*(3.0-2.0*f);
-    return mix( mix( hash( i + vec2(0.0,0.0) ), 
-                     hash( i + vec2(1.0,0.0) ), u.x),
-                mix( hash( i + vec2(0.0,1.0) ), 
-                     hash( i + vec2(1.0,1.0) ), u.x), u.y);
-}
-float noiseOctave(in vec2 p, int octaves, float persistence)
-{
-	float n = 0.;
-	float amplitude = 1.;
-	float frequency = 1.;
-	float maxValue = 0.;
-	for(int i = 0; i < octaves; i++)
-	{
-		n += noise((p+float(i)) * frequency) * amplitude;
-		maxValue += amplitude;
-		amplitude *= persistence;
-		frequency *= 2.0;
-	}
-	return n / maxValue; 
-}
+
 // https://www.shadertoy.com/view/XsSfDG
 vec3 rust(in vec2 uv )
 {
@@ -727,11 +771,55 @@ void main()
 #endif
 
 #if SCENE == 2
-    if (iTime < OP1) {
+    if (iTime < OP0_0) {
+        rayOrigin = vec3(0, 39, 19 - iTime);
+        gEye = rayOrigin;
+        vec3 tar = vec3(0, 0, 1);
+        
+        vec3 dir = normalize(tar - rayOrigin);
+	    vec3 right = normalize(cross(vec3(0, 1, 0), dir));
+ 	    vec3 up = cross(dir, right);
+        
+        rayDirection = normalize(dir + right*u + up*v);
+    } else if (iTime < OP0_1) {
+        float y = 5+iTime;
+        rayOrigin = vec3(19, y, -19);
+        gEye = rayOrigin;
+        vec3 tar = vec3(0, y, 1);
+        
+        vec3 dir = normalize(tar - rayOrigin);
+	    vec3 right = normalize(cross(vec3(0, 1, 0), dir));
+ 	    vec3 up = cross(dir, right);
+        
+        rayDirection = normalize(dir + right*u + up*v);
+    } else if (iTime < OP0_2) {
+        float t = iTime - OP0_1;
+        rayOrigin = vec3(19, 25 + t*3.0, 19);
+        gEye = rayOrigin;
+        vec3 tar = vec3(0, 0, 1);
+        
+        vec3 dir = normalize(tar - rayOrigin);
+	    vec3 right = normalize(cross(vec3(0, 1, 0), dir));
+ 	    vec3 up = cross(dir, right);
+        
+        rayDirection = normalize(dir + right*u + up*v);
+    } else if (iTime < OP0_3) {
+        float t = iTime - OP0_2;
+        rayOrigin = vec3(-15, 28 + t*3.0, 19);
+        gEye = rayOrigin;
+        vec3 tar = vec3(0, t*5, 1);
+        
+        vec3 dir = normalize(tar - rayOrigin);
+	    vec3 right = normalize(cross(vec3(0, 1, 0), dir));
+ 	    vec3 up = cross(dir, right);
+        
+        rayDirection = normalize(dir + right*u + up*v);
+    } else if (iTime < OP1) {
+        float t = iTime - OP0_3;
         rayOrigin = vec3(15, 38, 15);
         gEye = rayOrigin; // TODO is this correct?
         //vec3 tar = rayOrigin + vec3(1, 1 , 0);
-        vec3 tar = vec3(0, iTime * 3.0, 0);
+        vec3 tar = vec3(0, t * 3.0, 0);
         
         vec3 dir = normalize(tar - rayOrigin);
 	    vec3 right = normalize(cross(vec3(0, 1, 0), dir));
@@ -739,8 +827,9 @@ void main()
         
         rayDirection = normalize(dir + right*u + up*v);
     } else if (iTime < OP2) {
-        rayOrigin = vec3(15 * sin(iTime * 0.25), 38, 15 * cos(iTime * 0.25));
-        gEye = rayOrigin; // TODO is this correct?
+        float t = iTime - OP0_3;
+        rayOrigin = vec3(15 * sin(t * 0.25), 38, 15 * cos(t * 0.25));
+        gEye = rayOrigin; 
         vec3 tar = vec3(0, 20, 0);
         
         vec3 dir = normalize(tar - rayOrigin);
@@ -749,18 +838,20 @@ void main()
         
         rayDirection = normalize(dir + right*u + up*v);
     } else if (iTime < OP3) {
-        rayOrigin = vec3(15 * sin(iTime * 0.25), 38 - (iTime - OP2) * 3, 15 * cos(iTime * 0.25));
-        gEye = rayOrigin; // TODO is this correct?
-        vec3 tar = rayOrigin + vec3(1, -1, 1);
+        float t = iTime - OP2;
+        rayOrigin = vec3(15 * sin(t * 0.25), 38 - (t) * 3, 15 * cos(t * 0.25));
+        gEye = rayOrigin; 
+         vec3 tar = vec3(0, 20, 0);
         
         vec3 dir = normalize(tar - rayOrigin);
 	    vec3 right = normalize(cross(vec3(0, 1, 0), dir));
  	    vec3 up = cross(dir, right);
         
         rayDirection = normalize(dir + right*u + up*v);
+
     } else if (iTime < OP4) {
         rayOrigin = vec3(-10, 4, 13);
-        gEye = rayOrigin; // TODO is this correct?
+        gEye = rayOrigin; 
         vec3 tar = vec3(0, 30, 0);
         
         vec3 dir = normalize(tar - rayOrigin);
@@ -770,7 +861,7 @@ void main()
         rayDirection = normalize(dir + right*u + up*v);
     } else if (iTime < OP5) {
         rayOrigin = vec3(-19, 9, 11);
-        gEye = rayOrigin; // TODO is this correct?
+        gEye = rayOrigin; 
         vec3 tar = vec3(0, 9, 0);
         
         vec3 dir = normalize(tar - rayOrigin);
@@ -778,12 +869,37 @@ void main()
  	    vec3 up = cross(dir, right);
         
         rayDirection = normalize(dir + right*u + up*v);
+    } else if (iTime < OP6) {
+        if (noiseTransitionCheck()) {
+            float t = iTime - OP5;
+            rayOrigin = vec3(-8, t*3, -8);
+            gEye = rayOrigin; 
+            //vec3 tar = rayOrigin + vec3(1, 1 , 0);
+            vec3 tar = vec3(0, 3, 0);
+        
+            vec3 dir = normalize(tar - rayOrigin);
+            vec3 right = normalize(cross(vec3(0, 1, 0), dir));
+            vec3 up = cross(dir, right);
+        
+            rayDirection = normalize(dir + right*u + up*v);
+            fragColor.rgb = vec3(1,0,0);
+        } else {
+            rayOrigin = vec3(-19, 9, 11);
+            gEye = rayOrigin; 
+            vec3 tar = vec3(0, 9, 0);
+        
+            vec3 dir = normalize(tar - rayOrigin);
+	        vec3 right = normalize(cross(vec3(0, 1, 0), dir));
+ 	        vec3 up = cross(dir, right);
+        
+            rayDirection = normalize(dir + right*u + up*v);
+        }
     }
 #endif
 
 #if SCENE == 3
     rayOrigin = vec3(13*cos(iTime), 3 + iTime * 0.3, 13*sin(iTime));
-    gEye = rayOrigin; // TODO is this correct?
+    gEye = rayOrigin; 
     //vec3 tar = rayOrigin + vec3(1, 1 , 0);
     vec3 tar = vec3(0, 3, 0);
         
