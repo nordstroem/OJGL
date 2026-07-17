@@ -877,10 +877,13 @@ void main()
     fragColor = vec4(pow(max(color, 0.0), vec3(0.4545)), focus);
 
 #if SCENE == 2
-    if (mod(mBassdrumTot, 10.0) == 2.0) {
+    float m = mod(mBassdrumTot, 11.0);
+    if (m == 2.0) {
         fragColor.rgb = vec3(1)-fragColor.rgb;
-    } else if (mod(mBassdrumTot, 10.0) == 6.0) {
+    } else if (m == 6.0) {
         fragColor.rgb = vec3(gHitToEyeDistance * 0.01);
+    } else if (m == 9.0) {
+        fragColor.rgb = mix(fragColor.rgb, vec3(1)-fragColor.rgb, gHitToEyeDistance * 0.02);
     }
 #endif
 
