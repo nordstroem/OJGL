@@ -364,9 +364,9 @@ bool noiseTransitionCheck() {
     vec2 uv = fragCoord.xy;
     uv *= 200;
     uv = floor(uv);
-    float n = noiseOctave(uv, 10, 0.7);
+    float n = noiseOctave(uv, 1, 0.7);
     float t = iTime - OP5;
-    return n < smoothstep(2, 3, t);
+    return n < smoothstep(1, 2, t);
 }
 
 DistanceInfo oskar(in vec3 p) {
@@ -403,7 +403,7 @@ DistanceInfo oskar(in vec3 p) {
         // four band and swap on bassdrum
          phase = mod(fragCoord.y * 4.0 + mBassdrumTot, 4.0);
     } else if (iTime < OP6) {
-        phase = 1.0;
+        phase = 2.0;
 
         if (noiseTransitionCheck()) {
             // TODO copy pasted code
@@ -416,9 +416,9 @@ DistanceInfo oskar(in vec3 p) {
 
             return un(d1, d3);
         } else if (1.0 - fragCoord.y > mBassdrum && fragCoord.x > 0.5) {
-            phase = 3.0;
+        //    phase = 3.0;
         } else if (1.0 - fragCoord.y > mHihat && fragCoord.x <= 0.5) {
-            phase = 2.0;
+        //    phase = 2.0;
         }
     }
 
