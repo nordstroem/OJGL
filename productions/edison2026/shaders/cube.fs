@@ -215,7 +215,8 @@ float udRoundBox( vec3 p, vec3 b, float r )
 {
   return length(max(abs(p)-b,0.0))-r;
 }
-
+)""
+R""(
 float llt(vec3 p) 
 {
     p *= 0.3;
@@ -291,12 +292,15 @@ float opIntersection( float d1, float d2 )
     return max(d1,d2);
 }
 
-
-float OP1 = 10.0;
-float OP2 = 15.0;
-float OP3 = 16.0;
-float OP4 = 20.0;
-float OP5 = 25.0;
+float OP0_0 = 3.0;
+float OP0_1 = OP0_0 + 4.0;
+float OP0_2 = OP0_1 + 4.0;
+float OP0_3 = OP0_2 + 4.0;
+float OP1 = OP0_3 + 10.0;
+float OP2 = OP1 + 5.0;
+float OP3 = OP2 + 1.0;
+float OP4 = OP3 + 4.0;
+float OP5 = OP4 + 5.0;
 
 float ARM_SUBSCENE1 = 9.0;
 float ARM_SUBSCENE2 = 16.0;
@@ -306,7 +310,15 @@ DistanceInfo oskar(in vec3 p) {
     // static phase
     float phase = 0.0;
 
-    if (iTime < OP1) {
+    if (iTime < OP0_0) {
+        phase = 0.0;
+    } else if (iTime < OP0_1) {
+        phase = 1.0;
+    } else if (iTime < OP0_2) {
+        phase = 2.0;
+    } else if (iTime < OP0_3) {
+        phase = 3.0;
+    } else if (iTime < OP1) {
          // switch phase on bassdrum
         phase = mod(mBassdrumTot, 4);
     } else if (iTime < OP2) {
@@ -395,7 +407,8 @@ DistanceInfo elevatorLid(in vec3 p) {
 
     return DistanceInfo(opSubtraction(d3, d1), lidType);
 }
-
+)""
+R""(
 DistanceInfo map(in vec3 p)
 {
 #if SCENE == 0
@@ -685,11 +698,55 @@ void main()
 #endif
 
 #if SCENE == 2
-    if (iTime < OP1) {
+    if (iTime < OP0_0) {
+        rayOrigin = vec3(0, 39, 19 - iTime);
+        gEye = rayOrigin;
+        vec3 tar = vec3(0, 0, 1);
+        
+        vec3 dir = normalize(tar - rayOrigin);
+	    vec3 right = normalize(cross(vec3(0, 1, 0), dir));
+ 	    vec3 up = cross(dir, right);
+        
+        rayDirection = normalize(dir + right*u + up*v);
+    } else if (iTime < OP0_1) {
+        float y = 5+iTime;
+        rayOrigin = vec3(19, y, -19);
+        gEye = rayOrigin;
+        vec3 tar = vec3(0, y, 1);
+        
+        vec3 dir = normalize(tar - rayOrigin);
+	    vec3 right = normalize(cross(vec3(0, 1, 0), dir));
+ 	    vec3 up = cross(dir, right);
+        
+        rayDirection = normalize(dir + right*u + up*v);
+    } else if (iTime < OP0_2) {
+        float t = iTime - OP0_1;
+        rayOrigin = vec3(19, 25 + t*3.0, 19);
+        gEye = rayOrigin;
+        vec3 tar = vec3(0, 0, 1);
+        
+        vec3 dir = normalize(tar - rayOrigin);
+	    vec3 right = normalize(cross(vec3(0, 1, 0), dir));
+ 	    vec3 up = cross(dir, right);
+        
+        rayDirection = normalize(dir + right*u + up*v);
+    } else if (iTime < OP0_3) {
+        float t = iTime - OP0_2;
+        rayOrigin = vec3(-15, 30 + t*3.0, 19);
+        gEye = rayOrigin;
+        vec3 tar = vec3(0, t*5, 1);
+        
+        vec3 dir = normalize(tar - rayOrigin);
+	    vec3 right = normalize(cross(vec3(0, 1, 0), dir));
+ 	    vec3 up = cross(dir, right);
+        
+        rayDirection = normalize(dir + right*u + up*v);
+    } else if (iTime < OP1) {
+        float t = iTime - OP0_3;
         rayOrigin = vec3(15, 38, 15);
         gEye = rayOrigin; // TODO is this correct?
         //vec3 tar = rayOrigin + vec3(1, 1 , 0);
-        vec3 tar = vec3(0, iTime * 3.0, 0);
+        vec3 tar = vec3(0, t * 3.0, 0);
         
         vec3 dir = normalize(tar - rayOrigin);
 	    vec3 right = normalize(cross(vec3(0, 1, 0), dir));
@@ -697,7 +754,8 @@ void main()
         
         rayDirection = normalize(dir + right*u + up*v);
     } else if (iTime < OP2) {
-        rayOrigin = vec3(15 * sin(iTime * 0.25), 38, 15 * cos(iTime * 0.25));
+        float t = iTime - OP0_3;
+        rayOrigin = vec3(15 * sin(t * 0.25), 38, 15 * cos(t * 0.25));
         gEye = rayOrigin; // TODO is this correct?
         vec3 tar = vec3(0, 20, 0);
         
@@ -707,7 +765,8 @@ void main()
         
         rayDirection = normalize(dir + right*u + up*v);
     } else if (iTime < OP3) {
-        rayOrigin = vec3(15 * sin(iTime * 0.25), 38 - (iTime - OP2) * 3, 15 * cos(iTime * 0.25));
+        float t = iTime - OP0_3;
+        rayOrigin = vec3(15 * sin(t * 0.25), 38 - (t - OP2) * 3, 15 * cos(t * 0.25));
         gEye = rayOrigin; // TODO is this correct?
         vec3 tar = rayOrigin + vec3(1, -1, 1);
         
