@@ -107,16 +107,32 @@ float func(float n) {
 
 DistanceInfo robotArm(in vec3 p)
 {
-    float aBase =     0.9 * sin(0.35 * iTime);
-    float aShoulder = 0.35 + 0.3 * sin(0.5 * iTime + 1.0);
-    float aElbow =    0.9 + 0.5 * sin(0.45 * iTime + 2.5);
-    float aWrist =    0.8 * sin(0.7 * iTime);
+    float localTime = iTime;
+
+    float aBase =     0.9 * sin(0.35 * localTime);
+
+    float upright = 1;
+#if SCENE == 1
+    if (iTime < 5) {
+        upright = smoothstep(5, 6, iTime);
+    }
+#endif
+
+    float aShoulder = 0.35 + 0.3 * sin(0.5 * localTime + 1.0);
+    aShoulder *= upright;
+
+    float aElbow =    0.9 + 0.5 * sin(0.45 * localTime + 2.5);
+    aElbow *= upright;
+
+    float aWrist =    0.8 * sin(0.7 * localTime);
+    aWrist *= upright;
 
     float x0 = func(mStringsTot - 1);
     float x1 = func(mStringsTot);
     float aFinger = mix(x0, x1, smoothstep(0.0, 0.15, mStrings));
 
     float dJoint = sdCappedCylinder(p - vec3(0.0, 0.13, 0.0), vec2(0.8, 0.1));
+
 
     // Axis 1
     vec3 q = p - vec3(0.0, 0.65, 0.0);
@@ -370,7 +386,7 @@ DistanceInfo map(in vec3 p)
     return un(room(p), cube(p));
 #elif SCENE == 1
     vec3 pRobot = p;
-    pRobot -= vec3(0, min(0.0, -4 + iTime), 0);
+    pRobot -= vec3(0, min(0.0, -6 + iTime), 0);
     DistanceInfo d1 = robotArm(pRobot);
     
     float dElevatorShaft = elevatorShaft(p);
