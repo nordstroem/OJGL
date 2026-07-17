@@ -2,6 +2,7 @@
 #include "demo/Demo.h"
 #include "music/Music.h"
 #include "utility/Log.h"
+#include "utility/Vector.h"
 
 namespace ojgl {
 class Edison2026 final : public Demo {
@@ -48,6 +49,7 @@ StringsHistory gStringsHistory;
 ojstd::vector<Scene> Edison2026::buildSceneGraph(const Vector2i& sceneSize) const
 {
     ojstd::vector<Scene> scenes;
+    FreeCameraController::instance().set(Vector3f{-15.4204f, 11.7f, 19.5775f}, -0.632f, -0.374f);
 
     auto buildScene = [&sceneSize](int sceneIndex, const Duration& duration) -> Scene {
         auto cube = Buffer::construct(sceneSize.x, sceneSize.y, "common/quad.vs", "edison2026/cube.fs");

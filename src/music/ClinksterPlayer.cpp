@@ -1,21 +1,28 @@
 #include "ClinksterPlayer.h"
 #include "thirdparty/clinkster/clinkster.h"
+#include "utility/Macros.h"
 #include "utility/OJstd.h"
 #include <windows.h>
 
 namespace ojgl {
 
+#ifdef _DEBUG
 // Clinkster always renders 16-bit stereo PCM at 44100 Hz (struct sample { short left, right; }).
 static constexpr unsigned long kSampleRate = 44100;
+#endif
 
 ClinksterPlayer::ClinksterPlayer()
+#ifdef _DEBUG
     : _audio(ojstd::make_shared<AudioOutput>())
+#endif
 {
 }
 
 ClinksterPlayer::~ClinksterPlayer()
 {
+#ifdef _DEBUG
     stopAudio();
+#endif
     if (_renderThread) {
         WaitForSingleObject(static_cast<HANDLE>(_renderThread), INFINITE);
         CloseHandle(static_cast<HANDLE>(_renderThread));
@@ -37,19 +44,42 @@ void ClinksterPlayer::play(Duration startTime)
         while (!renderDone())
             Sleep(10);
     }
+#ifdef _DEBUG
     // startAudio re-seeks by repositioning the DirectSound play cursor (SetCurrentPosition), so
-    // the cursor is absolute and elapsedTime() needs no offset.
+    // the cursor is absolute and elapsedMilliseconds() needs no offset.
     startAudio(startTime.toMilliseconds<unsigned long>(), GetForegroundWindow());
+#else
+    // Native Clinkster waveOut player: start-once and always from the beginning (it cannot seek).
+    // Release never seeks -- scrubbing/restart are _DEBUG-only -- so startTime is always 0 here.
+    OJ_UNUSED(startTime);
+    if (!_started) {
+        Clinkster_StartMusic();
+        _started = true;
+    }
+#endif
 }
 
 void ClinksterPlayer::stop()
 {
+#ifdef _DEBUG
     stopAudio();
+#endif
+    // Release: Clinkster's native player exports no stop, and release never pauses (pause is
+    // _DEBUG-only); the waveOut device is reclaimed on process exit.
 }
 
 Duration ClinksterPlayer::elapsedTime() const
 {
+#ifdef _DEBUG
     return Duration::milliseconds(elapsedMilliseconds());
+#else
+    if (!_started)
+        return Duration::milliseconds(0);
+    // Clinkster_GetPosition() returns the play position in ticks, already advanced by
+    // CLINKSTER_TIMER_OFFSET to compensate for display latency (the reference engine's tuning).
+    const float ms = Clinkster_GetPosition() / Clinkster_TicksPerSecond * 1000.0f;
+    return Duration::milliseconds(ojstd::ftoi(ms));
+#endif
 }
 
 unsigned long __stdcall ClinksterPlayer::renderThreadProc(void* self)
@@ -74,6 +104,7 @@ bool ClinksterPlayer::renderDone() const
     return _renderDone != 0;
 }
 
+#ifdef _DEBUG
 void ClinksterPlayer::startAudio(unsigned long startMs, void* hWnd)
 {
     // Clinkster_WavFileHeader[10] is the WAV "data" chunk size in bytes; 4 bytes per stereo frame.
@@ -98,8 +129,9 @@ void ClinksterPlayer::stopAudio()
 
 long ClinksterPlayer::elapsedMilliseconds() const
 {
-    return ojstd::ftoi(_audio->currentFrame() / static_cast<float>(kSampleRate) * 1000.0f);
+    return ojstd::ftoi((_audio->currentFrame()) / static_cast<float>(kSampleRate) * 1000.0f);
 }
+#endif // _DEBUG
 
 ojstd::vector<SyncEvent> ClinksterPlayer::popSyncEvents()
 {

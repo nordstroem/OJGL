@@ -117,13 +117,16 @@ function(ojgl_add_demo)
             TARGET_DIRECTORY ojgl
             PROPERTIES EXTERNAL_OBJECT TRUE GENERATED TRUE)
 
+        # Release/CrinklerRelease play through Clinkster's native waveOut player (winmm); only the
+        # debug seek/scrub path uses our DirectSound AudioOutput wrapper, so AudioOutput.cpp and
+        # dsound are compiled/linked for the debug configs only.
         target_sources(ojgl PRIVATE
             "${OJGL_ROOT}/src/music/ClinksterPlayer.cpp"
-            "${OJGL_ROOT}/src/music/AudioOutput.cpp"
+            $<$<CONFIG:Debug,OptimizedDebug>:${OJGL_ROOT}/src/music/AudioOutput.cpp>
             ${_clinkster_obj})
-        # AudioOutput needs DirectSound in every config (no libv2 to provide it); winmm resolves
-        # the waveOut* imports from Clinkster's unused sections that Debug doesn't strip.
-        target_link_libraries(ojgl PRIVATE dsound winmm)
+        target_link_libraries(ojgl PRIVATE
+            winmm
+            $<$<CONFIG:Debug,OptimizedDebug>:dsound>)
     elseif(DEMO_SYNTH STREQUAL "None")
         # No music backend: link no synth library. NoMusicPlayer.cpp supplies a
         # createSelectedPlayer() that returns nullptr, so the demo runs silently on the system clock.

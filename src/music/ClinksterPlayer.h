@@ -1,16 +1,22 @@
 #pragma once
 
-#include "AudioOutput.h"
 #include "MusicPlayer.h"
 #include "SyncEvent.hpp"
 #include "utility/OJstd.h"
+#ifdef _DEBUG
+#include "AudioOutput.h"
+#endif
 
 namespace ojgl {
 
-// Clinkster (Blueberry/Loonies 4k softsynth) backend. Unlike V2, the song is baked into
-// build-time assembly and rendered up front into the static Clinkster_MusicBuffer[]; playback,
-// seeking and timing all go through our AudioOutput DirectSound wrapper (Clinkster's built-in
-// waveOut player cannot reposition).
+// Clinkster (Blueberry/Loonies 4k softsynth) backend. The song is baked into build-time assembly
+// and rendered up front into the static Clinkster_MusicBuffer[]. Playback differs by config:
+//   * Release/CrinklerRelease use Clinkster's native waveOut player (Clinkster_StartMusic /
+//     Clinkster_GetPosition). Its timer applies CLINKSTER_TIMER_OFFSET to compensate for display
+//     latency, which is the tuning the reference engine ships. It cannot seek, but release never
+//     does (all scrubbing/restart is _DEBUG-only).
+//   * Debug/OptimizedDebug route through our AudioOutput DirectSound wrapper instead, because the
+//     native player cannot reposition and the timeline scrubbing / restart controls need to seek.
 class ClinksterPlayer final : public MusicPlayer {
 public:
     ClinksterPlayer();
@@ -19,8 +25,8 @@ public:
     ~ClinksterPlayer() override;
 
     // MusicPlayer interface. play() renders the whole song up front on the first call (a few
-    // seconds), then (re)starts DirectSound playback from startTime. elapsedTime() is the
-    // absolute play cursor, so no offset accounting is needed.
+    // seconds), then starts playback. In release startTime is ignored (the native player only
+    // plays from the beginning); in debug it (re)starts DirectSound from startTime.
     void play(Duration startTime) override;
     void stop() override;
     Duration elapsedTime() const override;
@@ -37,6 +43,8 @@ private:
     void beginRender();
     // True once the background render has finished and the buffer is ready to play.
     bool renderDone() const;
+
+#ifdef _DEBUG
     // (Re)starts playback from startMs into the song via DirectSound.
     void startAudio(unsigned long startMs, void* hWnd);
     void stopAudio();
@@ -44,8 +52,13 @@ private:
     long elapsedMilliseconds() const;
 
     ojstd::shared_ptr<AudioOutput> _audio;
+#endif
+
     void* _renderThread = nullptr; // HANDLE
     volatile long _renderDone = 0;
+#ifndef _DEBUG
+    bool _started = false; // Clinkster's native waveOut player is start-once
+#endif
 };
 
 } // namespace ojgl
