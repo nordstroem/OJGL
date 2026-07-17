@@ -113,9 +113,7 @@ DistanceInfo robotArm(in vec3 p)
 
     float upright = 1;
 #if SCENE == 1
-    if (iTime < 5) {
-        upright = smoothstep(5, 6, iTime);
-    }
+    upright = smoothstep(5, 6, iTime);
 #endif
 
     float aShoulder = 0.35 + 0.3 * sin(0.5 * localTime + 1.0);
@@ -371,13 +369,19 @@ float elevatorShaft(in vec3 p) {
 DistanceInfo elevatorLid(in vec3 p) {
     float m = clamp(iTime - 1.0, 0.0, 1.2); // fix
     
+    vec3 o = p;
+
     p.z = abs(p.z);
     p += vec3(0, 0, -m);
     float d1 = sdCappedCylinder(p, vec2(1.5, 0.2));
     float d2 = sdBox(p+vec3(0, 0, 2), vec3(2));
     d1 = opSubtraction(d2, d1);
 
-    return DistanceInfo(d1, lidType);
+    o.y -= 0.18;
+    pMod1(o.x, 0.4);
+    float d3 = sdCylinder(o, 0.1);
+
+    return DistanceInfo(opSubtraction(d3, d1), lidType);
 }
 
 DistanceInfo map(in vec3 p)
@@ -435,7 +439,7 @@ float getReflectiveIndex(int type)
         return 0.5;
     }
     if (type == lidType) {
-        return 0.5;
+        return 0.2;
     }
     return 0.0;
 }
@@ -523,7 +527,7 @@ vec3 getColor(in MarchResult result)
         return baseColor + 2.0 * gFresnel * mix(vec3(0.6, 0.8, 1.0), metalColor, 0.4) + tintedSpecular;
     } else if (result.type == lidType) {
         float pulse = exp(-mBassdrum * 6.0);
-        vec3 metalColor = 0.5*vec3(0.2, 0.5, 0.9);
+        vec3 metalColor = 0.5*vec3(0.2, 0.3, 0.3);
         gFresnel = pow(1.0 - max(0.0, dot(normal, viewDir)), 4.0);
         vec3 baseColor = metalColor * diffuse * (1.0 + 2.0 * pulse);
         vec3 tintedSpecular = specular * mix(vec3(1.0), metalColor, 0.6); 
