@@ -3,10 +3,10 @@ const float S_distanceEpsilon = 1e-2;
 const float S_normalEpsilon = 1e-3;
 const int S_maxSteps = 400;
 const float S_maxDistance = 100.0;
-const float S_distanceMultiplier = 0.9;
+const float S_distanceMultiplier = 0.7;
 const float S_minVolumetricJumpDistance = 0.02;
 const float S_volumetricDistanceMultiplier = 0.75;
-const int S_reflectionJumps = 2;
+const int S_reflectionJumps = 4;
 
 #define S_VOLUMETRIC 0
 #define S_REFLECTIONS 1
@@ -314,8 +314,12 @@ DistanceInfo oskar(in vec3 p) {
 
     } else if (phase >= 2 ) { // llt
         float d1 = llt(p);
-        float d2 = sdSphere(p, 7.0 - mBassdrum);
-        return DistanceInfo(min(d1, d2), oskarType);
+        float d2 = sdSphere(p, 5.5 - mBassdrum*0.7);
+        p.xz *= rot(PI / 6);
+        pModPolar(p.xz, 6);
+        float r = 1.0 + 0.3 + sin(length(p.xz) - iTime*3)*0.3;
+        float d3 = sdCylinder(p.zyx- vec3(0, 0, 0), r);
+        return DistanceInfo(smink(d1, smink(d2, d3, 1.0), 0.1), oskarType);
 
     } else if (phase >= 1 ) { // tower w spheres
         vec3 q = p;
@@ -386,6 +390,54 @@ float getReflectiveIndex(int type)
     return 0.0;
 }
 
+float hash( in vec2 p ) {
+	float h = dot(p,vec2(127.1,311.7));	
+    return fract(sin(h)*43758.5453123);
+}
+float noise( in vec2 p ) {
+    vec2 i = floor( p );
+    vec2 f = fract( p );	
+	vec2 u = f*f*(3.0-2.0*f);
+    return mix( mix( hash( i + vec2(0.0,0.0) ), 
+                     hash( i + vec2(1.0,0.0) ), u.x),
+                mix( hash( i + vec2(0.0,1.0) ), 
+                     hash( i + vec2(1.0,1.0) ), u.x), u.y);
+}
+float noiseOctave(in vec2 p, int octaves, float persistence)
+{
+	float n = 0.;
+	float amplitude = 1.;
+	float frequency = 1.;
+	float maxValue = 0.;
+	for(int i = 0; i < octaves; i++)
+	{
+		n += noise((p+float(i)) * frequency) * amplitude;
+		maxValue += amplitude;
+		amplitude *= persistence;
+		frequency *= 2.0;
+	}
+	return n / maxValue; 
+}
+// https://www.shadertoy.com/view/XsSfDG
+vec3 rust(in vec2 uv )
+{
+	//vec2 uv = fragCoord.xy / iResolution.xy;
+    
+    float n = noiseOctave(uv * 4., 10, 0.7);
+    float gs = 0.5 + 0.5 * sin(uv.x * 50.0 + n * 60.0);
+    
+    
+    
+    vec3 blue = vec3(.25, .8, 1.);
+    vec3 rust = vec3(1., .7, .15);
+    
+    vec3 color = mix(rust, blue, 0.8 * gs);
+    float n2 = noiseOctave(uv * 100., 10, 0.7);
+    color = mix(color, vec3(n2 * 0.5 + 0.25), 0.3);
+    
+	return color;
+}
+
 vec3 getColor(in MarchResult result)
 {
     if (result.jump == 0) {
@@ -428,21 +480,42 @@ vec3 getColor(in MarchResult result)
         // -5 to 5
         float x = a.x + 5.0;
         float z = a.y + 5.0;
-        vec3 c1 = vec3(0.3, 0.8, 0.8);
-        vec3 c2 = vec3(0.2, 0.3, 0.6);
+        vec3 c1 = rust(result.position.xz * 0.01);
+        vec3 c2 = vec3(1) - c1;
         if (mod(mHihatTot, 2.0) >= 1.0) {
-            c2 = vec3(0.3, 0.8, 0.8);
-            c1 = vec3(0.2, 0.3, 0.6);
+            vec3 tmp = c1;
+            c1 = c2;
+            c2 = tmp;
         }
-        if (x == 0 || x == 10 || z == 0 || z == 10) {
-            color = c1;
-        } else if (x == 1 || x == 9 || z == 1 || z == 9) {
-             color = c2;
-        } else if (x == 2 || x == 8 || z == 2 || z == 8) {
-            color = c1;
-        } else if (x == 3 || x == 7 || z == 3 || z == 7) {
-            color = c2;
-        } else if (x == 4 || x == 6 || z == 4 || z == 6) {
+        float xm = 11-x - 2;
+        float zm = z - 2;
+        if (
+            (xm == 1 && zm == 0) ||
+            (xm == 2 && zm == 0) ||
+            (xm == 3 && zm == 0) ||
+            (xm == 0 && zm == 1) ||
+            (xm == 0 && zm == 2) ||
+            (xm == 0 && zm == 3) ||
+            (xm == 0 && zm == 4) ||
+            (xm == 0 && zm == 5) ||
+            (xm == 4 && zm == 1) ||
+            (xm == 4 && zm == 2) ||
+            (xm == 4 && zm == 3) ||
+            (xm == 4 && zm == 4) ||
+            (xm == 4 && zm == 5) ||
+            (xm == 1 && zm == 6) ||
+            (xm == 2 && zm == 6) ||
+            (xm == 3 && zm == 6) ||
+            (xm == 8 && zm == 0) ||
+            (xm == 8 && zm == 1) ||
+            (xm == 8 && zm == 2) ||
+            (xm == 8 && zm == 3) ||
+            (xm == 8 && zm == 4) ||
+            (xm == 8 && zm == 5) ||
+            (xm == 6 && zm == 6) ||
+            (xm == 7 && zm == 6) ||
+            (xm == 8 && zm == 6)
+            ) {
             color = c1;
         } else {
             color = c2;
