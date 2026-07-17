@@ -33,17 +33,15 @@ ojstd::shared_ptr<MusicPlayer> createSelectedPlayer()
 void ClinksterPlayer::play(Duration startTime)
 {
     if (!_renderDone) {
-        // Clinkster_GenerateMusic();
+        Clinkster_GenerateMusic();
         _renderDone = true;
     }
 
 #ifdef _DEBUG
-    // startAudio re-seeks by repositioning the DirectSound play cursor (SetCurrentPosition), so
-    // the cursor is absolute and elapsedMilliseconds() needs no offset.
     startAudio(startTime.toMilliseconds<unsigned long>(), GetForegroundWindow());
 #else
     // Native Clinkster waveOut player: start-once and always from the beginning (it cannot seek).
-    // Release never seeks -- scrubbing/restart are _DEBUG-only -- so startTime is always 0 here.
+    // Release never seeks -- scrubbing/restart are _DEBUG-yonly -- so startTime is always 0 here.
     OJ_UNUSED(startTime);
     if (!_started) {
         Clinkster_StartMusic();

@@ -668,11 +668,13 @@ VolumetricResult evaluateLight(in vec3 p)
     return VolumetricResult(1e6, vec3(0.0));
 }
 
+
 float getFogAmount(in vec3 p)
 {
     return 0.0;
 }
-
+)""
+    R""(
 void main()
 {
     float u = (fragCoord.x - 0.5);
