@@ -32,7 +32,10 @@ ojstd::shared_ptr<MusicPlayer> createSelectedPlayer()
 
 void ClinksterPlayer::play(Duration startTime)
 {
-    Clinkster_GenerateMusic();
+    if (!_renderDone) {
+        Clinkster_GenerateMusic();
+        _renderDone = true;
+    }
 
 #ifdef _DEBUG
     // startAudio re-seeks by repositioning the DirectSound play cursor (SetCurrentPosition), so

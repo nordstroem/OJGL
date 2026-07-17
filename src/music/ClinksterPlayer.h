@@ -37,12 +37,6 @@ public:
     ojstd::vector<SyncEvent> popSyncEvents() override;
 
 private:
-    static unsigned long __stdcall renderThreadProc(void* self);
-
-    // Kicks off the full-song render on a background thread (it takes a few seconds).
-    void beginRender();
-    // True once the background render has finished and the buffer is ready to play.
-    bool renderDone() const;
 
 #ifdef _DEBUG
     // (Re)starts playback from startMs into the song via DirectSound.
@@ -54,8 +48,7 @@ private:
     ojstd::shared_ptr<AudioOutput> _audio;
 #endif
 
-    void* _renderThread = nullptr; // HANDLE
-    volatile long _renderDone = 0;
+    bool  _renderDone = false;
 #ifndef _DEBUG
     bool _started = false; // Clinkster's native waveOut player is start-once
 #endif
