@@ -55,7 +55,7 @@ const int lidType = 9;
 vec3 gEye;
 float gFresnel = 0.0;
 float gHitToEyeDistance = 0.0;
-const float S_focusDistance = 10.0;
+float S_focusDistance = 10.0;
 const float S_focusRadius = 10.0;
 const float S_focusStrength = 0.03;
 vec3 cRoomSize = vec3(20, 20, 20);
@@ -416,9 +416,9 @@ DistanceInfo oskar(in vec3 p) {
 
             return un(d1, d3);
         } else if (1.0 - fragCoord.y > mBassdrum && fragCoord.x > 0.5) {
-        //    phase = 3.0;
+            phase = 3.0;
         } else if (1.0 - fragCoord.y > mHihat && fragCoord.x <= 0.5) {
-        //    phase = 2.0;
+            phase = 2.0;
         }
     }
 
@@ -614,9 +614,9 @@ vec3 getColor(in MarchResult result)
         // -5 to 5
         float x = a.x + 5.0;
         float z = a.y + 5.0;
-        vec3 c1 = rust(result.position.xz * 0.01);
-        vec3 c2 = vec3(1) - c1;
-        if (mod(mHihatTot, 2.0) >= 1.0) {
+        vec3 c1 = vec3(0.1);
+        vec3 c2 = vec3(1) - rust(result.position.xz * 0.01)*1.3;
+        if (mod(mBassdrumTot, 2.0) >= 1.0) {
             vec3 tmp = c1;
             c1 = c2;
             c2 = tmp;
@@ -731,6 +731,7 @@ void main()
 
 #if SCENE == 2
     if (iTime < OP0_0) {
+        S_focusDistance = 28.0;
         rayOrigin = vec3(0, 39, 19 - iTime);
         gEye = rayOrigin;
         vec3 tar = vec3(0, 0, 1);
@@ -874,6 +875,14 @@ void main()
     float focus = clamp( (abs(gHitToEyeDistance - S_focusDistance) - S_focusRadius) * S_focusStrength, 0.0, 1.0);
 
     fragColor = vec4(pow(max(color, 0.0), vec3(0.4545)), focus);
+
+#if SCENE == 2
+    if (mod(mBassdrumTot, 10.0) == 2.0) {
+        fragColor.rgb = vec3(1)-fragColor.rgb;
+    } else if (mod(mBassdrumTot, 10.0) == 6.0) {
+        fragColor.rgb = vec3(gHitToEyeDistance * 0.01);
+    }
+#endif
 
 #if SCENE == 3
     fragColor.rgb *= 1.0 - smoothstep(11, 14, iTime); // fade out
