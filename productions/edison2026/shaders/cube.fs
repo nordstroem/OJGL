@@ -114,6 +114,8 @@ DistanceInfo robotArm(in vec3 p, float timeOffset)
     float upright = 1;
 #if SCENE == 1
     upright = smoothstep(5, 6, iTime);
+#elif SCENE == 3
+    upright = 1.0 - smoothstep(2, 3, iTime);
 #endif
 
     float aShoulder = 0.35 + 0.3 * sin(0.5 * localTime + 1.0);
@@ -370,8 +372,15 @@ float elevatorShaft(in vec3 p) {
 }
 
 DistanceInfo elevatorLid(in vec3 p) {
-    float m = clamp(iTime - 1.0, 0.0, 1.2); // fix
-    
+    float m = 0;
+
+#if SCENE == 1
+        m = clamp(iTime - 1.0, 0.0, 1.2); // fix
+#endif
+
+#if SCENE == 3
+        m = clamp(11.0 - iTime, 0.0, 1.2); // fix
+#endif
     vec3 o = p;
 
     p.z = abs(p.z);
@@ -411,8 +420,18 @@ DistanceInfo map(in vec3 p)
     }
 #elif SCENE == 2
     return un(room(p), oskar(p));
-#else
-    return un(room(p), robotArm(p, 0));
+#elif SCENE == 3
+    vec3 pRobot = p;
+    pRobot -= vec3(0, min(0.0, 6 - iTime), 0);
+    DistanceInfo d2 = room(p);
+
+    DistanceInfo d1 = robotArm(pRobot, 0);
+    float dElevatorShaft = elevatorShaft(p);
+    d2.distance = opSubtraction(dElevatorShaft, d2.distance);
+
+    DistanceInfo d3 = elevatorLid(p);
+
+    return un(d1, un(d2, d3));
 #endif
 }
 
@@ -720,10 +739,27 @@ void main()
     }
 #endif
 
+#if SCENE == 3
+    rayOrigin = vec3(13*cos(iTime), 3 + iTime * 0.3, 13*sin(iTime));
+    gEye = rayOrigin; // TODO is this correct?
+    //vec3 tar = rayOrigin + vec3(1, 1 , 0);
+    vec3 tar = vec3(0, 3, 0);
+        
+    vec3 dir = normalize(tar - rayOrigin);
+    vec3 right = normalize(cross(vec3(0, 1, 0), dir));
+    vec3 up = cross(dir, right);
+        
+    rayDirection = normalize(dir + right*u + up*v);
+#endif
+
     vec3 color = march(rayOrigin, rayDirection);
 
     float focus = clamp( (abs(gHitToEyeDistance - S_focusDistance) - S_focusRadius) * S_focusStrength, 0.0, 1.0);
 
     fragColor = vec4(pow(max(color, 0.0), vec3(0.4545)), focus);
+
+#if SCENE == 3
+    fragColor.rgb *= 1.0 - smoothstep(11, 14, iTime); // fade out
+#endif
 }
 )""
