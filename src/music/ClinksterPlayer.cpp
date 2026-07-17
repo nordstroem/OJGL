@@ -33,7 +33,7 @@ ojstd::shared_ptr<MusicPlayer> createSelectedPlayer()
 void ClinksterPlayer::play(Duration startTime)
 {
     if (!_renderDone) {
-        Clinkster_GenerateMusic();
+        // Clinkster_GenerateMusic();
         _renderDone = true;
     }
 

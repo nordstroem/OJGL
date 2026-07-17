@@ -104,13 +104,22 @@ DistanceInfo room(in vec3 p)
 float func(float n) {
     return 0.8 * sin(0.3 * n*2);
 }
-
+float func2(float n) {
+    return 0.5 * sin(0.3 * n*2);
+}
+float func3(float n) {
+    return 0.5 * cos(0.3 * n*2);
+}
 DistanceInfo robotArm(in vec3 p, float timeOffset)
 {
+    vec3 orgp = p;
+    // pMod2(p.xz, vec2(5));
     float localTime = iTime + timeOffset*2.0;
 
-    float aBase =     0.9 * sin(0.35 * localTime);
-
+    float x000 = func3(mSnareTot - 1);
+    float x111 = func3(mSnareTot);
+    float aBase = mix(x000, x111, smoothstep(0.0, 0.15, mSnare));
+    
     float upright = 1;
 #if SCENE == 1
     upright = smoothstep(5, 6, iTime);
@@ -118,7 +127,10 @@ DistanceInfo robotArm(in vec3 p, float timeOffset)
     upright = 1.0 - smoothstep(2, 3, iTime);
 #endif
 
-    float aShoulder = 0.35 + 0.3 * sin(0.5 * localTime + 1.0);
+    float x00 = func2(mSnareTot - 1);
+    float x11 = func2(mSnareTot);
+    float aShoulder = mix(x00, x11, smoothstep(0.0, 0.15, mSnare));
+    
     aShoulder *= upright;
 
     float aElbow =    0.9 + 0.5 * sin(0.45 * localTime + 2.5);
@@ -127,8 +139,13 @@ DistanceInfo robotArm(in vec3 p, float timeOffset)
     float aWrist =    0.8 * sin(0.7 * localTime);
     aWrist *= upright;
 
-    float x0 = func(mStringsTot - 1);
-    float x1 = func(mStringsTot);
+#if SCENE == 1
+    float factor = 3;
+#else 
+    float factor = 1;
+#endif 
+    float x0 = func(floor(mStringsTot/factor) - 1);
+    float x1 = func(floor(mStringsTot/factor));
     float aFinger = mix(x0, x1, smoothstep(0.0, 0.15, mStrings));
 
     float dJoint = sdCappedCylinder(p - vec3(0.0, 0.13, 0.0), vec2(0.8, 0.1));
@@ -175,8 +192,10 @@ DistanceInfo robotArm(in vec3 p, float timeOffset)
 
     dJoint = min(dJoint, sdRoundCone(qq - vec3(0.00, 0.01, 0.0), 0.025, 0.005, fLength*2));
     
-
-    return un(DistanceInfo(dBody, armBodyType), DistanceInfo(dJoint, armJointType));
+    DistanceInfo di = un(DistanceInfo(dBody, armBodyType), DistanceInfo(dJoint, armJointType));
+    
+    // di.distance = max(di.distance, sdBox(orgp, vec3(5 + 7.5*(1+sin(mHihatTot)))));
+    return di;
 }
 
 const float cCellSize = 1.6;
@@ -203,10 +222,12 @@ DistanceInfo cube(in vec3 p)
 
     int order[12] = int[](1, 3, 4, 1, 3, 1, 4, 9, 1, 5, 2, 3);
     for (int i = 0; i < NUM_STRING_HITS; i++) {
-        float cell = float(order[int(mod(mStringsHitTot[i], 12))]);
-        float s = cellHeight(mStringsHitAge[i], int(cell));
-        vec3 r = p - vec3(cell * cCellSize, s, 0);
-        d = min(d, sdBox(r, vec3(cCellHalfWidth, s, cCellHalfWidth)));
+        if (mStringsHitTot[i] > 0) {
+            float cell = float(order[int(mod(mStringsHitTot[i] - 1, 12))]);
+            float s = cellHeight(mStringsHitAge[i], int(cell));
+            vec3 r = p - vec3((cell-3) * cCellSize, s, 0);
+            d = min(d, sdBox(r, vec3(cCellHalfWidth, s, cCellHalfWidth)));
+        }
     }
     return DistanceInfo(d, cubeType);
 }
@@ -298,7 +319,7 @@ float OP3 = 16.0;
 float OP4 = 20.0;
 float OP5 = 25.0;
 
-float ARM_SUBSCENE1 = 9.0;
+float ARM_SUBSCENE1 = 15.0;
 float ARM_SUBSCENE2 = 16.0;
 
 DistanceInfo oskar(in vec3 p) {
@@ -373,6 +394,7 @@ float elevatorShaft(in vec3 p) {
 
 DistanceInfo elevatorLid(in vec3 p) {
     float m = 0;
+    p.y*=3;
 
 #if SCENE == 1
         m = clamp(iTime - 1.0, 0.0, 1.2); // fix
@@ -467,7 +489,7 @@ float getReflectiveIndex(int type)
         return 0.5;
     }
     if (type == lidType) {
-        return 0.2;
+        return 0.9;
     }
     return 0.0;
 }
@@ -614,7 +636,7 @@ vec3 getColor(in MarchResult result)
         vec3 tintedSpecular = specular * mix(vec3(1.0), color, 0.6); 
         return baseColor + 2.0 * gFresnel * mix(vec3(0.6, 0.8, 1.0), color, 0.4) + tintedSpecular;
     } else if (result.type == armBodyType) {
-        vec3 bodyColor = 0.8*vec3(0.2, 0.5, 0.9);
+        vec3 bodyColor = vec3(0.2, 0.5, 0.9);
         gFresnel = 0.3 * pow(1.0 - max(0.0, dot(normal, viewDir)), 4.0);
         return bodyColor * (0.06 + diffuse) + 0.8 * specular * mix(vec3(1.0), bodyColor, 0.3) + gFresnel * vec3(1.0, 0.55, 0.25);
     } else if (result.type == armJointType) {
@@ -659,12 +681,30 @@ void main()
     gEye = (iCameraMatrix * vec4(0.0, 0.0, 0.0, 1.0)).xyz;
     vec3 rayDirection = normalize(rayOrigin - gEye);
 
+#if SCENE == 0
+    float cx = -14 * smoothstep(0, 5, iTime);
+    float cy = 28 * (1 - smoothstep(0, 10, iTime)) + 11;
+    rayOrigin = vec3(cx, sin(iTime)*cos(iTime*0.5) + cy, -17 + cos(iTime));
+    gEye = rayOrigin; // TODO is this correct?
+    //vec3 tar = rayOrigin + vec3(1, 1 , 0);
+    vec3 tar = vec3(0 + 1*cos(iTime), 0, 2);
+    
+    vec3 dir = normalize(tar - rayOrigin);
+    vec3 right = normalize(cross(vec3(0, 1, 0), dir));
+    vec3 up = cross(dir, right);
+    rayDirection = normalize(dir + right*u + up*v);
+
+#endif
+
 #if SCENE == 1
     if (iTime < ARM_SUBSCENE1) {
-        rayOrigin = vec3(13*cos(iTime), 3 + iTime * 0.3, 13*sin(iTime));
+        vec3 tar = vec3(0, 3 - 2*smoothstep(5, ARM_SUBSCENE1, iTime), 0);
+        rayOrigin = vec3(13*cos(0.5*iTime), 3 + iTime * 0.3, 13*sin(0.5*iTime));
+        
+        rayOrigin = mix(rayOrigin, tar + vec3(0, 5, 0), 0.3*smoothstep(5, ARM_SUBSCENE1, iTime));
+        
         gEye = rayOrigin; // TODO is this correct?
         //vec3 tar = rayOrigin + vec3(1, 1 , 0);
-        vec3 tar = vec3(0, 3, 0);
         
         vec3 dir = normalize(tar - rayOrigin);
         vec3 right = normalize(cross(vec3(0, 1, 0), dir));

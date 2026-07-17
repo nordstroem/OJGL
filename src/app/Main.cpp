@@ -20,6 +20,10 @@ RENDERDOC_API_1_1_2* renderdocApi = nullptr;
 
 using namespace ojgl;
 
+extern "C" {
+	void __stdcall Clinkster_GenerateMusic();
+}
+
 int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
 {
 
@@ -31,6 +35,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
     }
 #endif
     popup::Data popupData = popup::show();
+    Clinkster_GenerateMusic();
 
     bool saveFrames = false;
     const Vector2i windowSize(popupData.width, popupData.height);
