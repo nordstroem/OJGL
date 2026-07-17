@@ -105,9 +105,9 @@ float func(float n) {
     return 0.8 * sin(0.3 * n*2);
 }
 
-DistanceInfo robotArm(in vec3 p)
+DistanceInfo robotArm(in vec3 p, float timeOffset)
 {
-    float localTime = iTime;
+    float localTime = iTime + timeOffset*2.0;
 
     float aBase =     0.9 * sin(0.35 * localTime);
 
@@ -296,6 +296,9 @@ float OP3 = 16.0;
 float OP4 = 20.0;
 float OP5 = 25.0;
 
+float ARM_SUBSCENE1 = 9.0;
+float ARM_SUBSCENE2 = 16.0;
+
 DistanceInfo oskar(in vec3 p) {
 
     // static phase
@@ -391,19 +394,25 @@ DistanceInfo map(in vec3 p)
 #elif SCENE == 1
     vec3 pRobot = p;
     pRobot -= vec3(0, min(0.0, -6 + iTime), 0);
-    DistanceInfo d1 = robotArm(pRobot);
-    
-    float dElevatorShaft = elevatorShaft(p);
     DistanceInfo d2 = room(p);
-    d2.distance = opSubtraction(dElevatorShaft, d2.distance);
+    
+    if (iTime < ARM_SUBSCENE1) {
+        DistanceInfo d1 = robotArm(pRobot, 0);
+        float dElevatorShaft = elevatorShaft(p);
+        d2.distance = opSubtraction(dElevatorShaft, d2.distance);
 
-    DistanceInfo d3 = elevatorLid(p);
+        DistanceInfo d3 = elevatorLid(p);
 
-    return un(d1, un(d2, d3));
+        return un(d1, un(d2, d3));
+    } else {
+        vec2 i = pMod2(pRobot.xz, vec2(6, 6));
+        DistanceInfo d1 = robotArm(pRobot, i.x*10 + i.y);
+        return un(d1, d2);
+    }
 #elif SCENE == 2
     return un(room(p), oskar(p));
 #else
-    return un(room(p), robotArm(p));
+    return un(room(p), robotArm(p, 0));
 #endif
 }
 
@@ -632,16 +641,28 @@ void main()
     vec3 rayDirection = normalize(rayOrigin - gEye);
 
 #if SCENE == 1
-        rayOrigin = vec3(10*cos(iTime), 12, 10*sin(iTime));
+    if (iTime < ARM_SUBSCENE1) {
+        rayOrigin = vec3(10*cos(iTime), 11, 10*sin(iTime));
         gEye = rayOrigin; // TODO is this correct?
         //vec3 tar = rayOrigin + vec3(1, 1 , 0);
-        vec3 tar = vec3(0, 0, 0);
+        vec3 tar = vec3(0, 3, 0);
         
         vec3 dir = normalize(tar - rayOrigin);
         vec3 right = normalize(cross(vec3(0, 1, 0), dir));
         vec3 up = cross(dir, right);
         
         rayDirection = normalize(dir + right*u + up*v);
+    } else if (iTime < ARM_SUBSCENE2) {
+        rayOrigin = vec3(iTime, 25, -iTime + 10);
+        gEye = rayOrigin;
+        vec3 tar = rayOrigin - vec3(0.1, 1, 0.1);
+        
+        vec3 dir = normalize(tar - rayOrigin);
+        vec3 right = normalize(cross(vec3(0, 1, 0), dir));
+        vec3 up = cross(dir, right);
+        
+        rayDirection = normalize(dir + right*u + up*v);
+    }
 #endif
 
 #if SCENE == 2
