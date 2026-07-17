@@ -310,7 +310,11 @@ DistanceInfo oskar(in vec3 p) {
     if (phase >= 3 ) { // waves w rocket
         float d1 = p.y - 3 + sin(p.x + mBassdrumTot * 5) +  0.1 * sin(p.x * 3 + mBassdrumTot * 3);
         float d2 = missile(p);
-        return DistanceInfo(smink(d1, d2, 1.8), oskarType);
+        if (iTime > OP3 && iTime < OP4) { // skip waves in this sub scene, causes some shadow flicker in roof
+            return DistanceInfo(d2, oskarType);
+        } else {
+            return DistanceInfo(smink(d1, d2, 1.8), oskarType);
+        }
 
     } else if (phase >= 2 ) { // llt
         float d1 = llt(p);
