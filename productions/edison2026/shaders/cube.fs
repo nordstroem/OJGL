@@ -40,8 +40,6 @@ uniform float mSnare;
 uniform float mSnareTot;
 uniform float mStrings;
 uniform float mStringsTot;
-// The last NUM_STRING_HITS strings notes, newest first: seconds since the hit, and the value
-// mStringsTot had at it. Ages start far past cSpikeDecay so unused slots rest flat.
 uniform float mStringsHitAge[NUM_STRING_HITS];
 uniform float mStringsHitTot[NUM_STRING_HITS];
 
@@ -50,6 +48,8 @@ const int roomType = 2;
 const int armBodyType = 3;
 const int armJointType = 4;
 const int cubeType = 5;
+const int oskarType = 7;
+const int screenType = 8;
 
 vec3 gEye;
 float gFresnel = 0.0;
@@ -194,15 +194,160 @@ DistanceInfo cube(in vec3 p)
     return DistanceInfo(d, cubeType);
 }
 
+float udRoundBox( vec3 p, vec3 b, float r )
+{
+  return length(max(abs(p)-b,0.0))-r;
+}
+
+float llt(vec3 p) 
+{
+    p *= 0.3;
+
+    pModPolar(p.xz, 6);
+    p.x -= 3;
+	
+    // base ?
+    float w = 0.2;
+    if (p.y < 0.5) {
+    	w += 0.4 * (0.5 - p.y);
+    }
+    if (p.y > 2.7) {
+    	w -= (p.y - 2.7) * 0.5;
+    }
+    float d = sdHexPrism((p - vec3(0.0, 1.5, 0.0)).xzy, vec2(w, 1.5));
+    float res = d;
+    
+    p.xz *= rot(mHihat * 1.5);
+
+    { // top ? 
+        float w = 0.2;
+        w -= abs(p.y - 3.3) * 0.1;
+        float a = 0.2;
+        if (p.x < 0.0) {
+        	a -= abs(p.y - 3.3) * 0.1;
+        }
+
+    	float d = sdBox(p - vec3(0.0, 3.3, 0.0), vec3(a, 0.3, w));
+    	res = min(d, res);
+    }
+    { // barrell ?
+        float d = sdCappedCylinder((p - vec3(0.5, 3.3, 0.0)).yxz, vec2(0.05, 0.3));
+        d = max(d, -sdCappedCylinder((p - vec3(0.5, 3.3, 0.0)).yxz, vec2(0.03, 0.8)));
+        res = min(d, res);
+    
+    }
+    return res.x;
+}
+
+float missile(vec3 p) {
+    p *= 0.2;
+    vec2 b = pMod2(p.xz, vec2(3));
+    //p.y -= mod((b.x + b.y)*6.0 + iTime * 10.0, 10.0);
+    p.y -= mod((b.x + b.y)*6.0 + mStrings * 10.0, 10.0);
+
+    float w = 0.2 - 0.03 * smoothstep(1.4, 1.6, p.y);
+    if (p.y > 1.7) {
+     	w -= 0.2 * (p.y - 1.7);
+    }
+   
+    float d = sdCappedCylinder(p, vec2(w, 2));
+    float ds = sdSphere(p - vec3(0, 2.0, 0.0), 0.11);
+    d = min(ds, d);
+    float bw = 0.1;
+    if (p.y < -2.05) {
+    	bw += 0.6 * (-p.y - 2.05);
+    }
+    float bot = sdCappedCylinder(p - vec3(0,-2.05,0), vec2(bw, 0.1));
+    d = min(bot, d);
+    return d;
+}
+
+float opSubtraction( float d1, float d2 )
+{
+    return max(-d1,d2);
+}
+
+
+float opIntersection( float d1, float d2 )
+{
+    return max(d1,d2);
+}
+
+
+float OP1 = 10.0;
+float OP2 = 15.0;
+float OP3 = 16.0;
+float OP4 = 20.0;
+float OP5 = 25.0;
+
+DistanceInfo oskar(in vec3 p) {
+
+    // static phase
+    float phase = 0.0;
+
+    if (iTime < OP1) {
+         // switch phase on bassdrum
+        phase = mod(mBassdrumTot, 4);
+    } else if (iTime < OP2) {
+        // four corners
+        phase = fragCoord.x > 0.5 ? (fragCoord.y > 0.5 ? 0.0 : 2.0) : (fragCoord.y > 0.5 ? 3.0 : 1.0);
+    } else if (iTime < OP3) {
+        // L-R swipe
+        phase = fragCoord.x > mod(iTime, 1.0) ? 2.0 : 1.0;
+    } else if (iTime < OP4) {
+        // dual band
+        if (mod(mBassdrumTot, 2) >= 1) {
+            phase = mod(fragCoord.x + fragCoord.y, 0.5) > 0.25 ? 1.0 : 3.0;
+        } else {
+            phase = mod(fragCoord.x + fragCoord.y, 0.5) > 0.25 ? 3.0 : 1.0;
+        }
+    } else if (iTime < OP5) {
+        // four band and swap on bassdrum
+         phase = mod(fragCoord.y * 4.0 + mBassdrumTot, 4.0);
+    }
+
+    if (phase >= 3 ) { // waves w rocket
+        float d1 = p.y - 3 + sin(p.x + mBassdrumTot * 5) +  0.1 * sin(p.x * 3 + mBassdrumTot * 3);
+        float d2 = missile(p);
+        return DistanceInfo(smink(d1, d2, 1.8), oskarType);
+
+    } else if (phase >= 2 ) { // llt
+        float d1 = llt(p);
+        float d2 = sdSphere(p, 7.0 - mBassdrum);
+        return DistanceInfo(min(d1, d2), oskarType);
+
+    } else if (phase >= 1 ) { // tower w spheres
+        vec3 q = p;
+        float b = pMod1(q.y, 2);
+        float a = pModPolar(q.xz, 12);
+        q -= vec3(2 +  max(0, sin((mBassdrum) * 8 + b)), 0, 0);
+        float d1 = sdSphere(q , 0.5);
+        float d2 = sdCylinder(p.xzy, 1.5);
+        return DistanceInfo(min(d1, d2), oskarType);
+
+    } else { // screen
+        vec3 o = p;
+        vec2 a = pMod2(p.xz, vec2(3));
+        p.y -= (4.0 - 0.5*(abs(a.x) + abs(a.y)))*mHihat + 0.1;
+        float d1 = sdBox(p, vec3(1.2, 0.1, 1.2));
+
+        float d2 = sdBox(o, vec3(16.5));
+        float d = opIntersection(d1, d2);
+        return DistanceInfo(d, screenType);
+    }
+}
+
+
 DistanceInfo map(in vec3 p)
 {
-#if SCENE == 0
-    return un(room(p), blob(p));
-#elif SCENE == 1
-    return un(room(p), robotArm(p));
-#else
-    return un(room(p), cube(p));
-#endif
+    return un(room(p), oskar(p));
+// #if SCENE == 0
+//     return un(room(p), blob(p));
+// #elif SCENE == 1
+//     return un(room(p), robotArm(p));
+// #else
+//     return un(room(p), cube(p));
+// #endif
 }
 
 const float roomEdgeBevel = 2.7;
@@ -229,6 +374,12 @@ float getReflectiveIndex(int type)
     }
     if (type == cubeType) {
         return 0.2;
+    }
+    if (type == oskarType) {
+        return 0.5;
+    }
+    if (type == screenType) {
+        return 0.5;
     }
     return 0.0;
 }
@@ -259,6 +410,45 @@ vec3 getColor(in MarchResult result)
         vec3 baseColor = metalColor * diffuse * (1.0 + 2.0 * pulse);
         vec3 tintedSpecular = specular * mix(vec3(1.0), metalColor, 0.6); 
         return baseColor + 2.0 * gFresnel * mix(vec3(0.6, 0.8, 1.0), metalColor, 0.4) + tintedSpecular;
+    } else if (result.type == oskarType) {
+        float pulse = exp(-mBassdrum * 6.0);
+        vec3 metalColor = 0.5*vec3(0.2, 0.5, 0.9);
+        gFresnel = pow(1.0 - max(0.0, dot(normal, viewDir)), 4.0);
+        vec3 baseColor = metalColor * diffuse * (1.0 + 2.0 * pulse);
+        vec3 tintedSpecular = specular * mix(vec3(1.0), metalColor, 0.6); 
+        return baseColor + 2.0 * gFresnel * mix(vec3(0.6, 0.8, 1.0), metalColor, 0.4) + tintedSpecular;
+    } else if (result.type == screenType) {
+        float pulse = exp(-mBassdrum * 6.0);
+        vec2 copy = result.position.xz;
+        vec2 a = pMod2(copy, vec2(3));
+        //vec3 color = vec3(a.x, a.y, 0.0);
+        vec3 color = vec3(0.0);
+        // -5 to 5
+        float x = a.x + 5.0;
+        float z = a.y + 5.0;
+        vec3 c1 = vec3(0.3, 0.8, 0.8);
+        vec3 c2 = vec3(0.2, 0.3, 0.6);
+        if (mod(mHihatTot, 2.0) >= 1.0) {
+            c2 = vec3(0.3, 0.8, 0.8);
+            c1 = vec3(0.2, 0.3, 0.6);
+        }
+        if (x == 0 || x == 10 || z == 0 || z == 10) {
+            color = c1;
+        } else if (x == 1 || x == 9 || z == 1 || z == 9) {
+             color = c2;
+        } else if (x == 2 || x == 8 || z == 2 || z == 8) {
+            color = c1;
+        } else if (x == 3 || x == 7 || z == 3 || z == 7) {
+            color = c2;
+        } else if (x == 4 || x == 6 || z == 4 || z == 6) {
+            color = c1;
+        } else {
+            color = c2;
+        }
+        gFresnel = pow(1.0 - max(0.0, dot(normal, viewDir)), 4.0);
+        vec3 baseColor = color * diffuse * (1.0 + 2.0 * pulse);
+        vec3 tintedSpecular = specular * mix(vec3(1.0), color, 0.6); 
+        return baseColor + 2.0 * gFresnel * mix(vec3(0.6, 0.8, 1.0), color, 0.4) + tintedSpecular;
     } else if (result.type == armBodyType) {
         vec3 bodyColor = 0.8*vec3(0.2, 0.5, 0.9);
         gFresnel = 0.3 * pow(1.0 - max(0.0, dot(normal, viewDir)), 4.0);
@@ -304,6 +494,59 @@ void main()
     vec3 rayOrigin = (iCameraMatrix * vec4(u, v, -1.0, 1.0)).xyz;
     gEye = (iCameraMatrix * vec4(0.0, 0.0, 0.0, 1.0)).xyz;
     vec3 rayDirection = normalize(rayOrigin - gEye);
+
+    if (iTime < OP1) {
+        rayOrigin = vec3(15, 38, 15);
+        gEye = rayOrigin; // TODO is this correct?
+        //vec3 tar = rayOrigin + vec3(1, 1 , 0);
+        vec3 tar = vec3(0, iTime * 3.0, 0);
+        
+        vec3 dir = normalize(tar - rayOrigin);
+	    vec3 right = normalize(cross(vec3(0, 1, 0), dir));
+ 	    vec3 up = cross(dir, right);
+        
+        rayDirection = normalize(dir + right*u + up*v);
+    } else if (iTime < OP2) {
+        rayOrigin = vec3(15 * sin(iTime * 0.25), 38, 15 * cos(iTime * 0.25));
+        gEye = rayOrigin; // TODO is this correct?
+        vec3 tar = vec3(0, 20, 0);
+        
+        vec3 dir = normalize(tar - rayOrigin);
+	    vec3 right = normalize(cross(vec3(0, 1, 0), dir));
+ 	    vec3 up = cross(dir, right);
+        
+        rayDirection = normalize(dir + right*u + up*v);
+    } else if (iTime < OP3) {
+        rayOrigin = vec3(15 * sin(iTime * 0.25), 38 - (iTime - OP2) * 3, 15 * cos(iTime * 0.25));
+        gEye = rayOrigin; // TODO is this correct?
+        vec3 tar = rayOrigin + vec3(1, -1, 1);
+        
+        vec3 dir = normalize(tar - rayOrigin);
+	    vec3 right = normalize(cross(vec3(0, 1, 0), dir));
+ 	    vec3 up = cross(dir, right);
+        
+        rayDirection = normalize(dir + right*u + up*v);
+    } else if (iTime < OP4) {
+        rayOrigin = vec3(-10, 4, 13);
+        gEye = rayOrigin; // TODO is this correct?
+        vec3 tar = vec3(0, 30, 0);
+        
+        vec3 dir = normalize(tar - rayOrigin);
+	    vec3 right = normalize(cross(vec3(0, 1, 0), dir));
+ 	    vec3 up = cross(dir, right);
+        
+        rayDirection = normalize(dir + right*u + up*v);
+    } else if (iTime < OP5) {
+        rayOrigin = vec3(-19, 9, 11);
+        gEye = rayOrigin; // TODO is this correct?
+        vec3 tar = vec3(0, 9, 0);
+        
+        vec3 dir = normalize(tar - rayOrigin);
+	    vec3 right = normalize(cross(vec3(0, 1, 0), dir));
+ 	    vec3 up = cross(dir, right);
+        
+        rayDirection = normalize(dir + right*u + up*v);
+    }
 
     vec3 color = march(rayOrigin, rayDirection);
 
