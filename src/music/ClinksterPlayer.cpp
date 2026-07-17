@@ -32,16 +32,6 @@ ojstd::shared_ptr<MusicPlayer> createSelectedPlayer()
 
 void ClinksterPlayer::play(Duration startTime)
 {
-    Sleep(1000);
-
-    // Render the whole song up front on the first call (a few seconds); a startup busy-wait is
-    // fine for a first pass (see the deferred "loading state" follow-up).
-    // if (!renderDone()) {
-    //     beginRender();
-    //     while (!renderDone())
-    //         Sleep(10);
-    // }
-
     Clinkster_GenerateMusic();
 
 #ifdef _DEBUG
@@ -55,22 +45,6 @@ void ClinksterPlayer::play(Duration startTime)
     if (!_started) {
         Clinkster_StartMusic();
         _started = true;
-        // TEMP DIAGNOSTIC (remove): the raw clock advances but visuals freeze. Test whether the
-        // *exported* scalar symbols the C++ reads (Clinkster_TicksPerSecond drives elapsedTime;
-        // NumTracks/MusicLength/NumTicks drive popSyncEvents) survive Crinkler. The asm audio
-        // engine uses assemble-time immediates instead, so it can play fine while these are garbage.
-        Sleep(1000);
-        // const float pos = Clinkster_GetPosition();
-        // const float tps = Clinkster_TicksPerSecond;
-        // const int ms = ojstd::ftoi(pos / tps * 1000.0f);
-        // // Show raw numbers (expected: tps*1000 == 10000, i.e. tps == 10.0). If tps*1000 is far
-        // // from 10000, Crinkler is corrupting the exported float; if pos*1000 is tiny, the raw
-        // // clock itself is barely moving.
-        // ojstd::string s = ojstd::string("pos*1000=") + ojstd::to_string(ojstd::ftoi(pos * 1000.0f))
-        //     + "  tps*1000=" + ojstd::to_string(ojstd::ftoi(tps * 1000.0f))
-        //     + "  ms=" + ojstd::to_string(ms)
-        //     + "  tracks=" + ojstd::to_string(static_cast<int>(Clinkster_NumTracks));
-        // MessageBoxA(nullptr, s.c_str(), "clinkster diag", MB_OK);
     }
 #endif
 }
@@ -97,7 +71,6 @@ Duration ClinksterPlayer::elapsedTime() const
     return Duration::milliseconds(ojstd::ftoi(ms));
 #endif
 }
-
 
 #ifdef _DEBUG
 void ClinksterPlayer::startAudio(unsigned long startMs, void* hWnd)

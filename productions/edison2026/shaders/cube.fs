@@ -186,7 +186,7 @@ DistanceInfo cube(in vec3 p)
 
     int order[12] = int[](1, 3, 4, 1, 3, 1, 4, 9, 1, 5, 2, 3);
     for (int i = 0; i < NUM_STRING_HITS; i++) {
-        float cell = float(order[int(mod(mStringsHitTot[i]-1, 12))]);
+        float cell = float(order[int(mod(mStringsHitTot[i], 12))]);
         float s = cellHeight(mStringsHitAge[i], int(cell));
         vec3 r = p - vec3(cell * cCellSize, s, 0);
         d = min(d, sdBox(r, vec3(cCellHalfWidth, s, cCellHalfWidth)));
