@@ -186,7 +186,7 @@ DistanceInfo cube(in vec3 p)
 
     int order[12] = int[](1, 3, 4, 1, 3, 1, 4, 9, 1, 5, 2, 3);
     for (int i = 0; i < NUM_STRING_HITS; i++) {
-        float cell = float(order[int(mod(mStringsHitTot[i] - 69, 12))]);
+        float cell = float(order[int(mod(mStringsHitTot[i], 12))]);
         float s = cellHeight(mStringsHitAge[i], int(cell));
         vec3 r = p - vec3(cell * cCellSize, s, 0);
         d = min(d, sdBox(r, vec3(cCellHalfWidth, s, cCellHalfWidth)));
@@ -261,7 +261,8 @@ float missile(vec3 p) {
     d = min(bot, d);
     return d;
 }
-
+)""
+    R""(
 float opSubtraction( float d1, float d2 )
 {
     return max(-d1,d2);
@@ -340,14 +341,15 @@ DistanceInfo oskar(in vec3 p) {
 
 DistanceInfo map(in vec3 p)
 {
+#if SCENE == 0
+    return un(room(p), cube(p));
+#elif SCENE == 1
+    return un(room(p), robotArm(p));
+#elif SCENE == 2
     return un(room(p), oskar(p));
-// #if SCENE == 0
-//     return un(room(p), blob(p));
-// #elif SCENE == 1
-//     return un(room(p), robotArm(p));
-// #else
-//     return un(room(p), cube(p));
-// #endif
+#else
+    return un(room(p), robotArm(p));
+#endif
 }
 
 const float roomEdgeBevel = 2.7;
@@ -495,6 +497,7 @@ void main()
     gEye = (iCameraMatrix * vec4(0.0, 0.0, 0.0, 1.0)).xyz;
     vec3 rayDirection = normalize(rayOrigin - gEye);
 
+#if SCENE == 2
     if (iTime < OP1) {
         rayOrigin = vec3(15, 38, 15);
         gEye = rayOrigin; // TODO is this correct?
@@ -547,6 +550,7 @@ void main()
         
         rayDirection = normalize(dir + right*u + up*v);
     }
+#endif
 
     vec3 color = march(rayOrigin, rayDirection);
 

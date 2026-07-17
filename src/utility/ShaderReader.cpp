@@ -30,6 +30,10 @@ bool fileExists(const ojstd::string& path)
 // .fs/.vs files store their GLSL inside an R""( ... )"" raw-string wrapper (so they can also be
 // #include'd as string literals into the embedded resources). Strip the wrapper when reading
 // from disk.
+// A large shader may be split into several adjacent raw-string literals to stay under the MSVC
+// per-literal size cap (C2026): interior `)"" R""(` markers concatenate for the embedded build
+// but are not valid GLSL, so strip them here as well. Any `R""(`/`)""` token between the outer
+// markers can only be such a split marker (GLSL never contains these tokens).
 // Returns an empty string if the wrapper isn't found intact, e.g. when hot reload catches the
 // file mid-write (a partial save can be missing the opening/closing marker at read time).
 ojstd::string unwrapRawString(const std::string& fileContents)
@@ -40,7 +44,12 @@ ojstd::string unwrapRawString(const std::string& fileContents)
     size_t end = fileContents.rfind(post);
     if (start == std::string::npos || end == std::string::npos || end < start + pre.length())
         return ojstd::string();
-    return fileContents.substr(start + pre.length(), end - start - pre.length()).c_str();
+    std::string inner = fileContents.substr(start + pre.length(), end - start - pre.length());
+    for (const std::string& marker : { post, pre }) {
+        for (size_t pos = inner.find(marker); pos != std::string::npos; pos = inner.find(marker, pos))
+            inner.erase(pos, marker.length());
+    }
+    return inner.c_str();
 }
 #endif
 
