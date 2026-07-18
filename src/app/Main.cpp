@@ -33,6 +33,11 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
     popup::Data popupData = popup::show();
 
     bool saveFrames = false;
+    if (saveFrames) { 
+        popupData.full = false;
+        popupData.width = 1920 * 2;
+        popupData.height = 1080 * 2;
+    }
     const Vector2i windowSize(popupData.width, popupData.height);
     const bool fullScreen = popupData.full;
     const bool showCursor = !fullScreen;
