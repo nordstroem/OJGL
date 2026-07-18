@@ -61,8 +61,8 @@ const float S_focusStrength = 0.03;
 vec3 cRoomSize = vec3(20, 20, 20);
 float floorPosition = 0;
 
-float OP0_0 = 2.0;
-float OP0_1 = OP0_0 + 5.0;
+float OP0_0 = 3.0;
+float OP0_1 = OP0_0 + 3.0;
 float OP0_2 = OP0_1 + 4.0;
 float OP0_3 = OP0_2 + 4.0;
 float OP1 = OP0_3 + 10.0;
