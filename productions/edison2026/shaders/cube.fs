@@ -831,7 +831,7 @@ void main()
 
 #if SCENE == 2
     float mm = mod(mBassdrumTot, 13.0);
-    if (mm == 7.0) {
+    if (mm == 7.0 && iTime < OP4) {
         u *= 1.0 - mBassdrum*2.0;
         v *= 1.0 - mBassdrum*2.0;
     } 
