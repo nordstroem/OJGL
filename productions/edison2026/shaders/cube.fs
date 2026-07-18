@@ -744,7 +744,7 @@ void main()
 
 #if SCENE == 1
     if (iTime < ARM_SUBSCENE1) {
-        vec3 tar = vec3(0, 3 - 2*smoothstep(5, ARM_SUBSCENE1, iTime), 0);
+        vec3 tar = vec3(0, 3 - 1*smoothstep(5, ARM_SUBSCENE1, iTime), 0);
         rayOrigin = vec3(13*cos(0.5*iTime), 3 + iTime * 0.3, 13*sin(0.5*iTime));
         
         rayOrigin = mix(rayOrigin, tar + vec3(0, 5, 0), 0.3*smoothstep(5, ARM_SUBSCENE1, iTime));
