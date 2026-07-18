@@ -6,7 +6,7 @@ const float S_maxDistance = 100.0;
 const float S_distanceMultiplier = 0.7;
 const float S_minVolumetricJumpDistance = 0.02;
 const float S_volumetricDistanceMultiplier = 0.75;
-const int S_reflectionJumps = 4;
+const int S_reflectionJumps = 3;
 
 #define S_VOLUMETRIC 0
 #define S_REFLECTIONS 1
@@ -545,7 +545,7 @@ float getReflectiveIndex(int type)
     float m = mod(mBassdrumTot, 10.0);
     if (m == 3.0 || m == 5.0) {
         float a = abs(fragCoord.x - ((sin(iTime * 15.0)*0.5) + 0.5));
-        return a*a*a*a;
+        return a*a*a*a*a;
     }
 #endif
     float pulse = exp(-mBassdrum * 6.0);
