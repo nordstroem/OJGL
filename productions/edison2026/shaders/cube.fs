@@ -88,17 +88,7 @@ float SquareHolePattern(in vec2 uv)
   return smoothstep(0.1, 0.0, t*t);
 }
 
-DistanceInfo blob(in vec3 p)
-{
-    p.y -= 5.5;
-    p.x -= 5.0;
-    float d1 = sdSphere(p, 1.0);
-    p.x -= 0.5 * cos(3*iTime);
-    p.z -= 0.5 * sin(3*iTime);
-    float d2 = sdCutSphere(p, 1.0, 0.0);
-    float d = smink(d1, d2, 0.8);
-    return DistanceInfo(d, sphereType);
-}
+
 
 float wallPattern(in vec2 uv) {
     float thickness = 2.0;
@@ -760,16 +750,6 @@ vec3 getColor(in MarchResult result)
     }
 }
 
-VolumetricResult evaluateLight(in vec3 p)
-{
-    return VolumetricResult(1e6, vec3(0.0));
-}
-
-
-float getFogAmount(in vec3 p)
-{
-    return 0.0;
-}
 )""
     R""(
 void main()

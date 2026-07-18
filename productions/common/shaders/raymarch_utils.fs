@@ -21,8 +21,6 @@ struct VolumetricResult {
 };
 
 DistanceInfo map(in vec3 p);
-VolumetricResult evaluateLight(in vec3 p);
-float getFogAmount(in vec3 p);
 vec3 getColor(in MarchResult result);
 float getReflectiveIndex(int type);
 
