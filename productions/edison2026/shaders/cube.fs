@@ -758,11 +758,11 @@ void main()
 #endif
 
 #if SCENE == 1
-    float mm = mod(mBassdrumTot, 14.0);
-    if (mm == 7.0) {
-        u *= 1.0 + mBassdrum*0.4;
-        v *= 1.0 + mBassdrum*0.4;
-    } 
+    // float mm = mod(mBassdrumTot, 14.0);
+    // if (mm == 7.0) {
+    //     u *= 1.0 + mBassdrum*0.4;
+    //     v *= 1.0 + mBassdrum*0.4;
+    // } 
 
     if (iTime < ARM_SUBSCENE1) {
         vec3 tar = vec3(0, 3 - 1*smoothstep(5, ARM_SUBSCENE1, iTime), 0);
