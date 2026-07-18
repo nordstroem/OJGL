@@ -349,6 +349,10 @@ DistanceInfo elevatorLid(in vec3 p) {
         m = clamp(iTime - 1.0, 0.0, 1.2); // fix
 #endif
 
+#if SCENE == 2
+    m = 1.2;
+#endif
+
 #if SCENE == 3
         m = clamp(11.0 - iTime, 0.0, 1.2); // fix
 #endif
