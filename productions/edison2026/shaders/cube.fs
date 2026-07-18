@@ -472,7 +472,7 @@ DistanceInfo oskar(in vec3 p) {
 
     } else { // screen
         vec3 o = p;
-        vec2 a = pMod2(p.xz, vec2(3));
+        vec2 a = pMod2(p.xz, vec2(2.6));
         p.y -= (4.0 - 0.5*(abs(a.x) + abs(a.y)))*mHihat + 0.1;
         float d1 = sdBox(p, vec3(1.2, 0.1, 1.2));
 
@@ -565,7 +565,7 @@ float getReflectiveIndex(int type)
         return 0.5;
     }
     if (type == screenType) {
-        return 0.5;
+        return 0.3;
     }
     if (type == lidType) {
         return 0.9;
@@ -584,8 +584,8 @@ vec3 rust(in vec2 uv )
     
     
     
-    vec3 blue = vec3(.25, .8, 1.);
-    vec3 rust = vec3(1., .7, .15);
+    vec3 blue = vec3(0.8, 0.6,0.6);
+    vec3 rust = vec3(1.0);
     
     vec3 color = mix(rust, blue, 0.8 * gs);
     float n2 = noiseOctave(uv * 100., 10, 0.7);
@@ -644,14 +644,14 @@ vec3 getColor(in MarchResult result)
     } else if (result.type == screenType) {
         float pulse = exp(-mBassdrum * 6.0);
         vec2 copy = result.position.xz;
-        vec2 a = pMod2(copy, vec2(3));
+        vec2 a = pMod2(copy, vec2(2.6));
         //vec3 color = vec3(a.x, a.y, 0.0);
         vec3 color = vec3(0.0);
         // -5 to 5
         float x = a.x + 5.0;
         float z = a.y + 5.0;
-        vec3 c1 = vec3(0.1);
-        vec3 c2 = vec3(1) - rust(result.position.xz * 0.01)*1.3;
+        vec3 c1 = vec3(0.8);
+        vec3 c2 = vec3(1.0) - rust(result.position.xz * 0.01)*1.3;
         if (mod(mBassdrumTot, 2.0) >= 1.0) {
             vec3 tmp = c1;
             c1 = c2;
