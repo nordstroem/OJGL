@@ -4,6 +4,13 @@
 # Project-specific files
 *.png
 
+# CMake build output (build/ plus the per-generator/per-synth trees:
+# build-ninja/, build-clinkster/, build-ninja-clinkster/, ...)
+build/
+build-*/
+CMakeUserPresets.json
+CMakeSettings.json
+
 # User-specific files
 *.suo
 *.user
@@ -262,3 +269,7 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+
+# Clinkster wav-render tool build output
+tools/clinkster_wav/out/
+*.wav

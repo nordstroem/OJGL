@@ -1,0 +1,53 @@
+{
+    "version": 3,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 21,
+        "patch": 0
+    },
+    "configurePresets": [
+        {
+            "name": "vs",
+            "displayName": "Windows x86 (Visual Studio)",
+            "generator": "Visual Studio 17 2022",
+            "architecture": "Win32",
+            "binaryDir": "${sourceDir}/build"
+        },
+        {
+            "name": "ninja",
+            "displayName": "Windows x86 (Ninja, needed for CrinklerRelease)",
+            "generator": "Ninja Multi-Config",
+            "binaryDir": "${sourceDir}/build-ninja",
+            "cacheVariables": {
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "debug",
+            "configurePreset": "ninja",
+            "configuration": "Debug"
+        },
+        {
+            "name": "optimizeddebug",
+            "configurePreset": "ninja",
+            "configuration": "OptimizedDebug"
+        },
+        {
+            "name": "release",
+            "configurePreset": "ninja",
+            "configuration": "Release"
+        },
+        {
+            "name": "crinklerrelease",
+            "configurePreset": "ninja",
+            "configuration": "CrinklerRelease"
+        },
+        {
+            "name": "vsdebug",
+            "configurePreset": "vs",
+            "configuration": "Debug"
+        }
+    ]
+}
