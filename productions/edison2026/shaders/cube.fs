@@ -61,6 +61,20 @@ const float S_focusStrength = 0.03;
 vec3 cRoomSize = vec3(20, 20, 20);
 float floorPosition = 0;
 
+float OP0_0 = 3.0;
+float OP0_1 = OP0_0 + 4.0;
+float OP0_2 = OP0_1 + 4.0;
+float OP0_3 = OP0_2 + 4.0;
+float OP1 = OP0_3 + 10.0;
+float OP2 = OP1 + 5.0;
+float OP3 = OP2 + 1.0;
+float OP4 = OP3 + 4.0;
+float OP5 = OP4 + 5.0;
+float OP6 = OP5 + 6.0;
+
+float ARM_SUBSCENE1 = 15.0;
+float ARM_SUBSCENE2 = 16.0;
+
 float GridPattern(in vec2 uv)
 {
   return 0.5*clamp(10.*sin(PI*uv.x) + 10.5, 0.0, 1.0)
@@ -94,11 +108,18 @@ float wallPattern(in vec2 uv) {
 
 DistanceInfo room(in vec3 p)
 {
-    p.y += floorPosition -cRoomSize.y;
+    vec3 roomSize = cRoomSize;
+#if SCENE == 2
+    if (iTime > OP3 && iTime < OP4) {
+        float t = iTime - OP3;
+        roomSize.y += t*3.0;
+    }
+#endif
+    p.y += floorPosition -roomSize.y;
     p.y -= wallPattern(p.xz) * 0.005;
     p.x -= wallPattern(p.zy) * 0.005;
     p.z -= wallPattern(p.xy) * 0.005;
-    return DistanceInfo(-sdBox(p, cRoomSize), roomType);
+    return DistanceInfo(-sdBox(p, roomSize), roomType);
 }
 
 float func(float n) {
@@ -371,19 +392,7 @@ DistanceInfo elevatorLid(in vec3 p) {
     return DistanceInfo(opSubtraction(d3, d1), lidType);
 }
 
-float OP0_0 = 3.0;
-float OP0_1 = OP0_0 + 4.0;
-float OP0_2 = OP0_1 + 4.0;
-float OP0_3 = OP0_2 + 4.0;
-float OP1 = OP0_3 + 10.0;
-float OP2 = OP1 + 5.0;
-float OP3 = OP2 + 1.0;
-float OP4 = OP3 + 4.0;
-float OP5 = OP4 + 5.0;
-float OP6 = OP5 + 6.0;
 
-float ARM_SUBSCENE1 = 15.0;
-float ARM_SUBSCENE2 = 16.0;
 
 bool noiseTransitionCheck() {
     vec2 uv = fragCoord.xy;
