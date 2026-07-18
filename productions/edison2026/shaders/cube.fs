@@ -6,7 +6,7 @@ const float S_maxDistance = 100.0;
 const float S_distanceMultiplier = 0.7;
 const float S_minVolumetricJumpDistance = 0.02;
 const float S_volumetricDistanceMultiplier = 0.75;
-const int S_reflectionJumps = 4;
+const int S_reflectionJumps = 3;
 
 #define S_VOLUMETRIC 0
 #define S_REFLECTIONS 1
@@ -61,6 +61,20 @@ const float S_focusStrength = 0.03;
 vec3 cRoomSize = vec3(20, 20, 20);
 float floorPosition = 0;
 
+float OP0_0 = 3.0;
+float OP0_1 = OP0_0 + 4.0;
+float OP0_2 = OP0_1 + 4.0;
+float OP0_3 = OP0_2 + 4.0;
+float OP1 = OP0_3 + 10.0;
+float OP2 = OP1 + 5.0;
+float OP3 = OP2 + 1.0;
+float OP4 = OP3 + 4.0;
+float OP5 = OP4 + 5.0;
+float OP6 = OP5 + 6.0;
+
+float ARM_SUBSCENE1 = 15.0;
+float ARM_SUBSCENE2 = 16.0;
+
 float GridPattern(in vec2 uv)
 {
   return 0.5*clamp(10.*sin(PI*uv.x) + 10.5, 0.0, 1.0)
@@ -94,11 +108,18 @@ float wallPattern(in vec2 uv) {
 
 DistanceInfo room(in vec3 p)
 {
-    p.y += floorPosition -cRoomSize.y;
+    vec3 roomSize = cRoomSize;
+#if SCENE == 2
+    if (iTime > OP3 && iTime < OP4) {
+        float t = iTime - OP3;
+        roomSize.y += t*3.0;
+    }
+#endif
+    p.y += floorPosition -roomSize.y;
     p.y -= wallPattern(p.xz) * 0.005;
     p.x -= wallPattern(p.zy) * 0.005;
     p.z -= wallPattern(p.xy) * 0.005;
-    return DistanceInfo(-sdBox(p, cRoomSize), roomType);
+    return DistanceInfo(-sdBox(p, roomSize), roomType);
 }
 
 float func(float n) {
@@ -349,6 +370,10 @@ DistanceInfo elevatorLid(in vec3 p) {
         m = clamp(iTime - 1.0, 0.0, 1.2); // fix
 #endif
 
+#if SCENE == 2
+    m = 1.2;
+#endif
+
 #if SCENE == 3
         m = clamp(11.0 - iTime, 0.0, 1.2); // fix
 #endif
@@ -367,19 +392,7 @@ DistanceInfo elevatorLid(in vec3 p) {
     return DistanceInfo(opSubtraction(d3, d1), lidType);
 }
 
-float OP0_0 = 3.0;
-float OP0_1 = OP0_0 + 4.0;
-float OP0_2 = OP0_1 + 4.0;
-float OP0_3 = OP0_2 + 4.0;
-float OP1 = OP0_3 + 10.0;
-float OP2 = OP1 + 5.0;
-float OP3 = OP2 + 1.0;
-float OP4 = OP3 + 4.0;
-float OP5 = OP4 + 5.0;
-float OP6 = OP5 + 6.0;
 
-float ARM_SUBSCENE1 = 15.0;
-float ARM_SUBSCENE2 = 16.0;
 
 bool noiseTransitionCheck() {
     vec2 uv = fragCoord.xy;
@@ -512,7 +525,13 @@ DistanceInfo map(in vec3 p)
         return un(d1, d2);
     }
 #elif SCENE == 2
-    return un(room(p), oskar(p));
+    float m = mod(mBassdrumTot, 15.0);
+    DistanceInfo o = oskar(p);
+    if (m == 10.0 &&  mBassdrum*1.5 > abs(fragCoord.x - 0.5)) {
+        return o;
+    } else {
+        return un(room(p), o);
+    }
 #elif SCENE == 3
     vec3 pRobot = p;
     pRobot -= vec3(0, min(0.0, 6 - iTime), 0);
@@ -545,7 +564,7 @@ float getReflectiveIndex(int type)
     float m = mod(mBassdrumTot, 10.0);
     if (m == 3.0 || m == 5.0) {
         float a = abs(fragCoord.x - ((sin(iTime * 15.0)*0.5) + 0.5));
-        return a*a*a*a;
+        return a*a*a*a*a;
     }
 #endif
     float pulse = exp(-mBassdrum * 6.0);
@@ -600,8 +619,7 @@ vec3 getColor(in MarchResult result)
         gHitToEyeDistance = length(gEye - result.position);
 #if SCENE == 2
         // only render reflections as an effect
-        float m = mod(mBassdrumTot, 10.0);
-        if (mod(m, 18) == 2.0) {
+        if (mod(mBassdrumTot, 10.0) == 9.0) {
             return vec3(1.0);
         }
 #endif
@@ -928,7 +946,7 @@ void main()
 #endif
 
 #if SCENE == 3
-    rayOrigin = vec3(13*cos(iTime), 3 + iTime * 0.3, 13*sin(iTime));
+    rayOrigin = vec3(13*cos(iTime*0.5), 3 + iTime * 0.3, 13*sin(iTime*0.5));
     gEye = rayOrigin; 
     //vec3 tar = rayOrigin + vec3(1, 1 , 0);
     vec3 tar = vec3(0, 3, 0);
@@ -966,6 +984,10 @@ void main()
     } else if (m == 9.0) {
         fragColor.rgb = mix(fragColor.rgb, vec3(1)-fragColor.rgb, gHitToEyeDistance * 0.02);
     }
+#endif
+
+#if SCENE == 0
+    fragColor.rgb *= smoothstep(0.5, 1.5, iTime); // fade in
 #endif
 
 #if SCENE == 3
