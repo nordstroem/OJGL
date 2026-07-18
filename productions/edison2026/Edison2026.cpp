@@ -115,7 +115,7 @@ ojstd::vector<Scene> Edison2026::buildSceneGraph(const Vector2i& sceneSize) cons
 
 ojstd::string Edison2026::getTitle() const
 {
-    return "Edison 2026";
+    return "Exe K. Veraren";
 }
 
 ojstd::shared_ptr<Demo> ojgl::createSelectedDemo()
