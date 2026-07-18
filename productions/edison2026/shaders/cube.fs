@@ -4,8 +4,6 @@ const float S_normalEpsilon = 1e-3;
 const int S_maxSteps = 400;
 const float S_maxDistance = 100.0;
 const float S_distanceMultiplier = 0.7;
-const float S_minVolumetricJumpDistance = 0.02;
-const float S_volumetricDistanceMultiplier = 0.75;
 const int S_reflectionJumps = 3;
 
 #define S_VOLUMETRIC 0
@@ -61,32 +59,25 @@ const float S_focusStrength = 0.03;
 vec3 cRoomSize = vec3(20, 20, 20);
 float floorPosition = 0;
 
-float OP0_0 = 3.0;
-float OP0_1 = OP0_0 + 3.5;
-float OP0_2 = OP0_1 + 5.0;
-float OP0_3 = OP0_2 + 4.0;
-float OP1 = OP0_3 + 10.25;
-float OP2 = OP1 + 3.25;
-float OP3 = OP2 + 1.0;
-float OP4 = OP3 + 3.0;
-float OP5 = OP4 + 3.0;
-float OP6 = OP5 + 6.0;
+#if SCENE == 2
+const float OP0_0 = 3.0;
+const float OP0_1 = OP0_0 + 3.5;
+const float OP0_2 = OP0_1 + 5.0;
+const float OP0_3 = OP0_2 + 4.0;
+const float OP1 = OP0_3 + 10.25;
+const float OP2 = OP1 + 3.25;
+const float OP3 = OP2 + 1.0;
+const float OP4 = OP3 + 3.0;
+const float OP5 = OP4 + 3.0;
+const float OP6 = OP5 + 6.0;
+#endif
 
 float ARM_SUBSCENE1 = 15.0;
 float ARM_SUBSCENE2 = 16.0;
 
-float GridPattern(in vec2 uv)
-{
-  return 0.5*clamp(10.*sin(PI*uv.x) + 10.5, 0.0, 1.0)
-       / 0.5*clamp(10.*sin(PI*uv.y) + 10.5, 0.0, 1.0);
-}
 
-float SquareHolePattern(in vec2 uv)
-{
-  float thickness = 4.0;
-  float t = cos(uv.x*2.0) * cos(uv.y*2.0) / thickness;
-  return smoothstep(0.1, 0.0, t*t);
-}
+
+
 
 
 
@@ -383,7 +374,7 @@ DistanceInfo elevatorLid(in vec3 p) {
 }
 
 
-
+#if SCENE == 2
 bool noiseTransitionCheck() {
     vec2 uv = fragCoord.xy;
     uv *= 200;
@@ -392,7 +383,9 @@ bool noiseTransitionCheck() {
     float t = iTime - OP5;
     return n < smoothstep(1, 2, t);
 }
+#endif
 
+#if SCENE == 2
 DistanceInfo oskar(in vec3 p) {
 
     // static phase
@@ -484,6 +477,7 @@ DistanceInfo oskar(in vec3 p) {
         return DistanceInfo(d, screenType);
     }
 }
+#endif
 
 float elevatorShaft(in vec3 p) {
     float d1 = sdCylinder(p.xzy, 0.8);
