@@ -527,7 +527,7 @@ DistanceInfo map(in vec3 p)
 
         return un(d1, un(d2, d3));
     } else {
-        vec2 i = pMod2(pRobot.xz, vec2(6, 6));
+        vec2 i = pMod2(pRobot.xz, vec2(6.2, 4));
         DistanceInfo d1 = robotArm(pRobot, i.x*10 + i.y);
         return un(d1, d2);
     }
@@ -738,9 +738,9 @@ vec3 getColor(in MarchResult result)
         gFresnel = 0.2 * pow(1.0 - max(0.0, dot(normal, viewDir)), 4.0) * step(0.1, result.position.y);
         return graphite * (0.3 + diffuse) + 0.6 * specular + gFresnel * vec3(0.4);
     } else if (result.type == cubeType) {
-        vec3 cubeColor = vec3(0.7, 0.35, 0.15);
+        vec3 cubeColor = vec3(0.7, 0.7, 0.7);
         if (mod(result.position.x + cCellSize*0.5, cCellSize*2.0) >= cCellSize) {
-            cubeColor = vec3(0.25, 0.1, 0.5);
+            cubeColor = vec3(0.0, 0.0, 0.0);
         }
         gFresnel = 0.2 * pow(1.0 - max(0.0, dot(normal, viewDir)), 4.0);
         vec3 baseColor = cubeColor * (0.08 + diffuse);
