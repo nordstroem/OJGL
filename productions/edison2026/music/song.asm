@@ -1,4 +1,4 @@
-; Clinkster music converted from .\productions\edison2026\music\edison2026_3.xrns 2026-07-18 13:03:38
+; Clinkster music converted from .\productions\edison2026\music\edison2026_3.xrns 2026-07-18 13:27:39
 
 %define USES_SINE 1
 %define USES_SAWTOOTH 1
@@ -15,10 +15,10 @@
 
 %define SUBSAMPLES_PER_TICK 17640
 %define MAX_INSTRUMENT_SUBSAMPLES 2818048
-%define MAX_TOTAL_INSTRUMENT_SAMPLES 1900544
+%define MAX_TOTAL_INSTRUMENT_SAMPLES 2162688
 %define MAX_RELEASE_SUBSAMPLES 589824
 %define TOTAL_SAMPLES 4390912
-%define MAX_TRACK_INSTRUMENT_RENDERS 8
+%define MAX_TRACK_INSTRUMENT_RENDERS 9
 
 %define MAX_DELAY_LENGTH 16758
 %define LEFT_DELAY_LENGTH 16758
@@ -49,10 +49,10 @@ _InstrumentData:
 	db	24,1,0,11,1,0,-1
 	; 04:  introstrings / 10|introstrings
 	db	1,2,5,6,0,8,17,12,15,24,0,0,0,0,0,-80,-32,32
-	db	50,95,16,0,4,16,0,4,4,0,1,4,0,2,1,0,1,24,4,0,-1
+	db	50,95,32,16,0,4,16,0,4,4,0,1,4,0,2,1,0,1,24,4,0,-1
 	; 05:  introstrings / 10|introstrings
 	db	1,2,5,6,0,8,17,12,15,24,0,0,0,0,0,-80,-32,32
-	db	53,16,0,1,95,16,0,4,24,4,0,3,4,0,0,4,0,3,1,0,-1
+	db	53,16,0,1,95,32,16,0,4,24,4,0,3,4,0,0,4,0,3,1,0,-1
 	; 06:  introstrings / 10|introstrings
 	db	1,2,5,6,0,8,17,12,15,24,0,0,0,0,0,-80,-32,32
 	db	60,1,0,1,24,4,0,4,4,0,1,4,0,-1
@@ -84,15 +84,17 @@ _NotePositions:
 	db	8,8,8,8,8,8,8,8
 	; position 7 - pattern 3
 	db	8,8,8,8,8,8,8,8
-	; position 8 - pattern 4
+	; position 8 - pattern 2
 	db	8,8,8,8,8,8,8,8
 	; position 9 - pattern 0
 	db	8,8,8,8,8,8,8,8
-	; position 10 - pattern 2
+	; position 10 - pattern 4
 	db	8,8,8,8,8,8,8,8
-	; position 11 - pattern 2
+	; position 11 - pattern 4
 	db	8,8,8,8,8,8,8,8
 	; position 12 - pattern 0
+	db	8,8,8,8,8,8,8,8
+	; position 13 - pattern 0
 	db	8,8,8,8,8,8,8,8
 
 	; 01:  bassdrum / 00|bassdrum
@@ -112,15 +114,17 @@ _NotePositions:
 	db	6,6,4,6,6,4,6,6,4,6,6,4
 	; position 7 - pattern 3
 	db	6,4,2,4,6,6,4,6,6,4,6,6,4
-	; position 8 - pattern 4
-	db	6,4,2,4,6,6,4,6,6,4,6,6,4
+	; position 8 - pattern 2
+	db	6,6,4,6,6,4,6,6,4,6,6,4
 	; position 9 - pattern 0
 	db	6,6,4,6,6,4,6,6,4,6,6,4
-	; position 10 - pattern 2
-	db	6,6,4,6,6,4,6,6,4,6,6,4
-	; position 11 - pattern 2
-	db	6,6,4,6,6,4,6,6,4,6,6,4
+	; position 10 - pattern 4
+	db	6,4,2,4,6,6,4,6,6,4,6,6,4
+	; position 11 - pattern 4
+	db	6,4,2,4,6,6,4,6,6,4,6,6,4
 	; position 12 - pattern 0
+	db	6,6,4,6,6,4,6,6,4,6,6,4
+	; position 13 - pattern 0
 	db	6,6,4,6,6,4,6,6,4,6,6,4
 
 	; 02:  hihat / 09|hihat
@@ -140,15 +144,17 @@ _NotePositions:
 	db	2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2
 	; position 7 - pattern 3
 	db	2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2
-	; position 8 - pattern 4
-	db	2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2
+	; position 8 - pattern 2
+	db	2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2
 	; position 9 - pattern 0
 	db	2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2
-	; position 10 - pattern 2
-	db	2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2
-	; position 11 - pattern 2
-	db	2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2
+	; position 10 - pattern 4
+	db	2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	; position 11 - pattern 4
+	db	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
 	; position 12 - pattern 0
+	db	1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2
+	; position 13 - pattern 0
 	db	2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2
 
 	; 03:  #hihat / 01|clap
@@ -168,15 +174,17 @@ _NotePositions:
 	db	16,16,16,16
 	; position 7 - pattern 3
 	db	2,4,4,4,2,2,4,4,4,2,2,4,4,6,16
-	; position 8 - pattern 4
-	db	2,4,4,4,2,2,4,4,4,2,2,4,4,6,16
+	; position 8 - pattern 2
+	db	16,16,16,16
 	; position 9 - pattern 0
 	db	16,16,16,16
-	; position 10 - pattern 2
-	db	16,16,16,16
-	; position 11 - pattern 2
-	db	16,16,16,16
+	; position 10 - pattern 4
+	db	2,4,4,4,2,2,4,4,4,2,2,4,4,6,16
+	; position 11 - pattern 4
+	db	2,4,4,4,2,2,4,4,4,2,2,4,4,6,16
 	; position 12 - pattern 0
+	db	16,16,16,16
+	; position 13 - pattern 0
 	db	16,16,16,16
 
 	; 04:  introstrings / 10|introstrings
@@ -184,44 +192,40 @@ _NotePositions:
 	db	-2,0,4,4,4,24,4,4
 	; position 5 - pattern 2
 	db	20,4,4,4,24,4,4
-	; position 8 - pattern 4
-	db	-1,148,16,16
-	; position 10 - pattern 2
-	db	96,4,4,4,24,4,4
-	; position 11 - pattern 2
-	db	20,4,4,4,24,4,4
+	; position 8 - pattern 2
+	db	-1,148,4,4,4,24,4,4
+	; position 10 - pattern 4
+	db	84,16,16
+	; position 11 - pattern 4
+	db	32,16,16
 
 	; 05:  introstrings / 10|introstrings
 	; position 4 - pattern 2
 	db	-2,0,4,4,4,24,4,4
 	; position 5 - pattern 2
 	db	20,4,4,4,24,4,4
-	; position 8 - pattern 4
-	db	-1,148,16,16
-	; position 10 - pattern 2
-	db	96,4,4,4,24,4,4
-	; position 11 - pattern 2
-	db	20,4,4,4,24,4,4
+	; position 8 - pattern 2
+	db	-1,148,4,4,4,24,4,4
+	; position 10 - pattern 4
+	db	84,16,16
+	; position 11 - pattern 4
+	db	32,16,16
 
 	; 06:  introstrings / 10|introstrings
 	; position 4 - pattern 2
 	db	-2,0,4,4,4,24,4,4
 	; position 5 - pattern 2
 	db	20,4,4,4,24,4,4
-	; position 10 - pattern 2
-	db	-2,20,4,4,4,24,4,4
-	; position 11 - pattern 2
-	db	20,4,4,4,24,4,4
+	; position 8 - pattern 2
+	db	-1,148,4,4,4,24,4,4
 
 	; 07:  introstrings / 10|introstrings
 	; position 4 - pattern 2
 	db	-2,4
 	; position 5 - pattern 2
 	db	64
-	; position 10 - pattern 2
-	db	-2,64
-	; position 11 - pattern 2
-	db	64
+	; position 8 - pattern 2
+	db	-1,192
 
 	; 08:  #introstrings / 11|#introstrings
 	; position 1 - pattern 1
@@ -250,15 +254,17 @@ _NoteSamples:
 	db	0,0,0,0,0,0,0,0
 	; position 7 - pattern 3
 	db	0,0,0,0,0,0,0,0
-	; position 8 - pattern 4
+	; position 8 - pattern 2
 	db	0,0,0,0,0,0,0,0
 	; position 9 - pattern 0
 	db	0,0,0,0,0,0,0,0
-	; position 10 - pattern 2
+	; position 10 - pattern 4
 	db	0,0,0,0,0,0,0,0
-	; position 11 - pattern 2
+	; position 11 - pattern 4
 	db	0,0,0,0,0,0,0,0
 	; position 12 - pattern 0
+	db	0,0,0,0,0,0,0,0
+	; position 13 - pattern 0
 	db	0,0,0,0,0,0,0,0
 	db	-1
 
@@ -279,15 +285,17 @@ _NoteSamples:
 	db	0,0,0,0,0,0,0,0,0,0,0,0
 	; position 7 - pattern 3
 	db	0,0,0,0,0,0,0,0,0,0,0,0,0
-	; position 8 - pattern 4
-	db	0,0,0,0,0,0,0,0,0,0,0,0,0
+	; position 8 - pattern 2
+	db	0,0,0,0,0,0,0,0,0,0,0,0
 	; position 9 - pattern 0
 	db	0,0,0,0,0,0,0,0,0,0,0,0
-	; position 10 - pattern 2
-	db	0,0,0,0,0,0,0,0,0,0,0,0
-	; position 11 - pattern 2
-	db	0,0,0,0,0,0,0,0,0,0,0,0
+	; position 10 - pattern 4
+	db	0,0,0,0,0,0,0,0,0,0,0,0,0
+	; position 11 - pattern 4
+	db	0,0,0,0,0,0,0,0,0,0,0,0,0
 	; position 12 - pattern 0
+	db	0,0,0,0,0,0,0,0,0,0,0,0
+	; position 13 - pattern 0
 	db	0,0,0,0,0,0,0,0,0,0,0,0
 	db	-1
 
@@ -308,15 +316,17 @@ _NoteSamples:
 	db	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 	; position 7 - pattern 3
 	db	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	; position 8 - pattern 4
-	db	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	; position 8 - pattern 2
+	db	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 	; position 9 - pattern 0
 	db	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	; position 10 - pattern 2
-	db	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	; position 11 - pattern 2
-	db	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	; position 10 - pattern 4
+	db	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	; position 11 - pattern 4
+	db	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 	; position 12 - pattern 0
+	db	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	; position 13 - pattern 0
 	db	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 	db	-1
 
@@ -337,42 +347,44 @@ _NoteSamples:
 	db	1,1,1,1
 	; position 7 - pattern 3
 	db	0,0,0,0,1,0,0,0,0,1,0,0,0,1,1
-	; position 8 - pattern 4
-	db	0,0,0,0,1,0,0,0,0,1,0,0,0,1,1
+	; position 8 - pattern 2
+	db	1,1,1,1
 	; position 9 - pattern 0
 	db	1,1,1,1
-	; position 10 - pattern 2
-	db	1,1,1,1
-	; position 11 - pattern 2
-	db	1,1,1,1
+	; position 10 - pattern 4
+	db	0,0,0,0,1,0,0,0,0,1,0,0,0,1,1
+	; position 11 - pattern 4
+	db	0,0,0,0,1,0,0,0,0,1,0,0,0,1,1
 	; position 12 - pattern 0
+	db	1,1,1,1
+	; position 13 - pattern 0
 	db	1,1,1,1
 	db	-1
 
 	; 04:  introstrings / 10|introstrings
 	; position 4 - pattern 2
-	db	4,3,4,6,4,7,5
+	db	5,4,5,7,5,8,6
 	; position 5 - pattern 2
-	db	4,3,4,6,4,7,5
-	; position 8 - pattern 4
-	db	1,2,0
-	; position 10 - pattern 2
-	db	4,3,4,6,4,7,5
-	; position 11 - pattern 2
-	db	4,3,4,6,4,7,5
+	db	5,4,5,7,5,8,6
+	; position 8 - pattern 2
+	db	5,4,5,7,5,8,6
+	; position 10 - pattern 4
+	db	2,3,1
+	; position 11 - pattern 4
+	db	2,3,0
 	db	-1
 
 	; 05:  introstrings / 10|introstrings
 	; position 4 - pattern 2
-	db	6,5,6,3,6,4,7
+	db	7,6,7,4,7,5,8
 	; position 5 - pattern 2
-	db	6,5,6,3,6,4,7
-	; position 8 - pattern 4
-	db	2,0,1
-	; position 10 - pattern 2
-	db	6,5,6,3,6,4,7
-	; position 11 - pattern 2
-	db	6,5,6,3,6,4,7
+	db	7,6,7,4,7,5,8
+	; position 8 - pattern 2
+	db	7,6,7,4,7,5,8
+	; position 10 - pattern 4
+	db	3,0,2
+	; position 11 - pattern 4
+	db	3,0,1
 	db	-1
 
 	; 06:  introstrings / 10|introstrings
@@ -380,9 +392,7 @@ _NoteSamples:
 	db	4,3,4,1,4,2,0
 	; position 5 - pattern 2
 	db	4,3,4,1,4,2,0
-	; position 10 - pattern 2
-	db	4,3,4,1,4,2,0
-	; position 11 - pattern 2
+	; position 8 - pattern 2
 	db	4,3,4,1,4,2,0
 	db	-1
 
@@ -391,9 +401,7 @@ _NoteSamples:
 	db	0
 	; position 5 - pattern 2
 	db	0
-	; position 10 - pattern 2
-	db	0
-	; position 11 - pattern 2
+	; position 8 - pattern 2
 	db	0
 	db	-1
 
