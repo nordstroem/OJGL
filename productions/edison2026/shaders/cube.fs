@@ -502,6 +502,13 @@ float elevatorShaft(in vec3 p) {
 
 )""
     R""(
+
+DistanceInfo sunk(DistanceInfo a, DistanceInfo b, float k) {
+    DistanceInfo res = a.distance < b.distance ? a : b;
+    res.distance = smink(a.distance, b.distance, k);
+    return res;
+}
+
 DistanceInfo map(in vec3 p)
 {
 #if SCENE == 0
@@ -529,6 +536,16 @@ DistanceInfo map(in vec3 p)
     DistanceInfo o = oskar(p);
     if (m == 10.0 &&  mBassdrum*1.5 > abs(fragCoord.x - 0.5)) {
         return o;
+    } else if (m == 5.0 &&  mBassdrum*1.5 > abs(fragCoord.x - 0.5)) {
+        vec3 q = p;
+        q.xy *= rot(-PI / 4);
+        q.y -= 15;
+        pMod2(q.xz, vec2(2.5));
+        float d = sdSphere(q, 0.7 + mBassdrum*0.1);
+        d = smink(d, sdCylinder(q.xyz, 0.2), 0.3);
+        d = smink(d, sdCylinder(q.zyx, 0.2), 0.3);
+        DistanceInfo d2 = DistanceInfo(d, oskarType);
+        return un(o, sunk(room(p), d2, 0.5));
     } else {
         return un(room(p), o);
     }
@@ -722,6 +739,9 @@ vec3 getColor(in MarchResult result)
         return graphite * (0.3 + diffuse) + 0.6 * specular + gFresnel * vec3(0.4);
     } else if (result.type == cubeType) {
         vec3 cubeColor = vec3(0.7, 0.35, 0.15);
+        if (mod(result.position.x + cCellSize*0.5, cCellSize*2.0) >= cCellSize) {
+            cubeColor = vec3(0.25, 0.1, 0.5);
+        }
         gFresnel = 0.2 * pow(1.0 - max(0.0, dot(normal, viewDir)), 4.0);
         vec3 baseColor = cubeColor * (0.08 + diffuse);
         vec3 tintedSpecular = specular * mix(vec3(1.0), cubeColor, 0.5);
