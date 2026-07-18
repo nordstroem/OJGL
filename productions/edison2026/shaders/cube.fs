@@ -62,10 +62,10 @@ vec3 cRoomSize = vec3(20, 20, 20);
 float floorPosition = 0;
 
 float OP0_0 = 3.0;
-float OP0_1 = OP0_0 + 3.0;
-float OP0_2 = OP0_1 + 4.0;
+float OP0_1 = OP0_0 + 3.5;
+float OP0_2 = OP0_1 + 5.0;
 float OP0_3 = OP0_2 + 4.0;
-float OP1 = OP0_3 + 10.0;
+float OP1 = OP0_3 + 8.5;
 float OP2 = OP1 + 5.0;
 float OP3 = OP2 + 1.0;
 float OP4 = OP3 + 3.0;
