@@ -540,6 +540,14 @@ float roomEdgeAmount(in vec3 p)
 
 float getReflectiveIndex(int type)
 {
+#if SCENE == 2
+    // "global" reflection effect in scene 2 sometimes
+    float m = mod(mBassdrumTot, 10.0);
+    if (m == 3.0 || m == 5.0) {
+        float a = abs(fragCoord.x - ((sin(iTime * 15.0)*0.5) + 0.5));
+        return a*a*a*a;
+    }
+#endif
     float pulse = exp(-mBassdrum * 6.0);
     if (type == sphereType){
         return mix(0.5, 0.9, gFresnel);
