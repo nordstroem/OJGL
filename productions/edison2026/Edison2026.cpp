@@ -107,7 +107,7 @@ ojstd::vector<Scene> Edison2026::buildSceneGraph(const Vector2i& sceneSize) cons
 
     scenes.push_back(buildScene(0, Duration::seconds(20)));
     scenes.push_back(buildScene(1, Duration::milliseconds(18700)));
-    scenes.push_back(buildScene(2, Duration::seconds(15 + 25 + 4)));
+    scenes.push_back(buildScene(2, Duration::seconds(41)));
     scenes.push_back(buildScene(3, Duration::seconds(15)));
 
     return scenes;
