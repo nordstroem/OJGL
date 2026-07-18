@@ -743,6 +743,12 @@ void main()
 #endif
 
 #if SCENE == 1
+    float mm = mod(mBassdrumTot, 14.0);
+    if (mm == 7.0) {
+        u *= 1.0 + mBassdrum*0.4;
+        v *= 1.0 + mBassdrum*0.4;
+    } 
+
     if (iTime < ARM_SUBSCENE1) {
         vec3 tar = vec3(0, 3 - 1*smoothstep(5, ARM_SUBSCENE1, iTime), 0);
         rayOrigin = vec3(13*cos(0.5*iTime), 3 + iTime * 0.3, 13*sin(0.5*iTime));
@@ -924,6 +930,17 @@ void main()
     float focus = clamp( (abs(gHitToEyeDistance - S_focusDistance) - S_focusRadius) * S_focusStrength, 0.0, 1.0);
 
     fragColor = vec4(pow(max(color, 0.0), vec3(0.4545)), focus);
+
+#if SCENE == 1
+    float m = mod(mBassdrumTot, 33.0);
+    if (m == 6.0) {
+        fragColor.rgb = vec3(1)-fragColor.rgb;
+    } else if (m == 18.0) {
+        fragColor.rgb = vec3(gHitToEyeDistance * 0.01);
+    } else if (m == 23.0) {
+        fragColor.rgb = mix(fragColor.rgb, vec3(1)-fragColor.rgb, gHitToEyeDistance * 0.02);
+    }
+#endif
 
 #if SCENE == 2
     float m = mod(mBassdrumTot, 11.0);
