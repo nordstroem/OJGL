@@ -55,7 +55,7 @@ const int lidType = 9;
 vec3 gEye;
 float gFresnel = 0.0;
 float gHitToEyeDistance = 0.0;
-const float S_focusDistance = 10.0;
+float S_focusDistance = 10.0;
 const float S_focusRadius = 10.0;
 const float S_focusStrength = 0.03;
 vec3 cRoomSize = vec3(20, 20, 20);
@@ -385,9 +385,9 @@ bool noiseTransitionCheck() {
     vec2 uv = fragCoord.xy;
     uv *= 200;
     uv = floor(uv);
-    float n = noiseOctave(uv, 10, 0.7);
+    float n = noiseOctave(uv, 1, 0.7);
     float t = iTime - OP5;
-    return n < smoothstep(2, 3, t);
+    return n < smoothstep(1, 2, t);
 }
 
 DistanceInfo oskar(in vec3 p) {
@@ -424,7 +424,7 @@ DistanceInfo oskar(in vec3 p) {
         // four band and swap on bassdrum
          phase = mod(fragCoord.y * 4.0 + mBassdrumTot, 4.0);
     } else if (iTime < OP6) {
-        phase = 1.0;
+        phase = 2.0;
 
         if (noiseTransitionCheck()) {
             // TODO copy pasted code
@@ -635,9 +635,9 @@ vec3 getColor(in MarchResult result)
         // -5 to 5
         float x = a.x + 5.0;
         float z = a.y + 5.0;
-        vec3 c1 = rust(result.position.xz * 0.01);
-        vec3 c2 = vec3(1) - c1;
-        if (mod(mHihatTot, 2.0) >= 1.0) {
+        vec3 c1 = vec3(0.1);
+        vec3 c2 = vec3(1) - rust(result.position.xz * 0.01)*1.3;
+        if (mod(mBassdrumTot, 2.0) >= 1.0) {
             vec3 tmp = c1;
             c1 = c2;
             c2 = tmp;
@@ -771,7 +771,13 @@ void main()
 #endif
 
 #if SCENE == 2
+    float mm = mod(mBassdrumTot, 13.0);
+    if (mm == 7.0) {
+        u *= 1.0 - mBassdrum*2.0;
+        v *= 1.0 - mBassdrum*2.0;
+    } 
     if (iTime < OP0_0) {
+        S_focusDistance = 28.0;
         rayOrigin = vec3(0, 39, 19 - iTime);
         gEye = rayOrigin;
         vec3 tar = vec3(0, 0, 1);
@@ -802,7 +808,10 @@ void main()
 	    vec3 right = normalize(cross(vec3(0, 1, 0), dir));
  	    vec3 up = cross(dir, right);
         
+
         rayDirection = normalize(dir + right*u + up*v);
+
+
     } else if (iTime < OP0_3) {
         float t = iTime - OP0_2;
         rayOrigin = vec3(-15, 28 + t*3.0, 19);
@@ -915,6 +924,17 @@ void main()
     float focus = clamp( (abs(gHitToEyeDistance - S_focusDistance) - S_focusRadius) * S_focusStrength, 0.0, 1.0);
 
     fragColor = vec4(pow(max(color, 0.0), vec3(0.4545)), focus);
+
+#if SCENE == 2
+    float m = mod(mBassdrumTot, 11.0);
+    if (m == 2.0) {
+        fragColor.rgb = vec3(1)-fragColor.rgb;
+    } else if (m == 6.0) {
+        fragColor.rgb = vec3(gHitToEyeDistance * 0.01);
+    } else if (m == 9.0) {
+        fragColor.rgb = mix(fragColor.rgb, vec3(1)-fragColor.rgb, gHitToEyeDistance * 0.02);
+    }
+#endif
 
 #if SCENE == 3
     fragColor.rgb *= 1.0 - smoothstep(11, 14, iTime); // fade out
