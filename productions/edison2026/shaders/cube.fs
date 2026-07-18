@@ -972,6 +972,10 @@ void main()
     }
 #endif
 
+#if SCENE == 0
+    fragColor.rgb *= smoothstep(0.5, 1.5, iTime); // fade in
+#endif
+
 #if SCENE == 3
     fragColor.rgb *= 1.0 - smoothstep(11, 14, iTime); // fade out
 #endif
