@@ -516,7 +516,13 @@ DistanceInfo map(in vec3 p)
         return un(d1, d2);
     }
 #elif SCENE == 2
-    return un(room(p), oskar(p));
+    float m = mod(mBassdrumTot, 15.0);
+    DistanceInfo o = oskar(p);
+    if (m == 10.0 &&  mBassdrum*1.5 > abs(fragCoord.x - 0.5)) {
+        return o;
+    } else {
+        return un(room(p), o);
+    }
 #elif SCENE == 3
     vec3 pRobot = p;
     pRobot -= vec3(0, min(0.0, 6 - iTime), 0);
