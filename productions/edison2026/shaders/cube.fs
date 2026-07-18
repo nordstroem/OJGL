@@ -502,6 +502,13 @@ float elevatorShaft(in vec3 p) {
 
 )""
     R""(
+
+DistanceInfo sunk(DistanceInfo a, DistanceInfo b, float k) {
+    DistanceInfo res = a.distance < b.distance ? a : b;
+    res.distance = smink(a.distance, b.distance, k);
+    return res;
+}
+
 DistanceInfo map(in vec3 p)
 {
 #if SCENE == 0
@@ -529,6 +536,16 @@ DistanceInfo map(in vec3 p)
     DistanceInfo o = oskar(p);
     if (m == 10.0 &&  mBassdrum*1.5 > abs(fragCoord.x - 0.5)) {
         return o;
+    } else if (m == 5.0 &&  mBassdrum*1.5 > abs(fragCoord.x - 0.5)) {
+        vec3 q = p;
+        q.xy *= rot(-PI / 4);
+        q.y -= 15;
+        pMod2(q.xz, vec2(2.5));
+        float d = sdSphere(q, 0.7 + mBassdrum*0.1);
+        d = smink(d, sdCylinder(q.xyz, 0.2), 0.3);
+        d = smink(d, sdCylinder(q.zyx, 0.2), 0.3);
+        DistanceInfo d2 = DistanceInfo(d, oskarType);
+        return un(o, sunk(room(p), d2, 0.5));
     } else {
         return un(room(p), o);
     }
