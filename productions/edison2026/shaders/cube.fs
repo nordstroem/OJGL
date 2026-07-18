@@ -598,6 +598,13 @@ vec3 getColor(in MarchResult result)
 {
     if (result.jump == 0) {
         gHitToEyeDistance = length(gEye - result.position);
+#if SCENE == 2
+        // only render reflections as an effect
+        float m = mod(mBassdrumTot, 10.0);
+        if (mod(m, 18) == 2.0) {
+            return vec3(1.0);
+        }
+#endif
     }
 
     if (result.type == invalidType) {
