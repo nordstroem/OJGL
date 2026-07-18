@@ -722,6 +722,9 @@ vec3 getColor(in MarchResult result)
         return graphite * (0.3 + diffuse) + 0.6 * specular + gFresnel * vec3(0.4);
     } else if (result.type == cubeType) {
         vec3 cubeColor = vec3(0.7, 0.35, 0.15);
+        if (mod(result.position.x + cCellSize*0.5, cCellSize*2.0) >= cCellSize) {
+            cubeColor = vec3(0.25, 0.1, 0.5);
+        }
         gFresnel = 0.2 * pow(1.0 - max(0.0, dot(normal, viewDir)), 4.0);
         vec3 baseColor = cubeColor * (0.08 + diffuse);
         vec3 tintedSpecular = specular * mix(vec3(1.0), cubeColor, 0.5);
