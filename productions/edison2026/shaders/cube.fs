@@ -931,7 +931,7 @@ void main()
 #endif
 
 #if SCENE == 3
-    rayOrigin = vec3(13*cos(iTime), 3 + iTime * 0.3, 13*sin(iTime));
+    rayOrigin = vec3(13*cos(iTime*0.5), 3 + iTime * 0.3, 13*sin(iTime*0.5));
     gEye = rayOrigin; 
     //vec3 tar = rayOrigin + vec3(1, 1 , 0);
     vec3 tar = vec3(0, 3, 0);
