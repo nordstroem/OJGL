@@ -10,12 +10,20 @@ struct MarchResult {
     int type;
     vec3 position;
     int steps;
+    float transmittance;
+    vec3 scatteredLight;
     int jump;
 };
 
-
+struct VolumetricResult {
+    float distance;
+    vec3 color;
+};
 
 DistanceInfo map(in vec3 p);
+VolumetricResult evaluateLight(in vec3 p);
+float getFogAmount(in vec3 p);
+
 vec3 getColor(in MarchResult result);
 float getReflectiveIndex(int type);
 
@@ -78,6 +86,8 @@ DistanceInfo un(DistanceInfo a, DistanceInfo b) { return a.distance < b.distance
 vec3 march(in vec3 rayOrigin, in vec3 rayDirection)
 {
     float t = 0.0;
+    vec3 scatteredLight = vec3(0.0);
+    float transmittance = 1.0;
     float reflectionModifier = 1.0;
     vec3 resultColor = vec3(0.0);
 
@@ -91,9 +101,21 @@ vec3 march(in vec3 rayOrigin, in vec3 rayDirection)
             DistanceInfo info = map(p);
             float jumpDistance = info.distance * S_distanceMultiplier;
 
+#if S_VOLUMETRIC
+            float fogAmount = getFogAmount(p);
+            VolumetricResult vr = evaluateLight(p);
+
+            float volumetricJumpDistance = max(S_minVolumetricJumpDistance, vr.distance * S_volumetricDistanceMultiplier);
+            jumpDistance = min(jumpDistance, volumetricJumpDistance);
+            vec3 lightIntegrated = vr.color - vr.color * exp(-fogAmount * jumpDistance);
+            lightIntegrated = max(vec3(0), lightIntegrated); // To fix the small black squares that could appear sometimes with bright volumetric light
+            scatteredLight += transmittance * lightIntegrated;	
+            transmittance *= exp(-fogAmount * jumpDistance);      
+#endif
+
             t += jumpDistance;
             if (info.distance < (S_distanceEpsilon)) {
-                vec3 color = getColor(MarchResult(info.type, p, steps, jump));
+                vec3 color = getColor(MarchResult(info.type, p, steps, transmittance, scatteredLight, jump));
 #if !S_REFLECTIONS
                 return color;
 #else
@@ -111,7 +133,7 @@ vec3 march(in vec3 rayOrigin, in vec3 rayDirection)
             }
 
             if (t > S_maxDistance || steps == S_maxSteps - 1) {
-                vec3 color = getColor(MarchResult(invalidType, p, steps, jump));
+                vec3 color = getColor(MarchResult(invalidType, p, steps, transmittance, scatteredLight, jump));
                 resultColor = mix(resultColor, color, reflectionModifier);
                 return resultColor;
             }
