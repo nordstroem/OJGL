@@ -1,0 +1,991 @@
+R""(
+const float S_distanceEpsilon = 1e-2;
+const float S_normalEpsilon = 1e-3;
+const int S_maxSteps = 400;
+const float S_maxDistance = 100.0;
+const float S_distanceMultiplier = 0.7;
+const int S_reflectionJumps = 3;
+
+#define S_VOLUMETRIC 0
+#define S_REFLECTIONS 1
+
+// SCENE is injected per-scene via Buffer::setDefines (0 = robot arm + blob, 1 = cube).
+#ifndef SCENE
+#define SCENE 0
+#endif
+
+// Injected via Buffer::setDefines; must match cNumStringHits in Edison2026.cpp.
+#ifndef NUM_STRING_HITS
+#define NUM_STRING_HITS 3
+#endif
+
+#include "common/primitives.fs"
+#include "common/raymarch_utils.fs"
+#include "common/utils.fs"
+#line 23
+
+in vec2 fragCoord;
+out vec4 fragColor;
+
+uniform float iTime;
+uniform vec2 iResolution;
+uniform mat4 iCameraMatrix;
+uniform float mBassdrum;
+uniform float mBassdrumTot;
+uniform float mHihat;
+uniform float mHihatTot;
+uniform float mSnare;
+uniform float mSnareTot;
+uniform float mStrings;
+uniform float mStringsTot;
+uniform float mStringsHitAge[NUM_STRING_HITS];
+uniform float mStringsHitTot[NUM_STRING_HITS];
+
+const int sphereType = 1;
+const int roomType = 2;
+const int armBodyType = 3;
+const int armJointType = 4;
+const int cubeType = 5;
+const int oskarType = 7;
+const int screenType = 8;
+const int lidType = 9;
+
+vec3 gEye;
+float gFresnel = 0.0;
+float gHitToEyeDistance = 0.0;
+float S_focusDistance = 10.0;
+const float S_focusRadius = 10.0;
+const float S_focusStrength = 0.03;
+vec3 cRoomSize = vec3(20, 20, 20);
+float floorPosition = 0;
+
+#if SCENE == 2
+const float OP0_0 = 3.0;
+const float OP0_1 = OP0_0 + 3.5;
+const float OP0_2 = OP0_1 + 5.0;
+const float OP0_3 = OP0_2 + 4.0;
+const float OP1 = OP0_3 + 10.0;
+const float OP2 = OP1 + 3.5;
+const float OP3 = OP2 + 1.0;
+const float OP4 = OP3 + 3.0;
+const float OP5 = OP4 + 3.0;
+const float OP6 = OP5 + 6.0;
+#endif
+
+float ARM_SUBSCENE1 = 15.0;
+float ARM_SUBSCENE2 = 16.0;
+
+
+
+
+
+
+
+float wallPattern(in vec2 uv) {
+    float thickness = 2.0;
+    float t = cos(uv.x*2.0) * cos(uv.y*2.0) / thickness;
+    return smoothstep(0.1, 0.0, t*t);
+}
+
+DistanceInfo room(in vec3 p)
+{
+    vec3 roomSize = cRoomSize;
+#if SCENE == 2
+    if (iTime > OP3 && iTime < OP4) {
+        float t = iTime - OP3;
+        roomSize.y += t*3.0;
+    }
+#endif
+    p.y += floorPosition -roomSize.y;
+    p.y -= wallPattern(p.xz) * 0.005;
+    p.x -= wallPattern(p.zy) * 0.005;
+    p.z -= wallPattern(p.xy) * 0.005;
+    return DistanceInfo(-sdBox(p, roomSize), roomType);
+}
+
+float func(float n) {
+    return 0.8 * sin(0.3 * n*2);
+}
+float func2(float n) {
+    return 0.5 * sin(0.3 * n*2);
+}
+float func3(float n) {
+    return 0.5 * cos(0.3 * n*2);
+}
+DistanceInfo robotArm(in vec3 p, float timeOffset)
+{
+    vec3 orgp = p;
+    // pMod2(p.xz, vec2(5));
+    float localTime = iTime + timeOffset*2.0;
+
+    float x000 = func3(mSnareTot - 1);
+    float x111 = func3(mSnareTot);
+    float aBase = mix(x000, x111, smoothstep(0.0, 0.15, mSnare));
+    
+    float upright = 1;
+#if SCENE == 1
+    upright = smoothstep(5, 6, iTime);
+#elif SCENE == 3
+    upright = 1.0 - smoothstep(2, 3, iTime);
+#endif
+
+    float x00 = func2(mSnareTot - 1);
+    float x11 = func2(mSnareTot);
+    float aShoulder = mix(x00, x11, smoothstep(0.0, 0.15, mSnare));
+    
+    aShoulder *= upright;
+
+    float aElbow =    0.9 + 0.5 * sin(0.45 * localTime + 2.5);
+    aElbow *= upright;
+
+    float aWrist =    0.8 * sin(0.7 * localTime);
+    aWrist *= upright;
+
+#if SCENE == 1
+    float factor = 3;
+#else 
+    float factor = 1;
+#endif 
+    float x0 = func(floor(mStringsTot/factor) - 1);
+    float x1 = func(floor(mStringsTot/factor));
+    float aFinger = mix(x0, x1, smoothstep(0.0, 0.15, mStrings));
+
+    float dJoint = sdCappedCylinder(p - vec3(0.0, 0.13, 0.0), vec2(0.8, 0.1));
+
+
+    // Axis 1
+    vec3 q = p - vec3(0.0, 0.65, 0.0);
+    q.xz *= rot(aBase);
+    float dBody = sdRoundBox(q - vec3(0.0, 0.0, 0.0), vec3(0.15, 0.45, 0.23), 0.08);
+
+    // Axis 2
+    vec3 s = q - vec3(0.0, 0.55, 0.0);
+    dJoint = min(dJoint, sdCappedCylinder(s.xzy, vec2(0.28, 0.32)));
+    vec3 la = s;
+    la.xy *= rot(aShoulder);
+    float lowerLen = 1.5;
+    dBody = smink(dBody, sdRoundBox(la - vec3(0.0, 0.5 * lowerLen, 0.0), vec3(0.12, 0.5 * lowerLen, 0.14), 0.07), 0.1);
+
+    // Axis 3
+    vec3 e = la - vec3(0.0, lowerLen, 0.0);
+    dJoint = min(dJoint, sdCappedCylinder(e.xzy, vec2(0.22, 0.27)));
+    vec3 ua = e;
+    ua.xy *= rot(aElbow);
+    float upperLen = 1.2;
+    dBody = min(dBody, sdRoundCone(ua, 0.17, 0.11, upperLen));
+
+    // Axis 5
+    vec3 w = ua - vec3(0.0, upperLen, 0.0);
+    dJoint = min(dJoint, sdCappedCylinder(w.xzy, vec2(0.13, 0.16)));
+    vec3 tool = w;
+    tool.xy *= rot(aWrist);
+    pModPolar(tool.xz, 4);
+    tool.x -= 0.1;
+    tool.xy *= rot(-0.2);
+
+    float fLength = 0.2;
+    float fRadius = 0.03;
+    dJoint = min(dJoint, sdCappedCylinder(tool - vec3(0.0, 0.12 + fLength*0.5, 0.0), vec2(fRadius, fLength)));
+    
+    // Axis 6
+    vec3 qq = tool - vec3(0.0, 0.4, 0);
+    dJoint = min(dJoint, sdCappedCylinder(qq.xzy, vec2(0.04, 0.04)));
+    qq.xy *= rot(aFinger);
+
+    dJoint = min(dJoint, sdRoundCone(qq - vec3(0.00, 0.01, 0.0), 0.025, 0.005, fLength*2));
+    
+    DistanceInfo di = un(DistanceInfo(dBody, armBodyType), DistanceInfo(dJoint, armJointType));
+    
+    // di.distance = max(di.distance, sdBox(orgp, vec3(5 + 7.5*(1+sin(mHihatTot)))));
+    return di;
+}
+
+const float cCellSize = 1.6;
+const float cCellHalfWidth = 0.76;
+const float cRestHeight = 0.3;
+const float cSpikeHeight = 1.7;
+const float cSpikeDecay = 0.5;
+const float cSpikeAttack = 0.05;
+
+float cellHeight(float age, int cell)
+{
+    float decay = cell == 9 ? 2.0 : cSpikeDecay;
+    float rise = smoothstep(0.0, cSpikeAttack, age);
+    float fall = 1.0 - smoothstep(cSpikeAttack, cSpikeAttack + decay, age);
+    return cRestHeight + cSpikeHeight * rise * fall;
+}
+
+DistanceInfo cube(in vec3 p)
+{
+    p.y-=0.2;
+    vec3 q = p;
+    pMod1(q.x, cCellSize);
+    float d = sdBox(q - vec3(0, cRestHeight, 0), vec3(cCellHalfWidth, cRestHeight, cCellHalfWidth));
+
+    int order[12] = int[](1, 3, 4, 1, 3, 1, 4, 9, 1, 5, 2, 3);
+    for (int i = 0; i < NUM_STRING_HITS; i++) {
+        if (mStringsHitTot[i] > 0) {
+            float cell = float(order[int(mod(mStringsHitTot[i] - 1, 12))]);
+            float s = cellHeight(mStringsHitAge[i], int(cell));
+            vec3 r = p - vec3((cell-3) * cCellSize, s, 0);
+            d = min(d, sdBox(r, vec3(cCellHalfWidth, s, cCellHalfWidth)));
+        }
+    }
+    return DistanceInfo(d, cubeType);
+}
+
+float udRoundBox( vec3 p, vec3 b, float r )
+{
+  return length(max(abs(p)-b,0.0))-r;
+}
+)""
+    R""(
+float llt(vec3 p) 
+{
+    p *= 0.3;
+
+    pModPolar(p.xz, 6);
+    p.x -= 3;
+	
+    // base ?
+    float w = 0.2;
+    if (p.y < 0.5) {
+    	w += 0.4 * (0.5 - p.y);
+    }
+    if (p.y > 2.7) {
+    	w -= (p.y - 2.7) * 0.5;
+    }
+    float d = sdHexPrism((p - vec3(0.0, 1.5, 0.0)).xzy, vec2(w, 1.5));
+    float res = d;
+    
+    p.xz *= rot(mHihat * 1.5);
+
+    { // top ? 
+        float w = 0.2;
+        w -= abs(p.y - 3.3) * 0.1;
+        float a = 0.2;
+        if (p.x < 0.0) {
+        	a -= abs(p.y - 3.3) * 0.1;
+        }
+
+    	float d = sdBox(p - vec3(0.0, 3.3, 0.0), vec3(a, 0.3, w));
+    	res = min(d, res);
+    }
+    { // barrell ?
+        float d = sdCappedCylinder((p - vec3(0.5, 3.3, 0.0)).yxz, vec2(0.05, 0.3));
+        d = max(d, -sdCappedCylinder((p - vec3(0.5, 3.3, 0.0)).yxz, vec2(0.03, 0.8)));
+        res = min(d, res);
+    
+    }
+    return res.x;
+}
+
+float missile(vec3 p) {
+    p *= 0.2;
+    vec2 b = pMod2(p.xz, vec2(3));
+    //p.y -= mod((b.x + b.y)*6.0 + iTime * 10.0, 10.0);
+    p.y -= mod((b.x + b.y)*6.0 + mStrings * 10.0, 13.0) - 3.0;
+
+    float w = 0.2 - 0.03 * smoothstep(1.4, 1.6, p.y);
+    if (p.y > 1.7) {
+     	w -= 0.2 * (p.y - 1.7);
+    }
+   
+    float d = sdCappedCylinder(p, vec2(w, 2));
+    float ds = sdSphere(p - vec3(0, 2.0, 0.0), 0.11);
+    d = min(ds, d);
+    float bw = 0.1;
+    if (p.y < -2.05) {
+    	bw += 0.6 * (-p.y - 2.05);
+    }
+    float bot = sdCappedCylinder(p - vec3(0,-2.05,0), vec2(bw, 0.1));
+    d = min(bot, d);
+    return d;
+}
+)""
+    R""(
+float opSubtraction( float d1, float d2 )
+{
+    return max(-d1,d2);
+}
+
+
+float opIntersection( float d1, float d2 )
+{
+    return max(d1,d2);
+}
+
+float hash( in vec2 p ) {
+	float h = dot(p,vec2(127.1,311.7));	
+    return fract(sin(h)*43758.5453123);
+}
+float noise( in vec2 p ) {
+    vec2 i = floor( p );
+    vec2 f = fract( p );	
+	vec2 u = f*f*(3.0-2.0*f);
+    return mix( mix( hash( i + vec2(0.0,0.0) ), 
+                     hash( i + vec2(1.0,0.0) ), u.x),
+                mix( hash( i + vec2(0.0,1.0) ), 
+                     hash( i + vec2(1.0,1.0) ), u.x), u.y);
+}
+float noiseOctave(in vec2 p, int octaves, float persistence)
+{
+	float n = 0.;
+	float amplitude = 1.;
+	float frequency = 1.;
+	float maxValue = 0.;
+	for(int i = 0; i < octaves; i++)
+	{
+		n += noise((p+float(i)) * frequency) * amplitude;
+		maxValue += amplitude;
+		amplitude *= persistence;
+		frequency *= 2.0;
+	}
+	return n / maxValue; 
+}
+
+DistanceInfo elevatorLid(in vec3 p) {
+    float m = 0;
+
+#if SCENE == 1
+        m = clamp(iTime - 1.0, 0.0, 1.2); // fix
+#endif
+
+#if SCENE == 2
+    m = 1.2;
+#endif
+
+#if SCENE == 3
+        m = clamp(11.0 - iTime, 0.0, 1.2); // fix
+#endif
+    vec3 o = p;
+
+    p.z = abs(p.z);
+    p += vec3(0, 0, -m);
+    float d1 = sdCappedCylinder(p, vec2(1.5, 0.2));
+    float d2 = sdBox(p+vec3(0, 0, 2), vec3(2));
+    d1 = opSubtraction(d2, d1);
+
+    o.y -= 0.18;
+    pMod1(o.x, 0.4);
+    float d3 = sdCylinder(o, 0.1);
+
+    return DistanceInfo(opSubtraction(d3, d1), lidType);
+}
+
+
+#if SCENE == 2
+bool noiseTransitionCheck() {
+    vec2 uv = fragCoord.xy;
+    uv *= 200;
+    uv = floor(uv);
+    float n = noiseOctave(uv, 1, 0.7);
+    float t = iTime - OP5;
+    return n < smoothstep(1, 2, t);
+}
+#endif
+
+#if SCENE == 2
+DistanceInfo oskar(in vec3 p) {
+
+    // static phase
+    float phase = 0.0;
+
+    if (iTime < OP0_0) {
+        phase = 0.0;
+    } else if (iTime < OP0_1) {
+        phase = 1.0;
+    } else if (iTime < OP0_2) {
+        phase = 2.0;
+    } else if (iTime < OP0_3) {
+        phase = 3.0;
+    } else if (iTime < OP1) {
+         // switch phase on bassdrum
+        phase = mod(mBassdrumTot, 4);
+    } else if (iTime < OP2) {
+        // four corners
+        phase = fragCoord.x > 0.5 ? (fragCoord.y > 0.5 ? 0.0 : 2.0) : (fragCoord.y > 0.5 ? 3.0 : 1.0);
+    } else if (iTime < OP3) {
+        // L-R swipe
+        float t = iTime - OP2;
+        phase = fragCoord.x > mod(t, 1.0) ? 2.0 : 1.0;
+    } else if (iTime < OP4) {
+        // dual band
+        if (mod(mBassdrumTot, 2) >= 1) {
+            phase = mod(fragCoord.x + fragCoord.y, 0.5) > 0.25 ? 1.0 : 3.0;
+        } else {
+            phase = mod(fragCoord.x + fragCoord.y, 0.5) > 0.25 ? 3.0 : 1.0;
+        }
+    } else if (iTime < OP5) {
+        // four band and swap on bassdrum
+         phase = mod(fragCoord.y * 4.0 + mBassdrumTot, 4.0);
+    } else if (iTime < OP6) {
+        phase = 2.0;
+
+        if (noiseTransitionCheck()) {
+            // TODO copy pasted code
+            vec3 pRobot = p;
+            //pRobot -= vec3(0, min(0.0, 6 - iTime), 0);
+            //DistanceInfo d2 = room(p);
+
+            DistanceInfo d1 = robotArm(pRobot, 0);
+            DistanceInfo d3 = elevatorLid(p);
+
+            return un(d1, d3);
+        } else if (1.0 - fragCoord.y > mBassdrum && fragCoord.x > 0.5) {
+            phase = 3.0;
+        } else if (1.0 - fragCoord.y > mHihat && fragCoord.x <= 0.5) {
+            phase = 2.0;
+        }
+    }
+
+    if (phase >= 3 ) { // waves w rocket
+        float d1 = p.y - 3 + sin(p.x + mBassdrumTot * 5) +  0.1 * sin(p.x * 3 + mBassdrumTot * 3);
+        float d2 = missile(p);
+        if (iTime > OP3 && iTime < OP4) { // skip waves in this sub scene, causes some shadow flicker in roof
+            return DistanceInfo(d2, oskarType);
+        } else {
+            return DistanceInfo(smink(d1, d2, 1.8), oskarType);
+        }
+
+    } else if (phase >= 2 ) { // llt
+        float d1 = llt(p);
+        float d2 = sdSphere(p, 5.5 - mBassdrum*0.7);
+        p.xz *= rot(PI / 6);
+        pModPolar(p.xz, 6);
+        float r = 1.0 + 0.3 + sin(length(p.xz) - iTime*3)*0.3;
+        float d3 = sdCylinder(p.zyx- vec3(0, 0, 0), r);
+        return DistanceInfo(smink(d1, smink(d2, d3, 1.0), 0.1), oskarType);
+
+    } else if (phase >= 1 ) { // tower w spheres
+        vec3 q = p;
+        float b = pMod1(q.y, 2);
+        float a = pModPolar(q.xz, 12);
+        q -= vec3(2 +  max(0, sin((mBassdrum) * 8 + b)), 0, 0);
+        float d1 = sdSphere(q , 0.5);
+        float d2 = sdCylinder(p.xzy, 1.5);
+        return DistanceInfo(min(d1, d2), oskarType);
+
+    } else { // screen
+        vec3 o = p;
+        vec2 a = pMod2(p.xz, vec2(2.6));
+        p.y -= (4.0 - 0.5*(abs(a.x) + abs(a.y)))*mHihat + 0.1;
+        float d1 = sdBox(p, vec3(1.2, 0.1, 1.2));
+
+        float d2 = sdBox(o, vec3(16.5));
+        float d = opIntersection(d1, d2);
+        return DistanceInfo(d, screenType);
+    }
+}
+#endif
+
+float elevatorShaft(in vec3 p) {
+    float d1 = sdCylinder(p.xzy, 0.8);
+    return d1;
+}
+
+)""
+    R""(
+
+DistanceInfo sunk(DistanceInfo a, DistanceInfo b, float k) {
+    DistanceInfo res = a.distance < b.distance ? a : b;
+    res.distance = smink(a.distance, b.distance, k);
+    return res;
+}
+
+DistanceInfo map(in vec3 p)
+{
+#if SCENE == 0
+    return un(room(p), cube(p));
+#elif SCENE == 1
+    vec3 pRobot = p;
+    pRobot -= vec3(0, min(0.0, -6 + iTime), 0);
+    DistanceInfo d2 = room(p);
+    
+    if (iTime < ARM_SUBSCENE1) {
+        DistanceInfo d1 = robotArm(pRobot, 0);
+        float dElevatorShaft = elevatorShaft(p);
+        d2.distance = opSubtraction(dElevatorShaft, d2.distance);
+
+        DistanceInfo d3 = elevatorLid(p);
+
+        return un(d1, un(d2, d3));
+    } else {
+        vec2 i = pMod2(pRobot.xz, vec2(6.2, 4));
+        DistanceInfo d1 = robotArm(pRobot, i.x*10 + i.y);
+        return un(d1, d2);
+    }
+#elif SCENE == 2
+    float m = mod(mBassdrumTot, 15.0);
+    DistanceInfo o = oskar(p);
+    if (m == 10.0 &&  mBassdrum*1.5 > abs(fragCoord.x - 0.5)) {
+        return o;
+    } else if (m == 5.0 &&  mBassdrum*1.5 > abs(fragCoord.x - 0.5)) {
+        vec3 q = p;
+        q.xy *= rot(-PI / 4);
+        q.y -= 15;
+        pMod2(q.xz, vec2(2.5));
+        float d = sdSphere(q, 0.7 + mBassdrum*0.1);
+        d = smink(d, sdCylinder(q.xyz, 0.2), 0.3);
+        d = smink(d, sdCylinder(q.zyx, 0.2), 0.3);
+        DistanceInfo d2 = DistanceInfo(d, oskarType);
+        return un(o, sunk(room(p), d2, 0.5));
+    } else {
+        return un(room(p), o);
+    }
+#elif SCENE == 3
+    vec3 pRobot = p;
+    pRobot -= vec3(0, min(0.0, 6 - iTime), 0);
+    DistanceInfo d2 = room(p);
+
+    DistanceInfo d1 = robotArm(pRobot, 0);
+    float dElevatorShaft = elevatorShaft(p);
+    d2.distance = opSubtraction(dElevatorShaft, d2.distance);
+
+    DistanceInfo d3 = elevatorLid(p);
+
+    return un(d1, un(d2, d3));
+#endif
+}
+
+const float roomEdgeBevel = 2.7;
+float roomEdgeAmount(in vec3 p)
+{
+    p.y += floorPosition -cRoomSize.y;
+    vec3 q = p;
+    vec3 d = abs(q) - cRoomSize;
+    vec3 w = smoothstep(-roomEdgeBevel, 0.0, d);
+    return clamp(w.x + w.y + w.z - 1.0, 0.0, 1.0);
+}
+
+float getReflectiveIndex(int type)
+{
+#if SCENE == 2
+    // "global" reflection effect in scene 2 sometimes
+    float m = mod(mBassdrumTot, 10.0);
+    if (m == 3.0 || m == 5.0) {
+        float a = abs(fragCoord.x - ((sin(iTime * 15.0)*0.5) + 0.5));
+        return a*a*a*a*a;
+    }
+#endif
+    float pulse = exp(-mBassdrum * 6.0);
+    if (type == sphereType){
+        return mix(0.5, 0.9, gFresnel);
+    }
+    if (type == armBodyType) {
+        return 0.2;
+    }
+    if (type == armJointType) {
+        return 0.8;
+    }
+    if (type == cubeType) {
+        return 0.2;
+    }
+    if (type == oskarType) {
+        return 0.5;
+    }
+    if (type == screenType) {
+        return 0.3;
+    }
+    if (type == lidType) {
+        return 0.9;
+    }
+    return 0.0;
+}
+
+
+// https://www.shadertoy.com/view/XsSfDG
+vec3 rust(in vec2 uv )
+{
+	//vec2 uv = fragCoord.xy / iResolution.xy;
+    
+    float n = noiseOctave(uv * 4., 10, 0.7);
+    float gs = 0.5 + 0.5 * sin(uv.x * 50.0 + n * 60.0);
+    
+    
+    
+    vec3 blue = vec3(0.8, 0.6,0.6);
+    vec3 rust = vec3(1.0);
+    
+    vec3 color = mix(rust, blue, 0.8 * gs);
+    float n2 = noiseOctave(uv * 100., 10, 0.7);
+    color = mix(color, vec3(n2 * 0.5 + 0.25), 0.3);
+    
+	return color;
+}
+
+vec3 getColor(in MarchResult result)
+{
+    if (result.jump == 0) {
+        gHitToEyeDistance = length(gEye - result.position);
+#if SCENE == 2
+        // only render reflections as an effect
+        if (mod(mBassdrumTot, 10.0) == 9.0) {
+            return vec3(1.0);
+        }
+#endif
+    }
+
+    if (result.type == invalidType) {
+        return vec3(0.0);
+    }
+
+    float pulse = exp(-mBassdrum * 6.0);
+    vec3 lightPosition = vec3(15 * (1 - 2*pulse), 4.0, 8.0);
+    vec3 normal = normal(result.position);
+    vec3 invLight = normalize(lightPosition - result.position);
+    vec3 viewDir = normalize(gEye - result.position);
+    float diffuse = max(0.0, dot(invLight, normal));
+    vec3 halfDir = normalize(invLight + viewDir);
+    float specular = pow(max(0.0, dot(normal, halfDir)), 32.0);
+
+    if (result.type == sphereType) {
+        float pulse = exp(-mBassdrum * 6.0);
+        vec3 metalColor = 0.5*vec3(0.2, 0.5, 0.9);
+        gFresnel = pow(1.0 - max(0.0, dot(normal, viewDir)), 4.0);
+        vec3 baseColor = metalColor * diffuse * (1.0 + 2.0 * pulse);
+        vec3 tintedSpecular = specular * mix(vec3(1.0), metalColor, 0.6); 
+        return baseColor + 2.0 * gFresnel * mix(vec3(0.6, 0.8, 1.0), metalColor, 0.4) + tintedSpecular;
+    } else if (result.type == oskarType) {
+        float pulse = exp(-mBassdrum * 6.0);
+        vec3 metalColor = 0.5*vec3(0.2, 0.5, 0.9);
+        gFresnel = pow(1.0 - max(0.0, dot(normal, viewDir)), 4.0);
+        vec3 baseColor = metalColor * diffuse * (1.0 + 2.0 * pulse);
+        vec3 tintedSpecular = specular * mix(vec3(1.0), metalColor, 0.6); 
+        return baseColor + 2.0 * gFresnel * mix(vec3(0.6, 0.8, 1.0), metalColor, 0.4) + tintedSpecular;
+    } else if (result.type == lidType) {
+        float pulse = exp(-mBassdrum * 6.0);
+        vec3 metalColor = 0.5*vec3(0.2, 0.3, 0.3);
+        gFresnel = pow(1.0 - max(0.0, dot(normal, viewDir)), 4.0);
+        vec3 baseColor = metalColor * diffuse * (1.0 + 2.0 * pulse);
+        vec3 tintedSpecular = specular * mix(vec3(1.0), metalColor, 0.6); 
+        return baseColor + 2.0 * gFresnel * mix(vec3(0.6, 0.8, 1.0), metalColor, 0.4) + tintedSpecular;
+    } else if (result.type == screenType) {
+        float pulse = exp(-mBassdrum * 6.0);
+        vec2 copy = result.position.xz;
+        vec2 a = pMod2(copy, vec2(2.6));
+        //vec3 color = vec3(a.x, a.y, 0.0);
+        vec3 color = vec3(0.0);
+        // -5 to 5
+        float x = a.x + 5.0;
+        float z = a.y + 5.0;
+        vec3 c1 = vec3(0.8);
+        vec3 c2 = vec3(1.0) - rust(result.position.xz * 0.01)*1.3;
+        if (mod(mBassdrumTot, 2.0) >= 1.0) {
+            vec3 tmp = c1;
+            c1 = c2;
+            c2 = tmp;
+        }
+        float xm = 11-x - 2;
+        float zm = z - 2;
+        if (
+            (xm == 1 && zm == 0) ||
+            (xm == 2 && zm == 0) ||
+            (xm == 3 && zm == 0) ||
+            (xm == 0 && zm == 1) ||
+            (xm == 0 && zm == 2) ||
+            (xm == 0 && zm == 3) ||
+            (xm == 0 && zm == 4) ||
+            (xm == 0 && zm == 5) ||
+            (xm == 4 && zm == 1) ||
+            (xm == 4 && zm == 2) ||
+            (xm == 4 && zm == 3) ||
+            (xm == 4 && zm == 4) ||
+            (xm == 4 && zm == 5) ||
+            (xm == 1 && zm == 6) ||
+            (xm == 2 && zm == 6) ||
+            (xm == 3 && zm == 6) ||
+            (xm == 8 && zm == 0) ||
+            (xm == 8 && zm == 1) ||
+            (xm == 8 && zm == 2) ||
+            (xm == 8 && zm == 3) ||
+            (xm == 8 && zm == 4) ||
+            (xm == 8 && zm == 5) ||
+            (xm == 6 && zm == 6) ||
+            (xm == 7 && zm == 6) ||
+            (xm == 8 && zm == 6)
+            ) {
+            color = c1;
+        } else {
+            color = c2;
+        }
+        gFresnel = pow(1.0 - max(0.0, dot(normal, viewDir)), 4.0);
+        vec3 baseColor = color * diffuse * (1.0 + 2.0 * pulse);
+        vec3 tintedSpecular = specular * mix(vec3(1.0), color, 0.6); 
+        return baseColor + 2.0 * gFresnel * mix(vec3(0.6, 0.8, 1.0), color, 0.4) + tintedSpecular;
+    } else if (result.type == armBodyType) {
+        vec3 bodyColor = vec3(0.2, 0.5, 0.9);
+        gFresnel = 0.3 * pow(1.0 - max(0.0, dot(normal, viewDir)), 4.0);
+        return bodyColor * (0.06 + diffuse) + 0.8 * specular * mix(vec3(1.0), bodyColor, 0.3) + gFresnel * vec3(1.0, 0.55, 0.25);
+    } else if (result.type == armJointType) {
+        vec3 graphite = 0.5*vec3(0.08, 0.08, 0.09);
+        gFresnel = 0.2 * pow(1.0 - max(0.0, dot(normal, viewDir)), 4.0) * step(0.1, result.position.y);
+        return graphite * (0.3 + diffuse) + 0.6 * specular + gFresnel * vec3(0.4);
+    } else if (result.type == cubeType) {
+        vec3 cubeColor = vec3(0.7, 0.7, 0.7);
+        if (mod(result.position.x + cCellSize*0.5, cCellSize*2.0) >= cCellSize) {
+            cubeColor = vec3(0.0, 0.0, 0.0);
+        }
+        gFresnel = 0.2 * pow(1.0 - max(0.0, dot(normal, viewDir)), 4.0);
+        vec3 baseColor = cubeColor * (0.08 + diffuse);
+        vec3 tintedSpecular = specular * mix(vec3(1.0), cubeColor, 0.5);
+        float shadow = 0.3 + 0.7*shadowFunction2(result.position, normal, lightPosition, 30);
+        return shadow * (baseColor + tintedSpecular) + gFresnel * vec3(1.0, 0.7, 0.4);
+    } else {
+        float edgeAmount = roomEdgeAmount(result.position);
+        vec3 metalColor = 0.3*vec3(0.2, 0.3, 0.3);
+        gFresnel = 0.1*pow(1.0 - max(0.0, dot(normal, viewDir)), 4.0);
+        vec3 baseColor = metalColor * diffuse;
+        vec3 tintedSpecular = specular * mix(vec3(1.0), metalColor, 0.6);
+        vec3 col = baseColor + 2.0 * gFresnel * metalColor + tintedSpecular;
+        float shadow = 0.3 + 0.7*shadowFunction2(result.position, normal, lightPosition, 30);
+        return shadow * col * (1.0 - 0.4*edgeAmount);
+
+    }
+}
+
+)""
+    R""(
+void main()
+{
+    float u = (fragCoord.x - 0.5);
+    float v = (fragCoord.y - 0.5) * iResolution.y / iResolution.x;
+    vec3 rayOrigin = (iCameraMatrix * vec4(u, v, -1.0, 1.0)).xyz;
+    gEye = (iCameraMatrix * vec4(0.0, 0.0, 0.0, 1.0)).xyz;
+    vec3 rayDirection = normalize(rayOrigin - gEye);
+
+#if SCENE == 0
+    float cx = -14 * smoothstep(0, 5, iTime);
+    float cy = 28 * (1 - smoothstep(0, 10, iTime)) + 11;
+    rayOrigin = vec3(cx, sin(iTime)*cos(iTime*0.5) + cy, -17 + cos(iTime));
+    gEye = rayOrigin; // TODO is this correct?
+    //vec3 tar = rayOrigin + vec3(1, 1 , 0);
+    vec3 tar = vec3(0 + 1*cos(iTime), 0, 2);
+    
+    vec3 dir = normalize(tar - rayOrigin);
+    vec3 right = normalize(cross(vec3(0, 1, 0), dir));
+    vec3 up = cross(dir, right);
+    rayDirection = normalize(dir + right*u + up*v);
+
+#endif
+
+#if SCENE == 1
+    // float mm = mod(mBassdrumTot, 14.0);
+    // if (mm == 7.0) {
+    //     u *= 1.0 + mBassdrum*0.4;
+    //     v *= 1.0 + mBassdrum*0.4;
+    // } 
+
+    if (iTime < ARM_SUBSCENE1) {
+        vec3 tar = vec3(0, 3 - 1*smoothstep(5, ARM_SUBSCENE1, iTime), 0);
+        rayOrigin = vec3(13*cos(0.5*iTime), 3 + iTime * 0.3, 13*sin(0.5*iTime));
+        
+        rayOrigin = mix(rayOrigin, tar + vec3(0, 5, 0), 0.3*smoothstep(5, ARM_SUBSCENE1, iTime));
+        
+        gEye = rayOrigin; // TODO is this correct?
+        //vec3 tar = rayOrigin + vec3(1, 1 , 0);
+        
+        vec3 dir = normalize(tar - rayOrigin);
+        vec3 right = normalize(cross(vec3(0, 1, 0), dir));
+        vec3 up = cross(dir, right);
+        
+        rayDirection = normalize(dir + right*u + up*v);
+    } else if (iTime < ARM_SUBSCENE2) {
+        rayOrigin = vec3(iTime, 22, -iTime + 10);
+        gEye = rayOrigin;
+        vec3 tar = rayOrigin - vec3(0.1, 1, 0.1);
+        
+        vec3 dir = normalize(tar - rayOrigin);
+        vec3 right = normalize(cross(vec3(0, 1, 0), dir));
+        vec3 up = cross(dir, right);
+        
+        rayDirection = normalize(dir + right*u + up*v);
+    }
+#endif
+
+#if SCENE == 2
+    float mm = mod(mBassdrumTot, 13.0);
+    if (mm == 7.0 && iTime < OP4) {
+        u *= 1.0 - mBassdrum*2.0;
+        v *= 1.0 - mBassdrum*2.0;
+    } 
+    if (iTime < OP0_0) {
+        S_focusDistance = 28.0;
+        rayOrigin = vec3(0, 39, 19 - iTime);
+        gEye = rayOrigin;
+        vec3 tar = vec3(0, 0, 1);
+        
+        vec3 dir = normalize(tar - rayOrigin);
+	    vec3 right = normalize(cross(vec3(0, 1, 0), dir));
+ 	    vec3 up = cross(dir, right);
+        
+        rayDirection = normalize(dir + right*u + up*v);
+    } else if (iTime < OP0_1) {
+        float y = 5+iTime;
+        rayOrigin = vec3(19, y, -19);
+        gEye = rayOrigin;
+        vec3 tar = vec3(0, y, 1);
+        
+        vec3 dir = normalize(tar - rayOrigin);
+	    vec3 right = normalize(cross(vec3(0, 1, 0), dir));
+ 	    vec3 up = cross(dir, right);
+        
+        rayDirection = normalize(dir + right*u + up*v);
+    } else if (iTime < OP0_2) {
+        float t = iTime - OP0_1;
+        rayOrigin = vec3(19, 25 + t*3.0, 19);
+        gEye = rayOrigin;
+        vec3 tar = vec3(0, 0, 1);
+        
+        vec3 dir = normalize(tar - rayOrigin);
+	    vec3 right = normalize(cross(vec3(0, 1, 0), dir));
+ 	    vec3 up = cross(dir, right);
+        
+
+        rayDirection = normalize(dir + right*u + up*v);
+
+
+    } else if (iTime < OP0_3) {
+        float t = iTime - OP0_2;
+        rayOrigin = vec3(-15, 28 + t*3.0, 19);
+        gEye = rayOrigin;
+        vec3 tar = vec3(0, t*5, 1);
+        
+        vec3 dir = normalize(tar - rayOrigin);
+	    vec3 right = normalize(cross(vec3(0, 1, 0), dir));
+ 	    vec3 up = cross(dir, right);
+        
+        rayDirection = normalize(dir + right*u + up*v);
+    } else if (iTime < OP1) {
+        float t = iTime - OP0_3;
+        rayOrigin = vec3(15, 38, 15);
+        gEye = rayOrigin; // TODO is this correct?
+        //vec3 tar = rayOrigin + vec3(1, 1 , 0);
+        vec3 tar = vec3(0, t * 3.0, 0);
+        
+        vec3 dir = normalize(tar - rayOrigin);
+	    vec3 right = normalize(cross(vec3(0, 1, 0), dir));
+ 	    vec3 up = cross(dir, right);
+        
+        rayDirection = normalize(dir + right*u + up*v);
+    } else if (iTime < OP2) {
+        float t = iTime - OP0_3;
+        rayOrigin = vec3(15 * sin(t * 0.25), 38, 15 * cos(t * 0.25));
+        gEye = rayOrigin; 
+        vec3 tar = vec3(0, 20, 0);
+        
+        vec3 dir = normalize(tar - rayOrigin);
+	    vec3 right = normalize(cross(vec3(0, 1, 0), dir));
+ 	    vec3 up = cross(dir, right);
+        
+        rayDirection = normalize(dir + right*u + up*v);
+    } else if (iTime < OP3) {
+        float t = iTime - OP2;
+        rayOrigin = vec3(15 * sin(t * 0.25), 38 - (t) * 3, 15 * cos(t * 0.25));
+        gEye = rayOrigin; 
+         vec3 tar = vec3(0, 20, 0);
+        
+        vec3 dir = normalize(tar - rayOrigin);
+	    vec3 right = normalize(cross(vec3(0, 1, 0), dir));
+ 	    vec3 up = cross(dir, right);
+        
+        rayDirection = normalize(dir + right*u + up*v);
+
+    } else if (iTime < OP4) {
+        rayOrigin = vec3(-10, 4, 13);
+        gEye = rayOrigin; 
+        vec3 tar = vec3(0, 30, 0);
+        
+        vec3 dir = normalize(tar - rayOrigin);
+	    vec3 right = normalize(cross(vec3(0, 1, 0), dir));
+ 	    vec3 up = cross(dir, right);
+        
+        rayDirection = normalize(dir + right*u + up*v);
+    } else if (iTime < OP5) {
+        rayOrigin = vec3(-19, 9, 11);
+        gEye = rayOrigin; 
+        vec3 tar = vec3(0, 9, 0);
+        
+        vec3 dir = normalize(tar - rayOrigin);
+	    vec3 right = normalize(cross(vec3(0, 1, 0), dir));
+ 	    vec3 up = cross(dir, right);
+        
+        rayDirection = normalize(dir + right*u + up*v);
+    } else if (iTime < OP6) {
+        if (noiseTransitionCheck()) {
+            float t = iTime - OP5;
+            rayOrigin = vec3(-8, t*3, -8);
+            gEye = rayOrigin; 
+            //vec3 tar = rayOrigin + vec3(1, 1 , 0);
+            vec3 tar = vec3(0, 3, 0);
+        
+            vec3 dir = normalize(tar - rayOrigin);
+            vec3 right = normalize(cross(vec3(0, 1, 0), dir));
+            vec3 up = cross(dir, right);
+        
+            rayDirection = normalize(dir + right*u + up*v);
+            fragColor.rgb = vec3(1,0,0);
+        } else {
+            rayOrigin = vec3(-19, 9, 11);
+            gEye = rayOrigin; 
+            vec3 tar = vec3(0, 9, 0);
+        
+            vec3 dir = normalize(tar - rayOrigin);
+	        vec3 right = normalize(cross(vec3(0, 1, 0), dir));
+ 	        vec3 up = cross(dir, right);
+        
+            rayDirection = normalize(dir + right*u + up*v);
+        }
+    }
+#endif
+
+#if SCENE == 3
+    rayOrigin = vec3(13*cos(iTime*0.5), 3 + iTime * 0.3, 13*sin(iTime*0.5));
+    gEye = rayOrigin; 
+    //vec3 tar = rayOrigin + vec3(1, 1 , 0);
+    vec3 tar = vec3(0, 3, 0);
+        
+    vec3 dir = normalize(tar - rayOrigin);
+    vec3 right = normalize(cross(vec3(0, 1, 0), dir));
+    vec3 up = cross(dir, right);
+        
+    rayDirection = normalize(dir + right*u + up*v);
+#endif
+
+    vec3 color = march(rayOrigin, rayDirection);
+
+    float focus = clamp( (abs(gHitToEyeDistance - S_focusDistance) - S_focusRadius) * S_focusStrength, 0.0, 1.0);
+
+    fragColor = vec4(pow(max(color, 0.0), vec3(0.4545)), focus);
+
+#if SCENE == 1
+    float m = mod(mBassdrumTot, 33.0);
+    if (m == 6.0) {
+        fragColor.rgb = vec3(1)-fragColor.rgb;
+    } else if (m == 18.0) {
+        fragColor.rgb = vec3(gHitToEyeDistance * 0.01);
+    } else if (m == 23.0) {
+        fragColor.rgb = mix(fragColor.rgb, vec3(1)-fragColor.rgb, gHitToEyeDistance * 0.02);
+    }
+#endif
+
+#if SCENE == 2
+    float m = mod(mBassdrumTot, 11.0);
+    if (m == 2.0) {
+        fragColor.rgb = vec3(1)-fragColor.rgb;
+    } else if (m == 6.0) {
+        fragColor.rgb = vec3(gHitToEyeDistance * 0.01);
+    } else if (m == 9.0) {
+        fragColor.rgb = mix(fragColor.rgb, vec3(1)-fragColor.rgb, gHitToEyeDistance * 0.02);
+    }
+#endif
+
+#if SCENE == 0
+    fragColor.rgb *= smoothstep(0.5, 1.5, iTime); // fade in
+#endif
+
+#if SCENE == 3
+    fragColor.rgb *= 1.0 - smoothstep(11, 14, iTime); // fade out
+#endif
+}
+)""

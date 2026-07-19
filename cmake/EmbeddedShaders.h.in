@@ -1,0 +1,18 @@
+#pragma once
+#include "utility/OJstd.h"
+
+namespace ojgl::resources {
+// clang-format off
+
+inline ojstd::vector<ojstd::Pair<ojstd::string, ojstd::string>> shaders = {
+@OJGL_SHADER_EMBED_ENTRIES@
+};
+
+#ifdef _DEBUG
+inline ojstd::vector<ojstd::Pair<ojstd::string, ojstd::string>> shaderDiskPaths = {
+@OJGL_SHADER_DISKPATH_ENTRIES@
+};
+#endif
+
+// clang-format on
+}
