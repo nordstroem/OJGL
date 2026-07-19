@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.21)
 project(OJGL CXX)
 
 if(NOT MSVC)
-    message(FATAL_ERROR "OJGL only builds with MSVC (cl.exe). Use the Visual Studio generator.")
+    message(FATAL_ERROR "OJGL only builds with MSVC (cl.exe) ")
 endif()
 
 set(CMAKE_CONFIGURATION_TYPES "Debug;OptimizedDebug;Release;CrinklerRelease" CACHE STRING "" FORCE)
